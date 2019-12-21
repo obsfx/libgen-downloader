@@ -1,0 +1,23 @@
+{
+  "name": "libgen-downloader",
+  "version": "0.0.1",
+  "description": "a simple tool to search and download pdfs via command line interface",
+  "main": "index.js",
+  "scripts": {
+    "run": "node ./dist/index.js",
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": [
+    "libgen",
+    "downloader",
+    "tool"
+  ],
+  "author": "obsfx",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4"
+  }
+}
