@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "run": "node ./dist/index.js",
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "build": "tsc -b",
+    "watch": "tsc -b --watch"
   },
   "keywords": [
     "libgen",
