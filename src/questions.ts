@@ -1,14 +1,4 @@
-interface IQuestion {
-    type: string;
-    name: string;
-    message: string;
-    choices?: Array<IQuestionChoice>;
-}
-
-interface IQuestionChoice {
-    name: string;
-    value: string;
-}
+import { IQuestion } from './interfaces';
 
 const QSearch: IQuestion = {
     type: "input",

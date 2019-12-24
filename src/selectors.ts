@@ -1,4 +1,4 @@
-import { type } from "os";
+import { IEntry } from './interfaces';
 
 const enum TSections {
     ID = 1,
@@ -13,25 +13,12 @@ const enum TSections {
     Mirror = 10
 }
 
-type EntryData = {
-    ID: string;
-    Author: string;
-    Title: string;
-    Publisher: string;
-    Year: string;
-    Pages: string;
-    Lang: string;
-    Size: string;
-    Ext: string;
-    Mirror: string;
-}
-
 const container: string = '.c tbody';
 const buildCellSelector = (row: number, col: number): string => {
     return `${container} tr:nth-child(${row}) td:nth-child(${col})`;
 }
 
-const getEntryData = (id: number): EntryData => {
+const getEntrySelector = (id: number): IEntry => {
     return {
         ID: buildCellSelector(id, TSections.ID),
         Author: buildCellSelector(id, TSections.Author),
@@ -47,9 +34,10 @@ const getEntryData = (id: number): EntryData => {
 }
 
 const THeadRow = 1;
-const THeads: EntryData = getEntryData(THeadRow);
+const THeads: IEntry = getEntrySelector(THeadRow);
 
 export default {
     THeads,
-    getEntryData
+    container,
+    getEntrySelector
 }

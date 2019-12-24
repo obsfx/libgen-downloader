@@ -1,13 +1,15 @@
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
-import jsdom, { JSDOM } from 'jsdom';
+import { JSDOM } from 'jsdom';
 
 import questions from './questions';
 import selectors from './selectors';
+import { getAllEntries } from './entries';
 
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
 const main = async () => {
+    const url = 'http://libgen.is/search.php?req=Doing%20Math%20with%20Python%3A+Use+Programming+to+Explore+Algebra%2C+Statistics%2C+Calculus%2C+and+More%21&lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def';
 
     // let answers : any = await prompt([
     //     questions.QSearch
@@ -15,18 +17,21 @@ const main = async () => {
 
     // console.log(answers);
 
-    let data: any;
-
     try {
-        data = await fetch('http://libgen.is/search.php?req=Doing%20Math%20with%20Python%3A+Use+Programming+to+Explore+Algebra%2C+Statistics%2C+Calculus%2C+and+More%21&lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def');
-
+        let data: any = await fetch(url);
         data = await data.text();
-        let doc: jsdom.JSDOM = new JSDOM(data);
+
+        const document: HTMLDocument = new JSDOM(data).window.document;
+        const entiries = getAllEntries(document);
+
+        console.log(entiries);
+
+        // let doc: jsdom.JSDOM = new JSDOM(data);
         // console.log(doc.window.document.querySelectorAll(".c tbody tr"));
         // doc.window.document.querySelectorAll(".c tbody tr").forEach(e => {
         //     console.log(e.children[0].children[0].textContent);
         // })
-        console.log(selectors.getEntryData(2).ID);
+        // console.log(selectors.getEntryData(2).ID);
         // console.log(doc.window.document.querySelector(selectors.THeads.ID)?.textContent);
         // console.log(doc.window.document.querySelector(selectors.THeads.Author)?.textContent);
         // console.log(doc.window.document.querySelector(selectors.THeads.Ext)?.textContent);
