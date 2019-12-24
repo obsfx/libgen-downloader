@@ -9,9 +9,9 @@ const QSearch: IQuestion = {
 const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
     let choices: IQuestionChoice[] = [];
 
-    choices = entries.map(e => ({
+    choices = entries.map((e, i) => ({
         //name: `<${e.ID}> ${e.Title} | (${e.Author}) - ${e.Publisher}`,
-        name: `<${e.ID}> ${e.Title}`,
+        name: `[${i + 1}] <${e.ID}> ${e.Title}`,
         value: ''
     }));
 
@@ -21,7 +21,7 @@ const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
 const getListQuestion = (entries: IEntry[]): IQuestion => {
     return {
         type: 'list',
-        message: 'Results: ',
+        message: `Results: ${entries.length}`,
         name: 'rlist',
         choices: getQuestionChoices(entries)
     }

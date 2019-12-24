@@ -26,7 +26,7 @@ export const getAllEntries = (document: HTMLDocument): Array<IEntry> => {
     const entryArray: IEntry[] = [];
     const entryAmount: number = document.querySelectorAll(`${selectors.container} tr`).length;
 
-    for (let i = 1; i < entryAmount; i++) {
+    for (let i = selectors.THeadRow + 1; i < entryAmount; i++) {
         const entrySelector: IEntry = selectors.getEntrySelector(i);
         entryArray.push(getEntryData(document, entrySelector));
     }

@@ -37,6 +37,7 @@ const THeadRow = 1;
 const THeads: IEntry = getEntrySelector(THeadRow);
 
 export default {
+    THeadRow,
     THeads,
     container,
     getEntrySelector

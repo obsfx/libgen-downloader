@@ -22,6 +22,7 @@
   "author": "obsfx",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/cli-spinner": "^0.2.0",
     "@types/inquirer": "^6.5.0",
     "@types/jsdom": "^12.2.4",
     "@types/node": "^12.12.21",
@@ -30,6 +31,7 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
+    "cli-spinner": "^0.2.10",
     "inquirer": "^7.0.1",
     "jsdom": "^15.2.1",
     "node-fetch": "^2.6.0"

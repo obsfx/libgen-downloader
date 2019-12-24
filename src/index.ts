@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
+import { Spinner } from 'cli-spinner';
 
 import questions from './questions';
 import selectors from './selectors';
@@ -9,15 +10,19 @@ import { getAllEntries } from './entries';
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
 const main = async () => {
+    console.log("libgen-downloader");
 
-    let answers : any = await prompt([
+    let spinner = new Spinner('Searching.. %s ');
+    spinner.setSpinnerString('|/-\\');
+
+    let input: any = await prompt([
         questions.QSearch
     ]);
 
-    console.log(answers);
-
+    // console.log(answers);
+    spinner.start();
     try {
-        const url = `http://libgen.is/search.php?req=${answers.qsearch}&lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def`;
+        const url = `http://libgen.is/search.php?req=${input.qsearch}&lg_topic=libgen&open=0&view=simple&res=100&phrase=1&column=def`;
 
         let data: any = await fetch(url);
         data = await data.text();
@@ -26,10 +31,16 @@ const main = async () => {
         const entiries = getAllEntries(document);
 
         // console.log(entiries);
-
-        const q = questions.getListQuestion(entiries);
-
-        let a = prompt(q);
+        if (entiries.length != 0) {
+            const listQuestion = questions.getListQuestion(entiries);
+            spinner.stop();
+            console.log("");
+            let selection = await prompt(listQuestion);
+        } else {
+            spinner.stop();
+            console.log("");
+            console.log("No Result");
+        }
 
         // let doc: jsdom.JSDOM = new JSDOM(data);
         // console.log(doc.window.document.querySelectorAll(".c tbody tr"));
