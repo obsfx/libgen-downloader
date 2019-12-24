@@ -9,22 +9,27 @@ import { getAllEntries } from './entries';
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
 const main = async () => {
-    const url = 'http://libgen.is/search.php?req=Doing%20Math%20with%20Python%3A+Use+Programming+to+Explore+Algebra%2C+Statistics%2C+Calculus%2C+and+More%21&lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def';
 
-    // let answers : any = await prompt([
-    //     questions.QSearch
-    // ]);
+    let answers : any = await prompt([
+        questions.QSearch
+    ]);
 
-    // console.log(answers);
+    console.log(answers);
 
     try {
+        const url = `http://libgen.is/search.php?req=${answers.qsearch}&lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def`;
+
         let data: any = await fetch(url);
         data = await data.text();
 
         const document: HTMLDocument = new JSDOM(data).window.document;
         const entiries = getAllEntries(document);
 
-        console.log(entiries);
+        // console.log(entiries);
+
+        const q = questions.getListQuestion(entiries);
+
+        let a = prompt(q);
 
         // let doc: jsdom.JSDOM = new JSDOM(data);
         // console.log(doc.window.document.querySelectorAll(".c tbody tr"));

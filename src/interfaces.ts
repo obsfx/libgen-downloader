@@ -12,7 +12,7 @@ export interface IEntry {
 }
 
 export interface IQuestion {
-    type: string;
+    type: 'input' | 'number' | 'confirm' | 'list';
     name: string;
     message: string;
     choices?: IQuestionChoice[];
