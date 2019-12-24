@@ -1,4 +1,6 @@
-const enum TColumns {
+import { type } from "os";
+
+const enum TSections {
     ID = 1,
     Author = 2,
     Title = 3,
@@ -11,12 +13,7 @@ const enum TColumns {
     Mirror = 10
 }
 
-const container: string = '.c tbody';
-
-const THeadContainer: string = 'tr:nth-child(1)';
-const THeadPrefix: string = `${container} ${THeadContainer}`;
-
-interface ITHeads {
+type EntryData = {
     ID: string;
     Author: string;
     Title: string;
@@ -29,19 +26,30 @@ interface ITHeads {
     Mirror: string;
 }
 
-const THeads: ITHeads = {
-    ID: `${THeadPrefix} td:nth-child(${TColumns.ID})`,
-    Author: `${THeadPrefix} td:nth-child(${TColumns.Author})`,
-    Title: `${THeadPrefix} td:nth-child(${TColumns.Title})`,
-    Publisher: `${THeadPrefix} td:nth-child(${TColumns.Publisher})`,
-    Year: `${THeadPrefix} td:nth-child(${TColumns.Year})`,
-    Pages: `${THeadPrefix} td:nth-child(${TColumns.Pages})`,
-    Lang: `${THeadPrefix} td:nth-child(${TColumns.Lang})`,
-    Size: `${THeadPrefix} td:nth-child(${TColumns.Size})`,
-    Ext: `${THeadPrefix} td:nth-child(${TColumns.Ext})`,
-    Mirror: `${THeadPrefix} td:nth-child(${TColumns.Mirror})`
+const container: string = '.c tbody';
+const buildCellSelector = (row: number, col: number): string => {
+    return `${container} tr:nth-child(${row}) td:nth-child(${col})`;
 }
 
+const getEntryData = (id: number): EntryData => {
+    return {
+        ID: buildCellSelector(id, TSections.ID),
+        Author: buildCellSelector(id, TSections.Author),
+        Title: buildCellSelector(id, TSections.Title),
+        Publisher: buildCellSelector(id, TSections.Publisher),
+        Year: buildCellSelector(id, TSections.Year),
+        Pages: buildCellSelector(id, TSections.Pages),
+        Lang: buildCellSelector(id, TSections.Lang),
+        Size: buildCellSelector(id, TSections.Size),
+        Ext: buildCellSelector(id, TSections.Ext),
+        Mirror: buildCellSelector(id, TSections.Mirror),
+    }
+}
+
+const THeadRow = 1;
+const THeads: EntryData = getEntryData(THeadRow);
+
 export default {
-    THeads
+    THeads,
+    getEntryData
 }

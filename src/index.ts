@@ -26,15 +26,15 @@ const main = async () => {
         // doc.window.document.querySelectorAll(".c tbody tr").forEach(e => {
         //     console.log(e.children[0].children[0].textContent);
         // })
-        console.log(selectors.THeads.ID)
-        console.log(doc.window.document.querySelector(selectors.THeads.ID)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Author)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Ext)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Lang)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Mirror)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Pages)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Publisher)?.textContent);
-        console.log(doc.window.document.querySelector(selectors.THeads.Size)?.textContent);
+        console.log(selectors.getEntryData(2).ID);
+        // console.log(doc.window.document.querySelector(selectors.THeads.ID)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Author)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Ext)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Lang)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Mirror)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Pages)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Publisher)?.textContent);
+        // console.log(doc.window.document.querySelector(selectors.THeads.Size)?.textContent);
     } catch(err) {
         console.log(err);
     }
