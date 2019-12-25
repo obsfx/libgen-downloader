@@ -12,13 +12,20 @@ export interface IEntry {
 }
 
 export interface IQuestion {
-    type: 'input' | 'number' | 'confirm' | 'list';
+    type: 'input' | 'number' | 'confirm' | 'list' | 'list';
     name: string;
     message: string;
+    pageSize?: number;
     choices?: IQuestionChoice[];
 }
 
 export interface IQuestionChoice {
     name: string;
     value: string;
+}
+
+export interface IPagination {
+    order: string;
+    previous: string;
+    next: string;
 }

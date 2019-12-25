@@ -1,5 +1,9 @@
 import { IEntry } from './interfaces';
 
+export const enum CSS_Selectors {
+    TABLE_CONTAINER = '.c tbody'
+}
+
 const enum TSections {
     ID = 1,
     Author = 2,
@@ -13,23 +17,22 @@ const enum TSections {
     Mirror = 10
 }
 
-const container: string = '.c tbody';
 const buildCellSelector = (row: number, col: number): string => {
-    return `${container} tr:nth-child(${row}) td:nth-child(${col})`;
+    return `${CSS_Selectors.TABLE_CONTAINER} tr:nth-child(${row}) td:nth-child(${col})`;
 }
 
-const getEntrySelector = (id: number): IEntry => {
+const getEntrySelector = (rowOrder: number): IEntry => {
     return {
-        ID: buildCellSelector(id, TSections.ID),
-        Author: buildCellSelector(id, TSections.Author),
-        Title: buildCellSelector(id, TSections.Title),
-        Publisher: buildCellSelector(id, TSections.Publisher),
-        Year: buildCellSelector(id, TSections.Year),
-        Pages: buildCellSelector(id, TSections.Pages),
-        Lang: buildCellSelector(id, TSections.Lang),
-        Size: buildCellSelector(id, TSections.Size),
-        Ext: buildCellSelector(id, TSections.Ext),
-        Mirror: buildCellSelector(id, TSections.Mirror),
+        ID: buildCellSelector(rowOrder, TSections.ID),
+        Author: buildCellSelector(rowOrder, TSections.Author),
+        Title: buildCellSelector(rowOrder, TSections.Title),
+        Publisher: buildCellSelector(rowOrder, TSections.Publisher),
+        Year: buildCellSelector(rowOrder, TSections.Year),
+        Pages: buildCellSelector(rowOrder, TSections.Pages),
+        Lang: buildCellSelector(rowOrder, TSections.Lang),
+        Size: buildCellSelector(rowOrder, TSections.Size),
+        Ext: buildCellSelector(rowOrder, TSections.Ext),
+        Mirror: buildCellSelector(rowOrder, TSections.Mirror),
     }
 }
 
@@ -39,6 +42,5 @@ const THeads: IEntry = getEntrySelector(THeadRow);
 export default {
     THeadRow,
     THeads,
-    container,
     getEntrySelector
 }

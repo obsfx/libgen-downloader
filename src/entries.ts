@@ -1,8 +1,8 @@
 import { IEntry } from './interfaces';
-import selectors from './selectors';
+import selectors, { CSS_Selectors } from './selectors';
 
 const querySelectText = (document: HTMLDocument, selector: string) : string => {
-    const text = document.querySelector(selector)?.textContent;
+    let text = document.querySelector(selector)?.textContent;
     if (!text) return ' ';
     return text;
 }
@@ -22,13 +22,20 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-export const getAllEntries = (document: HTMLDocument): Array<IEntry> => {
-    const entryArray: IEntry[] = [];
-    const entryAmount: number = document.querySelectorAll(`${selectors.container} tr`).length;
+export const getAllEntries = (document: HTMLDocument): {pagination: boolean, entiries: IEntry[]} => {
+    let pagination: boolean = false;
+    let entiries: IEntry[] = [];
 
-    for (let i = selectors.THeadRow + 1; i < entryAmount; i++) {
-        const entrySelector: IEntry = selectors.getEntrySelector(i);
-        entryArray.push(getEntryData(document, entrySelector));
+    let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
+    
+    if (entryAmount - 1 > 25) {
+        pagination = true;
     }
-    return entryArray;
+
+    for (let i = selectors.THeadRow; i < 26; i++) {
+        const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
+        entiries.push(getEntryData(document, entrySelector));
+    }
+
+    return { pagination, entiries };
 }

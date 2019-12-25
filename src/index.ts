@@ -6,11 +6,13 @@ import { Spinner } from 'cli-spinner';
 import questions from './questions';
 import selectors from './selectors';
 import { getAllEntries } from './entries';
+import { getPaginations } from './pagination';
 
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
 const main = async () => {
     console.log("libgen-downloader");
+    console.log("obsfx.github.io");
 
     let spinner = new Spinner('Searching.. %s ');
     spinner.setSpinnerString('|/-\\');
@@ -20,27 +22,37 @@ const main = async () => {
     ]);
 
     // console.log(answers);
-    spinner.start();
+    // spinner.start();
+
+    /*
+        TODO:
+        ->  URL Builder
+        ->  Page Counter
+    */
     try {
-        const url = `http://libgen.is/search.php?req=${input.qsearch}&lg_topic=libgen&open=0&view=simple&res=100&phrase=1&column=def`;
+        const url = `http://libgen.is/search.php?req=${input.searchInput}&lg_topic=libgen&open=0&view=simple&res=50&phrase=1&column=def`;
+        console.log(url);
+        let response: any = await fetch(url);
+        let plainText: any = await response.text();
 
-        let data: any = await fetch(url);
-        data = await data.text();
+        const document: HTMLDocument = new JSDOM(plainText).window.document;
 
-        const document: HTMLDocument = new JSDOM(data).window.document;
-        const entiries = getAllEntries(document);
+        let { pagination, entiries } = getAllEntries(document);
+        let paginations: any = getPaginations(document) || false;
 
+        console.log("----" + paginations);
         // console.log(entiries);
-        if (entiries.length != 0) {
-            const listQuestion = questions.getListQuestion(entiries);
-            spinner.stop();
-            console.log("");
-            let selection = await prompt(listQuestion);
-        } else {
-            spinner.stop();
-            console.log("");
-            console.log("No Result");
-        }
+
+        // if (entiries.length != 0) {
+        //     let listQuestion = questions.getListQuestion(entiries);
+        //     spinner.stop();
+        //     console.log("");
+        //     let selection = await prompt(listQuestion);
+        // } else {
+        //     spinner.stop();
+        //     console.log("");
+        //     console.log("No Result");
+        // }
 
         // let doc: jsdom.JSDOM = new JSDOM(data);
         // console.log(doc.window.document.querySelectorAll(".c tbody tr"));
