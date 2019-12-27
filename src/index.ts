@@ -8,11 +8,11 @@ import selectors from './selectors';
 import { getAllEntries } from './entries';
 import { getPaginations } from './pagination';
 
-const prompt: inquirer.PromptModule = inquirer.createPromptModule();
-
 const main = async () => {
     console.log("libgen-downloader");
     console.log("obsfx.github.io");
+
+    const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
     let spinner = new Spinner('Searching.. %s ');
     spinner.setSpinnerString('|/-\\');
@@ -22,7 +22,7 @@ const main = async () => {
     ]);
 
     // console.log(answers);
-    // spinner.start();
+    spinner.start();
 
     /*
         TODO:
@@ -38,21 +38,25 @@ const main = async () => {
         const document: HTMLDocument = new JSDOM(plainText).window.document;
 
         let { pagination, entiries } = getAllEntries(document);
-        let paginations: any = getPaginations(document) || false;
+        // let paginations: any = getPaginations(document) || false;
 
-        console.log("----" + paginations);
+        // console.log("----" + paginations);
         // console.log(entiries);
 
-        // if (entiries.length != 0) {
-        //     let listQuestion = questions.getListQuestion(entiries);
-        //     spinner.stop();
-        //     console.log("");
-        //     let selection = await prompt(listQuestion);
-        // } else {
-        //     spinner.stop();
-        //     console.log("");
-        //     console.log("No Result");
-        // }
+        if (entiries.length != 0) {
+            let listQuestion = questions.getListQuestion(entiries);
+
+            if (pagination) {
+
+            }
+
+            spinner.stop(true);
+            
+            let selection = await prompt(listQuestion);
+        } else {
+            spinner.stop(true);
+            console.log("No Result");
+        }
 
         // let doc: jsdom.JSDOM = new JSDOM(data);
         // console.log(doc.window.document.querySelectorAll(".c tbody tr"));

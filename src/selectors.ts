@@ -1,7 +1,7 @@
 import { IEntry } from './interfaces';
 
-export const enum CSS_Selectors {
-    TABLE_CONTAINER = '.c tbody'
+export const CSS_Selectors = {
+    TABLE_CONTAINER: '.c tbody'
 }
 
 const enum TSections {

@@ -22,7 +22,7 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-export const getAllEntries = (document: HTMLDocument): {pagination: boolean, entiries: IEntry[]} => {
+export const getAllEntries = (document: HTMLDocument): { pagination: boolean, entiries: IEntry[] } => {
     let pagination: boolean = false;
     let entiries: IEntry[] = [];
 
