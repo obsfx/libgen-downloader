@@ -4,10 +4,10 @@ import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 
 import questions from './questions';
-import { getAllEntries } from './entries';
+import entries from './entries';
 import { getPaginations } from './pagination';
 import { getUrl } from './url';
-import { IQuestionChoice, IListQuestion, IListQuestionResult } from './interfaces';
+import { IQuestionChoice, IListQuestion, IListQuestionResult, IListEntryDetailsQuestionResult } from './interfaces';
 
 let currentPage: number = 1;
 
@@ -27,7 +27,7 @@ const showResults = async (pageUrl: string, query: string, pageNumber: number) =
 
     const document: HTMLDocument = new JSDOM(plainText).window.document;
 
-    let { isNextPageExist, entiries } = getAllEntries(document);
+    let { isNextPageExist, entiries } = entries.getAllEntries(document);
 
     if (entiries.length != 0) {
         let listQuestion: IListQuestion = questions.getListQuestion(entiries);
@@ -36,14 +36,24 @@ const showResults = async (pageUrl: string, query: string, pageNumber: number) =
         listQuestion.choices = paginationQuestionChoices.concat(listQuestion.choices)
         spinner.stop(true);
 
-        let selection: IListQuestionResult = await prompt(listQuestion);
+        let selected: IListQuestionResult = await prompt(listQuestion);
 
-        if (selection.listInput.pagination) {
-            currentPage = (selection.listInput.pagination == 'next') ? currentPage + 1 : currentPage - 1;
-            // console.log(selection.listInput.url, query, currentPage);
-            await showResults(selection.listInput.url, query, currentPage);
+        if (selected.result.pagination) {
+            currentPage = (selected.result.pagination == 'next') ? currentPage + 1 : currentPage - 1;
+            await showResults(selected.result.url, query, currentPage);
         } else {
+            console.log(selected);
+            entries.showEntry(entiries[Number(selected.result.id)]);
 
+            let detailsQuestion: IListQuestion = questions.getEntryDetailsQuestion(pageUrl, '');
+
+            let selectedOption: IListEntryDetailsQuestionResult = await prompt(detailsQuestion);
+
+            if (selectedOption.result.download) {
+
+            } else {
+                await showResults(selectedOption.result.url, query, currentPage);
+            }
         }
 
         // console.log(selection);

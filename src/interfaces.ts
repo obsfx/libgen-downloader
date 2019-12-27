@@ -32,11 +32,20 @@ export interface IListQuestion extends IQuestion {
 }
 
 export interface IListQuestionResult {
-    listInput: IListQuestionChoiceResult;
+    result: IListQuestionChoiceResult;
 }
 
 export interface IListQuestionChoiceResult {
     pagination: boolean | ('next' | 'prev');
     id: string;
+    url: string;
+}
+
+export interface IListEntryDetailsQuestionResult {
+    result: IListEntryDetailsQuestionChoiceResult
+}
+
+export interface IListEntryDetailsQuestionChoiceResult {
+    download: boolean;
     url: string;
 }

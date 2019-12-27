@@ -23,7 +23,7 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-export const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entiries: IEntry[] } => {
+const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entiries: IEntry[] } => {
     let isNextPageExist: boolean = false;
     let entiries: IEntry[] = [];
 
@@ -39,4 +39,25 @@ export const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolea
     }
 
     return { isNextPageExist, entiries };
+}
+
+const showEntry = (entry: IEntry) => {
+    let textArr: string[] = [
+        `ID: ${entry.ID}`,
+        `Author: ${entry.Author}`,
+        `Title: ${entry.Title}`,
+        `Publisher: ${entry.Publisher}`,
+        `Year: ${entry.Year}`,
+        `Pages: ${entry.Pages}`,
+        `Lang: ${entry.Lang}`,
+        `Size: ${entry.Size}`,
+        `Ext: ${entry.Ext}`
+    ];
+
+    textArr.forEach(text => console.log(text));
+}
+
+export default {
+    getAllEntries,
+    showEntry
 }
