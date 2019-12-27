@@ -16,6 +16,11 @@ interface IQuestion {
     message: string;
 }
 
+export interface IQuestionChoice {
+    name: string;
+    value: object;
+}
+
 export interface IInputQuestion extends IQuestion {
     type: 'input'
 }
@@ -26,7 +31,12 @@ export interface IListQuestion extends IQuestion {
     choices: IQuestionChoice[]
 }
 
-export interface IQuestionChoice {
-    name: string;
-    value: string;
+export interface IListQuestionResult {
+    listInput: IListQuestionChoiceResult;
+}
+
+export interface IListQuestionChoiceResult {
+    pagination: boolean | ('next' | 'prev');
+    id: string;
+    url: string;
 }

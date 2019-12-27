@@ -1,4 +1,4 @@
-import { IEntry, IQuestionChoice, IListQuestion, IInputQuestion } from './interfaces';
+import { IEntry, IQuestionChoice, IListQuestion, IInputQuestion, IListQuestionResult, IListQuestionChoiceResult } from './interfaces';
 import config from './config';
 
 const QSearch: IInputQuestion = {
@@ -7,7 +7,7 @@ const QSearch: IInputQuestion = {
     message: "Search: "
 }
 
-const getQuestionChoice = (name: string, value: string): IQuestionChoice => {
+const getQuestionChoice = (name: string, value: IListQuestionChoiceResult): IQuestionChoice => {
     return {
         name,
         value
@@ -24,7 +24,7 @@ const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
             title = title.substr(0, config.TITLE_MAX_STRLEN) + "...";
         }
 
-        return getQuestionChoice(title, `${i}`);
+        return getQuestionChoice(title, { pagination: false, id: `${i}`, url: '' });
     });
 
     return choices.slice(0, config.RESULTS_PAGE_SIZE);
