@@ -27,13 +27,17 @@ const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
         return getQuestionChoice(title, { pagination: false, id: `${i}`, url: '' });
     });
 
+    // if (choices.length > config.RESULTS_PAGE_SIZE) {
+    //     choices = choices.slice(0, config.RESULTS_PAGE_SIZE);
+    // }
+
     return choices.slice(0, config.RESULTS_PAGE_SIZE);
 }
 
 const getListQuestion = (entries: IEntry[]): IListQuestion => {
     return {
         type: 'list',
-        message: `Results: ${entries.length}`,
+        message: `Results: `,
         name: 'listInput',
         pageSize: config.INQUIRER_PAGE_SIZE,
         choices: getQuestionChoices(entries)

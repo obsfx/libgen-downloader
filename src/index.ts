@@ -16,6 +16,8 @@ const spinner = new Spinner('Searching.. %s ');
 spinner.setSpinnerString('|/-\\');
 
 const showResults = async (pageUrl: string, query: string, pageNumber: number) => {
+    spinner.start();
+
     let { plainText, error }: any = await getResponse(pageUrl);
 
     if (error) {
@@ -26,7 +28,7 @@ const showResults = async (pageUrl: string, query: string, pageNumber: number) =
     const document: HTMLDocument = new JSDOM(plainText).window.document;
 
     let { isNextPageExist, entiries } = getAllEntries(document);
-    
+
     if (entiries.length != 0) {
         let listQuestion: IListQuestion = questions.getListQuestion(entiries);
         let paginationQuestionChoices: IQuestionChoice[] = getPaginations(query, pageNumber, isNextPageExist);
@@ -36,7 +38,6 @@ const showResults = async (pageUrl: string, query: string, pageNumber: number) =
 
         let selection: IListQuestionResult = await prompt(listQuestion);
 
-        console.log(selection);
         if (selection.listInput.pagination) {
             currentPage = (selection.listInput.pagination == 'next') ? currentPage + 1 : currentPage - 1;
             // console.log(selection.listInput.url, query, currentPage);
@@ -79,8 +80,6 @@ const main = async () => {
     let input: any = await prompt([
         questions.QSearch
     ]);
-
-    spinner.start();
 
     const url = getUrl(input.searchInput, currentPage);
     console.log(url);

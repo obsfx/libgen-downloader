@@ -33,7 +33,7 @@ export const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolea
         isNextPageExist = true;
     }
 
-    for (let i = selectors.THeadRow; i < config.RESULTS_PAGE_SIZE + 1; i++) {
+    for (let i = selectors.THeadRow; i < entryAmount; i++) {
         const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
         entiries.push(getEntryData(document, entrySelector));
     }
