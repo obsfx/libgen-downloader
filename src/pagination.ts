@@ -7,12 +7,12 @@ export const getPaginations = (query: string, currentPage: number, isNextPageExi
 
     if (currentPage > 1) {
         let prevPageUrl = getUrl(query, currentPage - 1);
-        choices.push(questions.getQuestionChoice('Previous Page ->', prevPageUrl));
+        choices.push(questions.getQuestionChoice('Previous Page <-', prevPageUrl));
     }
 
     if (isNextPageExist) {
         let nextPageUrl = getUrl(query, currentPage + 1);
-        choices.push(questions.getQuestionChoice('Next Page <-', nextPageUrl));
+        choices.push(questions.getQuestionChoice('Next Page ->', nextPageUrl));
     }
 
     return choices;

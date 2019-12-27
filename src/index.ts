@@ -7,9 +7,15 @@ import questions from './questions';
 import { getAllEntries } from './entries';
 import { getPaginations } from './pagination';
 import { getUrl } from './url';
-import { IQuestionChoice, IQuestionList } from './interfaces';
+import { IQuestionChoice, IListQuestion } from './interfaces';
 
 const main = async () => {
+
+    /* 
+        TODO:
+        ->  More polished outputs
+    */
+
     console.log("libgen-downloader");
     console.log("obsfx.github.io");
 
@@ -29,7 +35,7 @@ const main = async () => {
 
     /*
         TODO:
-        ->  URL Builder
+        ->  [DONE] URL Builder
         ->  Page Counter
     */
     try {
@@ -49,7 +55,7 @@ const main = async () => {
         // console.log(entiries);
 
         if (entiries.length != 0) {
-            let listQuestion: IQuestionList = questions.getListQuestion(entiries);
+            let listQuestion: IListQuestion = questions.getListQuestion(entiries);
             let paginationQuestionChoices: IQuestionChoice[] = getPaginations(input.searchInput, currentPage, isNextPageExist);
 
             listQuestion.choices = paginationQuestionChoices.concat(listQuestion.choices)

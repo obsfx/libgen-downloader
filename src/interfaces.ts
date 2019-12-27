@@ -16,11 +16,11 @@ interface IQuestion {
     message: string;
 }
 
-export interface IQuestionInput extends IQuestion {
+export interface IInputQuestion extends IQuestion {
     type: 'input'
 }
 
-export interface IQuestionList extends IQuestion {
+export interface IListQuestion extends IQuestion {
     type: 'list',
     pageSize: number,
     choices: IQuestionChoice[]

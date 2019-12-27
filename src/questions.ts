@@ -1,7 +1,7 @@
-import { IEntry, IQuestionChoice, IQuestionList, IQuestionInput } from './interfaces';
+import { IEntry, IQuestionChoice, IListQuestion, IInputQuestion } from './interfaces';
 import config from './config';
 
-const QSearch: IQuestionInput = {
+const QSearch: IInputQuestion = {
     type: "input",
     name: "searchInput",
     message: "Search: "
@@ -30,7 +30,7 @@ const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
     return choices.slice(0, config.RESULTS_PAGE_SIZE);
 }
 
-const getListQuestion = (entries: IEntry[]): IQuestionList => {
+const getListQuestion = (entries: IEntry[]): IListQuestion => {
     return {
         type: 'list',
         message: `Results: ${entries.length}`,
