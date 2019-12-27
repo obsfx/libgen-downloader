@@ -4,13 +4,16 @@ import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 
 import questions from './questions';
-import selectors from './selectors';
 import { getAllEntries } from './entries';
 import { getPaginations } from './pagination';
+import { getUrl } from './url';
+import { IQuestionChoice, IQuestionList } from './interfaces';
 
 const main = async () => {
     console.log("libgen-downloader");
     console.log("obsfx.github.io");
+
+    let currentPage: number = 1;
 
     const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 
@@ -30,29 +33,32 @@ const main = async () => {
         ->  Page Counter
     */
     try {
-        const url = `http://libgen.is/search.php?req=${input.searchInput}&lg_topic=libgen&open=0&view=simple&res=50&phrase=1&column=def`;
+        // const url = `http://libgen.is/search.php?req=${input.searchInput}&lg_topic=libgen&open=0&view=simple&res=50&phrase=1&column=def`;
+        const url = getUrl(input.searchInput, currentPage);
+        
         console.log(url);
         let response: any = await fetch(url);
         let plainText: any = await response.text();
 
         const document: HTMLDocument = new JSDOM(plainText).window.document;
 
-        let { pagination, entiries } = getAllEntries(document);
+        let { isNextPageExist, entiries } = getAllEntries(document);
         // let paginations: any = getPaginations(document) || false;
 
         // console.log("----" + paginations);
         // console.log(entiries);
 
         if (entiries.length != 0) {
-            let listQuestion = questions.getListQuestion(entiries);
+            let listQuestion: IQuestionList = questions.getListQuestion(entiries);
+            let paginationQuestionChoices: IQuestionChoice[] = getPaginations(input.searchInput, currentPage, isNextPageExist);
 
-            if (pagination) {
-
-            }
-
+            listQuestion.choices = paginationQuestionChoices.concat(listQuestion.choices)
+            console.log(listQuestion.choices, paginationQuestionChoices, isNextPageExist);
             spinner.stop(true);
-            
+
             let selection = await prompt(listQuestion);
+
+            console.log(selection);
         } else {
             spinner.stop(true);
             console.log("No Result");

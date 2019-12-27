@@ -1,7 +1,8 @@
 import { IEntry } from './interfaces';
 import selectors, { CSS_Selectors } from './selectors';
+import config from './config';
 
-const querySelectText = (document: HTMLDocument, selector: string) : string => {
+const querySelectText = (document: HTMLDocument, selector: string): string => {
     let text = document.querySelector(selector)?.textContent;
     if (!text) return ' ';
     return text;
@@ -22,20 +23,20 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-export const getAllEntries = (document: HTMLDocument): { pagination: boolean, entiries: IEntry[] } => {
-    let pagination: boolean = false;
+export const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entiries: IEntry[] } => {
+    let isNextPageExist: boolean = false;
     let entiries: IEntry[] = [];
 
     let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
     
-    if (entryAmount - 1 > 25) {
-        pagination = true;
+    if (entryAmount - 1 > config.RESULTS_PAGE_SIZE) {
+        isNextPageExist = true;
     }
 
-    for (let i = selectors.THeadRow; i < 26; i++) {
+    for (let i = selectors.THeadRow; i < config.RESULTS_PAGE_SIZE + 1; i++) {
         const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
         entiries.push(getEntryData(document, entrySelector));
     }
 
-    return { pagination, entiries };
+    return { isNextPageExist, entiries };
 }

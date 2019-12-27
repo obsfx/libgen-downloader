@@ -11,21 +11,22 @@ export interface IEntry {
     Mirror: string | string[];
 }
 
-export interface IQuestion {
-    type: 'input' | 'number' | 'confirm' | 'list' | 'list';
+interface IQuestion {
     name: string;
     message: string;
-    pageSize?: number;
-    choices?: IQuestionChoice[];
+}
+
+export interface IQuestionInput extends IQuestion {
+    type: 'input'
+}
+
+export interface IQuestionList extends IQuestion {
+    type: 'list',
+    pageSize: number,
+    choices: IQuestionChoice[]
 }
 
 export interface IQuestionChoice {
     name: string;
     value: string;
-}
-
-export interface IPagination {
-    order: string;
-    previous: string;
-    next: string;
 }

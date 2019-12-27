@@ -1,35 +1,36 @@
-import { IQuestion, IEntry, IQuestionChoice } from './interfaces';
+import { IEntry, IQuestionChoice, IQuestionList, IQuestionInput } from './interfaces';
 import config from './config';
 
-const QSearch: IQuestion = {
+const QSearch: IQuestionInput = {
     type: "input",
     name: "searchInput",
     message: "Search: "
 }
 
+const getQuestionChoice = (name: string, value: string): IQuestionChoice => {
+    return {
+        name,
+        value
+    }
+} 
+
 const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
     let choices: IQuestionChoice[] = [];
 
     choices = entries.map((e, i) => {
-        // let title = (e.Title.length > 73) ? e.Title.substr(0, 70) + '...' : e.Title;
         let title = `<${i + 1}> <${e.Ext}> ${e.Title}`;
 
         if (title.length > config.TITLE_MAX_STRLEN) {
             title = title.substr(0, config.TITLE_MAX_STRLEN) + "...";
         }
 
-        return  {
-            //name: `<${e.ID}> ${e.Title} | (${e.Author}) - ${e.Publisher}`,
-            // name: `[${i + 1}] <${e.ID}> ${e.Title}`.substr(0, 80),
-            name: title,
-            value: '${i}'
-        }
+        return getQuestionChoice(title, `${i}`);
     });
 
-    return choices;
+    return choices.slice(0, config.RESULTS_PAGE_SIZE);
 }
 
-const getListQuestion = (entries: IEntry[]): IQuestion => {
+const getListQuestion = (entries: IEntry[]): IQuestionList => {
     return {
         type: 'list',
         message: `Results: ${entries.length}`,
@@ -41,5 +42,6 @@ const getListQuestion = (entries: IEntry[]): IQuestion => {
 
 export default {
     QSearch,
+    getQuestionChoice,
     getListQuestion
 };
