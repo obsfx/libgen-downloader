@@ -19,7 +19,7 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
         Lang: querySelectText(document, entrySelector.Lang),
         Size: querySelectText(document, entrySelector.Size),
         Ext: querySelectText(document, entrySelector.Ext),
-        Mirror: ""
+        Mirror: document.querySelector(entrySelector.Mirror)?.getAttribute('href') || ' '
     }
 }
 
@@ -41,7 +41,7 @@ const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entr
     return { isNextPageExist, entryDataArr };
 }
 
-const getDetails = (entry: IEntry): string[] => {
+const getDetails = (entry: IEntry): string[]=> {
     let textArr: string[] = [
         `ID: ${entry.ID}`,
         `Author: ${entry.Author}`,
@@ -51,13 +51,20 @@ const getDetails = (entry: IEntry): string[] => {
         `Pages: ${entry.Pages}`,
         `Lang: ${entry.Lang}`,
         `Size: ${entry.Size}`,
-        `Ext: ${entry.Ext}`
+        `Ext: ${entry.Ext}`,
+        `Mirror: ${entry.Mirror}`
     ];
 
     return textArr;
 }
 
+const getDownloadURL = (document: HTMLDocument): string => {
+    let downloadURL: string = document.querySelector('#info h2 a')?.getAttribute('href') || ' ';
+    return downloadURL;
+}
+
 export default {
     getAllEntries,
-    getDetails
+    getDetails,
+    getDownloadURL
 }

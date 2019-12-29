@@ -1,7 +1,8 @@
 import { IEntry } from './interfaces';
 
 export const CSS_Selectors = {
-    TABLE_CONTAINER: '.c tbody'
+    TABLE_CONTAINER: '.c tbody',
+    DOWNLOAD_URL: '#info h2 a'
 }
 
 const enum TSections {
@@ -32,7 +33,7 @@ const getEntrySelector = (rowOrder: number): IEntry => {
         Lang: buildCellSelector(rowOrder, TSections.Lang),
         Size: buildCellSelector(rowOrder, TSections.Size),
         Ext: buildCellSelector(rowOrder, TSections.Ext),
-        Mirror: buildCellSelector(rowOrder, TSections.Mirror),
+        Mirror: `${buildCellSelector(rowOrder, TSections.Mirror)} a`,
     }
 }
 

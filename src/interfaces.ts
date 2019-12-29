@@ -17,7 +17,7 @@ export interface IEntry {
     Lang: string;
     Size: string;
     Ext: string;
-    Mirror: string | string[];
+    Mirror: string;
 }
 
 interface IQuestion {

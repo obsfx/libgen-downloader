@@ -41,7 +41,7 @@ const getQuestionChoices = (entries: IEntry[], pageNumber: number): IQuestionCho
 const getListQuestion = (entries: IEntry[], pageNumber: number): IListQuestion => {
     return {
         type: 'list',
-        message: `Results: `,
+        message: `Page: ${pageNumber} Results: `,
         name: 'result',
         pageSize: config.INQUIRER_PAGE_SIZE,
         choices: getQuestionChoices(entries, pageNumber)

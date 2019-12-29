@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 
+import config from './config';
 import questions from './questions';
 import entries from './entries';
 import { getPaginations } from './pagination';
@@ -44,7 +45,7 @@ eventEmitter.on('userSelectedOnList', async (selected: IListQuestionResult) => {
 
 eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuestionResult) => {
     if (selected.result.download) {
-        console.log("downloading");
+        await downloadMedia(selected.result.url);
     } else {
         await promptResults();
     }
@@ -54,34 +55,41 @@ const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 const spinner = new Spinner('Getting Results... %s');
 spinner.setSpinnerString('|/-\\');
 
-const getResponse = async (pageUrl: string): Promise<{ plainText: string, error: any }> => {
-    let plainText: any = "";
+const getResponse = async (pageUrl: string): Promise<{ response: any, error: any }> => {
+    let response: any = "";
     let error: boolean = false;
 
     try {
-        let response = await fetch(pageUrl);
-        plainText = await response.text();
+        response = await fetch(pageUrl);
     } catch(err) {
         error = err;
     }
 
-    return { plainText, error }
+    return { response, error }
 }
 
-const getResults = async () => {
+const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
+    let { response, error }: { response: any, error: any }  = await getResponse(pageUrl);
+
+    if (error) {
+        console.log(error);
+        return new HTMLDocument();
+    }
+
+    let plainText = await response.text();
+
+    const document: HTMLDocument = new JSDOM(plainText).window.document;
+
+    return document;
+}
+
+const getResults = async (): Promise<void | number> => {
     spinner.start();
 
     appState.url = getUrl(appState.query, appState.currentPage);
     console.log(appState.url);
 
-    let { plainText, error }: any = await getResponse(appState.url);
-
-    if (error) {
-        console.log(error);
-        return 1;
-    }
-
-    const document: HTMLDocument = new JSDOM(plainText).window.document;
+    const document: HTMLDocument = await getDocument(appState.url);
 
     let { isNextPageExist, entryDataArr } = entries.getAllEntries(document);
 
@@ -89,7 +97,7 @@ const getResults = async () => {
     appState.entryDataArr = entryDataArr;
 }
 
-const promptResults = async () => {
+const promptResults = async (): Promise<void> => {
     if (appState.entryDataArr.length != 0) {
         let listQuestion: IListQuestion = questions.getListQuestion(appState.entryDataArr, appState.currentPage);
         let paginationQuestionChoices: IQuestionChoice[] = getPaginations(appState.query, appState.currentPage, appState.isNextPageExist);
@@ -107,20 +115,35 @@ const promptResults = async () => {
     }
 }
 
-const promptDetails = async (entryID: number) => {
+const promptDetails = async (entryID: number): Promise<void> => {
     let selectedEntry: IEntry = appState.entryDataArr[entryID];
-    let entryData: string[] = entries.getDetails(selectedEntry);
+    let textArr: string[] = entries.getDetails(selectedEntry);
 
-    entryData.forEach(data => console.log(data));
+    textArr.forEach(data => console.log(data));
 
-    let detailsQuestion: IListQuestion = questions.getEntryDetailsQuestion(appState.url, '');
+    let detailsQuestion: IListQuestion = questions.getEntryDetailsQuestion(appState.url, selectedEntry.Mirror);
 
     let selectedOption: IListEntryDetailsQuestionResult = await prompt(detailsQuestion);
 
     eventEmitter.emit('userSelectedOnDetails', selectedOption);
 }
 
-const main = async () => {
+const downloadMedia = async (mirrorUrl: string) => {
+    spinner.start();
+    console.log(mirrorUrl);
+
+    const URLParts: string[] = mirrorUrl.split('/');
+    const document: HTMLDocument = await getDocument(mirrorUrl);
+
+    let downloadUrl: string = entries.getDownloadURL(document);
+
+    downloadUrl = `${URLParts[0]}//${URLParts[2]}${downloadUrl}`;
+
+    console.log(downloadUrl);
+    spinner.stop(true);
+}
+
+const main = async (): Promise<void> => {
 
     /* 
         TODO:
