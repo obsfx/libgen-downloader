@@ -9,9 +9,9 @@ import {
 
 import config from './config';
 
-const QSearch: IInputQuestion = {
+const SearchQuestion: IInputQuestion = {
     type: "input",
-    name: "searchInput",
+    name: "result",
     message: "Search: "
 }
 
@@ -22,11 +22,11 @@ const getQuestionChoice = (name: string, value: IListQuestionChoiceResult | ILis
     }
 } 
 
-const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
+const getQuestionChoices = (entries: IEntry[], pageNumber: number): IQuestionChoice[] => {
     let choices: IQuestionChoice[] = [];
 
     choices = entries.map((e, i) => {
-        let title = `<${i + 1}> <${e.Ext}> ${e.Title}`;
+        let title = `<${((pageNumber - 1) * config.RESULTS_PAGE_SIZE) + i + 1}> <${e.Ext}> ${e.Title}`;
 
         if (title.length > config.TITLE_MAX_STRLEN) {
             title = title.substr(0, config.TITLE_MAX_STRLEN) + "...";
@@ -38,13 +38,13 @@ const getQuestionChoices = (entries: IEntry[]): IQuestionChoice[] => {
     return choices.slice(0, config.RESULTS_PAGE_SIZE);
 }
 
-const getListQuestion = (entries: IEntry[]): IListQuestion => {
+const getListQuestion = (entries: IEntry[], pageNumber: number): IListQuestion => {
     return {
         type: 'list',
         message: `Results: `,
         name: 'result',
         pageSize: config.INQUIRER_PAGE_SIZE,
-        choices: getQuestionChoices(entries)
+        choices: getQuestionChoices(entries, pageNumber)
     }
 }
 
@@ -77,7 +77,7 @@ const getEntryDetailsQuestion = (listUrl: string, downloadUrl: string): IListQue
 }
 
 export default {
-    QSearch,
+    SearchQuestion,
     getQuestionChoice,
     getListQuestion,
     getEntryDetailsQuestion

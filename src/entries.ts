@@ -23,9 +23,9 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entiries: IEntry[] } => {
+const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entryDataArr: IEntry[] } => {
     let isNextPageExist: boolean = false;
-    let entiries: IEntry[] = [];
+    let entryDataArr: IEntry[] = [];
 
     let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
     
@@ -35,13 +35,13 @@ const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, enti
 
     for (let i = selectors.THeadRow; i < entryAmount; i++) {
         const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
-        entiries.push(getEntryData(document, entrySelector));
+        entryDataArr.push(getEntryData(document, entrySelector));
     }
 
-    return { isNextPageExist, entiries };
+    return { isNextPageExist, entryDataArr };
 }
 
-const showEntry = (entry: IEntry) => {
+const getDetails = (entry: IEntry): string[] => {
     let textArr: string[] = [
         `ID: ${entry.ID}`,
         `Author: ${entry.Author}`,
@@ -54,10 +54,10 @@ const showEntry = (entry: IEntry) => {
         `Ext: ${entry.Ext}`
     ];
 
-    textArr.forEach(text => console.log(text));
+    return textArr;
 }
 
 export default {
     getAllEntries,
-    showEntry
+    getDetails
 }

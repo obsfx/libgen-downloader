@@ -1,3 +1,12 @@
+export interface IAppState {
+    currentPage: number,
+    url: string,
+    query: string,
+    isNextPageExist: boolean,
+    entryDataArr: IEntry[] | [],
+    listQuestion: IListQuestion | []
+}
+
 export interface IEntry {
     ID: string;
     Author: string;
@@ -23,6 +32,10 @@ export interface IQuestionChoice {
 
 export interface IInputQuestion extends IQuestion {
     type: 'input'
+}
+
+export interface IInputQuestionResult {
+    result: string
 }
 
 export interface IListQuestion extends IQuestion {
