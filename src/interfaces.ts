@@ -60,5 +60,5 @@ export interface IListEntryDetailsQuestionResult {
 
 export interface IListEntryDetailsQuestionChoiceResult {
     download: boolean;
-    url: string;
+    id: string;
 }

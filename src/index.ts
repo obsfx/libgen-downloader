@@ -1,10 +1,12 @@
 import events from 'events';
+import fs from 'fs';
+
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
+import ProgressBar from 'progress';
 
-import config from './config';
 import questions from './questions';
 import entries from './entries';
 import { getPaginations } from './pagination';
@@ -28,8 +30,11 @@ let appState: IAppState = {
     listQuestion: []
 }
 
-const eventEmitter = new events.EventEmitter();
+const prompt: inquirer.PromptModule = inquirer.createPromptModule();
+const spinner = new Spinner();
+spinner.setSpinnerString('|/-\\');
 
+const eventEmitter = new events.EventEmitter();
 eventEmitter.on('userSelectedOnList', async (selected: IListQuestionResult) => {
     if (selected.result.pagination) {
         appState.currentPage = (selected.result.pagination == 'next') ? 
@@ -39,21 +44,17 @@ eventEmitter.on('userSelectedOnList', async (selected: IListQuestionResult) => {
         await getResults();
         await promptResults();
     } else {
-        await promptDetails(Number(selected.result.id));
+        await promptDetails(selected.result.id);
     }
 });
 
 eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuestionResult) => {
     if (selected.result.download) {
-        await downloadMedia(selected.result.url);
+        await downloadMedia(selected.result.id);
     } else {
         await promptResults();
     }
 });
-
-const prompt: inquirer.PromptModule = inquirer.createPromptModule();
-const spinner = new Spinner('Getting Results... %s');
-spinner.setSpinnerString('|/-\\');
 
 const getResponse = async (pageUrl: string): Promise<{ response: any, error: any }> => {
     let response: any = "";
@@ -69,7 +70,7 @@ const getResponse = async (pageUrl: string): Promise<{ response: any, error: any
 }
 
 const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
-    let { response, error }: { response: any, error: any }  = await getResponse(pageUrl);
+    let { response, error }: { response: any, error: any } = await getResponse(pageUrl);
 
     if (error) {
         console.log(error);
@@ -84,6 +85,7 @@ const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
 }
 
 const getResults = async (): Promise<void | number> => {
+    spinner.setSpinnerTitle('Getting Results... %s');
     spinner.start();
 
     appState.url = getUrl(appState.query, appState.currentPage);
@@ -115,31 +117,55 @@ const promptResults = async (): Promise<void> => {
     }
 }
 
-const promptDetails = async (entryID: number): Promise<void> => {
-    let selectedEntry: IEntry = appState.entryDataArr[entryID];
+const promptDetails = async (entryID: string): Promise<void> => {
+    let selectedEntry: IEntry = appState.entryDataArr[Number(entryID)];
     let textArr: string[] = entries.getDetails(selectedEntry);
 
     textArr.forEach(data => console.log(data));
 
-    let detailsQuestion: IListQuestion = questions.getEntryDetailsQuestion(appState.url, selectedEntry.Mirror);
+    let detailsQuestion: IListQuestion = questions.getEntryDetailsQuestion(appState.url, entryID);
 
     let selectedOption: IListEntryDetailsQuestionResult = await prompt(detailsQuestion);
 
     eventEmitter.emit('userSelectedOnDetails', selectedOption);
 }
 
-const downloadMedia = async (mirrorUrl: string) => {
+const downloadMedia = async (entryID: string) => {
+    spinner.setSpinnerTitle('Downloading... %s');
     spinner.start();
-    console.log(mirrorUrl);
 
-    const URLParts: string[] = mirrorUrl.split('/');
-    const document: HTMLDocument = await getDocument(mirrorUrl);
+    let selectedEntry: IEntry = appState.entryDataArr[Number(entryID)];
+    console.log(selectedEntry.Mirror);
+
+    const URLParts: string[] = selectedEntry.Mirror.split('/');
+    const document: HTMLDocument = await getDocument(selectedEntry.Mirror);
 
     let downloadUrl: string = entries.getDownloadURL(document);
 
     downloadUrl = `${URLParts[0]}//${URLParts[2]}${downloadUrl}`;
 
+    console.log(selectedEntry);
     console.log(downloadUrl);
+
+    let { response, error }: { response: any, error: any } = await getResponse(downloadUrl);
+
+    const fileName = `${selectedEntry.ID}_${selectedEntry.Title}`;
+    const fileExtension = downloadUrl.split('.').pop();
+
+    const file = fs.createWriteStream(`./${fileName}.${fileExtension}`);
+
+    const progressBar = new ProgressBar('-> Downloading [:bar] :percent :etas', {
+        width: 40,
+        complete: '=',
+        incomplete: ' ',
+        renderThrottle: 1,
+        total: parseInt(response.headers.get('content-length'))
+    });
+  
+
+    response.body.on('data', (chunk: any) => progressBar.tick(chunk.length));
+    response.body.pipe(file);
+
     spinner.stop(true);
 }
 

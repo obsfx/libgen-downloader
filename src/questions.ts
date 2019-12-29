@@ -48,31 +48,31 @@ const getListQuestion = (entries: IEntry[], pageNumber: number): IListQuestion =
     }
 }
 
-const getEntryDetailsQuestionChoice = (listUrl: string, downloadUrl: string): IQuestionChoice[] => {
+const getEntryDetailsQuestionChoice = (listUrl: string, entryID: string): IQuestionChoice[] => {
     let choices: IQuestionChoice[] = [];
 
     choices.push(
         getQuestionChoice('<- Turn Back To The List', {
             download: false, 
-            url: listUrl 
+            id: entryID 
     }));
 
     choices.push(
         getQuestionChoice('>> Download This Media', {
             download: true, 
-            url: downloadUrl 
+            id: entryID 
     }));
 
     return choices;
 }
 
-const getEntryDetailsQuestion = (listUrl: string, downloadUrl: string): IListQuestion => {
+const getEntryDetailsQuestion = (listUrl: string, entryID: string): IListQuestion => {
     return {
         type: 'list',
         message: 'Options: ',
         name: 'result',
         pageSize: 2,
-        choices: getEntryDetailsQuestionChoice(listUrl, downloadUrl)
+        choices: getEntryDetailsQuestionChoice(listUrl, entryID)
     }
 }
 

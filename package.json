@@ -27,6 +27,7 @@
     "@types/jsdom": "^12.2.4",
     "@types/node": "^12.12.21",
     "@types/node-fetch": "^2.5.4",
+    "@types/progress": "^2.0.3",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },
@@ -34,6 +35,7 @@
     "cli-spinner": "^0.2.10",
     "inquirer": "^7.0.1",
     "jsdom": "^15.2.1",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "progress": "^2.0.3"
   }
 }
