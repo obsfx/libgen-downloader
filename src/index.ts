@@ -248,7 +248,7 @@ const main = async (): Promise<void> => {
    readline.cursorTo(process.stdout, 0, 0);
    readline.clearScreenDown(process.stdout);
 
-    console.log(`${yellow().bold('libgen-downloader')} - ${yellow().bold('0.1.0')}`);
+    console.log(`${yellow().bold('libgen-downloader')}`);
     console.log(`${cyan().bold('https://github.com/obsfx/libgen-cli-downloader')} - ${cyan().bold('obsfx')}`);
     console.log('---------------------------------------------');
 

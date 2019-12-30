@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "a simple tool to search and download pdfs via command line interface",
   "main": "./dist/index.js",
   "bin": {
