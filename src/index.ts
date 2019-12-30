@@ -63,7 +63,7 @@ const connectionError = (): void => {
         spinner.stop(true);
     }
 
-    console.log(`${red().bold('Connection Error.')} Probably libgen servers is not currently available. Please try again after a while.`);
+    console.log(`${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`);
     process.exit(1);
 }
  
