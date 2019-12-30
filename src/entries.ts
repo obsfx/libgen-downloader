@@ -1,6 +1,7 @@
+import { yellow } from 'kleur';
+
 import { IEntry } from './interfaces';
 import selectors, { CSS_Selectors } from './selectors';
-import config from './config';
 
 const querySelectText = (document: HTMLDocument, selector: string): string => {
     let text = document.querySelector(selector)?.textContent;
@@ -38,16 +39,17 @@ const getAllEntries = (document: HTMLDocument): IEntry[] => {
 
 const getDetails = (entry: IEntry): string[]=> {
     let textArr: string[] = [
-        `ID: ${entry.ID}`,
-        `Author: ${entry.Author}`,
-        `Title: ${entry.Title}`,
-        `Publisher: ${entry.Publisher}`,
-        `Year: ${entry.Year}`,
-        `Pages: ${entry.Pages}`,
-        `Lang: ${entry.Lang}`,
-        `Size: ${entry.Size}`,
-        `Ext: ${entry.Ext}`,
-        `Mirror: ${entry.Mirror}`
+        `${yellow().bold('ID')}: ${entry.ID}`,
+        `${yellow().bold('Author')}: ${entry.Author}`,
+        `${yellow().bold('Title')}: ${entry.Title}`,
+        `${yellow().bold('Publisher')}: ${entry.Publisher}`,
+        `${yellow().bold('Year')}: ${entry.Year}`,
+        `${yellow().bold('Pages')}: ${entry.Pages}`,
+        `${yellow().bold('Lang')}: ${entry.Lang}`,
+        `${yellow().bold('Size')}: ${entry.Size}`,
+        `${yellow().bold('Ext')}: ${entry.Ext}`,
+        `${yellow().bold('Mirror')}: ${entry.Mirror}`,
+        '---------------------------------------------'
     ];
 
     return textArr;

@@ -1,11 +1,13 @@
 import events from 'events';
 import fs from 'fs';
+import readline from 'readline';
 
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 import ProgressBar from 'progress';
+import { yellow, green, cyan, red } from 'kleur';
 
 import questions from './questions';
 import entries from './entries';
@@ -25,6 +27,7 @@ import {
 let appState: IAppState;
 
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
+
 const spinner = new Spinner();
 spinner.setSpinnerString('|/-\\');
 
@@ -49,6 +52,8 @@ eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuest
     if (selected.result.download) {
         await downloadMedia(selected.result.id);
     } else {
+        readline.cursorTo(process.stdout, 0, 4);
+        readline.clearScreenDown(process.stdout);
         await promptResults();
     }
 });
@@ -58,7 +63,7 @@ const connectionError = (): void => {
         spinner.stop(true);
     }
 
-    console.log('Connection Error. Probably libgen servers is not currently available. Please try again after a while.');
+    console.log(`${red().bold('Connection Error.')} Probably libgen servers is not currently available. Please try again after a while.`);
     process.exit(1);
 }
  
@@ -104,7 +109,7 @@ const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
 }
 
 const getResults = async (): Promise<void> => {
-    spinner.setSpinnerTitle('Getting Results... %s');
+    spinner.setSpinnerTitle(`${cyan().bold('Getting Results')}... %s`);
     spinner.start();
 
     appState.url = getUrl(appState.query, appState.currentPage);
@@ -136,7 +141,7 @@ const promptResults = async (): Promise<void> => {
         eventEmitter.emit('userSelectedOnList', selected);
     } else {
         spinner.stop(true);
-        console.log("No Result.");
+        console.log(`${cyan().bold('No Result.')}`);
     }
 }
 
@@ -166,7 +171,7 @@ const promptDetails = async (entryID: string): Promise<void> => {
 }
 
 const downloadMedia = async (entryID: string): Promise<void> => {
-    spinner.setSpinnerTitle('Connecting to Mirror... %s');
+    spinner.setSpinnerTitle(`${cyan().bold('Connecting to Mirror')}... %s`);
     spinner.start();
 
     let selectedEntry: IEntry = appState.entryDataArr[Number(entryID)];
@@ -190,12 +195,12 @@ const downloadMedia = async (entryID: string): Promise<void> => {
         return void 0;
     }
 
-    const fileName = selectedEntry.Title;
+    const fileName = selectedEntry.Title.split(' ').join('_');
     const fileExtension = selectedEntry.Ext;
 
     const file = fs.createWriteStream(`./${fileName}.${fileExtension}`);
 
-    const progressBar = new ProgressBar('-> Downloading [:bar] :percent :current', {
+    const progressBar = new ProgressBar(`${green().bold('-> Downloading')} [:bar] :percent :current`, {
         width: 40,
         complete: '=',
         incomplete: '.',
@@ -207,6 +212,7 @@ const downloadMedia = async (entryID: string): Promise<void> => {
     
     response.body.on('data', (chunk: any) => progressBar.tick(chunk.length));
     response.body.on('error', () => connectionError());
+    response.body.on('finish', () => console.log(`${green().bold('DONE')} ${yellow().bold(`${fileName}.${fileExtension}`)} downloaded on working directory.`));
     response.body.pipe(file);
 }
 
@@ -239,8 +245,12 @@ const main = async (): Promise<void> => {
         error handlings
     */
 
-    console.log("libgen-downloader");
-    console.log("obsfx.github.io");
+   readline.cursorTo(process.stdout, 0, 0);
+   readline.clearScreenDown(process.stdout);
+
+    console.log(`${yellow().bold('libgen-downloader')} - ${yellow().bold('0.1.0')}`);
+    console.log(`${cyan().bold('https://github.com/obsfx/libgen-cli-downloader')} - ${cyan().bold('obsfx')}`);
+    console.log('---------------------------------------------');
 
     await getInput();
 }

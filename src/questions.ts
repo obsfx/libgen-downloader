@@ -1,3 +1,5 @@
+import config from './config';
+
 import { 
     IEntry, 
     IQuestionChoice, 
@@ -6,8 +8,6 @@ import {
     IListQuestionChoiceResult, 
     IListEntryDetailsQuestionChoiceResult 
 } from './interfaces';
-
-import config from './config';
 
 const SearchQuestion: IInputQuestion = {
     type: "input",
