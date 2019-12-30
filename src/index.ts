@@ -7,7 +7,6 @@ import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 import ProgressBar from 'progress';
 
-import config from './config';
 import questions from './questions';
 import entries from './entries';
 import { CSS_Selectors } from './selectors';
@@ -23,14 +22,7 @@ import {
     IEntry
 } from './interfaces';
 
-let appState: IAppState = {
-    currentPage: 1,
-    url: '',
-    query: '',
-    isNextPageExist: false,
-    entryDataArr : [],
-    listQuestion: []
-}
+let appState: IAppState;
 
 const prompt: inquirer.PromptModule = inquirer.createPromptModule();
 const spinner = new Spinner();
@@ -43,8 +35,11 @@ eventEmitter.on('userSelectedOnList', async (selected: IListQuestionResult) => {
         appState.currentPage + 1 : 
         appState.currentPage - 1;
 
-        await getResults();
-        await promptResults();
+        await getAndPromptResults();
+    } else if (selected.result.id == 'searchAgain') {
+        await getInput();
+    } else if (selected.result.id == 'exit') {
+        process.exit(1);
     } else {
         await promptDetails(selected.result.id);
     }
@@ -58,8 +53,21 @@ eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuest
     }
 });
 
-const isNextPageExist = async (): Promise<boolean> => {
+const connectionError = (): void => {
+    if (spinner.isSpinning()) {
+        spinner.stop(true);
+    }
 
+    console.log('Connection Error. Probably libgen servers is not currently available. Please try again after a while.');
+    process.exit(1);
+}
+ 
+const isSearchInputExist = (document: HTMLDocument): boolean => {
+    const searchInput = document.querySelector(CSS_Selectors.SEARCH_INPUT);
+    return (searchInput) ? true : false;
+}
+
+const isNextPageExist = async (): Promise<boolean> => {
     const nextPageUrl: string = getUrl(appState.query, appState.currentPage + 1);
     const document: HTMLDocument = await getDocument(nextPageUrl);
 
@@ -68,24 +76,23 @@ const isNextPageExist = async (): Promise<boolean> => {
     return (entryAmount > 1) ? true : false;
 }
 
-const getResponse = async (pageUrl: string): Promise<{ response: any, error: any }> => {
+const getResponse = async (pageUrl: string): Promise<Response> => {
     let response: any = "";
-    let error: boolean = false;
 
     try {
         response = await fetch(pageUrl);
     } catch(err) {
-        error = err;
+        appState.connectionError = true;
     }
 
-    return { response, error }
+    return response;
 }
 
 const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
-    let { response, error }: { response: any, error: any } = await getResponse(pageUrl);
+    let response: any  = await getResponse(pageUrl);
 
-    if (error) {
-        console.log(error);
+    if (appState.connectionError) {
+        connectionError();
         return new HTMLDocument();
     }
 
@@ -96,14 +103,18 @@ const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
     return document;
 }
 
-const getResults = async (): Promise<void | number> => {
+const getResults = async (): Promise<void> => {
     spinner.setSpinnerTitle('Getting Results... %s');
     spinner.start();
 
     appState.url = getUrl(appState.query, appState.currentPage);
-    console.log(appState.url);
 
     const document: HTMLDocument = await getDocument(appState.url);
+
+    if (!isSearchInputExist(document)) {
+        appState.connectionError = true;
+        return void 0;
+    }
 
     let entryDataArr: IEntry[] = entries.getAllEntries(document);
 
@@ -125,7 +136,19 @@ const promptResults = async (): Promise<void> => {
         eventEmitter.emit('userSelectedOnList', selected);
     } else {
         spinner.stop(true);
-        console.log("No Result");
+        console.log("No Result.");
+    }
+}
+
+const getAndPromptResults = async () => {
+    appState.connectionError = false;
+
+    await getResults();
+
+    if (!appState.connectionError) {
+        await promptResults();
+    } else {
+        connectionError();
     }
 }
 
@@ -142,42 +165,68 @@ const promptDetails = async (entryID: string): Promise<void> => {
     eventEmitter.emit('userSelectedOnDetails', selectedOption);
 }
 
-const downloadMedia = async (entryID: string) => {
-    spinner.setSpinnerTitle('Downloading... %s');
+const downloadMedia = async (entryID: string): Promise<void> => {
+    spinner.setSpinnerTitle('Connecting to Mirror... %s');
     spinner.start();
 
     let selectedEntry: IEntry = appState.entryDataArr[Number(entryID)];
-    // console.log(selectedEntry.Mirror);
 
     const URLParts: string[] = selectedEntry.Mirror.split('/');
     const document: HTMLDocument = await getDocument(selectedEntry.Mirror);
+
+    if (appState.connectionError) {
+        connectionError();
+        return void 0;
+    }
 
     let downloadUrl: string = entries.getDownloadURL(document);
 
     downloadUrl = `${URLParts[0]}//${URLParts[2]}${downloadUrl}`;
 
-    // console.log(selectedEntry);
-    // console.log(downloadUrl);
+    let response: any = await getResponse(downloadUrl);
 
-    let { response, error }: { response: any, error: any } = await getResponse(downloadUrl);
+    if (appState.connectionError) {
+        connectionError();
+        return void 0;
+    }
 
     const fileName = `${selectedEntry.ID}_${selectedEntry.Title}`;
     const fileExtension = downloadUrl.split('.').pop();
 
     const file = fs.createWriteStream(`./${fileName}.${fileExtension}`);
 
-    const progressBar = new ProgressBar('-> Downloading [:bar] :percent :etas', {
+    const progressBar = new ProgressBar('-> Downloading [:bar] :percent :current', {
         width: 40,
         complete: '=',
-        incomplete: ' ',
+        incomplete: '.',
         renderThrottle: 1,
         total: parseInt(response.headers.get('content-length'))
     });
-  
+
     spinner.stop(true);
     
     response.body.on('data', (chunk: any) => progressBar.tick(chunk.length));
     response.body.pipe(file);
+}
+
+const getInput = async (): Promise<void> => {
+    appState = {
+        currentPage: 1,
+        url: '',
+        query: '',
+        isNextPageExist: false,
+        connectionError: false,
+        entryDataArr : [],
+        listQuestion: []
+    }
+
+    let input: IInputQuestionResult = await prompt([
+        questions.SearchQuestion
+    ]);
+
+    appState.query = input.result;
+
+    await getAndPromptResults();
 }
 
 const main = async (): Promise<void> => {
@@ -192,14 +241,7 @@ const main = async (): Promise<void> => {
     console.log("libgen-downloader");
     console.log("obsfx.github.io");
 
-    let input: IInputQuestionResult = await prompt([
-        questions.SearchQuestion
-    ]);
-
-    appState.query = input.result;
-
-    await getResults();
-    await promptResults();
+    await getInput();
 }
 
 main();

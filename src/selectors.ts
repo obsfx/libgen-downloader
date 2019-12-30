@@ -2,7 +2,8 @@ import { IEntry } from './interfaces';
 
 export const CSS_Selectors = {
     TABLE_CONTAINER: '.c tbody',
-    DOWNLOAD_URL: '#info h2 a'
+    DOWNLOAD_URL: '#info h2 a',
+    SEARCH_INPUT: '#searchform'
 }
 
 const enum TSections {

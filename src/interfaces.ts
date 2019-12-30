@@ -1,10 +1,11 @@
 export interface IAppState {
-    currentPage: number,
-    url: string,
-    query: string,
-    isNextPageExist: boolean,
-    entryDataArr: IEntry[] | [],
-    listQuestion: IListQuestion | []
+    currentPage: number;
+    url: string;
+    query: string;
+    isNextPageExist: boolean;
+    connectionError: boolean;
+    entryDataArr: IEntry[] | [];
+    listQuestion: IListQuestion | [];
 }
 
 export interface IEntry {
@@ -31,17 +32,17 @@ export interface IQuestionChoice {
 }
 
 export interface IInputQuestion extends IQuestion {
-    type: 'input'
+    type: 'input';
 }
 
 export interface IInputQuestionResult {
-    result: string
+    result: string;
 }
 
 export interface IListQuestion extends IQuestion {
-    type: 'list',
-    pageSize: number,
-    choices: IQuestionChoice[]
+    type: 'list';
+    pageSize: number;
+    choices: IQuestionChoice[];
 }
 
 export interface IListQuestionResult {
@@ -55,7 +56,7 @@ export interface IListQuestionChoiceResult {
 }
 
 export interface IListEntryDetailsQuestionResult {
-    result: IListEntryDetailsQuestionChoiceResult
+    result: IListEntryDetailsQuestionChoiceResult;
 }
 
 export interface IListEntryDetailsQuestionChoiceResult {
