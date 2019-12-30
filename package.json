@@ -20,7 +20,11 @@
     "tool"
   ],
   "author": "obsfx",
-  "license": "GPL-3.0",
+  "license": "WTFPL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/obsfx/libgen-cli-downloader.git"
+},
   "devDependencies": {
     "@types/cli-spinner": "^0.2.0",
     "@types/inquirer": "^6.5.0",
