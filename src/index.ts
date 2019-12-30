@@ -7,8 +7,10 @@ import { JSDOM } from 'jsdom';
 import { Spinner } from 'cli-spinner';
 import ProgressBar from 'progress';
 
+import config from './config';
 import questions from './questions';
 import entries from './entries';
+import { CSS_Selectors } from './selectors';
 import { getPaginations } from './pagination';
 import { getUrl } from './url';
 import { 
@@ -56,6 +58,16 @@ eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuest
     }
 });
 
+const isNextPageExist = async (): Promise<boolean> => {
+
+    const nextPageUrl: string = getUrl(appState.query, appState.currentPage + 1);
+    const document: HTMLDocument = await getDocument(nextPageUrl);
+
+    let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
+
+    return (entryAmount > 1) ? true : false;
+}
+
 const getResponse = async (pageUrl: string): Promise<{ response: any, error: any }> => {
     let response: any = "";
     let error: boolean = false;
@@ -93,9 +105,9 @@ const getResults = async (): Promise<void | number> => {
 
     const document: HTMLDocument = await getDocument(appState.url);
 
-    let { isNextPageExist, entryDataArr } = entries.getAllEntries(document);
+    let entryDataArr: IEntry[] = entries.getAllEntries(document);
 
-    appState.isNextPageExist = isNextPageExist;
+    appState.isNextPageExist = await isNextPageExist();
     appState.entryDataArr = entryDataArr;
 }
 
@@ -135,7 +147,7 @@ const downloadMedia = async (entryID: string) => {
     spinner.start();
 
     let selectedEntry: IEntry = appState.entryDataArr[Number(entryID)];
-    console.log(selectedEntry.Mirror);
+    // console.log(selectedEntry.Mirror);
 
     const URLParts: string[] = selectedEntry.Mirror.split('/');
     const document: HTMLDocument = await getDocument(selectedEntry.Mirror);
@@ -144,8 +156,8 @@ const downloadMedia = async (entryID: string) => {
 
     downloadUrl = `${URLParts[0]}//${URLParts[2]}${downloadUrl}`;
 
-    console.log(selectedEntry);
-    console.log(downloadUrl);
+    // console.log(selectedEntry);
+    // console.log(downloadUrl);
 
     let { response, error }: { response: any, error: any } = await getResponse(downloadUrl);
 
@@ -162,11 +174,10 @@ const downloadMedia = async (entryID: string) => {
         total: parseInt(response.headers.get('content-length'))
     });
   
-
+    spinner.stop(true);
+    
     response.body.on('data', (chunk: any) => progressBar.tick(chunk.length));
     response.body.pipe(file);
-
-    spinner.stop(true);
 }
 
 const main = async (): Promise<void> => {
@@ -174,6 +185,8 @@ const main = async (): Promise<void> => {
     /* 
         TODO:
         ->  More polished outputs
+        next page error - done
+        error handlings
     */
 
     console.log("libgen-downloader");

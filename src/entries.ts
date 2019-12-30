@@ -23,22 +23,17 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-const getAllEntries = (document: HTMLDocument): { isNextPageExist: boolean, entryDataArr: IEntry[] } => {
-    let isNextPageExist: boolean = false;
+const getAllEntries = (document: HTMLDocument): IEntry[] => {
     let entryDataArr: IEntry[] = [];
 
     let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
     
-    if (entryAmount - 1 > config.RESULTS_PAGE_SIZE) {
-        isNextPageExist = true;
-    }
-
     for (let i = selectors.THeadRow; i < entryAmount; i++) {
         const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
         entryDataArr.push(getEntryData(document, entrySelector));
     }
 
-    return { isNextPageExist, entryDataArr };
+    return entryDataArr;
 }
 
 const getDetails = (entry: IEntry): string[]=> {

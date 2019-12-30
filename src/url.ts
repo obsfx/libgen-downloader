@@ -19,7 +19,7 @@ export const getUrl = (query: string, pageNumber: number): string => {
 
     url += `&${URL_Parts.PARAMS.QUERY}=${query}`;
     url += `&${URL_Parts.PARAMS.PAGE}=${pageNumber}`;
-    url += `&${URL_Parts.PARAMS.PAGE_SIZE}=${config.REQUEST_PAGE_SIZE}`
+    url += `&${URL_Parts.PARAMS.PAGE_SIZE}=${config.RESULTS_PAGE_SIZE}`
     url += `&${URL_Parts.PARAMS.SORT_MODE}=${URL_Parts.PARAMS.SORT_MODE_VAL}`;
 
     return url;
