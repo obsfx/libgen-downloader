@@ -39,7 +39,7 @@ eventEmitter.on('userSelectedOnList', async (selected: IListQuestionResult) => {
     } else if (selected.result.id == 'searchAgain') {
         await getInput();
     } else if (selected.result.id == 'exit') {
-        process.exit(1);
+        process.exit(0);
     } else {
         await promptDetails(selected.result.id);
     }
@@ -190,8 +190,8 @@ const downloadMedia = async (entryID: string): Promise<void> => {
         return void 0;
     }
 
-    const fileName = `${selectedEntry.ID}_${selectedEntry.Title}`;
-    const fileExtension = downloadUrl.split('.').pop();
+    const fileName = selectedEntry.Title;
+    const fileExtension = selectedEntry.Ext;
 
     const file = fs.createWriteStream(`./${fileName}.${fileExtension}`);
 
@@ -206,6 +206,7 @@ const downloadMedia = async (entryID: string): Promise<void> => {
     spinner.stop(true);
     
     response.body.on('data', (chunk: any) => progressBar.tick(chunk.length));
+    response.body.on('error', () => connectionError());
     response.body.pipe(file);
 }
 
