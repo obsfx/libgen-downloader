@@ -11,3 +11,7 @@ npm i -g libgen-downloader
 ### Usage Demo
 
 [![asciicast](https://asciinema.org/a/RAimkC8sf2YEE0biW4wGKNG53.svg)](https://asciinema.org/a/RAimkC8sf2YEE0biW4wGKNG53)
+
+### Motivation
+
+This app is my first `nodejs` and `typescript` project so the main motivation of this project is learn `nodejs`, `typescript` and learn how can i construct a command line tool in `nodejs` and `typescript` environment with nodejs modules`.
