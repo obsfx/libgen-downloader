@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "a simple tool to search and download pdfs via command line interface",
   "main": "./dist/index.js",
   "bin": {
@@ -17,7 +17,11 @@
   "keywords": [
     "libgen",
     "downloader",
-    "tool"
+    "tool",
+    "cli",
+    "parser",
+    "output",
+    "user-friendly"
   ],
   "author": "obsfx",
   "license": "WTFPL",

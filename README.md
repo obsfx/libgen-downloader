@@ -10,4 +10,4 @@ npm i -g libgen-downloader
 
 ### Usage Demo
 
-[![asciicast](https://asciinema.org/a/RAimkC8sf2YEE0biW4wGKNG53.svg)](https://asciinema.org/a/RAimkC8sf2YEE0biW4wGKNG53)
+[![asciicast](https://asciinema.org/a/6dtvShb0S4uk8BZASThl3a8Wt.svg)](https://asciinema.org/a/6dtvShb0S4uk8BZASThl3a8Wt)

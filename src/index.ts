@@ -64,7 +64,7 @@ const connectionError = (): void => {
     }
 
     console.log(`${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`);
-    process.exit(1);
+    process.exit(0);
 }
  
 const isSearchInputExist = (document: HTMLDocument): boolean => {
@@ -98,7 +98,6 @@ const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
 
     if (appState.connectionError) {
         connectionError();
-        return new HTMLDocument();
     }
 
     let plainText = await response.text();
@@ -181,7 +180,6 @@ const downloadMedia = async (entryID: string): Promise<void> => {
 
     if (appState.connectionError) {
         connectionError();
-        return void 0;
     }
 
     let downloadUrl: string = entries.getDownloadURL(document);
@@ -192,7 +190,6 @@ const downloadMedia = async (entryID: string): Promise<void> => {
 
     if (appState.connectionError) {
         connectionError();
-        return void 0;
     }
 
     const fileName = selectedEntry.Title.split(' ').join('_');
@@ -233,17 +230,15 @@ const getInput = async (): Promise<void> => {
 
     appState.query = input.result;
 
-    await getAndPromptResults();
+    if (appState.query.trim().length < 3) {
+        console.log(`${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`);
+        await getInput();
+    } else {
+        await getAndPromptResults();
+    }
 }
 
 const main = async (): Promise<void> => {
-
-    /* 
-        TODO:
-        ->  More polished outputs
-        next page error - done
-        error handlings
-    */
 
    readline.cursorTo(process.stdout, 0, 0);
    readline.clearScreenDown(process.stdout);
