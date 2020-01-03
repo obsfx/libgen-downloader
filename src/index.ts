@@ -64,7 +64,7 @@ const connectionError = (): void => {
     }
 
     console.log(`${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`);
-    process.exit(0);
+    process.exit(1);
 }
  
 const isSearchInputExist = (document: HTMLDocument): boolean => {
@@ -87,6 +87,7 @@ const getResponse = async (pageUrl: string): Promise<Response> => {
     try {
         response = await fetch(pageUrl);
     } catch(err) {
+        // console.log(err);
         appState.connectionError = true;
     }
 
@@ -234,14 +235,15 @@ const getInput = async (): Promise<void> => {
         console.log(`${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`);
         await getInput();
     } else {
+        appState.query = encodeURIComponent(appState.query);
         await getAndPromptResults();
     }
 }
 
 const main = async (): Promise<void> => {
 
-   readline.cursorTo(process.stdout, 0, 0);
-   readline.clearScreenDown(process.stdout);
+    readline.cursorTo(process.stdout, 0, 0);
+    readline.clearScreenDown(process.stdout);
 
     console.log(`${yellow().bold('libgen-downloader')}`);
     console.log(`${cyan().bold('https://github.com/obsfx/libgen-cli-downloader')} - ${cyan().bold('obsfx')}`);
