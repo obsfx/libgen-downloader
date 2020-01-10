@@ -1,3 +1,5 @@
+![](https://github.com/obsfx/libgen-cli-downloader/blob/master/logo.jpg)
+
 # libgen-cli-downloader [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
 `libgen-downloader` is a simple command line tool to search and download ebooks from libgen that was developed in `nodejs` with `typescript`. It is not using any API. It basically accesses to the web page like a web browser, parses the HTML response and shows appropriate output to the user. Depending on the status of libgen servers, you can get connection error while you are searching, downloading or loading new pages.
