@@ -1,4 +1,4 @@
-![](https://github.com/obsfx/libgen-cli-downloader/blob/master/logo.jpg)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/logo.jpg)
 
 # libgen-cli-downloader [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
