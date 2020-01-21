@@ -1,29 +1,30 @@
 import config from './config';
 
-import { 
-    IEntry, 
-    IQuestionChoice, 
-    IListQuestion, 
-    IInputQuestion, 
-    IListQuestionChoiceResult, 
-    IListEntryDetailsQuestionChoiceResult 
-} from './interfaces';
+import { Interfaces } from './interfaces.namespace';
 
-const SearchQuestion: IInputQuestion = {
+const SearchQuestion: Interfaces.InputQuestion = {
     type: "input",
     name: "result",
     message: "Search: "
 }
 
-const getQuestionChoice = (name: string, value: IListQuestionChoiceResult | IListEntryDetailsQuestionChoiceResult): IQuestionChoice => {
+const getQuestionChoice = (
+        name: string, 
+        value: Interfaces.ListQuestionChoiceResult | Interfaces.EntryDetailsQuestionChoiceResult
+    ): Interfaces.QuestionChoice => {
+
     return {
         name,
         value
     }
 } 
 
-const getQuestionChoices = (entries: IEntry[], pageNumber: number): IQuestionChoice[] => {
-    let choices: IQuestionChoice[] = [];
+const getQuestionChoices = (
+        entries: Interfaces.Entry[], 
+        pageNumber: number
+    ): Interfaces.QuestionChoice[] => {
+
+    let choices: Interfaces.QuestionChoice[] = [];
 
     choices = entries.map((e, i) => {
         let title = `<${((pageNumber - 1) * config.RESULTS_PAGE_SIZE) + i + 1}> <${e.Ext}> ${e.Title}`;
@@ -38,7 +39,11 @@ const getQuestionChoices = (entries: IEntry[], pageNumber: number): IQuestionCho
     return choices.slice(0, config.RESULTS_PAGE_SIZE);
 }
 
-const getListQuestion = (entries: IEntry[], pageNumber: number): IListQuestion => {
+const getListQuestion = (
+        entries: Interfaces.Entry[], 
+        pageNumber: number
+    ): Interfaces.ListQuestion => {
+
     return {
         type: 'list',
         message: `Page: ${pageNumber} Results: `,
@@ -48,8 +53,11 @@ const getListQuestion = (entries: IEntry[], pageNumber: number): IListQuestion =
     }
 }
 
-const getEntryDetailsQuestionChoice = (listUrl: string, entryID: string): IQuestionChoice[] => {
-    let choices: IQuestionChoice[] = [];
+const getEntryDetailsQuestionChoice = (
+        entryID: string
+    ): Interfaces.QuestionChoice[] => {
+        
+    let choices: Interfaces.QuestionChoice[] = [];
 
     choices.push(
         getQuestionChoice('<- Turn Back To The List', {
@@ -66,19 +74,16 @@ const getEntryDetailsQuestionChoice = (listUrl: string, entryID: string): IQuest
     return choices;
 }
 
-const getEntryDetailsQuestion = (listUrl: string, entryID: string): IListQuestion => {
+const getEntryDetailsQuestion = (entryID: string): Interfaces.ListQuestion => {
     return {
         type: 'list',
         message: 'Options: ',
         name: 'result',
         pageSize: 2,
-        choices: getEntryDetailsQuestionChoice(listUrl, entryID)
+        choices: getEntryDetailsQuestionChoice(entryID)
     }
 }
 
 export default {
-    SearchQuestion,
-    getQuestionChoice,
-    getListQuestion,
-    getEntryDetailsQuestion
-};
+    SearchQuestion;
+}

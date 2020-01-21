@@ -1,5 +1,5 @@
 import questions from './questions';
-import { IQuestionChoice } from './interfaces';
+import { IQuestionChoice } from './interfaces.namespace';
 import { getUrl } from './url';
 
 export const getPaginations = (query: string, currentPage: number, isNextPageExist: boolean): IQuestionChoice[] => {

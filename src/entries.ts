@@ -1,15 +1,14 @@
-import { yellow } from 'kleur';
+import { Interfaces } from './interfaces.namespace';
 
-import { IEntry } from './interfaces';
-import selectors, { CSS_Selectors } from './selectors';
+import Selectors from './selectors';
+import OUTPUTS from './outputs';
 
 const querySelectText = (document: HTMLDocument, selector: string): string => {
-    let text = document.querySelector(selector)?.textContent;
-    if (!text) return ' ';
-    return text;
+    let text: string | undefined | null = document.querySelector(selector)?.textContent;
+    return (text) ? text : ' ';
 }
 
-const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => {
+const getEntryData = (document: HTMLDocument, entrySelector: Interfaces.Entry): Interfaces.Entry => {
     return {
         ID: querySelectText(document, entrySelector.ID),
         Author: querySelectText(document, entrySelector.Author),
@@ -24,31 +23,31 @@ const getEntryData = (document: HTMLDocument, entrySelector: IEntry): IEntry => 
     }
 }
 
-const getAllEntries = (document: HTMLDocument): IEntry[] => {
-    let entryDataArr: IEntry[] = [];
+const getAllEntries = (document: HTMLDocument): Interfaces.Entry[] => {
+    let entryDataArr: Interfaces.Entry[] = [];
 
-    let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
+    let entryAmount: number = document.querySelectorAll(Selectors.CSS_SELECTORS.ROW).length;
     
-    for (let i = selectors.THeadRow; i < entryAmount; i++) {
-        const entrySelector: IEntry = selectors.getEntrySelector(i + 1);
+    for (let i = Selectors.THeadRow; i < entryAmount; i++) {
+        const entrySelector: Interfaces.Entry = Selectors.getEntrySelector(i + 1);
         entryDataArr.push(getEntryData(document, entrySelector));
     }
 
     return entryDataArr;
 }
 
-const getDetails = (entry: IEntry): string[]=> {
+const getDetails = (entry: Interfaces.Entry): string[] => {
     let textArr: string[] = [
-        `${yellow().bold('ID')}: ${entry.ID}`,
-        `${yellow().bold('Author')}: ${entry.Author}`,
-        `${yellow().bold('Title')}: ${entry.Title}`,
-        `${yellow().bold('Publisher')}: ${entry.Publisher}`,
-        `${yellow().bold('Year')}: ${entry.Year}`,
-        `${yellow().bold('Pages')}: ${entry.Pages}`,
-        `${yellow().bold('Lang')}: ${entry.Lang}`,
-        `${yellow().bold('Size')}: ${entry.Size}`,
-        `${yellow().bold('Ext')}: ${entry.Ext}`,
-        `${yellow().bold('Mirror')}: ${entry.Mirror}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.ID}: ${entry.ID}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Author}: ${entry.Author}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Title}: ${entry.Title}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Publisher}: ${entry.Publisher}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Year}: ${entry.Year}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Pages}: ${entry.Pages}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Lang}: ${entry.Lang}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Size}: ${entry.Size}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Ext}: ${entry.Ext}`,
+        `${OUTPUTS.ENTRY_DETAILS_HEAD.Mirror}: ${entry.Mirror}`,
         '---------------------------------------------'
     ];
 
@@ -56,7 +55,7 @@ const getDetails = (entry: IEntry): string[]=> {
 }
 
 const getDownloadURL = (document: HTMLDocument): string => {
-    let downloadURL: string = document.querySelector('#info h2 a')?.getAttribute('href') || ' ';
+    let downloadURL: string = document.querySelector(Selectors.CSS_SELECTORS.DOWNLOAD_URL)?.getAttribute('href') || ' ';
     return downloadURL;
 }
 

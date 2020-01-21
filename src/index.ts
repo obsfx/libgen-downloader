@@ -22,7 +22,7 @@ import {
     IAppState,
     IInputQuestionResult,
     IEntry
-} from './interfaces';
+} from './interfaces.namespace';
 
 let appState: IAppState;
 
@@ -58,74 +58,74 @@ eventEmitter.on('userSelectedOnDetails', async (selected: IListEntryDetailsQuest
     }
 });
 
-const connectionError = (): void => {
-    if (spinner.isSpinning()) {
-        spinner.stop(true);
-    }
+// const connectionError = (): void => {
+//     if (spinner.isSpinning()) {
+//         spinner.stop(true);
+//     }
 
-    console.log(`${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`);
-    process.exit(1);
-}
+//     console.log(`${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`);
+//     process.exit(1);
+// }
  
-const isSearchInputExist = (document: HTMLDocument): boolean => {
-    const searchInput = document.querySelector(CSS_Selectors.SEARCH_INPUT);
-    return (searchInput) ? true : false;
-}
+// const isSearchInputExist = (document: HTMLDocument): boolean => {
+//     const searchInput = document.querySelector(CSS_Selectors.SEARCH_INPUT);
+//     return (searchInput) ? true : false;
+// }
 
-const isNextPageExist = async (): Promise<boolean> => {
-    const nextPageUrl: string = getUrl(appState.query, appState.currentPage + 1);
-    const document: HTMLDocument = await getDocument(nextPageUrl);
+// const isNextPageExist = async (): Promise<boolean> => {
+//     const nextPageUrl: string = getUrl(appState.query, appState.currentPage + 1);
+//     const document: HTMLDocument = await getDocument(nextPageUrl);
 
-    let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
+//     let entryAmount: number = document.querySelectorAll(`${CSS_Selectors.TABLE_CONTAINER} tr`).length;
 
-    return (entryAmount > 1) ? true : false;
-}
+//     return (entryAmount > 1) ? true : false;
+// }
 
-const getResponse = async (pageUrl: string): Promise<Response> => {
-    let response: any = "";
+// const getResponse = async (pageUrl: string): Promise<Response> => {
+//     let response: any = "";
 
-    try {
-        response = await fetch(pageUrl);
-    } catch(err) {
-        // console.log(err);
-        appState.connectionError = true;
-    }
+//     try {
+//         response = await fetch(pageUrl);
+//     } catch(err) {
+//         // console.log(err);
+//         appState.connectionError = true;
+//     }
 
-    return response;
-}
+//     return response;
+// }
 
-const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
-    let response: any  = await getResponse(pageUrl);
+// const getDocument = async (pageUrl: string): Promise<HTMLDocument> => {
+//     let response: any = await getResponse(pageUrl);
 
-    if (appState.connectionError) {
-        connectionError();
-    }
+//     if (appState.connectionError) {
+//         connectionError();
+//     }
 
-    let plainText = await response.text();
+//     let plainText = await response.text();
 
-    const document: HTMLDocument = new JSDOM(plainText).window.document;
+//     const document: HTMLDocument = new JSDOM(plainText).window.document;
 
-    return document;
-}
+//     return document;
+// }
 
-const getResults = async (): Promise<void> => {
-    spinner.setSpinnerTitle(`${cyan().bold('Getting Results')}... %s`);
-    spinner.start();
+// const getResults = async (): Promise<void> => {
+//     spinner.setSpinnerTitle(`${cyan().bold('Getting Results')}... %s`);
+//     spinner.start();
 
-    appState.url = getUrl(appState.query, appState.currentPage);
+//     appState.url = getUrl(appState.query, appState.currentPage);
 
-    const document: HTMLDocument = await getDocument(appState.url);
+//     const document: HTMLDocument = await getDocument(appState.url);
 
-    if (!isSearchInputExist(document)) {
-        appState.connectionError = true;
-        return void 0;
-    }
+//     if (!isSearchInputExist(document)) {
+//         appState.connectionError = true;
+//         return void 0;
+//     }
 
-    let entryDataArr: IEntry[] = entries.getAllEntries(document);
+//     let entryDataArr: IEntry[] = entries.getAllEntries(document);
 
-    appState.isNextPageExist = await isNextPageExist();
-    appState.entryDataArr = entryDataArr;
-}
+//     appState.isNextPageExist = await isNextPageExist();
+//     appState.entryDataArr = entryDataArr;
+// }
 
 const promptResults = async (): Promise<void> => {
     if (appState.entryDataArr.length != 0) {
@@ -214,34 +214,33 @@ const downloadMedia = async (entryID: string): Promise<void> => {
     response.body.pipe(file);
 }
 
-const getInput = async (): Promise<void> => {
-    appState = {
-        currentPage: 1,
-        url: '',
-        query: '',
-        isNextPageExist: false,
-        connectionError: false,
-        entryDataArr : [],
-        listQuestion: []
-    }
+// const getInput = async (): Promise<void> => {
+//     appState = {
+//         currentPage: 1,
+//         url: '',
+//         query: '',
+//         isNextPageExist: false,
+//         connectionError: false,
+//         entryDataArr : [],
+//         listQuestion: []
+//     }
 
-    let input: IInputQuestionResult = await prompt([
-        questions.SearchQuestion
-    ]);
+//     let input: IInputQuestionResult = await prompt([
+//         questions.SearchQuestion
+//     ]);
 
-    appState.query = input.result;
+//     appState.query = input.result;
 
-    if (appState.query.trim().length < 3) {
-        console.log(`${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`);
-        await getInput();
-    } else {
-        appState.query = encodeURIComponent(appState.query);
-        await getAndPromptResults();
-    }
-}
+//     if (appState.query.trim().length < 3) {
+//         console.log(`${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`);
+//         await getInput();
+//     } else {
+//         appState.query = encodeURIComponent(appState.query);
+//         await getAndPromptResults();
+//     }
+// }
 
 const main = async (): Promise<void> => {
-
     readline.cursorTo(process.stdout, 0, 0);
     readline.clearScreenDown(process.stdout);
 
