@@ -1,7 +1,8 @@
-import { IEntry } from './interfaces';
+import { Interfaces } from '../interfaces.namespace';
 
-export const CSS_Selectors = {
+const CSS_SELECTORS = {
     TABLE_CONTAINER: '.c tbody',
+    ROW: `.c tbody tr`,
     DOWNLOAD_URL: '#info h2 a',
     SEARCH_INPUT: '#searchform'
 }
@@ -20,10 +21,10 @@ const enum TSections {
 }
 
 const buildCellSelector = (row: number, col: number): string => {
-    return `${CSS_Selectors.TABLE_CONTAINER} tr:nth-child(${row}) td:nth-child(${col})`;
+    return `${CSS_SELECTORS.TABLE_CONTAINER} tr:nth-child(${row}) td:nth-child(${col})`;
 }
 
-const getEntrySelector = (rowOrder: number): IEntry => {
+const getEntrySelector = (rowOrder: number): Interfaces.Entry => {
     return {
         ID: buildCellSelector(rowOrder, TSections.ID),
         Author: buildCellSelector(rowOrder, TSections.Author),
@@ -39,10 +40,10 @@ const getEntrySelector = (rowOrder: number): IEntry => {
 }
 
 const THeadRow = 1;
-const THeads: IEntry = getEntrySelector(THeadRow);
+const THeads: Interfaces.Entry = getEntrySelector(THeadRow);
 
 export default {
+    CSS_SELECTORS,
     THeadRow,
-    THeads,
     getEntrySelector
 }
