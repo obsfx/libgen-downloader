@@ -1,4 +1,4 @@
-import { Interfaces } from './interfaces.namespace';
+import { Interfaces } from '../interfaces.namespace';
 
 const CSS_SELECTORS = {
     TABLE_CONTAINER: '.c tbody',

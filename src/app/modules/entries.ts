@@ -1,7 +1,7 @@
-import { Interfaces } from './interfaces.namespace';
+import { Interfaces } from '../interfaces.namespace';
 
 import Selectors from './selectors';
-import OUTPUTS from './outputs';
+import CONSTANTS from '../constants';
 
 const querySelectText = (document: HTMLDocument, selector: string): string => {
     let text: string | undefined | null = document.querySelector(selector)?.textContent;
@@ -38,17 +38,17 @@ const getAllEntries = (document: HTMLDocument): Interfaces.Entry[] => {
 
 const getDetails = (entry: Interfaces.Entry): string[] => {
     let textArr: string[] = [
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.ID}: ${entry.ID}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Author}: ${entry.Author}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Title}: ${entry.Title}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Publisher}: ${entry.Publisher}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Year}: ${entry.Year}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Pages}: ${entry.Pages}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Lang}: ${entry.Lang}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Size}: ${entry.Size}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Ext}: ${entry.Ext}`,
-        `${OUTPUTS.ENTRY_DETAILS_HEAD.Mirror}: ${entry.Mirror}`,
-        '---------------------------------------------'
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.ID}: ${entry.ID}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Author}: ${entry.Author}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Title}: ${entry.Title}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Publisher}: ${entry.Publisher}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Year}: ${entry.Year}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Pages}: ${entry.Pages}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Lang}: ${entry.Lang}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Size}: ${entry.Size}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Ext}: ${entry.Ext}`,
+        `${CONSTANTS.ENTRY_DETAILS_HEAD.Mirror}: ${entry.Mirror}`,
+        ' '
     ];
 
     return textArr;

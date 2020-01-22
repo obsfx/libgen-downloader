@@ -12,7 +12,13 @@ export namespace Interfaces {
         eventEmitter: EventEmitter;
 
         createNewAppState(): AppState;
+        clear(): void;
+
+        init(): Promise<void>;
+        initEventHandlers(): Promise<void>;
+
         constructURL(pageNumber: number): string;
+        constructPaginations(pageNumber: number): QuestionChoice[];
         connectionError(): void;
 
         isSearchInputExistInDocument(document: HTMLDocument): boolean;
@@ -23,6 +29,13 @@ export namespace Interfaces {
 
         getResponse(url :string): Promise<Response>;
         getDocument(url: string): Promise<HTMLDocument>;
+
+        download(entryIndex: number): Promise<void>;
+
+        promptResults(): Promise<void>;
+        promptEntryDetails(entryIndex: number): Promise<void>;
+
+        executePromptFlow(): Promise<void>;
     }
 
     export interface AppState {
@@ -67,7 +80,6 @@ export namespace Interfaces {
         result: string;
     }
     
-    //
     export interface ListQuestion extends Question {
         type: 'list';
         pageSize: number;
@@ -79,7 +91,7 @@ export namespace Interfaces {
     }
     
     export interface ListQuestionChoiceResult {
-        pagination: boolean | ('next' | 'prev');
+        pagination: boolean | string;
         id: string;
         url: string;
     }
@@ -93,9 +105,3 @@ export namespace Interfaces {
         id: string;
     }
 }
-
-//
-
-//
-
-

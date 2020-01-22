@@ -1,6 +1,7 @@
-import config from './config';
+import CONFIG from '../config';
+import CONSTANTS from '../constants';
 
-import { Interfaces } from './interfaces.namespace';
+import { Interfaces } from '../interfaces.namespace';
 
 const SearchQuestion: Interfaces.InputQuestion = {
     type: "input",
@@ -27,16 +28,16 @@ const getQuestionChoices = (
     let choices: Interfaces.QuestionChoice[] = [];
 
     choices = entries.map((e, i) => {
-        let title = `<${((pageNumber - 1) * config.RESULTS_PAGE_SIZE) + i + 1}> <${e.Ext}> ${e.Title}`;
+        let title = `[${((pageNumber - 1) * CONFIG.RESULTS_PAGE_SIZE) + i + 1}] [${e.Ext}] ${e.Title}`;
 
-        if (title.length > config.TITLE_MAX_STRLEN) {
-            title = title.substr(0, config.TITLE_MAX_STRLEN) + "...";
+        if (title.length > CONFIG.TITLE_MAX_STRLEN) {
+            title = title.substr(0, CONFIG.TITLE_MAX_STRLEN) + "...";
         }
 
         return getQuestionChoice(title, { pagination: false, id: `${i}`, url: '' });
     });
 
-    return choices.slice(0, config.RESULTS_PAGE_SIZE);
+    return choices.slice(0, CONFIG.RESULTS_PAGE_SIZE);
 }
 
 const getListQuestion = (
@@ -48,42 +49,45 @@ const getListQuestion = (
         type: 'list',
         message: `Page: ${pageNumber} Results: `,
         name: 'result',
-        pageSize: config.INQUIRER_PAGE_SIZE,
+        pageSize: CONFIG.INQUIRER_PAGE_SIZE,
         choices: getQuestionChoices(entries, pageNumber)
     }
 }
 
 const getEntryDetailsQuestionChoice = (
-        entryID: string
+        entryIndex: string
     ): Interfaces.QuestionChoice[] => {
         
     let choices: Interfaces.QuestionChoice[] = [];
 
     choices.push(
-        getQuestionChoice('<- Turn Back To The List', {
+        getQuestionChoice(CONSTANTS.ENTRY_DETAILS_QUESTIONS.TURN_BACK, {
             download: false, 
-            id: entryID 
+            id: '' 
     }));
 
     choices.push(
-        getQuestionChoice('>> Download This Media', {
-            download: true, 
-            id: entryID 
+        getQuestionChoice(CONSTANTS.ENTRY_DETAILS_QUESTIONS.DOWNLOAD_MEDIA, {
+            download: true,
+            id: entryIndex
     }));
 
     return choices;
 }
 
-const getEntryDetailsQuestion = (entryID: string): Interfaces.ListQuestion => {
+const getEntryDetailsQuestion = (entryIndex: number): Interfaces.ListQuestion => {
     return {
         type: 'list',
         message: 'Options: ',
         name: 'result',
         pageSize: 2,
-        choices: getEntryDetailsQuestionChoice(entryID)
+        choices: getEntryDetailsQuestionChoice(entryIndex.toString())
     }
 }
 
 export default {
-    SearchQuestion;
+    SearchQuestion,
+    getListQuestion,
+    getQuestionChoice,
+    getEntryDetailsQuestion
 }
