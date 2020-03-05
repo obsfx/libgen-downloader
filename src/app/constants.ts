@@ -11,7 +11,7 @@ export default {
     INPUT_MINLEN_WARNING: `${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
     NO_RESULT: `${cyan().bold('No Result.')}`,
-    DOWNLOAD_COMPLETED: `${green().bold('DONE')} ${yellow().bold(`%s.%s`)} downloaded on working directory.`,
+    DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s.%s`)} downloaded on working directory.\n`,
 
     SPINNER: {
         GETTING_RESULTS: `${cyan().bold('Getting Results')}... %s`,
@@ -51,7 +51,14 @@ export default {
     },
 
     ENTRY_DETAILS_QUESTIONS: {
-        TURN_BACK: '←  Turn Back To The List',
-        DOWNLOAD_MEDIA: '↓  Download This Media'
+        TURN_BACK: '• Turn Back To The List',
+        DOWNLOAD_MEDIA: '• Download This Media'
+    },
+
+    AFTER_DOWNLOAD_QUESTIONS: {
+        TURN_BACK: '• Turn Back To The List',
+        TURN_BACK_RESULT_ID: 'turnBack',
+        EXIT: 'X Exit',
+        EXIT_RESULT_ID: 'exit'
     }
 }

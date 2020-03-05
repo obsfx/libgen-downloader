@@ -85,9 +85,46 @@ const getEntryDetailsQuestion = (entryIndex: number): Interfaces.ListQuestion =>
     }
 }
 
+const getAfterDownloadQuestionChoices = (): Interfaces.QuestionChoice[] => {
+    let choices: Interfaces.QuestionChoice[] = [];
+
+    choices.push(
+        getQuestionChoice(
+            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK, 
+            {
+                download: false,
+                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
+            }
+        )
+    );
+
+    choices.push(
+        getQuestionChoice(
+            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
+            {
+                download: false,
+                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
+            }
+        )
+    );
+
+    return choices
+}
+
+const getAfterDownloadQuestion = (): Interfaces.ListQuestion => {
+    return {
+        type: 'list',
+        message: 'Options: ',
+        name: 'result',
+        pageSize: 2,
+        choices: getAfterDownloadQuestionChoices()
+    }
+}
+
 export default {
     SearchQuestion,
     getListQuestion,
     getQuestionChoice,
-    getEntryDetailsQuestion
+    getEntryDetailsQuestion,
+    getAfterDownloadQuestion
 }

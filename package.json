@@ -8,7 +8,7 @@
     "obsfx@libgen-downloader": "./bin/index.js"
   },
   "scripts": {
-    "run": "node ./build/index.js",
+    "run": "node ./dist/index.js",
     "build": "tsc -b",
     "minify": "minify ./dist -d ./build",
     "watch": "tsc -b --watch",
