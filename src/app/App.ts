@@ -261,12 +261,17 @@ export default class App implements Interfaces.App {
         if (this.state.connectionError) {
             this.connectionError();
         }
-
-        let fileName: string = selectedEntry.Title.split(' ').join('_');
-        let fileID: string = selectedEntry.ID;
+        
+        let fileAuthor: string = selectedEntry.Author;
+        let fileTitle: string = selectedEntry.Title;
         let fileExtension: string = selectedEntry.Ext;
+        
+        let fileName: string = (`${fileAuthor} ${fileTitle}`).replace(CONSTANTS.STRING_REPLACE_REGEX,"");
+        fileName = fileName.split(' ').join('_');
 
-        let file: fs.WriteStream = fs.createWriteStream(`./${fileID}__${fileName}.${fileExtension}`);
+        let fullFileName: string = `./${fileName}.${fileExtension}`;
+
+        let file: fs.WriteStream = fs.createWriteStream(fullFileName);
 
         let progressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
             width: CONSTANTS.PROGRESS_BAR.WIDTH,

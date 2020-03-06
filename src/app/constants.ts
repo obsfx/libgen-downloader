@@ -20,9 +20,9 @@ export default {
 
     PROGRESS_BAR: {
         TITLE: `${green().bold('→  Downloading')} [:bar] :percent :current`,
-        WIDTH: 40,
-        COMPLETE: '=',
-        INCOMPLETE: '-',
+        WIDTH: 30,
+        COMPLETE: '█',
+        INCOMPLETE: ' ',
         RENDER_THROTTLE: 1
     },
     
@@ -60,5 +60,7 @@ export default {
         TURN_BACK_RESULT_ID: 'turnBack',
         EXIT: 'X Exit',
         EXIT_RESULT_ID: 'exit'
-    }
+    },
+
+    STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g
 }
