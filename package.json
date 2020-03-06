@@ -39,7 +39,6 @@
     "@types/node-fetch": "^2.5.4",
     "@types/progress": "^2.0.3",
     "babel-minify": "^0.5.1",
-    "nexe": "^3.3.2",
     "pkg": "^4.4.4",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
