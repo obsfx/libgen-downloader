@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require("../build/index.js");
+require("../dist/index.js");
