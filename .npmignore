@@ -1,4 +1,8 @@
 /node_modules
 /src
+/standalone-executables
+
 .gitignore
-logo.jpg
+
+logo.png
+demo.gif
