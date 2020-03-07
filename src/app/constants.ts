@@ -2,9 +2,9 @@ import { yellow, green, cyan, red } from 'kleur';
 
 export default {
     HEAD: [
-        `${yellow().bold('• libgen-downloader')}`,
-        '→  github.com/obsfx/libgen-cli-downloader',
-        '→  npmjs.com/package/libgen-downloader',
+        `┌  ${yellow().bold('libgen-downloader')}`,
+        '├───  github.com/obsfx/libgen-cli-downloader',
+        '└───  npmjs.com/package/libgen-downloader',
         ' '
     ],
 
@@ -12,6 +12,7 @@ export default {
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
     NO_RESULT: `${cyan().bold('No Result.')}`,
     DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s.%s`)} downloaded on working directory.\n`,
+    DIRECTORY_STRING: `┌ Your media is being downloaded to this directory:\n└───  ${cyan().bold(`%s`)}`,
 
     SPINNER: {
         GETTING_RESULTS: `${cyan().bold('Getting Results')}... %s`,
@@ -19,8 +20,8 @@ export default {
     },
 
     PROGRESS_BAR: {
-        TITLE: `${green().bold('→  Downloading')} [:bar] :percent :current`,
-        WIDTH: 30,
+        TITLE: `${green().bold('→  Downloading')} [ :bar ] :percent :current`,
+        WIDTH: 25,
         COMPLETE: '█',
         INCOMPLETE: ' ',
         RENDER_THROTTLE: 1
@@ -45,7 +46,7 @@ export default {
         Year: `${yellow().bold('Year')}`,
         Pages: `${yellow().bold('Pages')}`,
         Lang: `${yellow().bold('Lang')}`,
-        Size: `${yellow().bold('Size')}:`,
+        Size: `${yellow().bold('Size')}`,
         Ext: `${yellow().bold('Extension')}`,
         Mirror: `${yellow().bold('Mirror')}`,
     },
@@ -58,6 +59,13 @@ export default {
     AFTER_DOWNLOAD_QUESTIONS: {
         TURN_BACK: '• Turn Back To The List',
         TURN_BACK_RESULT_ID: 'turnBack',
+        EXIT: 'X Exit',
+        EXIT_RESULT_ID: 'exit'
+    },
+
+    AFTER_NORESULT_QUESTIONS: {
+        SEARCH_ANOTHER: '• Search Another Thing',
+        SEARCH_ANOTHER_RESULT_ID: 'searchAnotherThing',
         EXIT: 'X Exit',
         EXIT_RESULT_ID: 'exit'
     },

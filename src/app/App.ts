@@ -26,7 +26,8 @@ export default class App implements Interfaces.App {
     events: {
         USER_SELECTED_FROM_LIST: string,
         USER_SELECTED_IN_ENTRY_DETAILS: string,
-        USER_SELECTED_AFTER_DOWNLOAD: string
+        USER_SELECTED_AFTER_DOWNLOAD: string,
+        USER_SELECTED_AFTER_NORESULT: string
     }
 
     constructor() {
@@ -38,7 +39,8 @@ export default class App implements Interfaces.App {
         this.events = {
             USER_SELECTED_FROM_LIST: 'user_selected_from_list',
             USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
-            USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download'
+            USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
+            USER_SELECTED_AFTER_NORESULT: 'user_selected_after_noresult'
         }
     }
 
@@ -102,6 +104,14 @@ export default class App implements Interfaces.App {
         this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
             if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
                 await this.promptResults();
+            } else {
+                process.exit(0);
+            }
+        });
+
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_NORESULT, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
+            if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
+                await this.init();
             } else {
                 process.exit(0);
             }
@@ -282,13 +292,19 @@ export default class App implements Interfaces.App {
         });
 
         this.spinner.stop(true);
-
-        downloadResponse.body.on('data', chunk => progressBar.tick(chunk.length));
-        downloadResponse.body.on('error', this.connectionError);
+        
+        console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
+        
+        downloadResponse.body.on('data', chunk => {
+            progressBar.tick(chunk.length);
+        });
+        
         downloadResponse.body.on('finish', async () => {
             this.promptAfterDownload(fileName, fileExtension);
         });
-
+        
+        downloadResponse.body.on('error', this.connectionError);
+        
         downloadResponse.body.pipe(file);
     }
 
@@ -328,7 +344,17 @@ export default class App implements Interfaces.App {
     async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
         console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
 
-        let afterDownloadQuestion: Interfaces.ListQuestion = Questions.getAfterDownloadQuestion();
+        let afterDownloadQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
+            {
+                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK,
+                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
+            },
+
+            {
+                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
+                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
+            }
+        ]);
 
         let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterDownloadQuestion);
 
@@ -351,6 +377,22 @@ export default class App implements Interfaces.App {
             this.promptResults();
         } else {
             console.log(CONSTANTS.NO_RESULT);
+
+            let afterNoResultQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
+                {
+                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER,
+                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID
+                },
+
+                {
+                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT,
+                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT_RESULT_ID
+                }
+            ]);
+
+            let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterNoResultQuestion);
+
+            this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_NORESULT, selectedChoice);
         }
     }
 }

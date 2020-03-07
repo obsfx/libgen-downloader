@@ -46,7 +46,7 @@
   "dependencies": {
     "cli-spinner": "^0.2.10",
     "inquirer": "^7.0.1",
-    "jsdom": "^15.2.1",
+    "jsdom": "^16.2.0",
     "kleur": "^3.0.3",
     "node-fetch": "^2.6.0",
     "progress": "^2.0.3"

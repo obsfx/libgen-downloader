@@ -85,39 +85,51 @@ const getEntryDetailsQuestion = (entryIndex: number): Interfaces.ListQuestion =>
     }
 }
 
-const getAfterDownloadQuestionChoices = (): Interfaces.QuestionChoice[] => {
+const getAfterEventQuestionChoices = (options: Interfaces.AfterEventQuetionOption[]): Interfaces.QuestionChoice[] => {
     let choices: Interfaces.QuestionChoice[] = [];
 
-    choices.push(
-        getQuestionChoice(
-            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK, 
-            {
-                download: false,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
-            }
-        )
-    );
+    for (let i: number = 0; i < options.length; i++) {
+        choices.push(
+            getQuestionChoice(
+                options[i].name,
+                {
+                    download: false,
+                    id: options[i].id
+                }
+            )
+        );
+    }
 
-    choices.push(
-        getQuestionChoice(
-            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
-            {
-                download: false,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
-            }
-        )
-    );
+//    choices.push(
+//        getQuestionChoice(
+//            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK, 
+//            {
+//                download: false,
+//                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
+//            }
+//        )
+//    );
+//
+//    choices.push(
+//        getQuestionChoice(
+//            CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
+//            {
+//                download: false,
+//                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
+//            }
+//        )
+//    );
 
     return choices
 }
 
-const getAfterDownloadQuestion = (): Interfaces.ListQuestion => {
+const getAfterEventQuestion = (options: Interfaces.AfterEventQuetionOption[]): Interfaces.ListQuestion => {
     return {
         type: 'list',
         message: 'Options: ',
         name: 'result',
-        pageSize: 2,
-        choices: getAfterDownloadQuestionChoices()
+        pageSize: options.length,
+        choices: getAfterEventQuestionChoices(options)
     }
 }
 
@@ -126,5 +138,5 @@ export default {
     getListQuestion,
     getQuestionChoice,
     getEntryDetailsQuestion,
-    getAfterDownloadQuestion
+    getAfterEventQuestion
 }

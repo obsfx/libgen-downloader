@@ -104,4 +104,9 @@ export namespace Interfaces {
         download: boolean;
         id: string;
     }
+
+    export interface AfterEventQuetionOption {
+        name: string;
+        id: string;
+    }
 }
