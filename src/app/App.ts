@@ -249,24 +249,34 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
+    async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string> {
+        let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
+        let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
+
+        if (this.state.connectionError) {
+            this.connectionError();
+        }
+
+        let md5ResponseJson: [ {md5: string} ] = await md5Response.json();
+        let entrymd5: string = md5ResponseJson[0].md5;
+        
+        let mirrorURL: string = CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN.replace('{MD5}', entrymd5);
+        let mirrorDocument: HTMLDocument = await this.getDocument(mirrorURL);
+
+        let downloadEndpoint: string = Entries.getDownloadURL(mirrorDocument);
+
+        return downloadEndpoint;
+    }
+
     async download(entryIndex: number): Promise<void> {
         this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.CONNECTING_MIRROR);
         this.spinner.start();
 
         let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
 
-        let URLParts: string[] = selectedEntry.Mirror.split('/');
-        let mirrorDocument: HTMLDocument = await this.getDocument(selectedEntry.Mirror);
+        let downloadEndPoint: string = await this.constructDownloadEndpoint(selectedEntry);
 
-        if (this.state.connectionError) {
-            this.connectionError();
-        }
-
-        let downloadURL: string = Entries.getDownloadURL(mirrorDocument);
-
-        downloadURL = `${URLParts[0]}//${URLParts[2]}${downloadURL}`;
-
-        let downloadResponse: Response = await this.getResponse(downloadURL);
+        let downloadResponse: Response = await this.getResponse(downloadEndPoint);
 
         if (this.state.connectionError) {
             this.connectionError();

@@ -1,4 +1,5 @@
 import { yellow, green, cyan, red } from 'kleur';
+import CONFIG from './config';
 
 export default {
     HEAD: [
@@ -12,7 +13,7 @@ export default {
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
     NO_RESULT: `${cyan().bold('No Result.')}`,
     DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s.%s`)} downloaded on working directory.\n`,
-    DIRECTORY_STRING: `┌ Your media is being downloaded to this directory:\n└───  ${cyan().bold(`%s`)}`,
+    DIRECTORY_STRING: `┌  Your media is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
 
     SPINNER: {
         GETTING_RESULTS: `${cyan().bold('Getting Results')}... %s`,
@@ -20,7 +21,7 @@ export default {
     },
 
     PROGRESS_BAR: {
-        TITLE: `${green().bold('→  Downloading')} [ :bar ] :percent :current`,
+        TITLE: `${green().bold('└───  Downloading')} [ :bar ] :percent :current`,
         WIDTH: 25,
         COMPLETE: '█',
         INCOMPLETE: ' ',
@@ -70,5 +71,8 @@ export default {
         EXIT_RESULT_ID: 'exit'
     },
 
-    STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g
+    STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
+
+    MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`,
+    MD5_DOWNLOAD_PAGE_PATTERN: `${CONFIG.DOWNLOAD_MIRROR}main/{MD5}`
 }
