@@ -3,7 +3,7 @@
 ## V1.0 TODOs
 
 - [ ] Puntonite `(new ui module)`
-- [x] Rendering
+  - [x] Rendering
   - [x] Event Handler
   - [ ] Single Input
   - [x] List Output
@@ -13,7 +13,7 @@
   - [ ] Remove Inquirer Dependency
   
 - [ ] Batch Downloading
-- [ ] Downloading by a given md5.txt file
+  - [ ] Downloading by a given md5.txt file
   - [ ] Downloading by selecting  listings from in-app list
   - [ ] Export md5 codes of selected and downloaded listings
 
