@@ -1,6 +1,27 @@
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/logo.png)
 
-# [libgen-cli-downloader](https://obsfx.github.io/libgen-downloader) [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
+## V1.0 TODOs
+
+- [ ] #### Puntonite `(new ui module)`
+
+  - [x] Rendering
+  - [x] Event Handler
+  - [ ] Single Input
+  - [x] List Output
+  - [ ] Listing Submenu
+  - [ ] Checkable Listings for Batch Downloading
+  - [ ] Batch Downloading Listing
+  - [ ] Remove Inquirer Dependency
+
+- [ ] #### Batch Downloading
+
+  - [ ] Downloading by a given md5.txt file
+  - [ ] Downloading by selecting  listings from in-app list
+  - [ ] Export md5 codes of selected and downloaded listings
+
+
+
+# [libgen-downloader](https://obsfx.github.io/libgen-downloader) [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/demo.gif)
 
