@@ -13,6 +13,7 @@ export namespace Interfaces {
     export interface ListObject {
         type: 'list';
         listings: ListingObject[];
+        listedItemCount: number;
     }
 
     export interface ListingObject extends baseObject {

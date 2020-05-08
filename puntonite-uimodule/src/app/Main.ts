@@ -34,12 +34,12 @@ export default abstract class Main {
 
     public static async promptList(listObject: Interfaces.ListObject): Promise<string> {
         process.stdin.setRawMode(true);
-        Terminal.hideCursor();
+        // Terminal.hideCursor();
 
         this.state = constants.STATE.LIST;
         this.returnVal = null;
 
-        Terminal.promptList(listObject.listings);
+        Terminal.promptList(listObject.listings, listObject.listedItemCount);
 
         return await this.listenForReturn<string>();
     }

@@ -38,13 +38,19 @@ for (let i = 0; i < strarrr.length; i++) {
 
 Main.init()
 
+console.log("List")
+console.log("List")
+console.log("List")
+
+
 const p = async () => {
     let list: Interfaces.ListObject = {
         type: 'list',
-        listings: listingarr
+        listings: listingarr,
+        listedItemCount: 10
     }
 
-    console.log(await Main.promptList(list));
+    console.log(await Main.prompt(list));
     process.exit(0);
 
     // console.log(await Main.promptInput('Ara Ulan!: '));
