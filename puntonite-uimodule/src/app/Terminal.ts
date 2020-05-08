@@ -2,13 +2,15 @@ import { Interfaces } from '../interfaces.namespace';
 
 import ascii from '../ascii';
 import outputs from '../outputs';
+import constants from '../constants';
 
 export default abstract class Terminal {
     private static cursorIndex: number = 0;
-    private static currentList: (Interfaces.ListingObject | undefined)[] = [];
+    private static currentList: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
 
+    /*********************************************** */
     public static clear(): void {
         process.stdout.write(ascii.CLEARSCREEN)
         // readline.cursorTo(process.stdout, 0, 0);
@@ -52,8 +54,34 @@ export default abstract class Terminal {
         process.stdout.write(ascii.NEXTLINEX.replace('{x}', x.toString()));
     }
 
-    public static promptList(arr: (Interfaces.ListingObject | undefined)[], listedItemCount: number): void {
+    /*********************************************** */
+    public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
         this.cursorIndex = Math.floor(listedItemCount / 2);
+
+        for (let i: number = 0; i < arr.length; i++) {
+            if (arr[i].isCheckable) {
+                if (!arr[i].submenu) {
+                    arr[i].submenu = [];
+                }
+
+                arr[i].submenu?.push({
+                    text: arr[i].checkBtnText || ' ',
+                    value: constants.CHECKBTNVAL, 
+                    isSubmenuListing: true,
+                    isCheckable: false,
+                });
+            }
+
+            if (arr[i].submenu) {
+                arr[i].submenu?.push({
+                    text: arr[i].submenuToggleBtnText || ' ',
+                    value: constants.TOGGLECLOSEBTNVAL, 
+                    isSubmenuListing: true,
+                    isCheckable: false,
+                });
+            }
+        }
+
         this.currentList = arr;
         this.listedItemCount = listedItemCount;
 
@@ -61,12 +89,22 @@ export default abstract class Terminal {
     }
 
     public static prevListing(): void {
-        this.currentList.unshift(this.currentList.pop())
+        let pop: Interfaces.ListingObject | undefined = this.currentList.pop();
+
+        if (pop) {
+            this.currentList.unshift(pop)
+        }
+
         this.renderList();
     }
 
     public static nextListing(): void {
-        this.currentList.push(this.currentList.shift())
+        let shift: Interfaces.ListingObject | undefined = this.currentList.shift();
+
+        if  (shift) {
+            this.currentList.push(shift);
+        }
+
         this.renderList();
     }
 
@@ -80,10 +118,20 @@ export default abstract class Terminal {
         let output: string = '';
 
         for (let i: number = 0; i < this.listedItemCount; i++) {
-            let text: string = this.currentList[i]?.text || ' ';
+            let text: string = this.currentList[i].text;
 
             if (i == this.cursorIndex) {
-                output += outputs.HOVEREDOUTPUT.replace('{text}', text);
+                if (this.currentList[i].isSubmenuListing) {
+                    output += outputs.SUBMENUHOVEREDOUTPUT.replace('{text}', text);
+                } else if (this.currentList[i].isSubmenuOpen) {
+                    output += outputs.TOGGLEDHOVEREDOUTPUT.replace('{text}', text);
+                } else {
+                    output += outputs.HOVEREDOUTPUT.replace('{text}', text);
+                }
+            } else if (this.currentList[i].isSubmenuListing){
+                output += outputs.SUBMENUOUTPUT.replace('{text}', text);
+            } else if (this.currentList[i].isSubmenuOpen) {
+                output += outputs.TOGGLEDOUTPUT.replace('{text}', text);
             } else {
                 output += outputs.STANDARTOUTPUT.replace('{text}', text);
             }
@@ -94,10 +142,28 @@ export default abstract class Terminal {
         process.stdout.write(output);
     }
 
-    public static getCurrentListing(): string {
-        return this.currentList[this.cursorIndex]?.value || ' ';
+    public static getCurrentListing(): Interfaces.ListingObject | null {
+        return this.currentList[this.cursorIndex] || null;
     }
 
+    public static toggleSubmenu(): void {
+        let currentListing: Interfaces.ListingObject = this.currentList[this.cursorIndex];
+        
+        if (currentListing.submenu) {
+            if (currentListing.isSubmenuOpen) {
+                this.currentList.splice(this.cursorIndex + 1, currentListing.submenu.length);
+            } else {
+                this.currentList.splice(this.cursorIndex + 1, 0, ...currentListing.submenu); 
+            }
+
+            this.currentList[this.cursorIndex].isSubmenuOpen = !this.currentList[this.cursorIndex].isSubmenuOpen;
+            this.renderList();
+        }
+
+        //splice(this.cursorIndex + 1, submenu.length)
+    }
+
+    /*********************************************** */
     public static promptInput(promptHead: string): void {
         process.stdout.write(promptHead);
     }

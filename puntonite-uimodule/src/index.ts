@@ -1,7 +1,7 @@
 import { Interfaces } from './interfaces.namespace';
 import Main from './app/Main'
 
-let strarrr: (string | undefined)[] = [
+let strarrr: string[] = [
     "Understanding AJAX: Using JavaScript to Create Rich Internet Applications",
     "JavaScript & DHTML Cookbook",
     "JavaScript Bible [3 ed.]",
@@ -29,9 +29,22 @@ let listingarr: Interfaces.ListingObject[] = [];
 
 for (let i = 0; i < strarrr.length; i++) {
     listingarr.push({
-        text: strarrr[i] || ' ',
-        submenu: null,
-        value: strarrr[i] || ' '
+        text: strarrr[i],
+        submenu: [
+            {
+                text: 'Download', 
+                value: 'download', 
+                isSubmenuListing: true,
+                isCheckable: false,
+            }
+        ],
+        value: strarrr[i],
+        isSubmenuOpen: false,
+        isSubmenuListing: false,
+        isCheckable: true,
+        isChecked: false,
+        checkBtnText: 'Add to Batch Download Queue',
+        submenuToggleBtnText: 'Close The Submenu'
     });
 }
 

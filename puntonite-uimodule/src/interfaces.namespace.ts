@@ -17,6 +17,13 @@ export namespace Interfaces {
     }
 
     export interface ListingObject extends baseObject {
-        submenu: ListingObject[] | null;
+        isCheckable: boolean;
+        isChecked?: boolean;
+        checkBtnText?: string;
+
+        isSubmenuListing: boolean;
+        isSubmenuOpen?: boolean;
+        submenu?: ListingObject[];
+        submenuToggleBtnText?: string;
     }
 }

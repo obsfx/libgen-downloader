@@ -14,7 +14,8 @@ export default abstract class Main {
     })
 
     private static state: string | null = null;
-    private static returnVal: string | null = null;
+    private static returnedVal: string | null = null;
+    private static returnedListing: Interfaces.ListingObject;
 
     public static init(): void {
         this.initEventHandlers();
@@ -37,7 +38,7 @@ export default abstract class Main {
         // Terminal.hideCursor();
 
         this.state = constants.STATE.LIST;
-        this.returnVal = null;
+        this.returnedVal = null;
 
         Terminal.promptList(listObject.listings, listObject.listedItemCount);
 
@@ -49,7 +50,7 @@ export default abstract class Main {
         Terminal.showCursor();
 
         this.state = constants.STATE.INPUT;
-        this.returnVal = null;
+        this.returnedVal = null;
 
         Terminal.promptInput(promptObject.text);
 
@@ -79,15 +80,27 @@ export default abstract class Main {
                 }
 
                 if (key.name == keymap.DOACTION) {
-                    this.returnVal = Terminal.getCurrentListing();
+                    let listing: Interfaces.ListingObject | null = Terminal.getCurrentListing();
+                    
+                    if (listing) {
+                        this.returnedListing = listing;
+
+                        if (this.returnedListing.submenu || this.returnedListing.value == constants.TOGGLECLOSEBTNVAL) {
+                            console.log(this.returnedListing.value, constants.TOGGLECLOSEBTNVAL);
+                            Terminal.toggleSubmenu();
+                        } else {
+                            this.returnedVal = this.returnedListing.value;
+                        }
+                    }
                 }
             }
         });
 
         this.rl.on('line', (line: string) => {
             if (this.state == constants.STATE.INPUT) {
-                this.returnVal = line;
+                this.returnedVal = line;
             }
+
             Terminal.prevLine();
             Terminal.clearLine();
         });
@@ -96,8 +109,8 @@ export default abstract class Main {
     private static listenForReturn<T>(): Promise<T> {
         return new Promise((resolve: Function) => {
             const controlLoop = (): void => {
-                if (this.returnVal) {
-                    resolve(this.returnVal);
+                if (this.returnedVal) {
+                    resolve(this.returnedVal);
                 } else {
                     setImmediate(controlLoop);
                 }
