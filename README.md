@@ -8,11 +8,11 @@
   - [ ] Single Input
   - [x] List Output
   - [ ] Listing Submenu
-  - [ ] Checkable Listings for Batch Downloading
-  - [ ] Batch Downloading Listing
+  - [ ] Checkable Listings for Bulk Downloading
+  - [ ] Bulk Downloading Listing
   - [ ] Remove Inquirer Dependency
   
-- [ ] Batch Downloading
+- [ ] Bulk Downloading
   - [ ] Downloading by a given md5.txt file
   - [ ] Downloading by selecting  listings from in-app list
   - [ ] Export md5 codes of selected and downloaded listings

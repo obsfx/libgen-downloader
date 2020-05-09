@@ -26,6 +26,6 @@ export namespace Interfaces {
         submenu?: ListingObject[];
         submenuToggleBtnText?: string;
 
-        parentIndex?: number;
+        parentOffset?: number;
     }
 }

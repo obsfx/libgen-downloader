@@ -6,10 +6,9 @@ import constants from '../constants';
 
 export default abstract class Terminal {
     private static cursorIndex: number = 0;
-    private static currentList: Interfaces.ListingObject[] = [];
+    private static renderingQueue: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
-    private static shiftOffset: number = 0;
 
     /*********************************************** */
     public static clear(): void {
@@ -58,6 +57,7 @@ export default abstract class Terminal {
     /*********************************************** */
     public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
         this.cursorIndex = Math.floor(listedItemCount / 2);
+        this.listedItemCount = listedItemCount;
 
         for (let i: number = 0; i < arr.length; i++) {
             if (arr[i].isCheckable) {
@@ -69,8 +69,7 @@ export default abstract class Terminal {
                     text: arr[i].checkBtnText || ' ',
                     value: constants.CHECKBTNVAL, 
                     isSubmenuListing: true,
-                    isCheckable: false,
-                    parentIndex: i
+                    isCheckable: false
                 });
             }
 
@@ -80,66 +79,60 @@ export default abstract class Terminal {
                     value: constants.TOGGLECLOSEBTNVAL, 
                     isSubmenuListing: true,
                     isCheckable: false,
-                    parentIndex: i
+                    parentOffset: arr[i].submenu?.length
                 });
             }
         }
 
-        this.currentList = arr;
-        this.listedItemCount = listedItemCount;
+        this.renderingQueue = arr;
 
         this.renderList();
     }
 
     public static prevListing(): void {
-        this.shiftOffset = (this.shiftOffset > 0) ? this.shiftOffset-=1 : this.currentList.length - 1;
-
-        let pop: Interfaces.ListingObject | undefined = this.currentList.pop();
+        let pop: Interfaces.ListingObject | undefined = this.renderingQueue.pop();
 
         if (pop) {
-            this.currentList.unshift(pop)
+            this.renderingQueue.unshift(pop)
         }
 
         this.renderList();
-        console.log(this.shiftOffset);
     }
 
     public static nextListing(): void {
-        this.shiftOffset = this.shiftOffset+=1 % this.currentList.length;
 
-        let shift: Interfaces.ListingObject | undefined = this.currentList.shift();
+        let shift: Interfaces.ListingObject | undefined = this.renderingQueue.shift();
 
         if  (shift) {
-            this.currentList.push(shift);
+            this.renderingQueue.push(shift);
         }
 
         this.renderList();
-        console.log(this.shiftOffset);
     }
 
     private static renderList(): void {
-        // if (this.printedListingCount != 0) {
-        //     this.clearList();
-        // }
-        this.clear();
+        if (this.printedListingCount != 0) {
+            this.clearList();
+        }
+        // this.clear();
         this.printedListingCount = 0;
 
         let output: string = '';
 
         for (let i: number = 0; i < this.listedItemCount; i++) {
-            let text: string = this.currentList[i].text;
+            let text: string = this.renderingQueue[i].text;
 
             if (i == this.cursorIndex) {
-                if (this.currentList[i].isSubmenuListing) {
+                if (this.renderingQueue[i].isSubmenuListing) {
                     output += outputs.SUBMENUHOVEREDOUTPUT.replace('{text}', text);
-                } else if (this.currentList[i].isSubmenuOpen) {
+                } else if (this.renderingQueue[i].isSubmenuOpen) {
                     output += outputs.TOGGLEDHOVEREDOUTPUT.replace('{text}', text);
                 } else {
                     output += outputs.HOVEREDOUTPUT.replace('{text}', text);
                 }
-            } else if (this.currentList[i].isSubmenuListing){
+            } else if (this.renderingQueue[i].isSubmenuListing){
                 output += outputs.SUBMENUOUTPUT.replace('{text}', text);
-            } else if (this.currentList[i].isSubmenuOpen) {
+            } else if (this.renderingQueue[i].isSubmenuOpen) {
                 output += outputs.TOGGLEDOUTPUT.replace('{text}', text);
             } else {
                 output += outputs.STANDARTOUTPUT.replace('{text}', text);
@@ -151,29 +144,40 @@ export default abstract class Terminal {
         process.stdout.write(output);
     }
 
-    public static getCurrentListing(): Interfaces.ListingObject | null {
-        return this.currentList[this.cursorIndex] || null;
+    public static getCurrentListing(): Interfaces.ListingObject {
+        return this.renderingQueue[this.cursorIndex];
     }
 
     public static toggleSubmenu(): void {
-        let currentListing: Interfaces.ListingObject = this.currentList[this.cursorIndex];
+        let currentListing: Interfaces.ListingObject = this.getCurrentListing();
         
-        if (currentListing.submenu || currentListing.parentIndex) {
-            let targetIndex: number = currentListing.parentIndex || this.cursorIndex;
-            let listingIndex: number = Math.abs(this.cursorIndex - this.shiftOffset) % this.listedItemCount;
-            let targetListingItem: Interfaces.ListingObject = this.currentList[listingIndex];
+        if (currentListing.submenu || currentListing.parentOffset) {
+            let targetIndex: number = this.cursorIndex;
+
+            if (currentListing.parentOffset) {
+                targetIndex -= currentListing.parentOffset + 1;
+            }
+            
+            let targetListingItem: Interfaces.ListingObject = this.renderingQueue[targetIndex];
 
             if (targetListingItem.submenu) {
                 if (targetListingItem.isSubmenuOpen) {
-                    this.currentList.splice(listingIndex + 1, targetListingItem.submenu.length);
+                    this.renderingQueue.splice(targetIndex + 1, targetListingItem.submenu.length);
                 } else {
-                    this.currentList.splice(listingIndex + 1, 0, ...targetListingItem.submenu); 
+                    this.renderingQueue.splice(targetIndex + 1, 0, ...targetListingItem.submenu); 
                 }
-            }
 
-            this.currentList[listingIndex].isSubmenuOpen = !this.currentList[listingIndex].isSubmenuOpen;
-            this.renderList();
-            console.log(targetIndex, listingIndex, this.cursorIndex, this.shiftOffset);
+                this.renderingQueue[targetIndex].isSubmenuOpen = !this.renderingQueue[targetIndex].isSubmenuOpen;
+
+                if (currentListing.parentOffset) {
+                    for (let i: number = 0; i < targetListingItem.submenu.length; i++) {
+                        this.prevListing();
+                    }
+                }
+
+                this.renderList();
+            }
+            // console.log(this.printedListingCount);
         }
 
         //splice(this.cursorIndex + 1, submenu.length)

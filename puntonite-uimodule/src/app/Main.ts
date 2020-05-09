@@ -86,7 +86,6 @@ export default abstract class Main {
                         this.returnedListing = listing;
 
                         if (this.returnedListing.submenu || this.returnedListing.value == constants.TOGGLECLOSEBTNVAL) {
-                            console.log(this.returnedListing.value, constants.TOGGLECLOSEBTNVAL);
                             Terminal.toggleSubmenu();
                         } else {
                             this.returnedVal = this.returnedListing.value;
