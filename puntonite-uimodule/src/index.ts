@@ -1,5 +1,6 @@
 import { Interfaces } from './interfaces.namespace';
-import Main from './app/Main'
+import Main from './app/Main';
+import outputs from './outputs';
 
 let strarrr: string[] = [
     "Understanding AJAX: Using JavaScript to Create Rich Internet Applications",
@@ -38,13 +39,13 @@ for (let i = 0; i < strarrr.length; i++) {
                 isCheckable: false,
             }
         ],
-        value: strarrr[i],
+        value: i + '_' + strarrr[i],
         isSubmenuOpen: false,
         isSubmenuListing: false,
         isCheckable: true,
-        isChecked: false,
-        checkBtnText: 'Add to Batch Download Queue',
-        submenuToggleBtnText: 'Close The Submenu'
+        checkBtnText: 'Add To Bulk Download Queue',
+        unCheckBtnText: 'Remove From Bulk Download Queue',
+        submenuToggleBtnText: 'Close Sublist'
     });
 }
 
@@ -55,18 +56,22 @@ console.log("List")
 console.log("List")
 console.log("List")
 
-
 const p = async () => {
     let list: Interfaces.ListObject = {
         type: 'list',
         listings: listingarr,
-        listedItemCount: 10
+        listedItemCount: 12
+    }
+
+    let input: Interfaces.promptObject = {
+        type: 'input',
+        text: outputs.SEARCH
     }
 
     console.log(await Main.prompt(list));
     process.exit(0);
 
-    // console.log(await Main.promptInput('Ara Ulan!: '));
+    // console.log(await Main.prompt(input));
     // process.exit(0);
 }
 

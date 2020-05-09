@@ -87,6 +87,8 @@ export default abstract class Main {
 
                         if (this.returnedListing.submenu || this.returnedListing.value == constants.TOGGLECLOSEBTNVAL) {
                             Terminal.toggleSubmenu();
+                        } else if (this.returnedListing.value == constants.CHECKBTNVAL) {
+                            Terminal.toggleCheck();
                         } else {
                             this.returnedVal = this.returnedListing.value;
                         }

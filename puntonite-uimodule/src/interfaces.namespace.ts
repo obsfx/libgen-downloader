@@ -3,7 +3,6 @@ import { Types } from './types.namespace';
 export namespace Interfaces {
     interface baseObject {
         text: string;
-        value: string;
     }
 
     export interface promptObject extends baseObject {
@@ -17,9 +16,10 @@ export namespace Interfaces {
     }
 
     export interface ListingObject extends baseObject {
+        value: string;
         isCheckable: boolean;
-        isChecked?: boolean;
         checkBtnText?: string;
+        unCheckBtnText?: string;
 
         isSubmenuListing: boolean;
         isSubmenuOpen?: boolean;
@@ -27,5 +27,9 @@ export namespace Interfaces {
         submenuToggleBtnText?: string;
 
         parentOffset?: number;
+    }
+
+    export interface TerminalCheckedItemsHashTable {
+        [key: string]: boolean
     }
 }

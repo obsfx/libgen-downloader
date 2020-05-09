@@ -2,8 +2,10 @@ export default {
     CLEARSCREEN: '\u001b[1000A\u001b[1000D\u001b[0J',
     CLEARCURSORTOEND: '\u001b[0J',
 
-    HIDECURSOR: '\u001B[?25l',
-    SHOWCURSOR: '\u001B[?25h',
+    HIDECURSOR: '\u001b[?25l',
+    SHOWCURSOR: '\u001b[?25h',
+    SAVECURSORPOS: '\u001b[s',
+    RESTORECURSORPOS: '\u001b[u',
 
     PREVLINE: '\u001b[1F',
     NEXTLINE: '\u001b[1E',

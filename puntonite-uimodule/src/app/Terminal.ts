@@ -9,6 +9,7 @@ export default abstract class Terminal {
     private static renderingQueue: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
+    private static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {}
 
     /*********************************************** */
     public static clear(): void {
@@ -21,14 +22,22 @@ export default abstract class Terminal {
         process.stdout.write(ascii.CLEARCURSORTOEND);
     }
 
+    public static saveCursorPos(): void {
+        process.stdout.write(ascii.SAVECURSORPOS);
+    }
+
+    public static restoreCursorPos(): void {
+        process.stdout.write(ascii.RESTORECURSORPOS);
+    }
+
     public static clearLine(): void {
         process.stdout.write(ascii.CLEARLINE);
     }
 
-    private static clearList(): void {
-        this.prevLineX(this.printedListingCount);
-        this.clearCursorToEnd();
-    }
+    // private static clearList(): void {
+    //     this.prevLineX(this.printedListingCount);
+    //     this.clearCursorToEnd();
+    // }
 
     public static hideCursor(): void {
         process.stdout.write(ascii.HIDECURSOR);
@@ -66,10 +75,12 @@ export default abstract class Terminal {
                 }
 
                 arr[i].submenu?.push({
-                    text: arr[i].checkBtnText || ' ',
+                    text: (this.checkedItemsHashTable[arr[i].value] ? 
+                        arr[i].unCheckBtnText : arr[i].checkBtnText) || ' ',
                     value: constants.CHECKBTNVAL, 
                     isSubmenuListing: true,
-                    isCheckable: false
+                    isCheckable: false,
+                    parentOffset: arr[i].submenu?.length
                 });
             }
 
@@ -112,15 +123,26 @@ export default abstract class Terminal {
 
     private static renderList(): void {
         if (this.printedListingCount != 0) {
-            this.clearList();
+            this.restoreCursorPos();
+            this.clearCursorToEnd();
         }
-        // this.clear();
+
+        this.saveCursorPos();
         this.printedListingCount = 0;
+
+        let listSize = this.renderingQueue.length >= this.listedItemCount ? 
+        this.listedItemCount : this.renderingQueue.length;
 
         let output: string = '';
 
-        for (let i: number = 0; i < this.listedItemCount; i++) {
+        for (let i: number = 0; i < listSize; i++) {
             let text: string = this.renderingQueue[i].text;
+
+            if (this.checkedItemsHashTable[this.renderingQueue[i].value]) {
+                output += outputs.CHECKED;
+            } else {
+                output += outputs.UNCHECKED;
+            }
 
             if (i == this.cursorIndex) {
                 if (this.renderingQueue[i].isSubmenuListing) {
@@ -134,6 +156,8 @@ export default abstract class Terminal {
                 output += outputs.SUBMENUOUTPUT.replace('{text}', text);
             } else if (this.renderingQueue[i].isSubmenuOpen) {
                 output += outputs.TOGGLEDOUTPUT.replace('{text}', text);
+            } else if (this.checkedItemsHashTable[this.renderingQueue[i].value]) { 
+                output += outputs.CHECKEDOUTPUT.replace('{text}', text);
             } else {
                 output += outputs.STANDARTOUTPUT.replace('{text}', text);
             }
@@ -181,6 +205,28 @@ export default abstract class Terminal {
         }
 
         //splice(this.cursorIndex + 1, submenu.length)
+    }
+
+    public static toggleCheck(): void {
+        let currentListing: Interfaces.ListingObject = this.getCurrentListing();
+
+        if (currentListing.parentOffset) {
+            let targetIndex: number = this.cursorIndex - (currentListing.parentOffset + 1);
+
+            let targetListingItem: Interfaces.ListingObject = this.renderingQueue[targetIndex];
+
+            if (this.checkedItemsHashTable[targetListingItem.value]) {
+                delete this.checkedItemsHashTable[targetListingItem.value];
+            } else {
+                this.checkedItemsHashTable[targetListingItem.value] = true
+            }
+            
+            this.renderingQueue[this.cursorIndex].text = this.checkedItemsHashTable[targetListingItem.value] ? 
+            this.renderingQueue[targetIndex].unCheckBtnText || '': 
+            this.renderingQueue[targetIndex].checkBtnText || '';
+
+            this.renderList();
+        }
     }
 
     /*********************************************** */
