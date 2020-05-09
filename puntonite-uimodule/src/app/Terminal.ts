@@ -9,6 +9,7 @@ export default abstract class Terminal {
     private static currentList: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
+    private static shiftOffset: number = 0;
 
     /*********************************************** */
     public static clear(): void {
@@ -69,6 +70,7 @@ export default abstract class Terminal {
                     value: constants.CHECKBTNVAL, 
                     isSubmenuListing: true,
                     isCheckable: false,
+                    parentIndex: i
                 });
             }
 
@@ -78,6 +80,7 @@ export default abstract class Terminal {
                     value: constants.TOGGLECLOSEBTNVAL, 
                     isSubmenuListing: true,
                     isCheckable: false,
+                    parentIndex: i
                 });
             }
         }
@@ -89,6 +92,8 @@ export default abstract class Terminal {
     }
 
     public static prevListing(): void {
+        this.shiftOffset = (this.shiftOffset > 0) ? this.shiftOffset-=1 : this.currentList.length - 1;
+
         let pop: Interfaces.ListingObject | undefined = this.currentList.pop();
 
         if (pop) {
@@ -96,9 +101,12 @@ export default abstract class Terminal {
         }
 
         this.renderList();
+        console.log(this.shiftOffset);
     }
 
     public static nextListing(): void {
+        this.shiftOffset = this.shiftOffset+=1 % this.currentList.length;
+
         let shift: Interfaces.ListingObject | undefined = this.currentList.shift();
 
         if  (shift) {
@@ -106,13 +114,14 @@ export default abstract class Terminal {
         }
 
         this.renderList();
+        console.log(this.shiftOffset);
     }
 
     private static renderList(): void {
-        if (this.printedListingCount != 0) {
-            this.clearList();
-        }
-
+        // if (this.printedListingCount != 0) {
+        //     this.clearList();
+        // }
+        this.clear();
         this.printedListingCount = 0;
 
         let output: string = '';
@@ -149,15 +158,22 @@ export default abstract class Terminal {
     public static toggleSubmenu(): void {
         let currentListing: Interfaces.ListingObject = this.currentList[this.cursorIndex];
         
-        if (currentListing.submenu) {
-            if (currentListing.isSubmenuOpen) {
-                this.currentList.splice(this.cursorIndex + 1, currentListing.submenu.length);
-            } else {
-                this.currentList.splice(this.cursorIndex + 1, 0, ...currentListing.submenu); 
+        if (currentListing.submenu || currentListing.parentIndex) {
+            let targetIndex: number = currentListing.parentIndex || this.cursorIndex;
+            let listingIndex: number = Math.abs(this.cursorIndex - this.shiftOffset) % this.listedItemCount;
+            let targetListingItem: Interfaces.ListingObject = this.currentList[listingIndex];
+
+            if (targetListingItem.submenu) {
+                if (targetListingItem.isSubmenuOpen) {
+                    this.currentList.splice(listingIndex + 1, targetListingItem.submenu.length);
+                } else {
+                    this.currentList.splice(listingIndex + 1, 0, ...targetListingItem.submenu); 
+                }
             }
 
-            this.currentList[this.cursorIndex].isSubmenuOpen = !this.currentList[this.cursorIndex].isSubmenuOpen;
+            this.currentList[listingIndex].isSubmenuOpen = !this.currentList[listingIndex].isSubmenuOpen;
             this.renderList();
+            console.log(targetIndex, listingIndex, this.cursorIndex, this.shiftOffset);
         }
 
         //splice(this.cursorIndex + 1, submenu.length)

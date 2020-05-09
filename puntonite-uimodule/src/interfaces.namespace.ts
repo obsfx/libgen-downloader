@@ -25,5 +25,7 @@ export namespace Interfaces {
         isSubmenuOpen?: boolean;
         submenu?: ListingObject[];
         submenuToggleBtnText?: string;
+
+        parentIndex?: number;
     }
 }
