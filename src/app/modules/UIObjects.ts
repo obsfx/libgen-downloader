@@ -85,15 +85,17 @@ export default abstract class {
         }
     }
 
-    public static getEntryDetailsListObject(entryIndex: number): UIInterfaces.ListObject {
+    public static getEntryDetailsListObject(entryIndex: number, entryCheckStatus: boolean): UIInterfaces.ListObject {
+        let listings: UIInterfaces.ListingObject[] = this.getEntryDetailListingObjectArr(entryIndex, entryCheckStatus);
+        
         return {
             type: 'list',
-            listedItemCount: 2,
-            listings: this.getEntryDetailListingObjectArr(entryIndex)
+            listedItemCount: listings.length,
+            listings
         }
     }
 
-    private static getEntryDetailListingObjectArr(entryIndex: number): UIInterfaces.ListingObject[] {
+    private static getEntryDetailListingObjectArr(entryIndex: number, entryCheckStatus: boolean): UIInterfaces.ListingObject[] {
         let listings: UIInterfaces.ListingObject[] = [];
 
         listings.push(this.getOptionListingObject(
@@ -107,14 +109,23 @@ export default abstract class {
             entryIndex.toString()
         ));
 
+        listings.push(this.getOptionListingObject(
+            entryCheckStatus ? 
+                CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_REMOVE : 
+                CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_ADD,
+            CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL,
+            entryIndex.toString()
+        ));
+
         return listings;
     }
 
     public static getAfterDownloadListObject(): UIInterfaces.ListObject {
+        let listings: UIInterfaces.ListingObject[] = this.getAfterDownloadListingObjectArr();
         return {
             type: 'list',
-            listedItemCount: 2,
-            listings: this.getAfterDownloadListingObjectArr()
+            listedItemCount: listings.length,
+            listings
         }
     }
 
@@ -134,15 +145,17 @@ export default abstract class {
         return listings;
     }
 
-    public static getAfterNoResultListObject(): UIInterfaces.ListObject {
+    public static getSearchAnotherListObject(): UIInterfaces.ListObject {
+        let listings: UIInterfaces.ListingObject[] = this.getSearchAnotherListingObjectArr();
+
         return {
             type: 'list',
-            listedItemCount: 2,
-            listings: this.getAfterNoResultListingObjectArr()
+            listedItemCount: listings.length,
+            listings
         }
     }
 
-    private static getAfterNoResultListingObjectArr(): UIInterfaces.ListingObject[] {
+    private static getSearchAnotherListingObjectArr(): UIInterfaces.ListingObject[] {
         let listings: UIInterfaces.ListingObject[] = [];
 
         listings.push(this.getOptionListingObject(

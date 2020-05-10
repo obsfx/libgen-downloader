@@ -178,6 +178,7 @@ export default abstract class Terminal {
 
         this.renderBulkQueueIndicator();
         process.stdout.write(output);
+        process.stdout.write(outputs.USAGE_INFO);
     }
 
     public static getCurrentListing(): Interfaces.ListingObject {
@@ -224,17 +225,21 @@ export default abstract class Terminal {
 
             let targetListingItem: Interfaces.ListingObject = this.renderingQueue[targetIndex];
 
-            if (this.checkedItemsHashTable[targetListingItem.value]) {
-                delete this.checkedItemsHashTable[targetListingItem.value];
-            } else {
-                this.checkedItemsHashTable[targetListingItem.value] = true
-            }
+            this.toggleCheckHashMap(targetListingItem.value);
             
             this.renderingQueue[this.cursorIndex].text = this.checkedItemsHashTable[targetListingItem.value] ? 
             this.renderingQueue[targetIndex].unCheckBtnText || '': 
             this.renderingQueue[targetIndex].checkBtnText || '';
 
             this.renderList();
+        }
+    }
+
+    public static toggleCheckHashMap(hash: string): void {
+        if (this.checkedItemsHashTable[hash]) {
+            delete this.checkedItemsHashTable[hash];
+        } else {
+            this.checkedItemsHashTable[hash] = true
         }
     }
 

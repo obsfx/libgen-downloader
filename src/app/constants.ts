@@ -44,6 +44,12 @@ export default {
         EXIT_RESULT_ID: '@EXIT'
     },
 
+    ENTRY_DETAILS_CHECK: {
+        ENTRY_DETAILS_CHECK_ADD: '• Add This Book To Bulk Download Queue',
+        ENTRY_DETAILS_CHECK_REMOVE: '• Remove This Book From Bulk Download Queue',
+        ENTRY_DETAILS_CHECK_RES_VAL: '@EDCHECK'
+    },
+
     SUBMENU_LISTINGS: {
         CHECK: 'Add To Bulk Download Queue',
         UNCHECK: 'Remove From Bulk Download Queue',

@@ -28,7 +28,7 @@ export default abstract class App {
         USER_SELECTED_FROM_LIST: 'user_selected_from_list',
         USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
         USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
-        USER_SELECTED_AFTER_NORESULT: 'user_selected_after_noresult'
+        USER_SELECTED_SEARCH_ANOTHER: 'user_selected_search_another'
     }
 
     /**  **************************************************  */
@@ -96,7 +96,13 @@ export default abstract class App {
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
             if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
                 // await this.download(Number(value));
-            } else {
+            } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
+                let entryID: string = this.state.entryDataArr[Number(value)].ID;
+
+                UI.Terminal.toggleCheckHashMap(entryID);
+
+                await this.promptEntryDetails(Number(value));
+            } else if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
                 await this.promptResults();
             }
         });
@@ -110,13 +116,14 @@ export default abstract class App {
             // }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_NORESULT, async (selectedChoice: string) => {
-            // if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
-            //     await this.init();
-            // } else {
-                // UI.Terminal.showCursor();
-            //     process.exit(0);
-            // }
+        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.SEARCH_ANOTHER_LISTINGS.SEARCH_ANOTHER_RESULT_ID) {
+                await this.init();
+            } else {
+                // REWORK EXIT THING
+                UI.Terminal.showCursor();
+                process.exit(0);
+            }
         });
     }
 
@@ -169,15 +176,22 @@ export default abstract class App {
         return listings;
     }
 
-    private static connectionError(): void {
+    private static async connectionError(): Promise<void> {
         if (this.spinner.isSpinning()) {
             this.spinner.stop(true);
         }
 
+        UI.Terminal.prevLine();
+        UI.Terminal.clearLine();
+
         // NEEDS REWORK HERE
         console.log(CONSTANTS.CONNECTION_ERROR);
-        UI.Terminal.showCursor();
-        process.exit(1);
+
+        let afterSearchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterSearchAnotherObject);
+        this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
+        // UI.Terminal.showCursor();
+        // process.exit(1);
     }
 
     /**  **************************************************  */
@@ -220,7 +234,7 @@ export default abstract class App {
 
         if (!this.isSearchInputExistInDocument(document)) {
             this.state.connectionError = true;
-            this.connectionError();
+            await this.connectionError();
         }
 
         let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
@@ -247,7 +261,7 @@ export default abstract class App {
         let response: Response = await this.getResponse(url) || new Response();
 
         if (this.state.connectionError) {
-            this.connectionError();
+            await this.connectionError();
         }
 
         let plainText: string = await response.text();
@@ -261,7 +275,7 @@ export default abstract class App {
         let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
 
         if (this.state.connectionError) {
-            this.connectionError();
+            await this.connectionError();
         }
 
         let md5ResponseJson: [ {md5: string} ] = await md5Response.json();
@@ -286,7 +300,7 @@ export default abstract class App {
         let downloadResponse: Response = await this.getResponse(downloadEndPoint);
 
         if (this.state.connectionError) {
-            this.connectionError();
+            await this.connectionError();
         }
         
         let fileAuthor: string = selectedEntry.Author;
@@ -320,7 +334,7 @@ export default abstract class App {
             this.promptAfterDownload(fileName, fileExtension);
         });
         
-        downloadResponse.body.on('error', this.connectionError);
+        downloadResponse.body.on('error', await this.connectionError);
         
         downloadResponse.body.pipe(file);
     }
@@ -328,7 +342,6 @@ export default abstract class App {
     /**  **************************************************  */
     private static async promptResults(): Promise<void> {
         this.clear();
-        // KEY INFO IS NEEDED
         let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
         let paginationQuestionChoices: UIInterfaces.ListingObject[] = this.constructOptions();
 
@@ -351,7 +364,9 @@ export default abstract class App {
 
         outputArr.forEach(output => console.log(output));
 
-        let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex);
+        let entryCheckStatus: boolean = UI.Terminal.checkedItemsHashTable[selectedEntry.ID];
+
+        let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex, entryCheckStatus);
 
         let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(detailsListObject);
 
@@ -375,7 +390,7 @@ export default abstract class App {
         await this.setEntries();
 
         if (this.state.connectionError) {
-            this.connectionError();
+            await this.connectionError();
         }
 
         this.spinner.stop(true);
@@ -383,13 +398,14 @@ export default abstract class App {
         if (this.state.entryDataArr.length > 0) {
             this.promptResults();
         } else {
+            UI.Terminal.prevLine();
+            UI.Terminal.clearLine();
+
             console.log(CONSTANTS.NO_RESULT);
 
-            let afterNoResultListObject: UIInterfaces.ListObject = UIObjects.getAfterNoResultListObject();
-
-            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterNoResultListObject);
-
-            this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_NORESULT, selectedChoice);
+            let afterSearchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterSearchAnotherObject);
+            this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
         }
     }
 }

@@ -6,6 +6,8 @@ const OUTPUTS = {
     SUBMENUHOVEREDPREFIX: '  > •',
     HOVERPREFIX: '>',
 
+    USAGE_INFO: '(UP and DOWN arrow keys to reveal listing, ENTER key to interact.)\n',
+
     EMPTY_BULK_QUEUE: `${ascii.BRIGHTBLACK}[{text} 0]${ascii.RESETCOLOR}\n`,
     BULK_QUEUE: `${ascii.BRIGHTWHITE}[{text} ${ascii.YELLOW}{queuelength}]${ascii.RESETCOLOR}\n`,
     

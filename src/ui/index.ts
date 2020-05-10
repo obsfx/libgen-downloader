@@ -17,5 +17,5 @@ export default {
     Terminal,
 
     outputs,
-    ascii
+    ascii,
 }
