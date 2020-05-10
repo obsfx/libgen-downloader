@@ -30,14 +30,19 @@ export default {
     
     PAGINATIONS: {
         SEARCH: '?  Search',
-        SEARCH_RESULT_ID: 'searchAgain',
+        SEARCH_RESULT_ID: '@SRCAGAIN',
         NEXT_PAGE: '→  Next Page',
-        NEXT_PAGE_RESULT_VAL: 'next',
+        NEXT_PAGE_RESULT_VAL: '@NEXTPAGE',
         PREV_PAGE: '←  Previous Page',
-        PREV_PAGE_RESULT_VAL: 'prev',
-        EXIT: 'X  Exit',
-        EXIT_RESULT_ID: 'exit'
+        PREV_PAGE_RESULT_VAL: '@PREVPAGE',
     },
+
+    EXIT: {
+        EXIT: 'X  Exit',
+        EXIT_RESULT_ID: '@EXIT'
+    },
+
+    DOWNLOAD_RES_VAL: '@DOWNLOAD',
 
     ENTRY_DETAILS_HEAD: {
         ID: `${yellow().bold('ID')}`,
@@ -59,16 +64,14 @@ export default {
 
     AFTER_DOWNLOAD_QUESTIONS: {
         TURN_BACK: '• Turn Back To The List',
-        TURN_BACK_RESULT_ID: 'turnBack',
-        EXIT: 'X Exit',
-        EXIT_RESULT_ID: 'exit'
+        TURN_BACK_RESULT_ID: '@TRNBACK',
     },
 
     AFTER_NORESULT_QUESTIONS: {
         SEARCH_ANOTHER: '• Search Another Thing',
-        SEARCH_ANOTHER_RESULT_ID: 'searchAnotherThing',
+        SEARCH_ANOTHER_RESULT_ID: '@SRCANOTHER',
         EXIT: 'X Exit',
-        EXIT_RESULT_ID: 'exit'
+        EXIT_RESULT_ID: '@EXIT'
     },
 
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,

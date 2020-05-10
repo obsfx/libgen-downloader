@@ -2,12 +2,14 @@ import { Response } from 'node-fetch';
 import inquirer from 'inquirer';
 import { Spinner } from 'cli-spinner';
 
+import { UIInterfaces } from '../ui'
+
 import { EventEmitter } from 'events';
 
 export namespace Interfaces {
     export interface App {
         state: AppState;
-        prompt: inquirer.PromptModule;
+        // prompt: inquirer.PromptModule;
         spinner: Spinner;
         eventEmitter: EventEmitter;
 
@@ -18,7 +20,7 @@ export namespace Interfaces {
         initEventHandlers(): Promise<void>;
 
         constructURL(pageNumber: number): string;
-        constructPaginations(pageNumber: number): QuestionChoice[];
+        constructOptions(): UIInterfaces.ListingObject[];
         connectionError(): void;
 
         isSearchInputExistInDocument(document: HTMLDocument): boolean;
@@ -46,7 +48,7 @@ export namespace Interfaces {
         errorText: string;
         connectionError: boolean;
         entryDataArr: Entry[] | [];
-        listQuestion: ListQuestion | [];
+        listObject: UIInterfaces.ListObject | null;
     }
 
     export interface Entry {

@@ -35,7 +35,6 @@ export default abstract class Main {
 
     public static async promptList(listObject: Interfaces.ListObject): Promise<string> {
         process.stdin.setRawMode(true);
-        // Terminal.hideCursor();
 
         this.state = constants.STATE.LIST;
         this.returnedVal = null;
@@ -85,9 +84,9 @@ export default abstract class Main {
                     if (listing) {
                         this.returnedListing = listing;
 
-                        if (this.returnedListing.submenu || this.returnedListing.value == constants.TOGGLECLOSEBTNVAL) {
+                        if (this.returnedListing.submenu || this.returnedListing.actionID == constants.TOGGLECLOSEBTNVAL) {
                             Terminal.toggleSubmenu();
-                        } else if (this.returnedListing.value == constants.CHECKBTNVAL) {
+                        } else if (this.returnedListing.actionID == constants.CHECKBTNVAL) {
                             Terminal.toggleCheck();
                         } else {
                             this.returnedVal = this.returnedListing.value;

@@ -1,9 +1,11 @@
 import { Interfaces } from './interfaces.namespace';
+import { UIInterfaces } from '../ui';
 
 import CONFIG from './config';
 import CONSTANTS from './constants';
 
-import Questions from './modules/questions';
+import UI from '../ui';
+import UIObjects from './modules/UIObjects';
 import Selectors from './modules/selectors';
 import Entries from './modules/entries';
 
@@ -19,7 +21,7 @@ import fs from 'fs';
 
 export default class App implements Interfaces.App {
     state: Interfaces.AppState;
-    prompt: inquirer.PromptModule;
+    // prompt: inquirer.PromptModule;
     spinner: Spinner;
     eventEmitter: EventEmitter;
 
@@ -32,7 +34,7 @@ export default class App implements Interfaces.App {
 
     constructor() {
         this.state = this.createNewAppState();
-        this.prompt = inquirer.createPromptModule();
+        // this.prompt = inquirer.createPromptModule();
         this.spinner = new Spinner();
         this.eventEmitter = new EventEmitter();
 
@@ -54,7 +56,7 @@ export default class App implements Interfaces.App {
             errorText: '',
             connectionError: false,
             entryDataArr: [],
-            listQuestion: []
+            listObject: null
         }
     }
 
@@ -66,6 +68,8 @@ export default class App implements Interfaces.App {
 
     /**  **************************************************  */
     async init(): Promise<void> {
+        UI.Main.init();
+
         this.clear();
         this.state = this.createNewAppState();
 
@@ -86,7 +90,7 @@ export default class App implements Interfaces.App {
                 await this.executePromptFlow();
             } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
                 await this.init();
-            } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.EXIT_RESULT_ID) {
+            } else if (selectedChoice.result.id == CONSTANTS.EXIT.EXIT_RESULT_ID) {
                 process.exit(0);
             } else {
                 await this.promptEntryDetails(Number(selectedChoice.result.id));
@@ -131,40 +135,40 @@ export default class App implements Interfaces.App {
         return url;
     }
 
-    constructPaginations(): Interfaces.QuestionChoice[] {
-        let choices: Interfaces.QuestionChoice[] = [];
+    constructOptions(): UIInterfaces.ListingObject[] {
+        let listings: UIInterfaces.ListingObject[] = [];
 
-        choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.SEARCH, {
-            pagination: false,
-            url: '',
-            id: CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID
-        }));
+        listings.push(UIObjects.getOptionListingObject(
+            CONSTANTS.PAGINATIONS.SEARCH,
+            CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID
+        ));
 
         if (this.state.isNextPageExist) {
-            let nextPageURL = this.constructURL(this.state.currentPage + 1);
-            choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.NEXT_PAGE, {
-                pagination: CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL,
-                url: nextPageURL,
-                id: ''
-            }));
+            let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
+            
+            listings.push(UIObjects.getOptionListingObject(
+                CONSTANTS.PAGINATIONS.NEXT_PAGE,
+                CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL,
+                nextPageURL
+            ));
         }
 
         if (this.state.currentPage > 1) {
-            let prevPageURL = this.constructURL(this.state.currentPage - 1);
-            choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.PREV_PAGE, {
-                pagination: CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL,
-                url: prevPageURL,
-                id: ''
-            }));
+            let prevPageURL: string = this.constructURL(this.state.currentPage - 1);
+
+            listings.push(UIObjects.getOptionListingObject(
+                CONSTANTS.PAGINATIONS.PREV_PAGE,
+                CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL,
+                prevPageURL
+            ));
         }
 
-        choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.EXIT, {
-            pagination: false,
-            url: '',
-            id: CONSTANTS.PAGINATIONS.EXIT_RESULT_ID
-        }));
+        listings.push(UIObjects.getOptionListingObject(
+            CONSTANTS.EXIT.EXIT,
+            CONSTANTS.EXIT.EXIT_RESULT_ID
+        ));
 
-        return choices;
+        return listings;
     }
 
     connectionError(): void {
@@ -193,14 +197,18 @@ export default class App implements Interfaces.App {
 
     /**  **************************************************  */
     async setInput(): Promise<void> {
-        let input: Interfaces.InputQuestionResult = await this.prompt([
-            Questions.SearchQuestion
-        ]);
+        let inputObject: UIInterfaces.promptObject = {
+            type: 'input',
+            text: UI.outputs.SEARCH
+        }
 
-        if (input.result.trim().length < CONFIG.MIN_INPUTLEN) {
+        let input: string = await UI.Main.prompt(inputObject);
+
+        if (input.trim().length < CONFIG.MIN_INPUTLEN) {
             console.log(CONSTANTS.INPUT_MINLEN_WARNING);
         } else {
-            this.state.query = encodeURIComponent(input.result);
+            console.log(input);
+            // this.state.query = encodeURIComponent(input);
         }
     }
 
@@ -322,16 +330,16 @@ export default class App implements Interfaces.App {
     async promptResults(): Promise<void> {
         this.clear();
 
-        let listQuestion: Interfaces.ListQuestion = Questions.getListQuestion(this.state.entryDataArr, this.state.currentPage);
-        let paginationQuestionChoices: Interfaces.QuestionChoice[] = this.constructPaginations();
+        let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
+        let paginationQuestionChoices: UIInterfaces.ListingObject[] = this.constructOptions();
 
         if (paginationQuestionChoices.length > 0) {
-            listQuestion.choices = [ ... paginationQuestionChoices, ...listQuestion.choices];
+            listObject.listings = [ ... paginationQuestionChoices, ...listObject.listings];
         }
 
-        this.state.listQuestion = listQuestion;
+        this.state.listObject = listObject;
 
-        let selectedChoice: Interfaces.ListQuestionResult = await this.prompt(this.state.listQuestion);
+        let selectedChoice: string = await UI.Main.prompt(this.state.listObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
     }

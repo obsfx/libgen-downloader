@@ -5,17 +5,16 @@ import outputs from '../outputs';
 import constants from '../constants';
 
 export default abstract class Terminal {
+    public static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {};
+
     private static cursorIndex: number = 0;
     private static renderingQueue: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
-    private static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {}
 
     /*********************************************** */
     public static clear(): void {
         process.stdout.write(ascii.CLEARSCREEN)
-        // readline.cursorTo(process.stdout, 0, 0);
-        // readline.clearScreenDown(process.stdout);
     }
 
     public static clearCursorToEnd(): void {
@@ -33,11 +32,6 @@ export default abstract class Terminal {
     public static clearLine(): void {
         process.stdout.write(ascii.CLEARLINE);
     }
-
-    // private static clearList(): void {
-    //     this.prevLineX(this.printedListingCount);
-    //     this.clearCursorToEnd();
-    // }
 
     public static hideCursor(): void {
         process.stdout.write(ascii.HIDECURSOR);
@@ -77,7 +71,8 @@ export default abstract class Terminal {
                 arr[i].submenu?.push({
                     text: (this.checkedItemsHashTable[arr[i].value] ? 
                         arr[i].unCheckBtnText : arr[i].checkBtnText) || ' ',
-                    value: constants.CHECKBTNVAL, 
+                    actionID: constants.CHECKBTNVAL, 
+                    value: '',
                     isSubmenuListing: true,
                     isCheckable: false,
                     parentOffset: arr[i].submenu?.length
@@ -87,7 +82,8 @@ export default abstract class Terminal {
             if (arr[i].submenu) {
                 arr[i].submenu?.push({
                     text: arr[i].submenuToggleBtnText || ' ',
-                    value: constants.TOGGLECLOSEBTNVAL, 
+                    actionID: constants.TOGGLECLOSEBTNVAL, 
+                    value: '',
                     isSubmenuListing: true,
                     isCheckable: false,
                     parentOffset: arr[i].submenu?.length
@@ -201,10 +197,7 @@ export default abstract class Terminal {
 
                 this.renderList();
             }
-            // console.log(this.printedListingCount);
         }
-
-        //splice(this.cursorIndex + 1, submenu.length)
     }
 
     public static toggleCheck(): void {

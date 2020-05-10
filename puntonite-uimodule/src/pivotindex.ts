@@ -1,5 +1,5 @@
 import { Interfaces } from './interfaces.namespace';
-import Main from './app/Main';
+import Main from './modules/Main';
 import outputs from './outputs';
 
 let strarrr: string[] = [
