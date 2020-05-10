@@ -81,44 +81,44 @@ export default class App implements Interfaces.App {
     }
 
     async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async (selectedChoice: Interfaces.ListQuestionResult) => {
-            if (selectedChoice.result.pagination) {
-                this.state.currentPage = (selectedChoice.result.pagination == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
-                this.state.currentPage + 1 :
-                this.state.currentPage - 1;
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async (selectedChoice: string) => {
+            // if (selectedChoice.result.pagination) {
+            //     this.state.currentPage = (selectedChoice.result.pagination == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
+            //     this.state.currentPage + 1 :
+            //     this.state.currentPage - 1;
 
-                await this.executePromptFlow();
-            } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
-                await this.init();
-            } else if (selectedChoice.result.id == CONSTANTS.EXIT.EXIT_RESULT_ID) {
-                process.exit(0);
-            } else {
-                await this.promptEntryDetails(Number(selectedChoice.result.id));
-            }
+            //     await this.executePromptFlow();
+            // } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
+            //     await this.init();
+            // } else if (selectedChoice.result.id == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+            //     process.exit(0);
+            // } else {
+            //     await this.promptEntryDetails(Number(selectedChoice.result.id));
+            // }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.download) {
-                await this.download(Number(selectedChoice.result.id));
-            } else {
-                await this.promptResults();
-            }
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async (selectedChoice: string) => {
+            // if (selectedChoice.result.download) {
+            //     await this.download(Number(selectedChoice.result.id));
+            // } else {
+            //     await this.promptResults();
+            // }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
-                await this.promptResults();
-            } else {
-                process.exit(0);
-            }
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: string) => {
+            // if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
+            //     await this.promptResults();
+            // } else {
+            //     process.exit(0);
+            // }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_NORESULT, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
-                await this.init();
-            } else {
-                process.exit(0);
-            }
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_NORESULT, async (selectedChoice: string) => {
+            // if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
+            //     await this.init();
+            // } else {
+            //     process.exit(0);
+            // }
         });
     }
 
@@ -207,8 +207,7 @@ export default class App implements Interfaces.App {
         if (input.trim().length < CONFIG.MIN_INPUTLEN) {
             console.log(CONSTANTS.INPUT_MINLEN_WARNING);
         } else {
-            console.log(input);
-            // this.state.query = encodeURIComponent(input);
+            this.state.query = encodeURIComponent(input);
         }
     }
 
@@ -352,9 +351,9 @@ export default class App implements Interfaces.App {
 
         outputArr.forEach(output => console.log(output));
 
-        let detailsQuestion: Interfaces.ListQuestion = Questions.getEntryDetailsQuestion(entryIndex);
+        let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex);
 
-        let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(detailsQuestion);
+        let selectedChoice: string = await UI.Main.prompt(detailsListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
@@ -362,19 +361,9 @@ export default class App implements Interfaces.App {
     async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
         console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
 
-        let afterDownloadQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
-            {
-                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
-            },
+        let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
 
-            {
-                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
-            }
-        ]);
-
-        let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterDownloadQuestion);
+        let selectedChoice: string = await UI.Main.prompt(afterDownloadListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_DOWNLOAD, selectedChoice);
     }
@@ -396,19 +385,9 @@ export default class App implements Interfaces.App {
         } else {
             console.log(CONSTANTS.NO_RESULT);
 
-            let afterNoResultQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
-                {
-                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER,
-                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID
-                },
+            let afterNoResultListObject: UIInterfaces.ListObject = UIObjects.getAfterNoResultListObject();
 
-                {
-                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT,
-                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT_RESULT_ID
-                }
-            ]);
-
-            let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterNoResultQuestion);
+            let selectedChoice: string = await UI.Main.prompt(afterNoResultListObject);
 
             this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_NORESULT, selectedChoice);
         }

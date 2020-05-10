@@ -1,10 +1,10 @@
 import ascii from './ascii';
 
 const OUTPUTS = {
-    STANDARTPREFIX: '  ',
-    SUBMENUPREFIX: '     •',
-    SUBMENUHOVEREDPREFIX: '   > •',
-    HOVERPREFIX: ' >',
+    STANDARTPREFIX: ' ',
+    SUBMENUPREFIX: '    •',
+    SUBMENUHOVEREDPREFIX: '  > •',
+    HOVERPREFIX: '>',
 
     HEADBULKDOWNLOAD: '    [Books in Bulk Download Queue: {queuelength}]\n',
     

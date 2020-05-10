@@ -8,6 +8,7 @@ export default abstract class Terminal {
     public static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {};
 
     private static cursorIndex: number = 0;
+    private static middleIndex: number = 0;
     private static renderingQueue: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
@@ -59,7 +60,8 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
-        this.cursorIndex = Math.floor(listedItemCount / 2);
+        this.cursorIndex = 0;
+        this.middleIndex = Math.floor(listedItemCount / 2);
         this.listedItemCount = listedItemCount;
 
         for (let i: number = 0; i < arr.length; i++) {
@@ -97,21 +99,28 @@ export default abstract class Terminal {
     }
 
     public static prevListing(): void {
-        let pop: Interfaces.ListingObject | undefined = this.renderingQueue.pop();
+        if (this.renderingQueue.length <= this.listedItemCount) {
+            this.cursorIndex = this.cursorIndex > 0 ? this.cursorIndex -= 1 : this.renderingQueue.length - 1;
+        } else {
+            let pop: Interfaces.ListingObject | undefined = this.renderingQueue.pop();
 
-        if (pop) {
-            this.renderingQueue.unshift(pop)
+            if (pop) {
+                this.renderingQueue.unshift(pop)
+            }
         }
 
         this.renderList();
     }
 
     public static nextListing(): void {
+        if (this.renderingQueue.length <= this.listedItemCount || this.cursorIndex < this.middleIndex) { 
+            this.cursorIndex = this.cursorIndex < this.renderingQueue.length - 1 ? this.cursorIndex += 1 : 0;
+        } else {
+            let shift: Interfaces.ListingObject | undefined = this.renderingQueue.shift();
 
-        let shift: Interfaces.ListingObject | undefined = this.renderingQueue.shift();
-
-        if  (shift) {
-            this.renderingQueue.push(shift);
+            if  (shift) {
+                this.renderingQueue.push(shift);
+            }
         }
 
         this.renderList();

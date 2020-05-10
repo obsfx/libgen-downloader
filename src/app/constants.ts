@@ -42,7 +42,27 @@ export default {
         EXIT_RESULT_ID: '@EXIT'
     },
 
-    DOWNLOAD_RES_VAL: '@DOWNLOAD',
+    SUBMENU_LISTINGS: {
+        CHECK: 'Add To Bulk Download Queue',
+        UNCHECK: 'Remove From Bulk Download Queue',
+        CLOSEBTN: 'Close The Sublist'
+    },
+
+    DOWNLOAD_LISTING: {
+        DOWNLOAD_DIRECTLY: 'Download Directly',
+        DOWNLOAD: '• Download This Media',
+        DOWNLOAD_RES_VAL: '@DOWNLOAD' 
+    },
+
+    TURN_BACK_LISTING: {
+        TURN_BACK: '• Turn Back To The List',
+        TURN_BACK_RESULT_ID: '@TRNBACK',
+    },
+
+    SEARCH_ANOTHER_LISTINGS: {
+        SEARCH_ANOTHER: '• Search Another Thing',
+        SEARCH_ANOTHER_RESULT_ID: '@SRCANOTHER',
+    },
 
     ENTRY_DETAILS_HEAD: {
         ID: `${yellow().bold('ID')}`,
@@ -55,23 +75,6 @@ export default {
         Size: `${yellow().bold('Size')}`,
         Ext: `${yellow().bold('Extension')}`,
         Mirror: `${yellow().bold('Mirror')}`,
-    },
-
-    ENTRY_DETAILS_QUESTIONS: {
-        TURN_BACK: '• Turn Back To The List',
-        DOWNLOAD_MEDIA: '• Download This Media'
-    },
-
-    AFTER_DOWNLOAD_QUESTIONS: {
-        TURN_BACK: '• Turn Back To The List',
-        TURN_BACK_RESULT_ID: '@TRNBACK',
-    },
-
-    AFTER_NORESULT_QUESTIONS: {
-        SEARCH_ANOTHER: '• Search Another Thing',
-        SEARCH_ANOTHER_RESULT_ID: '@SRCANOTHER',
-        EXIT: 'X Exit',
-        EXIT_RESULT_ID: '@EXIT'
     },
 
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
