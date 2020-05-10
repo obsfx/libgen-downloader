@@ -32,4 +32,9 @@ export namespace Interfaces {
     export interface TerminalCheckedItemsHashTable {
         [key: string]: boolean
     }
+
+    export interface ReturnObject {
+        value: string,
+        actionID: string
+    }
 }

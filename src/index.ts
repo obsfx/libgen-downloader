@@ -1,10 +1,11 @@
 import App from './app/App';
+import UI from './ui';
 
 const main = async (): Promise<void> => {
-    const app: App = new App();
+    UI.Main.init();
 
-    app.initEventHandlers();
-    app.init();
+    App.initEventHandlers();
+    App.init();
 }
 
 main();

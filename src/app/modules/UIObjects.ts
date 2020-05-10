@@ -46,9 +46,17 @@ export default abstract class {
     private static getEntryListingObject(title: string, index: number, id: string): UIInterfaces.ListingObject {
         return {
             text: title,
-            value: index.toString(),
+            value: id.toString(),
             
             submenu: [
+                {
+                    text: CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS,
+                    actionID: CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL,
+                    value: index.toString(),
+                    isSubmenuListing: true,
+                    isCheckable: false
+                },
+
                 {
                     text: CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_DIRECTLY,
                     actionID: CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL,

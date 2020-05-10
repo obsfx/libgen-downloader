@@ -10,44 +10,29 @@ import Selectors from './modules/selectors';
 import Entries from './modules/entries';
 
 import fetch, { Response } from 'node-fetch';
-import inquirer from 'inquirer';
 import ProgressBar from 'progress';
 import { Spinner } from 'cli-spinner';
 import { JSDOM } from 'jsdom';
 
-import readline from 'readline';
 import { EventEmitter } from 'events';
 import fs from 'fs';
 
-export default class App implements Interfaces.App {
-    state: Interfaces.AppState;
-    // prompt: inquirer.PromptModule;
-    spinner: Spinner;
-    eventEmitter: EventEmitter;
+export default abstract class App {
+    private static state: Interfaces.AppState;
+    private static spinner: Spinner = new Spinner();
+    private static eventEmitter: EventEmitter = new EventEmitter();
 
-    events: {
-        USER_SELECTED_FROM_LIST: string,
-        USER_SELECTED_IN_ENTRY_DETAILS: string,
-        USER_SELECTED_AFTER_DOWNLOAD: string,
-        USER_SELECTED_AFTER_NORESULT: string
-    }
-
-    constructor() {
-        this.state = this.createNewAppState();
-        // this.prompt = inquirer.createPromptModule();
-        this.spinner = new Spinner();
-        this.eventEmitter = new EventEmitter();
-
-        this.events = {
-            USER_SELECTED_FROM_LIST: 'user_selected_from_list',
-            USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
-            USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
-            USER_SELECTED_AFTER_NORESULT: 'user_selected_after_noresult'
-        }
+    private static events: {
+        [key: string]: string
+    } = {
+        USER_SELECTED_FROM_LIST: 'user_selected_from_list',
+        USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
+        USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
+        USER_SELECTED_AFTER_NORESULT: 'user_selected_after_noresult'
     }
 
     /**  **************************************************  */
-    createNewAppState(): Interfaces.AppState {
+    private static createNewAppState(): Interfaces.AppState {
         return {
             currentPage: 1,
             url: '',
@@ -60,17 +45,21 @@ export default class App implements Interfaces.App {
         }
     }
 
-    clear(): void {
-        readline.cursorTo(process.stdout, 0, 0);
-        readline.clearScreenDown(process.stdout);
+    private static clear(): void {
+        // readline.cursorTo(process.stdout, 0, 0);
+        // readline.clearScreenDown(process.stdout);
+        UI.Terminal.clear();
+        this.promptHead();
+    }
+
+    private static promptHead(): void {
         CONSTANTS.HEAD.forEach(line => console.log(line));
     }
 
     /**  **************************************************  */
-    async init(): Promise<void> {
-        UI.Main.init();
-
+    public static async init(): Promise<void> {
         this.clear();
+
         this.state = this.createNewAppState();
 
         while (this.state.query == null) {
@@ -80,35 +69,42 @@ export default class App implements Interfaces.App {
         await this.executePromptFlow();
     }
 
-    async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async (selectedChoice: string) => {
-            // if (selectedChoice.result.pagination) {
-            //     this.state.currentPage = (selectedChoice.result.pagination == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
-            //     this.state.currentPage + 1 :
-            //     this.state.currentPage - 1;
-
-            //     await this.executePromptFlow();
-            // } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
-            //     await this.init();
-            // } else if (selectedChoice.result.id == CONSTANTS.EXIT.EXIT_RESULT_ID) {
-            //     process.exit(0);
-            // } else {
-            //     await this.promptEntryDetails(Number(selectedChoice.result.id));
-            // }
+    public static async initEventHandlers(): Promise<void> {
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
+                || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
+                this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
+                this.state.currentPage + 1 :
+                this.state.currentPage - 1;
+                
+                this.clear();
+                await this.executePromptFlow();
+            } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
+                await this.init();
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                UI.Terminal.showCursor();
+                process.exit(0);
+            } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+                console.log(actionID, value);
+            } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
+                console.log(actionID, value);
+                await this.promptEntryDetails(Number(value));
+            }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async (selectedChoice: string) => {
-            // if (selectedChoice.result.download) {
-            //     await this.download(Number(selectedChoice.result.id));
-            // } else {
-            //     await this.promptResults();
-            // }
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+                // await this.download(Number(value));
+            } else {
+                await this.promptResults();
+            }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: string) => {
             // if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
             //     await this.promptResults();
             // } else {
+                    // UI.Terminal.showCursor();
             //     process.exit(0);
             // }
         });
@@ -117,12 +113,13 @@ export default class App implements Interfaces.App {
             // if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
             //     await this.init();
             // } else {
+                // UI.Terminal.showCursor();
             //     process.exit(0);
             // }
         });
     }
 
-    constructURL(pageNumber: number): string {
+    private static constructURL(pageNumber: number): string {
         let url: string = CONFIG.MIRROR;
 
         url += `${CONFIG.URL_PARTS.SEARCH_PAGE}?`;
@@ -135,7 +132,7 @@ export default class App implements Interfaces.App {
         return url;
     }
 
-    constructOptions(): UIInterfaces.ListingObject[] {
+    private static constructOptions(): UIInterfaces.ListingObject[] {
         let listings: UIInterfaces.ListingObject[] = [];
 
         listings.push(UIObjects.getOptionListingObject(
@@ -171,22 +168,24 @@ export default class App implements Interfaces.App {
         return listings;
     }
 
-    connectionError(): void {
+    private static connectionError(): void {
         if (this.spinner.isSpinning()) {
             this.spinner.stop(true);
         }
 
+        // NEEDS REWORK HERE
         console.log(CONSTANTS.CONNECTION_ERROR);
+        UI.Terminal.showCursor();
         process.exit(1);
     }
 
     /**  **************************************************  */
-    isSearchInputExistInDocument(document: HTMLDocument): boolean {
+    private static isSearchInputExistInDocument(document: HTMLDocument): boolean {
         const searchInput = document.querySelector(Selectors.CSS_SELECTORS.SEARCH_INPUT);
         return (searchInput) ? true : false;
     }
 
-    async isNextPageExist(): Promise<boolean> {
+    private static async isNextPageExist(): Promise<boolean> {
         let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
         let document: HTMLDocument = await this.getDocument(nextPageURL);
 
@@ -196,22 +195,22 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
-    async setInput(): Promise<void> {
+    private static async setInput(): Promise<void> {
         let inputObject: UIInterfaces.promptObject = {
             type: 'input',
             text: UI.outputs.SEARCH
         }
 
-        let input: string = await UI.Main.prompt(inputObject);
+        let input: UIInterfaces.ReturnObject = await UI.Main.prompt(inputObject);
 
-        if (input.trim().length < CONFIG.MIN_INPUTLEN) {
+        if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             console.log(CONSTANTS.INPUT_MINLEN_WARNING);
         } else {
-            this.state.query = encodeURIComponent(input);
+            this.state.query = encodeURIComponent(input.value);
         }
     }
 
-    async setEntries(): Promise<void> {
+    private static async setEntries(): Promise<void> {
         this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
         this.spinner.start();
 
@@ -230,7 +229,7 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
-    async getResponse(url: string): Promise<Response> {
+    private static async getResponse(url: string): Promise<Response> {
         let response: Response = new Response();
 
         try {
@@ -243,7 +242,7 @@ export default class App implements Interfaces.App {
         return response;
     }
 
-    async getDocument(url: string): Promise<HTMLDocument> {
+    private static async getDocument(url: string): Promise<HTMLDocument> {
         let response: Response = await this.getResponse(url) || new Response();
 
         if (this.state.connectionError) {
@@ -256,7 +255,7 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
-    async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string> {
+    private static async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string> {
         let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
         let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
 
@@ -275,7 +274,7 @@ export default class App implements Interfaces.App {
         return downloadEndpoint;
     }
 
-    async download(entryIndex: number): Promise<void> {
+    private static async download(entryIndex: number): Promise<void> {
         this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.CONNECTING_MIRROR);
         this.spinner.start();
 
@@ -326,9 +325,9 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
-    async promptResults(): Promise<void> {
+    private static async promptResults(): Promise<void> {
         this.clear();
-
+        // KEY INFO IS NEEDED
         let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
         let paginationQuestionChoices: UIInterfaces.ListingObject[] = this.constructOptions();
 
@@ -338,12 +337,12 @@ export default class App implements Interfaces.App {
 
         this.state.listObject = listObject;
 
-        let selectedChoice: string = await UI.Main.prompt(this.state.listObject);
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
     }
 
-    async promptEntryDetails(entryIndex: number): Promise<void> {
+    private static async promptEntryDetails(entryIndex: number): Promise<void> {
         this.clear();
 
         let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
@@ -353,23 +352,23 @@ export default class App implements Interfaces.App {
 
         let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex);
 
-        let selectedChoice: string = await UI.Main.prompt(detailsListObject);
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(detailsListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
+    private static async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
         console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
 
         let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
 
-        let selectedChoice: string = await UI.Main.prompt(afterDownloadListObject);
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterDownloadListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_DOWNLOAD, selectedChoice);
     }
 
     /**  **************************************************  */
-    async executePromptFlow(): Promise<void> {
+    private static async executePromptFlow(): Promise<void> {
         this.state.connectionError = false;
 
         await this.setEntries();
@@ -387,7 +386,7 @@ export default class App implements Interfaces.App {
 
             let afterNoResultListObject: UIInterfaces.ListObject = UIObjects.getAfterNoResultListObject();
 
-            let selectedChoice: string = await UI.Main.prompt(afterNoResultListObject);
+            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterNoResultListObject);
 
             this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_NORESULT, selectedChoice);
         }

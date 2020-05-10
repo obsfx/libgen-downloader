@@ -1,13 +1,13 @@
-import { yellow, green, cyan, red } from 'kleur';
+import { yellow, green, cyan, red, gray, white } from 'kleur';
 import CONFIG from './config';
 
 export default {
     HEAD: [
-        `┌  ${yellow().bold('libgen-downloader')}`,
-        '├───  github.com/obsfx/libgen-cli-downloader',
-        '└───  npmjs.com/package/libgen-downloader',
+        `┌  ${yellow().bold('libgen-downloader')} ${cyan().bold('@v1.0')}`,
+        '├───  Source Code: https://github.com/obsfx/libgen-downloader',
+        '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
         ' '
-    ],
+    ], 
 
     INPUT_MINLEN_WARNING: `${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
@@ -46,6 +46,11 @@ export default {
         CHECK: 'Add To Bulk Download Queue',
         UNCHECK: 'Remove From Bulk Download Queue',
         CLOSEBTN: 'Close The Sublist'
+    },
+
+    SEE_DETAILS_LISTING: {
+        SEE_DETAILS: 'See Details',
+        SEE_DETAILS_RES_VAL: '@SEEDETAILS'
     },
 
     DOWNLOAD_LISTING: {

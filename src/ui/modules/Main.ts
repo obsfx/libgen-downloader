@@ -14,7 +14,7 @@ export default abstract class Main {
     })
 
     private static state: string | null = null;
-    private static returnedVal: string | null = null;
+    private static returnedVal: Interfaces.ReturnObject | null = null;
     private static returnedListing: Interfaces.ListingObject;
 
     public static init(): void {
@@ -23,28 +23,29 @@ export default abstract class Main {
         Terminal.clear();
     }
 
-    public static async prompt(promptObject: Interfaces.promptObject | Interfaces.ListObject): Promise<string> {
+    public static async prompt(promptObject: Interfaces.promptObject | Interfaces.ListObject): Promise<Interfaces.ReturnObject> {
         if (promptObject.type == 'input') {
             return await this.promptInput(promptObject);
         } else if (promptObject.type == 'list') {
             return await this.promptList(promptObject);
         }
 
-        return ' ';
+        return { value: '', actionID: '' };
     }
 
-    public static async promptList(listObject: Interfaces.ListObject): Promise<string> {
+    public static async promptList(listObject: Interfaces.ListObject): Promise<Interfaces.ReturnObject> {
         process.stdin.setRawMode(true);
+        Terminal.hideCursor();
 
         this.state = constants.STATE.LIST;
         this.returnedVal = null;
 
         Terminal.promptList(listObject.listings, listObject.listedItemCount);
 
-        return await this.listenForReturn<string>();
+        return await this.listenForReturn<Interfaces.ReturnObject>();
     }
 
-    public static async promptInput(promptObject: Interfaces.promptObject): Promise<string> {
+    public static async promptInput(promptObject: Interfaces.promptObject): Promise<Interfaces.ReturnObject> {
         process.stdin.setRawMode(false);
         Terminal.showCursor();
 
@@ -53,11 +54,7 @@ export default abstract class Main {
 
         Terminal.promptInput(promptObject.text);
 
-        return await this.listenForReturn<string>();
-    }
-
-    public static promptTable(): void {
-
+        return await this.listenForReturn<Interfaces.ReturnObject>();
     }
 
     private static initEventHandlers(): void {
@@ -89,7 +86,7 @@ export default abstract class Main {
                         } else if (this.returnedListing.actionID == constants.CHECKBTNVAL) {
                             Terminal.toggleCheck();
                         } else {
-                            this.returnedVal = this.returnedListing.value;
+                            this.returnedVal = { value: this.returnedListing.value, actionID: this.returnedListing.actionID || ' ' };
                         }
                     }
                 }
@@ -98,7 +95,7 @@ export default abstract class Main {
 
         this.rl.on('line', (line: string) => {
             if (this.state == constants.STATE.INPUT) {
-                this.returnedVal = line;
+                this.returnedVal = { value: line, actionID: ' ' };
             }
 
             Terminal.prevLine();

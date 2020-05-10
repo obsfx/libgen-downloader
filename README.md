@@ -2,15 +2,15 @@
 
 ## V1.0 TODOs
 
-- [ ] Puntonite `(new ui module)`
+- [ ] New UI Module
   - [x] Rendering
   - [x] Event Handler
-  - [ ] Single Input
+  - [x] Single Input
   - [x] List Output
-  - [ ] Listing Submenu
-  - [ ] Checkable Listings for Bulk Downloading
+  - [x] Listing Submenu
+  - [x] Checkable Listings for Bulk Downloading
   - [ ] Bulk Downloading Listing
-  - [ ] Remove Inquirer Dependency
+  - [x] Remove Inquirer Dependency
   
 - [ ] Bulk Downloading
   - [ ] Downloading by a given md5.txt file

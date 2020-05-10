@@ -6,7 +6,8 @@ const OUTPUTS = {
     SUBMENUHOVEREDPREFIX: '  > •',
     HOVERPREFIX: '>',
 
-    HEADBULKDOWNLOAD: '    [Books in Bulk Download Queue: {queuelength}]\n',
+    EMPTY_BULK_QUEUE: `${ascii.BRIGHTBLACK}[Books in Bulk Download Queue: 0]${ascii.RESETCOLOR}\n`,
+    BULK_QUEUE: `${ascii.BRIGHTWHITE}[Books in Bulk Download Queue: ${ascii.YELLOW}{queuelength}]${ascii.RESETCOLOR}\n`,
     
     CHECKED: `${ascii.BRIGHTGREEN}x${ascii.RESETCOLOR}`,
     UNCHECKED: ' ',

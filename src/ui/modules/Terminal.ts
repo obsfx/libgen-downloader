@@ -61,6 +61,7 @@ export default abstract class Terminal {
     /*********************************************** */
     public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
         this.cursorIndex = 0;
+        this.printedListingCount = 0;
         this.middleIndex = Math.floor(listedItemCount / 2);
         this.listedItemCount = listedItemCount;
 
@@ -143,7 +144,7 @@ export default abstract class Terminal {
         for (let i: number = 0; i < listSize; i++) {
             let text: string = this.renderingQueue[i].text;
 
-            if (this.checkedItemsHashTable[this.renderingQueue[i].value]) {
+            if (this.checkedItemsHashTable[this.renderingQueue[i].value] && !this.renderingQueue[i].isSubmenuListing) {
                 output += outputs.CHECKED;
             } else {
                 output += outputs.UNCHECKED;
@@ -161,7 +162,7 @@ export default abstract class Terminal {
                 output += outputs.SUBMENUOUTPUT.replace('{text}', text);
             } else if (this.renderingQueue[i].isSubmenuOpen) {
                 output += outputs.TOGGLEDOUTPUT.replace('{text}', text);
-            } else if (this.checkedItemsHashTable[this.renderingQueue[i].value]) { 
+            } else if (this.checkedItemsHashTable[this.renderingQueue[i].value] && !this.renderingQueue[i].isSubmenuListing) { 
                 output += outputs.CHECKEDOUTPUT.replace('{text}', text);
             } else {
                 output += outputs.STANDARTOUTPUT.replace('{text}', text);
@@ -169,7 +170,8 @@ export default abstract class Terminal {
 
             this.printedListingCount++;
         }
-
+        
+        this.renderBulkQueueIndicator();
         process.stdout.write(output);
     }
 
@@ -233,6 +235,21 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static promptInput(promptHead: string): void {
+        this.renderBulkQueueIndicator();
         process.stdout.write(promptHead);
     }
+
+    /*********************************************** */
+    public static renderBulkQueueIndicator(): void {
+        if (Object.keys(this.checkedItemsHashTable).length < 1) {
+            process.stdout.write(outputs.EMPTY_BULK_QUEUE);
+        } else {
+            process.stdout.write(
+                outputs.BULK_QUEUE.replace(
+                    '{queuelength}', 
+                    Object.keys(this.checkedItemsHashTable).length.toString()
+                )
+            );
+        }
+    }    
 }
