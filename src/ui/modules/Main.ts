@@ -8,18 +8,18 @@ import keymap from '../keymap';
 import Terminal from './Terminal';
 
 export default abstract class Main {
-    private static rl: readline.Interface = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    })
+    private static rl: readline.Interface;
 
     private static state: string | null = null;
     private static returnedVal: Interfaces.ReturnObject | null = null;
     private static returnedListing: Interfaces.ListingObject;
 
     public static init(): void {
-        this.initEventHandlers();
+        this.rl = readline.createInterface({
+            input: process.stdin
+        });
 
+        this.initEventHandlers();
         Terminal.clear();
     }
 
@@ -34,8 +34,9 @@ export default abstract class Main {
     }
 
     public static async promptList(listObject: Interfaces.ListObject): Promise<Interfaces.ReturnObject> {
-        process.stdin.setRawMode(true);
         Terminal.hideCursor();
+
+        process.stdin.setRawMode(true);
 
         this.state = constants.STATE.LIST;
         this.returnedVal = null;
@@ -46,8 +47,9 @@ export default abstract class Main {
     }
 
     public static async promptInput(promptObject: Interfaces.promptObject): Promise<Interfaces.ReturnObject> {
-        process.stdin.setRawMode(false);
         Terminal.showCursor();
+
+        process.stdin.setRawMode(false);
 
         this.state = constants.STATE.INPUT;
         this.returnedVal = null;

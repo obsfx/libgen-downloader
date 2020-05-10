@@ -12,6 +12,7 @@ export default abstract class Terminal {
     private static renderingQueue: Interfaces.ListingObject[] = [];
     private static listedItemCount: number = 0;
     private static printedListingCount: number = 0;
+    private static checkedItemsIndicatorText: string = '';
 
     /*********************************************** */
     public static clear(): void {
@@ -32,6 +33,10 @@ export default abstract class Terminal {
 
     public static clearLine(): void {
         process.stdout.write(ascii.CLEARLINE);
+    }
+
+    public static turnBackToBeginningOfLine(): void {
+        process.stdout.write(ascii.TURNBACKTOBEGINNINGOFLINE);
     }
 
     public static hideCursor(): void {
@@ -170,7 +175,7 @@ export default abstract class Terminal {
 
             this.printedListingCount++;
         }
-        
+
         this.renderBulkQueueIndicator();
         process.stdout.write(output);
     }
@@ -240,14 +245,22 @@ export default abstract class Terminal {
     }
 
     /*********************************************** */
+    public static setIndicatorText(text: string): void {
+        this.checkedItemsIndicatorText = text;
+    }
+
+    /*********************************************** */
     public static renderBulkQueueIndicator(): void {
         if (Object.keys(this.checkedItemsHashTable).length < 1) {
-            process.stdout.write(outputs.EMPTY_BULK_QUEUE);
+            process.stdout.write(outputs.EMPTY_BULK_QUEUE.replace('{text}', this.checkedItemsIndicatorText));
         } else {
             process.stdout.write(
                 outputs.BULK_QUEUE.replace(
                     '{queuelength}', 
                     Object.keys(this.checkedItemsHashTable).length.toString()
+                ).replace(
+                    '{text}',
+                    this.checkedItemsIndicatorText
                 )
             );
         }

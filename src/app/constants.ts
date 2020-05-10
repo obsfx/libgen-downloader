@@ -7,7 +7,9 @@ export default {
         '├───  Source Code: https://github.com/obsfx/libgen-downloader',
         '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
         ' '
-    ], 
+    ],
+    
+    BULK_QUEUE_INDICATOR_TEXT: 'Books in Bulk Download Queue:',
 
     INPUT_MINLEN_WARNING: `${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,

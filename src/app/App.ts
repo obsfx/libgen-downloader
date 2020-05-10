@@ -82,6 +82,7 @@ export default abstract class App {
             } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
                 await this.init();
             } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                // ASK TO USER
                 UI.Terminal.showCursor();
                 process.exit(0);
             } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
