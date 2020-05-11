@@ -98,10 +98,10 @@ export default abstract class Main {
         this.rl.on('line', (line: string) => {
             if (this.state == constants.STATE.INPUT) {
                 this.returnedVal = { value: line, actionID: ' ' };
-            }
 
-            Terminal.prevLine();
-            Terminal.clearLine();
+                Terminal.prevLine();
+                Terminal.clearLine();
+            }
         });
     }
 

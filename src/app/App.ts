@@ -1,3 +1,5 @@
+//DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
+
 import { Interfaces } from './interfaces.namespace';
 import { UIInterfaces } from '../ui';
 
@@ -59,7 +61,6 @@ export default abstract class App {
     /**  **************************************************  */
     public static async init(): Promise<void> {
         this.clear();
-
         this.state = this.createNewAppState();
 
         while (this.state.query == null) {
@@ -181,14 +182,16 @@ export default abstract class App {
             this.spinner.stop(true);
         }
 
+        //FIX HERE
+
         UI.Terminal.prevLine();
         UI.Terminal.clearLine();
 
         // NEEDS REWORK HERE
         console.log(CONSTANTS.CONNECTION_ERROR);
 
-        let afterSearchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
-        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterSearchAnotherObject);
+        let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
         this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
         // UI.Terminal.showCursor();
         // process.exit(1);
@@ -202,9 +205,13 @@ export default abstract class App {
 
     private static async isNextPageExist(): Promise<boolean> {
         let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
-        let document: HTMLDocument = await this.getDocument(nextPageURL);
+        let document: HTMLDocument | void = await this.getDocument(nextPageURL);
 
-        let entryAmount: number = document.querySelectorAll(Selectors.CSS_SELECTORS.ROW).length;
+        let entryAmount: number = 0;
+
+        if (document) {
+            entryAmount = document.querySelectorAll(Selectors.CSS_SELECTORS.ROW).length;
+        }
 
         return (entryAmount > 1) ? true : false;
     }
@@ -230,15 +237,16 @@ export default abstract class App {
         this.spinner.start();
 
         this.state.url = this.constructURL(this.state.currentPage);
-        let document: HTMLDocument = await this.getDocument(this.state.url);
+        let document: HTMLDocument | void = await this.getDocument(this.state.url);
 
-        if (!this.isSearchInputExistInDocument(document)) {
-            this.state.connectionError = true;
-            await this.connectionError();
+        if (document) {
+            if (!this.isSearchInputExistInDocument(document)) {
+                this.state.connectionError = true;
+            }
+    
+            let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
+            this.state.entryDataArr = entryData;
         }
-
-        let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
-        this.state.entryDataArr = entryData;
 
         this.state.isNextPageExist = await this.isNextPageExist();
     }
@@ -257,11 +265,11 @@ export default abstract class App {
         return response;
     }
 
-    private static async getDocument(url: string): Promise<HTMLDocument> {
+    private static async getDocument(url: string): Promise<HTMLDocument | void> {
         let response: Response = await this.getResponse(url) || new Response();
 
         if (this.state.connectionError) {
-            await this.connectionError();
+            return;
         }
 
         let plainText: string = await response.text();
@@ -270,21 +278,26 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string> {
+    private static async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string | void> {
         let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
         let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
 
         if (this.state.connectionError) {
             await this.connectionError();
+            return;
         }
 
         let md5ResponseJson: [ {md5: string} ] = await md5Response.json();
         let entrymd5: string = md5ResponseJson[0].md5;
         
         let mirrorURL: string = CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN.replace('{MD5}', entrymd5);
-        let mirrorDocument: HTMLDocument = await this.getDocument(mirrorURL);
+        let mirrorDocument: HTMLDocument | void = await this.getDocument(mirrorURL);
 
-        let downloadEndpoint: string = Entries.getDownloadURL(mirrorDocument);
+        let downloadEndpoint: string = '';
+
+        if (mirrorDocument) {
+            downloadEndpoint = Entries.getDownloadURL(mirrorDocument)
+        }
 
         return downloadEndpoint;
     }
@@ -295,12 +308,13 @@ export default abstract class App {
 
         let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
 
-        let downloadEndPoint: string = await this.constructDownloadEndpoint(selectedEntry);
+        let downloadEndPoint: string = await this.constructDownloadEndpoint(selectedEntry) || '';
 
         let downloadResponse: Response = await this.getResponse(downloadEndPoint);
 
         if (this.state.connectionError) {
             await this.connectionError();
+            return;
         }
         
         let fileAuthor: string = selectedEntry.Author;
@@ -390,7 +404,8 @@ export default abstract class App {
         await this.setEntries();
 
         if (this.state.connectionError) {
-            await this.connectionError();
+            this.connectionError();
+            return;
         }
 
         this.spinner.stop(true);
@@ -403,8 +418,8 @@ export default abstract class App {
 
             console.log(CONSTANTS.NO_RESULT);
 
-            let afterSearchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
-            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterSearchAnotherObject);
+            let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
             this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
         }
     }
