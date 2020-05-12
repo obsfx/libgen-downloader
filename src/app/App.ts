@@ -1,4 +1,12 @@
-//DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
+// DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
+// Make the tests of connection error cases
+// Add 'See Bulk Download Queue' option to results list
+// Implement download functionlity
+// bulk download screen 
+// --md5file=file.txt and idfile=file.txt command line parameter
+// libgen downloader --md5=md5 output -> download url commandline parameter
+// user also can download via id 
+// add try again option for connection failure
 
 import { Interfaces } from './interfaces.namespace';
 import { UIInterfaces } from '../ui';
@@ -242,13 +250,18 @@ export default abstract class App {
         if (document) {
             if (!this.isSearchInputExistInDocument(document)) {
                 this.state.connectionError = true;
+                return;
+            }
+
+            this.state.isNextPageExist = await this.isNextPageExist();
+
+            if (this.state.connectionError) {
+                return;
             }
     
             let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
             this.state.entryDataArr = entryData;
         }
-
-        this.state.isNextPageExist = await this.isNextPageExist();
     }
 
     /**  **************************************************  */
@@ -360,11 +373,15 @@ export default abstract class App {
         let paginationQuestionChoices: UIInterfaces.ListingObject[] = this.constructOptions();
 
         if (paginationQuestionChoices.length > 0) {
-            listObject.listings = [ ... paginationQuestionChoices, ...listObject.listings];
+            listObject.listings = [...paginationQuestionChoices, ...listObject.listings];
         }
 
         this.state.listObject = listObject;
 
+        console.log(CONSTANTS.RESULTS_TITLE
+            .replace('{query}', this.state.query || ' ')
+            .replace('{page}', this.state.currentPage.toString()));
+        
         let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);

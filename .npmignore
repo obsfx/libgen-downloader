@@ -2,7 +2,7 @@
 /src
 /standalone-executables
 
-/dist
+/dev
 /bin/index_dev.js
 
 .gitignore

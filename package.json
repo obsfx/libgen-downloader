@@ -10,7 +10,7 @@
   "scripts": {
     "standalone": "pkg . --out-path ./standalone-executables",
     "run": "node ./build/index.js",
-    "run-dev": "node ./dist/index.js",
+    "run-dev": "node ./dev/index.js",
     "build": "tsc -b",
     "minify": "minify ./dist -d ./build",
     "watch": "tsc -b --watch",
