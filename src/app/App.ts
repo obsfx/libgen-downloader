@@ -1,4 +1,4 @@
-// DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
+// + DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
 // Make the tests of connection error cases
 // Add 'See Bulk Download Queue' option to results list
 // Implement download functionlity
@@ -370,10 +370,10 @@ export default abstract class App {
     private static async promptResults(): Promise<void> {
         this.clear();
         let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
-        let paginationQuestionChoices: UIInterfaces.ListingObject[] = this.constructOptions();
+        let optionObjects: UIInterfaces.ListingObject[] = this.constructOptions();
 
-        if (paginationQuestionChoices.length > 0) {
-            listObject.listings = [...paginationQuestionChoices, ...listObject.listings];
+        if (optionObjects.length > 0) {
+            listObject.listings = [...optionObjects, ...listObject.listings];
         }
 
         this.state.listObject = listObject;
@@ -381,6 +381,8 @@ export default abstract class App {
         console.log(CONSTANTS.RESULTS_TITLE
             .replace('{query}', this.state.query || ' ')
             .replace('{page}', this.state.currentPage.toString()));
+
+        UI.Terminal.setBulkDownloadOptionPosition(optionObjects.length);
         
         let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
 

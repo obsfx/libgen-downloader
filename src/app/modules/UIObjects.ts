@@ -23,6 +23,7 @@ export default abstract class {
     public static getListObject(entries: Interfaces.Entry[], pageNumber: number): UIInterfaces.ListObject {
         return {
             type: 'list',
+            bulkDownloadOption: true,
             listedItemCount: CONFIG.UI_PAGE_SIZE,
             listings: this.getListingObjectArr(entries, pageNumber)
         }
@@ -47,7 +48,8 @@ export default abstract class {
         return {
             text: title,
             value: id.toString(),
-            
+            index: index,
+
             submenu: [
                 {
                     text: CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS,
@@ -90,6 +92,7 @@ export default abstract class {
         
         return {
             type: 'list',
+            bulkDownloadOption: false,
             listedItemCount: listings.length,
             listings
         }
@@ -124,6 +127,7 @@ export default abstract class {
         let listings: UIInterfaces.ListingObject[] = this.getAfterDownloadListingObjectArr();
         return {
             type: 'list',
+            bulkDownloadOption: false,
             listedItemCount: listings.length,
             listings
         }
@@ -150,6 +154,7 @@ export default abstract class {
 
         return {
             type: 'list',
+            bulkDownloadOption: false,
             listedItemCount: listings.length,
             listings
         }

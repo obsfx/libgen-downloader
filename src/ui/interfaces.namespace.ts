@@ -9,12 +9,14 @@ export namespace Interfaces {
 
     export interface ListObject {
         type: 'list';
+        bulkDownloadOption: boolean;
         listings: ListingObject[];
         listedItemCount: number;
     }
 
     export interface ListingObject extends baseObject {
         value: string;
+        index?: number;
         isCheckable: boolean;
         checkBtnText?: string;
         unCheckBtnText?: string;

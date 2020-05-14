@@ -1,4 +1,4 @@
-import { yellow, green, cyan, red, gray, white } from 'kleur';
+import { yellow, green, cyan, red, white } from 'kleur';
 import CONFIG from './config';
 
 export default {
@@ -10,6 +10,8 @@ export default {
     ],
     
     BULK_QUEUE_INDICATOR_TEXT: 'Books in Bulk Download Queue:',
+    BULK_DOWNLOAD_INDICATOR_TEXT: '@  Start The Bulk Downloading:',
+
     RESULTS_TITLE: white('Results for: \'{query}\' Page: {page}'),
 
     INPUT_MINLEN_WARNING: `${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,

@@ -41,7 +41,7 @@ export default abstract class Main {
         this.state = constants.STATE.LIST;
         this.returnedVal = null;
 
-        Terminal.promptList(listObject.listings, listObject.listedItemCount);
+        Terminal.promptList(listObject.listings, listObject.listedItemCount, listObject.bulkDownloadOption);
 
         return await this.listenForReturn<Interfaces.ReturnObject>();
     }

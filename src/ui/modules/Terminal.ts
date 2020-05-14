@@ -14,6 +14,10 @@ export default abstract class Terminal {
     private static printedListingCount: number = 0;
     private static checkedItemsIndicatorText: string = '';
 
+    private static isBulkDownloadOptionAdded: boolean = false;
+    private static bulkDownloadOptionPosition: number = 0;
+    private static bulkDownloadOptionText: string = '';
+
     /*********************************************** */
     public static clear(): void {
         process.stdout.write(ascii.CLEARSCREEN)
@@ -64,42 +68,54 @@ export default abstract class Terminal {
     }
 
     /*********************************************** */
-    public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
+    public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number, addBulkDownloadOption: boolean = false): void {
         this.cursorIndex = 0;
         this.printedListingCount = 0;
         this.middleIndex = Math.floor(listedItemCount / 2);
         this.listedItemCount = listedItemCount;
+        this.renderingQueue = arr;
+        this.isBulkDownloadOptionAdded = addBulkDownloadOption;
 
-        for (let i: number = 0; i < arr.length; i++) {
-            if (arr[i].isCheckable) {
-                if (!arr[i].submenu) {
-                    arr[i].submenu = [];
+        for (let i: number = 0; i < this.renderingQueue.length; i++) {
+            if (this.renderingQueue[i].isCheckable) {
+                if (!this.renderingQueue[i].submenu) {
+                    this.renderingQueue[i].submenu = [];
                 }
 
-                arr[i].submenu?.push({
-                    text: (this.checkedItemsHashTable[arr[i].value] ? 
-                        arr[i].unCheckBtnText : arr[i].checkBtnText) || ' ',
+                this.renderingQueue[i].submenu?.push({
+                    text: (this.checkedItemsHashTable[this.renderingQueue[i].value] ? 
+                        this.renderingQueue[i].unCheckBtnText : this.renderingQueue[i].checkBtnText) || ' ',
                     actionID: constants.CHECKBTNVAL, 
                     value: '',
                     isSubmenuListing: true,
                     isCheckable: false,
-                    parentOffset: arr[i].submenu?.length
+                    parentOffset: this.renderingQueue[i].submenu?.length
                 });
             }
 
-            if (arr[i].submenu) {
-                arr[i].submenu?.push({
-                    text: arr[i].submenuToggleBtnText || ' ',
+            if (this.renderingQueue[i].submenu) {
+                this.renderingQueue[i].submenu?.push({
+                    text: this.renderingQueue[i].submenuToggleBtnText || ' ',
                     actionID: constants.TOGGLECLOSEBTNVAL, 
                     value: '',
                     isSubmenuListing: true,
                     isCheckable: false,
-                    parentOffset: arr[i].submenu?.length
+                    parentOffset: this.renderingQueue[i].submenu?.length
                 });
             }
         }
-
-        this.renderingQueue = arr;
+        
+        if (this.isBulkDownloadOptionAdded) {
+            this.renderingQueue.splice(this.bulkDownloadOptionPosition, 0, {
+                text: '',
+                actionID: constants.DOWNLOADBULKVAL,
+                value: '',
+                isSubmenuListing: false,
+                isCheckable: false
+            });
+    
+            this.updateBulkDownloadOptionText();
+        }
 
         this.renderList();
     }
@@ -111,8 +127,19 @@ export default abstract class Terminal {
             let pop: Interfaces.ListingObject | undefined = this.renderingQueue.pop();
 
             if (pop) {
-                this.renderingQueue.unshift(pop)
+                this.renderingQueue.unshift(pop);
+
+                if (this.isBulkDownloadOptionAdded) {
+                    this.bulkDownloadOptionPosition = this.bulkDownloadOptionPosition < this.renderingQueue.length - 1 ?
+                    this.bulkDownloadOptionPosition += 1 : 0;
+                }
             }
+        }
+
+        if (this.cursorIndex == this.bulkDownloadOptionPosition 
+            && this.getCheckedListingsCount() < 1
+            && this.isBulkDownloadOptionAdded) {
+            this.prevListing();
         }
 
         this.renderList();
@@ -126,7 +153,19 @@ export default abstract class Terminal {
 
             if  (shift) {
                 this.renderingQueue.push(shift);
+
+                if (this.isBulkDownloadOptionAdded) {
+                    this.bulkDownloadOptionPosition = this.bulkDownloadOptionPosition > 0 ?
+                    this.bulkDownloadOptionPosition -= 1 :
+                    this.renderingQueue.length - 1;
+                }
             }
+        }
+
+        if (this.cursorIndex == this.bulkDownloadOptionPosition 
+            && this.getCheckedListingsCount() < 1
+            && this.isBulkDownloadOptionAdded) {
+            this.nextListing();
         }
 
         this.renderList();
@@ -179,6 +218,7 @@ export default abstract class Terminal {
         this.renderBulkQueueIndicator();
         process.stdout.write(output);
         process.stdout.write(outputs.USAGE_INFO);
+        process.stdout.write(this.bulkDownloadOptionPosition.toString());
     }
 
     public static getCurrentListing(): Interfaces.ListingObject {
@@ -200,8 +240,15 @@ export default abstract class Terminal {
             if (targetListingItem.submenu) {
                 if (targetListingItem.isSubmenuOpen) {
                     this.renderingQueue.splice(targetIndex + 1, targetListingItem.submenu.length);
+
+                    if (this.cursorIndex < this.bulkDownloadOptionPosition) {
+                        this.bulkDownloadOptionPosition -= targetListingItem.submenu.length;
+                    }
                 } else {
-                    this.renderingQueue.splice(targetIndex + 1, 0, ...targetListingItem.submenu); 
+                    this.renderingQueue.splice(targetIndex + 1, 0, ...targetListingItem.submenu);
+                    if (this.cursorIndex < this.bulkDownloadOptionPosition) { 
+                        this.bulkDownloadOptionPosition += targetListingItem.submenu.length;
+                    }
                 }
 
                 this.renderingQueue[targetIndex].isSubmenuOpen = !this.renderingQueue[targetIndex].isSubmenuOpen;
@@ -227,6 +274,10 @@ export default abstract class Terminal {
 
             this.toggleCheckHashMap(targetListingItem.value);
             
+            if (this.isBulkDownloadOptionAdded) {
+                this.updateBulkDownloadOptionText();
+            }
+
             this.renderingQueue[this.cursorIndex].text = this.checkedItemsHashTable[targetListingItem.value] ? 
             this.renderingQueue[targetIndex].unCheckBtnText || '': 
             this.renderingQueue[targetIndex].checkBtnText || '';
@@ -243,6 +294,10 @@ export default abstract class Terminal {
         }
     }
 
+    public static getCheckedListingsCount(): number {
+        return Object.keys(this.checkedItemsHashTable).length
+    }
+
     /*********************************************** */
     public static promptInput(promptHead: string): void {
         this.renderBulkQueueIndicator();
@@ -256,18 +311,38 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static renderBulkQueueIndicator(): void {
-        if (Object.keys(this.checkedItemsHashTable).length < 1) {
+        if (this.getCheckedListingsCount() < 1) {
             process.stdout.write(outputs.EMPTY_BULK_QUEUE.replace('{text}', this.checkedItemsIndicatorText));
         } else {
             process.stdout.write(
                 outputs.BULK_QUEUE.replace(
                     '{queuelength}', 
-                    Object.keys(this.checkedItemsHashTable).length.toString()
+                    this.getCheckedListingsCount().toString()
                 ).replace(
                     '{text}',
                     this.checkedItemsIndicatorText
                 )
             );
         }
-    }    
+    }
+
+     /*********************************************** */
+    public static setBulkDownloadOptionPosition(index: number): void {
+        this.bulkDownloadOptionPosition = index;
+    }
+
+    public static setBulkDownloadOptionText(text: string): void {
+        this.bulkDownloadOptionText = text;
+    }
+
+    public static updateBulkDownloadOptionText(): void {
+        if (this.getCheckedListingsCount() > 0) {
+            this.renderingQueue[this.bulkDownloadOptionPosition].text = outputs.BULK_DOWNLOAD_TEXT_TEMPLATE
+                                                                        .replace('{text}', this.bulkDownloadOptionText)
+                                                                        .replace('{queuelength}', this.getCheckedListingsCount().toString());
+        } else {
+            this.renderingQueue[this.bulkDownloadOptionPosition].text = outputs.BULK_DOWNLOAD_TEXT_EMPTY_TEMPLATE
+                                                                        .replace('{text}', this.bulkDownloadOptionText);
+        }
+    }
 }

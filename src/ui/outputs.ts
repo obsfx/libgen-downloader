@@ -6,7 +6,7 @@ const OUTPUTS = {
     SUBMENUHOVEREDPREFIX: '  > •',
     HOVERPREFIX: '>',
 
-    USAGE_INFO: '(UP and DOWN arrow keys to reveal listing, ENTER key to interact.)\n',
+    USAGE_INFO: '(UP and DOWN arrow keys to reveal listings, ENTER key to interact.)\n',
 
     EMPTY_BULK_QUEUE: `${ascii.BRIGHTBLACK}[{text} 0]${ascii.RESETCOLOR}\n`,
     BULK_QUEUE: `${ascii.BRIGHTWHITE}[{text} ${ascii.YELLOW}{queuelength}]${ascii.RESETCOLOR}\n`,
@@ -15,6 +15,10 @@ const OUTPUTS = {
     UNCHECKED: ' ',
 
     SEARCH: `${ascii.BRIGHTCYAN}? ${ascii.BRIGHTWHITE}Search:  ${ascii.RESETCOLOR}`,
+
+    BULK_DOWNLOAD_TEXT_EMPTY_TEMPLATE: `${ascii.BRIGHTBLACK}{text} 0 Items${ascii.RESETCOLOR}`,
+    BULK_DOWNLOAD_TEXT_TEMPLATE: `{text} ${ascii.YELLOW}{queuelength} Items${ascii.RESETCOLOR}`,
+
 
     STANDARTOUTPUT: '',
     HOVEREDOUTPUT: '',
