@@ -87,7 +87,7 @@ export default abstract class Main {
                             Terminal.toggleSubmenu();
                         } else if (this.returnedListing.actionID == constants.CHECKBTNVAL) {
                             Terminal.toggleCheck();
-                        } else {
+                        } else if (!this.returnedListing.disableKeypress) {
                             this.returnedVal = { value: this.returnedListing.value, actionID: this.returnedListing.actionID || ' ' };
                         }
                     }

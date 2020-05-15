@@ -38,17 +38,19 @@ export default abstract class {
         listingObjects = entries.map((e: Interfaces.Entry, i: number) => {
             let title: string = this.buildTitle(e.Title, e.Ext, pageNumber, i);
 
-            return this.getEntryListingObject(title, i, e.ID);
+            return this.getEntryListingObject(title, i, e.ID, e);
         });
 
         return listingObjects;
     }
 
-    private static getEntryListingObject(title: string, index: number, id: string): UIInterfaces.ListingObject {
+    private static getEntryListingObject(
+        title: string, index: number, 
+        id: string, entryData: Interfaces.Entry): UIInterfaces.ListingObject {
         return {
             text: title,
             value: id.toString(),
-            index: index,
+            entryData: entryData,
 
             submenu: [
                 {

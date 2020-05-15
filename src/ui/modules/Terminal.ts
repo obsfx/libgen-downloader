@@ -1,11 +1,12 @@
 import { Interfaces } from '../interfaces.namespace';
+import { Interfaces as AppInterfaces} from '../../app/interfaces.namespace';
 
-import ascii from '../ascii';
+import ansi from '../ansi';
 import outputs from '../outputs';
 import constants from '../constants';
 
 export default abstract class Terminal {
-    public static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {};
+    private static checkedItemsHashTable: Interfaces.TerminalCheckedItemsHashTable = {};
 
     private static cursorIndex: number = 0;
     private static middleIndex: number = 0;
@@ -20,51 +21,51 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static clear(): void {
-        process.stdout.write(ascii.CLEARSCREEN)
+        process.stdout.write(ansi.CLEARSCREEN)
     }
 
     public static clearCursorToEnd(): void {
-        process.stdout.write(ascii.CLEARCURSORTOEND);
+        process.stdout.write(ansi.CLEARCURSORTOEND);
     }
 
     public static saveCursorPos(): void {
-        process.stdout.write(ascii.SAVECURSORPOS);
+        process.stdout.write(ansi.SAVECURSORPOS);
     }
 
     public static restoreCursorPos(): void {
-        process.stdout.write(ascii.RESTORECURSORPOS);
+        process.stdout.write(ansi.RESTORECURSORPOS);
     }
 
     public static clearLine(): void {
-        process.stdout.write(ascii.CLEARLINE);
+        process.stdout.write(ansi.CLEARLINE);
     }
 
     public static turnBackToBeginningOfLine(): void {
-        process.stdout.write(ascii.TURNBACKTOBEGINNINGOFLINE);
+        process.stdout.write(ansi.TURNBACKTOBEGINNINGOFLINE);
     }
 
     public static hideCursor(): void {
-        process.stdout.write(ascii.HIDECURSOR);
+        process.stdout.write(ansi.HIDECURSOR);
     }
 
     public static showCursor(): void {
-        process.stdout.write(ascii.SHOWCURSOR);
+        process.stdout.write(ansi.SHOWCURSOR);
     }
 
     public static prevLine(): void {
-        process.stdout.write(ascii.PREVLINE);
+        process.stdout.write(ansi.PREVLINE);
     }
 
     public static nextLine(): void {
-        process.stdout.write(ascii.NEXTLINE);
+        process.stdout.write(ansi.NEXTLINE);
     }
 
     public static prevLineX(x: number): void {
-        process.stdout.write(ascii.PREVLINEX.replace('{x}', x.toString()));
+        process.stdout.write(ansi.PREVLINEX.replace('{x}', x.toString()));
     }
 
     public static nextLineX(x: number): void {
-        process.stdout.write(ascii.NEXTLINEX.replace('{x}', x.toString()));
+        process.stdout.write(ansi.NEXTLINEX.replace('{x}', x.toString()));
     }
 
     /*********************************************** */
@@ -120,6 +121,11 @@ export default abstract class Terminal {
         this.renderList();
     }
 
+    public static promptBulkList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
+        
+    }
+
+    /*********************************************** */
     public static prevListing(): void {
         if (this.renderingQueue.length <= this.listedItemCount) {
             this.cursorIndex = this.cursorIndex > 0 ? this.cursorIndex -= 1 : this.renderingQueue.length - 1;
@@ -171,6 +177,7 @@ export default abstract class Terminal {
         this.renderList();
     }
 
+    /*********************************************** */
     private static renderList(): void {
         if (this.printedListingCount != 0) {
             this.restoreCursorPos();
@@ -218,13 +225,13 @@ export default abstract class Terminal {
         this.renderBulkQueueIndicator();
         process.stdout.write(output);
         process.stdout.write(outputs.USAGE_INFO);
-        process.stdout.write(this.bulkDownloadOptionPosition.toString());
     }
 
     public static getCurrentListing(): Interfaces.ListingObject {
         return this.renderingQueue[this.cursorIndex];
     }
 
+    /*********************************************** */
     public static toggleSubmenu(): void {
         let currentListing: Interfaces.ListingObject = this.getCurrentListing();
         
@@ -264,6 +271,7 @@ export default abstract class Terminal {
         }
     }
 
+    /*********************************************** */
     public static toggleCheck(): void {
         let currentListing: Interfaces.ListingObject = this.getCurrentListing();
 
@@ -272,7 +280,9 @@ export default abstract class Terminal {
 
             let targetListingItem: Interfaces.ListingObject = this.renderingQueue[targetIndex];
 
-            this.toggleCheckHashMap(targetListingItem.value);
+            if (targetListingItem.entryData) {
+                this.toggleCheckHashMap(targetListingItem.entryData);
+            }
             
             if (this.isBulkDownloadOptionAdded) {
                 this.updateBulkDownloadOptionText();
@@ -286,16 +296,25 @@ export default abstract class Terminal {
         }
     }
 
-    public static toggleCheckHashMap(hash: string): void {
-        if (this.checkedItemsHashTable[hash]) {
-            delete this.checkedItemsHashTable[hash];
+    /*********************************************** */
+    public static toggleCheckHashMap(entry: AppInterfaces.Entry): void {
+        if (this.checkedItemsHashTable[entry.ID]) {
+            delete this.checkedItemsHashTable[entry.ID];
         } else {
-            this.checkedItemsHashTable[hash] = true
+            this.checkedItemsHashTable[entry.ID] = entry;
         }
     }
 
     public static getCheckedListingsCount(): number {
         return Object.keys(this.checkedItemsHashTable).length
+    }
+
+    public static getCheckedListings(): Interfaces.TerminalCheckedItemsHashTable {
+        return this.checkedItemsHashTable;
+    }
+
+    public static isListingChecked(entryID: string): boolean {
+        return this.checkedItemsHashTable[entryID] ? true : false;
     }
 
     /*********************************************** */

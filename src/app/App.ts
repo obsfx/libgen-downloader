@@ -1,12 +1,11 @@
 // + DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
 // Make the tests of connection error cases
-// Add 'See Bulk Download Queue' option to results list
+// + Add 'See Bulk Download Queue' option to results list
 // Implement download functionlity
 // bulk download screen 
 // --md5file=file.txt and idfile=file.txt command line parameter
 // libgen downloader --md5=md5 output -> download url commandline parameter
 // user also can download via id 
-// add try again option for connection failure
 
 import { Interfaces } from './interfaces.namespace';
 import { UIInterfaces } from '../ui';
@@ -106,9 +105,9 @@ export default abstract class App {
             if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
                 // await this.download(Number(value));
             } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
-                let entryID: string = this.state.entryDataArr[Number(value)].ID;
+                let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
 
-                UI.Terminal.toggleCheckHashMap(entryID);
+                UI.Terminal.toggleCheckHashMap(entry);
 
                 await this.promptEntryDetails(Number(value));
             } else if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
@@ -397,7 +396,7 @@ export default abstract class App {
 
         outputArr.forEach(output => console.log(output));
 
-        let entryCheckStatus: boolean = UI.Terminal.checkedItemsHashTable[selectedEntry.ID];
+        let entryCheckStatus: boolean = UI.Terminal.isListingChecked(selectedEntry.ID);
 
         let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex, entryCheckStatus);
 

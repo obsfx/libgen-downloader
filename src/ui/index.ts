@@ -5,7 +5,7 @@ import Main from './modules/Main';
 import Terminal from './modules/Terminal';
 
 import outputs from './outputs';
-import ascii from './ascii';
+import ansi from './ansi';
 
 export {
     Interfaces as UIInterfaces,
@@ -17,5 +17,5 @@ export default {
     Terminal,
 
     outputs,
-    ascii,
+    ansi,
 }

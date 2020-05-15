@@ -1,3 +1,5 @@
+import { Interfaces as AppInterfaces} from '../app/interfaces.namespace';
+
 export namespace Interfaces {
     interface baseObject {
         text: string;
@@ -16,7 +18,7 @@ export namespace Interfaces {
 
     export interface ListingObject extends baseObject {
         value: string;
-        index?: number;
+        entryData?: AppInterfaces.Entry;
         isCheckable: boolean;
         checkBtnText?: string;
         unCheckBtnText?: string;
@@ -29,10 +31,11 @@ export namespace Interfaces {
         submenuToggleBtnText?: string;
 
         parentOffset?: number;
+        disableKeypress?: true;
     }
 
     export interface TerminalCheckedItemsHashTable {
-        [key: string]: boolean
+        [key: string]: AppInterfaces.Entry;
     }
 
     export interface ReturnObject {
