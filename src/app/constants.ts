@@ -21,9 +21,21 @@ export default {
     DIRECTORY_STRING: `┌  Your media is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
 
     SPINNER: {
-        GETTING_RESULTS: `${cyan().bold('%s Getting Results')}`,
-        CONNECTING_MIRROR: `${cyan().bold('Connecting to Mirror (it can take a while depending on the libgen servers)')}... %s`
+        GETTING_RESULTS: cyan().bold('%s Getting Results'),
+        GETTING_RESULTS_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Getting Results')}`,
+        
+        GETTING_ENTRY_DATA: cyan().bold('%s Finding MD5, Title, Author and Extension Data of Media'),
+        GETTING_ENTRY_DATA_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding MD5, Title, Author and Extension Data of Media')}`,
+                
+        GETTING_DOWNLOAD_URL: cyan().bold('%s Finding The Download URL'),
+        GETTING_DOWNLOAD_URL_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding The Download URL')}`,
+        
+        STARTING_DOWNLOAD: cyan().bold('%s Starting Download'),
+        STARTING_DOWNLOAD_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Starting Download')}`
     },
+
+    JSON_PARSE_ERR: red().bold('Invalid JSON Error'),
+    DOWNLOAD_ERR: red().bold('Invalid JSON Error'),
 
     PROGRESS_BAR: {
         TITLE: `${green().bold('└───  Downloading')} [ :bar ] :percent :current`,
@@ -93,10 +105,8 @@ export default {
         Mirror: `${yellow().bold('Mirror')}`,
     },
 
-    DOWNLOADER_CONNECTION_ERR_SPINNER_TITLE: `${cyan().bold('Getting Results')}... %s`,
-
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
 
-    MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`,
+    MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5,title,author,extension`,
     MD5_DOWNLOAD_PAGE_PATTERN: `${CONFIG.DOWNLOAD_MIRROR}main/{MD5}`
 }

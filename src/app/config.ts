@@ -6,6 +6,7 @@ export default {
     TITLE_MAX_STRLEN: 70,
     MIN_INPUTLEN: 3,
     ERR_TOLERANCE: 5,
+    ERR_RECONNECT_DELAYMS: 3000,
     URL_PARTS: {
         SEARCH_PAGE: 'search.php',
         PARAMS: {

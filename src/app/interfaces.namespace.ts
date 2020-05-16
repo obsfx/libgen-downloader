@@ -25,4 +25,11 @@ export namespace Interfaces {
         Ext: string;
         Mirror: string;
     }
+
+    export interface EntryData {
+        md5: string;
+        title: string;
+        author: string;
+        extension: string;
+    }
 }

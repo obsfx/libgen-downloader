@@ -1,7 +1,7 @@
 // + DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
 // Make the tests of connection error cases
 // + Add 'See Bulk Download Queue' option to results list
-// Implement download functionlity
+// + Implement download functionlity
 // bulk download screen 
 // --md5file=file.txt and idfile=file.txt command line parameter
 // libgen downloader --md5=md5 output -> download url commandline parameter
@@ -17,18 +17,13 @@ import UI from '../ui';
 import UIObjects from './modules/UIObjects';
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
+import Downloader from './modules/Downloader';
 
 import fetch, { Response } from 'node-fetch';
-import ProgressBar from 'progress';
 import { Spinner } from 'cli-spinner';
 import { JSDOM } from 'jsdom';
 
 import { EventEmitter } from 'events';
-import fs from 'fs';
-
-
-/**********************************DEMOO */
-import DOWNLOADER from './modules/Downloader';
 
 export default abstract class App {
     public static state: Interfaces.AppState;
@@ -82,6 +77,12 @@ export default abstract class App {
         await this.executePromptFlow();
     }
 
+    private static exit(): void {
+        // REWORK EXIT THING
+        UI.Terminal.showCursor();
+        process.exit(0);
+    }
+
     public static async initEventHandlers(): Promise<void> {
         this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
             if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
@@ -95,21 +96,17 @@ export default abstract class App {
             } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
                 await this.init();
             } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
-                // ASK TO USER
-                UI.Terminal.showCursor();
-                process.exit(0);
+                this.exit();
             } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-                console.log(actionID, value);
+                await this.download(Number(value));
             } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
-                console.log(actionID, value);
                 await this.promptEntryDetails(Number(value));
             }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
             if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-                // await this.download(Number(value));
-                console.log(await DOWNLOADER.findMd5(this.state.entryDataArr[Number(value)].ID));
+                await this.download(Number(value));
             } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
                 let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
 
@@ -121,22 +118,19 @@ export default abstract class App {
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: string) => {
-            // if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
-            //     await this.promptResults();
-            // } else {
-                    // UI.Terminal.showCursor();
-            //     process.exit(0);
-            // }
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
+                await this.promptResults();
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID){
+                this.exit();
+            }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
             if (actionID == CONSTANTS.SEARCH_ANOTHER_LISTINGS.SEARCH_ANOTHER_RESULT_ID) {
                 await this.init();
-            } else {
-                // REWORK EXIT THING
-                UI.Terminal.showCursor();
-                process.exit(0);
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                this.exit();
             }
         });
     }
@@ -211,6 +205,12 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
+    public static sleep(ms: number): Promise<void> {
+        return new Promise((resolve: Function) => {
+            setTimeout(() => { resolve() }, ms);
+        });
+    }
+    
     private static isSearchInputExistInDocument(document: HTMLDocument): boolean {
         const searchInput = document.querySelector(Selectors.CSS_SELECTORS.SEARCH_INPUT);
         return (searchInput) ? true : false;
@@ -246,9 +246,6 @@ export default abstract class App {
     }
 
     private static async setEntries(): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
-        this.spinner.start();
-
         this.state.url = this.constructURL(this.state.currentPage);
         let document: HTMLDocument | void = await this.getDocument(this.state.url);
 
@@ -283,7 +280,7 @@ export default abstract class App {
         return response;
     }
 
-    private static async getDocument(url: string): Promise<HTMLDocument | void> {
+    public static async getDocument(url: string): Promise<HTMLDocument | void> {
         let response: Response = await this.getResponse(url) || new Response();
 
         if (this.state.runtimeError) {
@@ -296,79 +293,27 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string | void> {
-        let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
-        let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
-
-        if (this.state.runtimeError) {
-            await this.runtimeError();
-            return;
-        }
-
-        let md5ResponseJson: [ {md5: string} ] = await md5Response.json();
-        let entrymd5: string = md5ResponseJson[0].md5;
-        
-        let mirrorURL: string = CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN.replace('{MD5}', entrymd5);
-        let mirrorDocument: HTMLDocument | void = await this.getDocument(mirrorURL);
-
-        let downloadEndpoint: string = '';
-
-        if (mirrorDocument) {
-            downloadEndpoint = Entries.getDownloadURL(mirrorDocument)
-        }
-
-        return downloadEndpoint;
-    }
-
     private static async download(entryIndex: number): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.CONNECTING_MIRROR);
-        this.spinner.start();
+        let entryID: string = this.state.entryDataArr[entryIndex].ID;
+        let entryData: Interfaces.EntryData | void = await Downloader.findEntryInformation(entryID);
 
-        let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
-
-        let downloadEndPoint: string = await this.constructDownloadEndpoint(selectedEntry) || '';
-
-        let downloadResponse: Response = await this.getResponse(downloadEndPoint);
+        let URL: string = '';
 
         if (this.state.runtimeError) {
-            await this.runtimeError();
             return;
         }
-        
-        let fileAuthor: string = selectedEntry.Author;
-        let fileTitle: string = selectedEntry.Title;
-        let fileExtension: string = selectedEntry.Ext;
-        
-        let fileName: string = (`${fileAuthor} ${fileTitle}`).replace(CONSTANTS.STRING_REPLACE_REGEX,"");
-        fileName = fileName.split(' ').join('_');
 
-        let fullFileName: string = `./${fileName}.${fileExtension}`;
+        if (entryData) {
+            URL = await Downloader.findDownloadURL(entryData.md5);
+        }
 
-        let file: fs.WriteStream = fs.createWriteStream(fullFileName);
+        if  (this.state.runtimeError) {
+            return;
+        }
 
-        let progressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
-            width: CONSTANTS.PROGRESS_BAR.WIDTH,
-            complete: CONSTANTS.PROGRESS_BAR.COMPLETE,
-            incomplete: CONSTANTS.PROGRESS_BAR.INCOMPLETE,
-            renderThrottle: CONSTANTS.PROGRESS_BAR.RENDER_THROTTLE,
-            total: parseInt(downloadResponse.headers.get('content-length') || '0')
-        });
-
-        this.spinner.stop(true);
-        
-        console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
-        
-        downloadResponse.body.on('data', chunk => {
-            progressBar.tick(chunk.length);
-        });
-        
-        downloadResponse.body.on('finish', async () => {
-            this.promptAfterDownload(fileName, fileExtension);
-        });
-        
-        downloadResponse.body.on('error', await this.runtimeError);
-        
-        downloadResponse.body.pipe(file);
+        if (entryData && URL) {
+            await Downloader.startDownloading(entryData, URL);
+        }
     }
 
     /**  **************************************************  */
@@ -411,7 +356,7 @@ export default abstract class App {
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    private static async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
+    public static async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
         console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
 
         let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
@@ -423,9 +368,31 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async executePromptFlow(): Promise<void> {
-        this.state.runtimeError = false;
+        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
+        this.spinner.start();
 
-        await this.setEntries();
+        let connectionSucceed: boolean = false;
+
+        let errTolarance: number = CONFIG.ERR_TOLERANCE;
+        let errCounter: number = 0;
+
+        while (errCounter < errTolarance && !connectionSucceed) {
+            this.state.runtimeError = false;
+
+            await this.setEntries();
+
+            if (this.state.runtimeError) {
+                errCounter++;
+                this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS_ERR
+                    .replace('{errCounter}', errCounter.toString())
+                    .replace('{errTolarance}', errTolarance.toString()));
+                await this.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
+            } else {
+                connectionSucceed = true;
+            }
+        }
+
+        this.spinner.stop(true);
 
         if (this.state.runtimeError) {
             this.runtimeError();

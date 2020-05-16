@@ -61,7 +61,7 @@ export default abstract class {
                 {
                     text: CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_DIRECTLY,
                     actionID: CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL,
-                    value: id,
+                    value: index.toString(),
                     isSubmenuListing: true,
                     isCheckable: false
                 }
