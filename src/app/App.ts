@@ -15,8 +15,8 @@ import CONSTANTS from './constants';
 
 import UI from '../ui';
 import UIObjects from './modules/UIObjects';
-import Selectors from './modules/selectors';
-import Entries from './modules/entries';
+import Selectors from './modules/Selectors';
+import Entries from './modules/Entries';
 
 import fetch, { Response } from 'node-fetch';
 import ProgressBar from 'progress';
@@ -26,9 +26,14 @@ import { JSDOM } from 'jsdom';
 import { EventEmitter } from 'events';
 import fs from 'fs';
 
+
+/**********************************DEMOO */
+import DOWNLOADER from './modules/Downloader';
+
 export default abstract class App {
-    private static state: Interfaces.AppState;
-    private static spinner: Spinner = new Spinner();
+    public static state: Interfaces.AppState;
+    public static spinner: Spinner = new Spinner();
+
     private static eventEmitter: EventEmitter = new EventEmitter();
 
     private static events: {
@@ -48,7 +53,7 @@ export default abstract class App {
             query: null,
             isNextPageExist: false,
             errorText: '',
-            connectionError: false,
+            runtimeError: false,
             entryDataArr: [],
             listObject: null
         }
@@ -104,10 +109,11 @@ export default abstract class App {
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
             if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
                 // await this.download(Number(value));
+                console.log(await DOWNLOADER.findMd5(this.state.entryDataArr[Number(value)].ID));
             } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
                 let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
 
-                UI.Terminal.toggleCheckHashMap(entry);
+                UI.Terminal.toggleCheckHashMap(entry.ID);
 
                 await this.promptEntryDetails(Number(value));
             } else if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
@@ -184,7 +190,7 @@ export default abstract class App {
         return listings;
     }
 
-    private static async connectionError(): Promise<void> {
+    private static async runtimeError(): Promise<void> {
         if (this.spinner.isSpinning()) {
             this.spinner.stop(true);
         }
@@ -248,13 +254,13 @@ export default abstract class App {
 
         if (document) {
             if (!this.isSearchInputExistInDocument(document)) {
-                this.state.connectionError = true;
+                this.state.runtimeError = true;
                 return;
             }
 
             this.state.isNextPageExist = await this.isNextPageExist();
 
-            if (this.state.connectionError) {
+            if (this.state.runtimeError) {
                 return;
             }
     
@@ -264,13 +270,13 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async getResponse(url: string): Promise<Response> {
+    public static async getResponse(url: string): Promise<Response> {
         let response: Response = new Response();
 
         try {
             response = await fetch(url);
         } catch(error) {
-            this.state.connectionError = true;
+            this.state.runtimeError = true;
             this.state.errorText = error;
         }
 
@@ -280,7 +286,7 @@ export default abstract class App {
     private static async getDocument(url: string): Promise<HTMLDocument | void> {
         let response: Response = await this.getResponse(url) || new Response();
 
-        if (this.state.connectionError) {
+        if (this.state.runtimeError) {
             return;
         }
 
@@ -294,8 +300,8 @@ export default abstract class App {
         let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
         let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
 
-        if (this.state.connectionError) {
-            await this.connectionError();
+        if (this.state.runtimeError) {
+            await this.runtimeError();
             return;
         }
 
@@ -324,8 +330,8 @@ export default abstract class App {
 
         let downloadResponse: Response = await this.getResponse(downloadEndPoint);
 
-        if (this.state.connectionError) {
-            await this.connectionError();
+        if (this.state.runtimeError) {
+            await this.runtimeError();
             return;
         }
         
@@ -360,7 +366,7 @@ export default abstract class App {
             this.promptAfterDownload(fileName, fileExtension);
         });
         
-        downloadResponse.body.on('error', await this.connectionError);
+        downloadResponse.body.on('error', await this.runtimeError);
         
         downloadResponse.body.pipe(file);
     }
@@ -417,12 +423,12 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async executePromptFlow(): Promise<void> {
-        this.state.connectionError = false;
+        this.state.runtimeError = false;
 
         await this.setEntries();
 
-        if (this.state.connectionError) {
-            this.connectionError();
+        if (this.state.runtimeError) {
+            this.runtimeError();
             return;
         }
 

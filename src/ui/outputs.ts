@@ -16,8 +16,8 @@ const OUTPUTS = {
 
     SEARCH: `${ansi.BRIGHTCYAN}? ${ansi.BRIGHTWHITE}Search:  ${ansi.RESETCOLOR}`,
 
-    BULK_DOWNLOAD_TEXT_EMPTY_TEMPLATE: `${ansi.BRIGHTBLACK}{text} 0 Items${ansi.RESETCOLOR}`,
-    BULK_DOWNLOAD_TEXT_TEMPLATE: `{text} ${ansi.YELLOW}{queuelength} Items${ansi.RESETCOLOR}`,
+    BULK_DOWNLOAD_TEXT_EMPTY_TEMPLATE: `${ansi.BRIGHTBLACK}{text} 0 Item(s)${ansi.RESETCOLOR}`,
+    BULK_DOWNLOAD_TEXT_TEMPLATE: `{text} ${ansi.YELLOW}{queuelength} Item(s)${ansi.RESETCOLOR}`,
 
 
     STANDARTOUTPUT: '',

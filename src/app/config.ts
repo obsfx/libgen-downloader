@@ -5,6 +5,7 @@ export default {
     UI_PAGE_SIZE: 10,
     TITLE_MAX_STRLEN: 70,
     MIN_INPUTLEN: 3,
+    ERR_TOLERANCE: 5,
     URL_PARTS: {
         SEARCH_PAGE: 'search.php',
         PARAMS: {

@@ -1,5 +1,4 @@
 import { Interfaces } from '../interfaces.namespace';
-import { Interfaces as AppInterfaces} from '../../app/interfaces.namespace';
 
 import ansi from '../ansi';
 import outputs from '../outputs';
@@ -120,11 +119,7 @@ export default abstract class Terminal {
 
         this.renderList();
     }
-
-    public static promptBulkList(arr: Interfaces.ListingObject[], listedItemCount: number): void {
-        
-    }
-
+    
     /*********************************************** */
     public static prevListing(): void {
         if (this.renderingQueue.length <= this.listedItemCount) {
@@ -280,9 +275,9 @@ export default abstract class Terminal {
 
             let targetListingItem: Interfaces.ListingObject = this.renderingQueue[targetIndex];
 
-            if (targetListingItem.entryData) {
-                this.toggleCheckHashMap(targetListingItem.entryData);
-            }
+
+            this.toggleCheckHashMap(targetListingItem.value);
+
             
             if (this.isBulkDownloadOptionAdded) {
                 this.updateBulkDownloadOptionText();
@@ -297,11 +292,11 @@ export default abstract class Terminal {
     }
 
     /*********************************************** */
-    public static toggleCheckHashMap(entry: AppInterfaces.Entry): void {
-        if (this.checkedItemsHashTable[entry.ID]) {
-            delete this.checkedItemsHashTable[entry.ID];
+    public static toggleCheckHashMap(entryID: string): void {
+        if (this.checkedItemsHashTable[entryID]) {
+            delete this.checkedItemsHashTable[entryID];
         } else {
-            this.checkedItemsHashTable[entry.ID] = entry;
+            this.checkedItemsHashTable[entryID] = true;
         }
     }
 

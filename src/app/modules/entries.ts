@@ -1,6 +1,6 @@
 import { Interfaces } from '../interfaces.namespace';
 
-import Selectors from './selectors';
+import Selectors from './Selectors';
 import CONSTANTS from '../constants';
 
 

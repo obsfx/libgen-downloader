@@ -21,7 +21,7 @@ export default {
     DIRECTORY_STRING: `┌  Your media is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
 
     SPINNER: {
-        GETTING_RESULTS: `${cyan().bold('Getting Results')}... %s`,
+        GETTING_RESULTS: `${cyan().bold('%s Getting Results')}`,
         CONNECTING_MIRROR: `${cyan().bold('Connecting to Mirror (it can take a while depending on the libgen servers)')}... %s`
     },
 
@@ -92,6 +92,8 @@ export default {
         Ext: `${yellow().bold('Extension')}`,
         Mirror: `${yellow().bold('Mirror')}`,
     },
+
+    DOWNLOADER_CONNECTION_ERR_SPINNER_TITLE: `${cyan().bold('Getting Results')}... %s`,
 
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
 

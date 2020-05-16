@@ -8,7 +8,7 @@ export namespace Interfaces {
         query: string | null;
         isNextPageExist: boolean;
         errorText: string;
-        connectionError: boolean;
+        runtimeError: boolean;
         entryDataArr: Entry[] | [];
         listObject: UIInterfaces.ListObject | null;
     }

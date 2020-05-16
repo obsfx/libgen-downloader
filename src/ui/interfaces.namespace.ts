@@ -1,5 +1,3 @@
-import { Interfaces as AppInterfaces} from '../app/interfaces.namespace';
-
 export namespace Interfaces {
     interface baseObject {
         text: string;
@@ -18,7 +16,6 @@ export namespace Interfaces {
 
     export interface ListingObject extends baseObject {
         value: string;
-        entryData?: AppInterfaces.Entry;
         isCheckable: boolean;
         checkBtnText?: string;
         unCheckBtnText?: string;
@@ -35,7 +32,7 @@ export namespace Interfaces {
     }
 
     export interface TerminalCheckedItemsHashTable {
-        [key: string]: AppInterfaces.Entry;
+        [key: string]: boolean;
     }
 
     export interface ReturnObject {
