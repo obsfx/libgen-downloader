@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/cli-spinner": "^0.2.0",
+    "@types/content-disposition": "^0.5.3",
     "@types/jsdom": "^12.2.4",
     "@types/node": "^12.12.38",
     "@types/node-fetch": "^2.5.4",
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "cli-spinner": "^0.2.10",
+    "content-disposition": "^0.5.3",
     "jsdom": "^16.2.0",
     "kleur": "^3.0.3",
     "node-fetch": "^2.6.0",

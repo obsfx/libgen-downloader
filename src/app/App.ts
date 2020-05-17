@@ -18,6 +18,7 @@ import UIObjects from './modules/UIObjects';
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
 import Downloader from './modules/Downloader';
+import BulkDownloader from '../bulk-downloader';
 
 import fetch, { Response } from 'node-fetch';
 import { Spinner } from 'cli-spinner';
@@ -55,8 +56,6 @@ export default abstract class App {
     }
 
     private static clear(): void {
-        // readline.cursorTo(process.stdout, 0, 0);
-        // readline.clearScreenDown(process.stdout);
         UI.Terminal.clear();
         this.promptHead();
     }
@@ -101,6 +100,19 @@ export default abstract class App {
                 await this.download(Number(value));
             } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
                 await this.promptEntryDetails(Number(value));
+            } else if (actionID == UI.constants.DOWNLOADBULKVAL) {
+                this.clear();
+                
+                await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
+
+                if (this.state.runtimeError) {
+                    this.runtimeError();
+                    return;
+                }
+
+                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED);
+
+                App.promptAfterDownload();
             }
         });
 
@@ -184,7 +196,7 @@ export default abstract class App {
         return listings;
     }
 
-    private static async runtimeError(): Promise<void> {
+    public static async runtimeError(): Promise<void> {
         if (this.spinner.isSpinning()) {
             this.spinner.stop(true);
         }
@@ -295,7 +307,7 @@ export default abstract class App {
     /**  **************************************************  */
     private static async download(entryIndex: number): Promise<void> {
         let entryID: string = this.state.entryDataArr[entryIndex].ID;
-        let entryData: Interfaces.EntryData | void = await Downloader.findEntryInformation(entryID);
+        let entryMD5Arr: { md5: string }[] | void = await Downloader.findEntriesMD5([entryID]);
 
         let URL: string = '';
 
@@ -303,17 +315,25 @@ export default abstract class App {
             return;
         }
 
-        if (entryData) {
-            URL = await Downloader.findDownloadURL(entryData.md5);
+        if (entryMD5Arr) {
+            URL = await Downloader.findDownloadURL(entryMD5Arr[0].md5);
         }
 
         if  (this.state.runtimeError) {
             return;
         }
 
-        if (entryData && URL) {
-            await Downloader.startDownloading(entryData, URL);
+
+        let fileName: string = await Downloader.startDownloading(URL);
+
+        if (App.state.runtimeError) {
+            this.runtimeError();
+            return;
         }
+
+        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName);
+
+        App.promptAfterDownload();
     }
 
     /**  **************************************************  */
@@ -356,9 +376,7 @@ export default abstract class App {
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    public static async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
-        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
-
+    public static async promptAfterDownload(): Promise<void> {
         let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
 
         let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterDownloadListObject);

@@ -6,6 +6,7 @@ import Terminal from './modules/Terminal';
 
 import outputs from './outputs';
 import ansi from './ansi';
+import constants from './constants';
 
 export {
     Interfaces as UIInterfaces,
@@ -18,4 +19,5 @@ export default {
 
     outputs,
     ansi,
+    constants
 }

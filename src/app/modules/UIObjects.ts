@@ -5,7 +5,7 @@ import { Interfaces } from '../interfaces.namespace';
 import { UIInterfaces } from '../../ui';
 
 export default abstract class {
-    private static buildTitle(title: string, ext: string, pageNumber: number, index: number): string {
+    public static buildTitle(title: string, ext: string, pageNumber: number, index: number): string {
         let orderNumber: number = (pageNumber - 1) * CONFIG.RESULTS_PAGE_SIZE + index + 1;
         let orderTitle: string = `[${orderNumber}]`;
 

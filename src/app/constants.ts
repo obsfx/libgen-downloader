@@ -17,15 +17,18 @@ export default {
     INPUT_MINLEN_WARNING: `${yellow().bold('Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
     NO_RESULT: `${cyan().bold('No Result.')}`,
-    DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s.%s`)} downloaded on working directory.\n`,
+    DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s`)} downloaded on working directory.\n`,
+    BULK_DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`Bulk Downloading`)} completed.\n`,
     DIRECTORY_STRING: `┌  Your media is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
+    DOWNLOADING_FILE: `├───  ${yellow().bold('%s')}`,
+    REMAINING_BOOKS: yellow().bold('Remaining Books: %s'),
 
     SPINNER: {
         GETTING_RESULTS: cyan().bold('%s Getting Results'),
         GETTING_RESULTS_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Getting Results')}`,
         
-        GETTING_ENTRY_DATA: cyan().bold('%s Finding MD5, Title, Author and Extension Data of Media'),
-        GETTING_ENTRY_DATA_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding MD5, Title, Author and Extension Data of Media')}`,
+        GETTING_ENTRY_DATA: cyan().bold('%s Finding MD5(s) of Media(s)'),
+        GETTING_ENTRY_DATA_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding MD5(s) of Media(s)')}`,
                 
         GETTING_DOWNLOAD_URL: cyan().bold('%s Finding The Download URL'),
         GETTING_DOWNLOAD_URL_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding The Download URL')}`,
@@ -35,7 +38,7 @@ export default {
     },
 
     JSON_PARSE_ERR: red().bold('Invalid JSON Error'),
-    DOWNLOAD_ERR: red().bold('Invalid JSON Error'),
+    DOWNLOAD_ERR: red().bold('Downloading couldn\'t completed'),
 
     PROGRESS_BAR: {
         TITLE: `${green().bold('└───  Downloading')} [ :bar ] :percent :current`,
@@ -107,6 +110,6 @@ export default {
 
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
 
-    MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5,title,author,extension`,
+    MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`,
     MD5_DOWNLOAD_PAGE_PATTERN: `${CONFIG.DOWNLOAD_MIRROR}main/{MD5}`
 }

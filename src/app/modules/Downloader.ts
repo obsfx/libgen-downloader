@@ -8,11 +8,12 @@ import CONFIG from '../config';
 
 import { Response } from 'node-fetch';
 import ProgressBar from 'progress';
+import contentDisposition from 'content-disposition';
 
 import fs from 'fs';
 
 export default abstract class Downloader {
-    public static async findEntryInformation(entryID: string): Promise<Interfaces.EntryData | void> {
+    public static async findEntriesMD5(entryIDArr: string[]): Promise<{md5: string}[] | void> {
         App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_ENTRY_DATA);
         App.spinner.start();
 
@@ -21,15 +22,17 @@ export default abstract class Downloader {
         let errTolarance: number = CONFIG.ERR_TOLERANCE;
         let errCounter: number = 0;
 
-        let entryData: Interfaces.EntryData;
+        let MD5Arr: { md5: string }[];
         let MD5ReqURL: string = '';
         let MD5Response: Response = new Response();
+
+        let entryIDs: string = entryIDArr.join(',');
 
         // CONSTANTS.MD5_REQ_PATTERN = '';
         while (errCounter < errTolarance && !connectionSucceed) {
             App.state.runtimeError = false;
 
-            MD5ReqURL = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entryID);
+            MD5ReqURL = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entryIDs);
             MD5Response = await App.getResponse(MD5ReqURL);
 
             if (App.state.runtimeError) {
@@ -53,8 +56,7 @@ export default abstract class Downloader {
         }
 
         try {
-            let MD5ResponseJSON: [ Interfaces.EntryData ] = await MD5Response.json();
-            entryData = MD5ResponseJSON[0];
+            MD5Arr = await MD5Response.json();
 
             App.spinner.stop(true);
         } catch(err) {
@@ -65,7 +67,7 @@ export default abstract class Downloader {
             return;
         }
 
-        return entryData;
+        return MD5Arr;
     }
 
     public static async findDownloadURL(entryMD5: string): Promise<string> {
@@ -111,77 +113,80 @@ export default abstract class Downloader {
         return downloadEndpoint;
     }
 
-    public static async startDownloading(
-        entryData: Interfaces.EntryData, 
-        downloadEndpoint: string): Promise<void> {
-        App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD);
-        App.spinner.start();
+    public static startDownloading(downloadEndpoint: string): Promise<string> {
+        
+        return new Promise(async (resolve: Function) => {
+            App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD);
+            App.spinner.start();
 
-        let connectionSucceed: boolean = false;
+            let connectionSucceed: boolean = false;
 
-        let errTolarance: number = CONFIG.ERR_TOLERANCE;
-        let errCounter: number = 0;
+            let errTolarance: number = CONFIG.ERR_TOLERANCE;
+            let errCounter: number = 0;
 
-        let downloadResponse: Response = new Response();
+            let downloadResponse: Response = new Response();
 
-        while (errCounter < errTolarance && !connectionSucceed) {
-            App.state.runtimeError = false;
+            while (errCounter < errTolarance && !connectionSucceed) {
+                App.state.runtimeError = false;
 
-            downloadResponse = await App.getResponse(downloadEndpoint);
+                downloadResponse = await App.getResponse(downloadEndpoint);
+
+                if (App.state.runtimeError) {
+                    errCounter++;
+                    App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD_ERR
+                        .replace('{errCounter}', errCounter.toString())
+                        .replace('{errTolarance}', errTolarance.toString()));
+                    await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
+                } else {
+                    connectionSucceed = true;
+                }
+            }
+
+            App.spinner.stop(true);
 
             if (App.state.runtimeError) {
-                errCounter++;
-                App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD_ERR
-                    .replace('{errCounter}', errCounter.toString())
-                    .replace('{errTolarance}', errTolarance.toString()));
-                await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
-            } else {
-                connectionSucceed = true;
+                return;
             }
-        }
 
-        App.spinner.stop(true);
+            let parsedContentDisposition: {
+                type: string,
+                parameters: { filename: string }
+            } = contentDisposition.parse(downloadResponse.headers.get('content-disposition') || '');
 
-        if (App.state.runtimeError) {
-            return;
-        }
-        
-        let fileAuthor: string = entryData.author;
-        let fileTitle: string = entryData.title;
-        let fileExtension: string = entryData.extension;
+            if (parsedContentDisposition.type != 'attachment') {
+                App.state.runtimeError = true;
+                return;
+            }
 
-        let fileName: string = `${fileAuthor} ${fileTitle}`
-                                    .replace(CONSTANTS.STRING_REPLACE_REGEX, '')
-                                    .split(' ')
-                                    .join('_');
+            let fullFileName: string = `./${parsedContentDisposition.parameters.filename}`;
 
-        let fullFileName: string = `./${fileName}.${fileExtension}`;
+            let file: fs.WriteStream = fs.createWriteStream(fullFileName);
 
-        let file: fs.WriteStream = fs.createWriteStream(fullFileName);
+            let progressBar: ProgressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
+                width: CONSTANTS.PROGRESS_BAR.WIDTH,
+                complete: CONSTANTS.PROGRESS_BAR.COMPLETE,
+                incomplete: CONSTANTS.PROGRESS_BAR.INCOMPLETE,
+                renderThrottle: CONSTANTS.PROGRESS_BAR.RENDER_THROTTLE,
+                total: parseInt(downloadResponse.headers.get('content-length') || '0')
+            });
 
-        let progressBar: ProgressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
-            width: CONSTANTS.PROGRESS_BAR.WIDTH,
-            complete: CONSTANTS.PROGRESS_BAR.COMPLETE,
-            incomplete: CONSTANTS.PROGRESS_BAR.INCOMPLETE,
-            renderThrottle: CONSTANTS.PROGRESS_BAR.RENDER_THROTTLE,
-            total: parseInt(downloadResponse.headers.get('content-length') || '0')
+            console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
+            console.log(CONSTANTS.DOWNLOADING_FILE, parsedContentDisposition.parameters.filename);
+            
+            downloadResponse.body.on('data', chunk => {
+                progressBar.tick(chunk.length);
+            });
+            downloadResponse.body.on('finish', async () => {
+                resolve(parsedContentDisposition.parameters.filename);
+            });
+            
+            downloadResponse.body.on('error', () => {
+                console.log(CONSTANTS.DOWNLOAD_ERR);
+                App.state.runtimeError = true;
+                resolve(parsedContentDisposition.parameters.filename);
+            });
+            
+            downloadResponse.body.pipe(file);
         });
-
-        console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
-
-        downloadResponse.body.on('data', chunk => {
-            progressBar.tick(chunk.length);
-        });
-        
-        downloadResponse.body.on('finish', async () => {
-            App.promptAfterDownload(fileName, fileExtension);
-        });
-        
-        downloadResponse.body.on('error', () => {
-            console.log(CONSTANTS.DOWNLOAD_ERR);
-            App.state.runtimeError = true;
-        });
-        
-        downloadResponse.body.pipe(file);
     }
 }
