@@ -65,9 +65,13 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    public static async init(): Promise<void> {
+    public static async init(fileReadMode: boolean = false): Promise<void> {
         this.clear();
         this.state = this.createNewAppState();
+
+        if (fileReadMode) {
+            return;
+        }
 
         while (this.state.query == null) {
             await this.setInput();
@@ -76,8 +80,7 @@ export default abstract class App {
         await this.executePromptFlow();
     }
 
-    private static exit(): void {
-        // REWORK EXIT THING
+    public static exit(): void {
         UI.Terminal.showCursor();
         process.exit(0);
     }
@@ -109,6 +112,8 @@ export default abstract class App {
                     this.runtimeError();
                     return;
                 }
+
+                UI.Terminal.resetCheckedListings();
 
                 console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED);
 
@@ -201,19 +206,14 @@ export default abstract class App {
             this.spinner.stop(true);
         }
 
-        //FIX HERE
-
         UI.Terminal.prevLine();
         UI.Terminal.clearLine();
 
-        // NEEDS REWORK HERE
         console.log(CONSTANTS.CONNECTION_ERROR);
 
         let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
         let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
         this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
-        // UI.Terminal.showCursor();
-        // process.exit(1);
     }
 
     /**  **************************************************  */
@@ -416,8 +416,6 @@ export default abstract class App {
             this.runtimeError();
             return;
         }
-
-        this.spinner.stop(true);
 
         if (this.state.entryDataArr.length > 0) {
             this.promptResults();

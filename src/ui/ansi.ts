@@ -1,5 +1,5 @@
 export default {
-    CLEARSCREEN: '\u001b[1000A\u001b[1000D\u001b[0J',
+    CLEARSCREEN: '\u001b[H\u001bc',
     CLEARCURSORTOEND: '\u001b[0J',
 
     TURNBACKTOBEGINNINGOFLINE: '\u001b[{n}D',

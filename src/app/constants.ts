@@ -1,4 +1,4 @@
-import { yellow, green, cyan, red, white } from 'kleur';
+import { yellow, green, cyan, red, white, gray } from 'kleur';
 import CONFIG from './config';
 
 export default {
@@ -19,26 +19,37 @@ export default {
     NO_RESULT: `${cyan().bold('No Result.')}`,
     DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s`)} downloaded on working directory.\n`,
     BULK_DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`Bulk Downloading`)} completed.\n`,
-    DIRECTORY_STRING: `┌  Your media is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
+    DIRECTORY_STRING: `┌  Your book is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
     DOWNLOADING_FILE: `├───  ${yellow().bold('%s')}`,
-    REMAINING_BOOKS: yellow().bold('Remaining Books: %s'),
+    REMAINING_BOOKS: gray().bold('[Remaining Books: %s]'),
+
+    MD5_INDICATOR: `MD5: ${green().bold('%s')}`,
+    LIST_EXPORT_SUCCESS: `${green().bold('List of MD5(s) of Downloaded Book(s) Successfully Created.')} ${yellow().bold('%s')}`,
+    LIST_EXPORT_ERR: red().bold('List of MD5(s) of Downloaded Book(s) Couldn\'t Created.'),
+
+    BULK_DOWNLOAD_TITLE: `─ ${cyan().bold('Bulk Downloader')}\n`,
 
     SPINNER: {
         GETTING_RESULTS: cyan().bold('%s Getting Results'),
         GETTING_RESULTS_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Getting Results')}`,
         
-        GETTING_ENTRY_DATA: cyan().bold('%s Finding MD5(s) of Media(s)'),
-        GETTING_ENTRY_DATA_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding MD5(s) of Media(s)')}`,
+        GETTING_ENTRY_DATA: cyan().bold('%s Finding MD5(s) of Book(s)'),
+        GETTING_ENTRY_DATA_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding MD5(s) of Book(s)')}`,
                 
         GETTING_DOWNLOAD_URL: cyan().bold('%s Finding The Download URL'),
         GETTING_DOWNLOAD_URL_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Finding The Download URL')}`,
         
         STARTING_DOWNLOAD: cyan().bold('%s Starting Download'),
-        STARTING_DOWNLOAD_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Starting Download')}`
+        STARTING_DOWNLOAD_ERR: `${red().bold('%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${cyan().bold('Starting Download')}`,
+
+        LIST_EXPORT: yellow().bold('%s Creating a List of MD5(s) of Downloaded Book(s)'),
+
+        READING_MD5_LIST: cyan().bold('%s Reading File')
     },
 
     JSON_PARSE_ERR: red().bold('Invalid JSON Error'),
     DOWNLOAD_ERR: red().bold('Downloading couldn\'t completed'),
+    FILE_READ_ERR: red().bold('File couldn\'t read'),
 
     PROGRESS_BAR: {
         TITLE: `${green().bold('└───  Downloading')} [ :bar ] :percent :current`,
@@ -81,7 +92,7 @@ export default {
 
     DOWNLOAD_LISTING: {
         DOWNLOAD_DIRECTLY: 'Download Directly',
-        DOWNLOAD: '• Download This Media',
+        DOWNLOAD: '• Download This Book',
         DOWNLOAD_RES_VAL: '@DOWNLOAD' 
     },
 

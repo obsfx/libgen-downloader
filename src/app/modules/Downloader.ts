@@ -1,5 +1,3 @@
-import { Interfaces } from '../interfaces.namespace'
-
 import App from '../App';
 import Entries from '../modules/Entries';
 
@@ -145,6 +143,7 @@ export default abstract class Downloader {
             App.spinner.stop(true);
 
             if (App.state.runtimeError) {
+                resolve('');
                 return;
             }
 
@@ -155,6 +154,7 @@ export default abstract class Downloader {
 
             if (parsedContentDisposition.type != 'attachment') {
                 App.state.runtimeError = true;
+                resolve(parsedContentDisposition.parameters.filename);
                 return;
             }
 
@@ -183,7 +183,6 @@ export default abstract class Downloader {
             downloadResponse.body.on('error', () => {
                 console.log(CONSTANTS.DOWNLOAD_ERR);
                 App.state.runtimeError = true;
-                resolve(parsedContentDisposition.parameters.filename);
             });
             
             downloadResponse.body.pipe(file);

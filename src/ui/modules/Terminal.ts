@@ -312,6 +312,10 @@ export default abstract class Terminal {
         return this.checkedItemsHashTable[entryID] ? true : false;
     }
 
+    public static resetCheckedListings(): void {
+        this.checkedItemsHashTable = {};
+    }
+
     /*********************************************** */
     public static promptInput(promptHead: string): void {
         this.renderBulkQueueIndicator();
