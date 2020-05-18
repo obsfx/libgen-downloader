@@ -89,8 +89,7 @@ export default abstract class Main {
                             Terminal.toggleCheck();
                         } else if (!this.returnedListing.disableKeypress) {
                             this.returnedVal = { value: this.returnedListing.value, actionID: this.returnedListing.actionID || ' ' };
-                            Terminal.restoreCursorPos();
-                            Terminal.clearCursorToEnd();
+                            Terminal.clearPrinted();
                         }
                     }
                 }

@@ -3,7 +3,7 @@ import CONFIG from './config';
 
 export default {
     HEAD: [
-        `┌  ${yellow().bold('libgen-downloader')} ${cyan().bold('@v1.0')}`,
+        `┌  ${yellow().bold('libgen-downloader')} ${cyan().bold('@v1.0.0')}`,
         '├───  Source Code: https://github.com/obsfx/libgen-downloader',
         '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
         ' '
@@ -18,7 +18,7 @@ export default {
     CONNECTION_ERROR: `${red().bold('Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
     NO_RESULT: `${cyan().bold('No Result.')}`,
     DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`%s`)} downloaded on working directory.\n`,
-    BULK_DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`Bulk Downloading`)} completed.\n`,
+    BULK_DOWNLOAD_COMPLETED: `\n${green().bold('DONE')} ${yellow().bold(`Bulk Downloading`)} completed. ${green().bold('%s / %s')} item(s) downloaded.\n`,
     DIRECTORY_STRING: `┌  Your book is being downloaded to this directory:\n├───  ${cyan().bold(`%s`)}`,
     DOWNLOADING_FILE: `├───  ${yellow().bold('%s')}`,
     REMAINING_BOOKS: gray().bold('[Remaining Books: %s]'),
@@ -26,6 +26,8 @@ export default {
     MD5_INDICATOR: `MD5: ${green().bold('%s')}`,
     LIST_EXPORT_SUCCESS: `${green().bold('List of MD5(s) of Downloaded Book(s) Successfully Created.')} ${yellow().bold('%s')}`,
     LIST_EXPORT_ERR: red().bold('List of MD5(s) of Downloaded Book(s) Couldn\'t Created.'),
+
+    DOWNLOAD_URL: `Here is your download URL: ${yellow().green('%s')}`,
 
     BULK_DOWNLOAD_TITLE: `─ ${cyan().bold('Bulk Downloader')}\n`,
 
@@ -47,9 +49,16 @@ export default {
         READING_MD5_LIST: cyan().bold('%s Reading File')
     },
 
-    JSON_PARSE_ERR: red().bold('Invalid JSON Error'),
-    DOWNLOAD_ERR: red().bold('Downloading couldn\'t completed'),
-    FILE_READ_ERR: red().bold('File couldn\'t read'),
+    HELP: [
+        `${yellow().bold('libgen downloader')}  start the main app without any argument.`,
+        `${yellow().bold('libgen downloader')} ${cyan().bold('--help')}  see available additional arguments.`,
+        `${yellow().bold('libgen downloader')} ${cyan().bold('--bulk=md5listfile.txt')}  start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.`,
+        `${yellow().bold('libgen downloader')} ${cyan().bold('--geturl=md5')}  get the download url of book by passing the md5.`,
+    ],
+
+    JSON_PARSE_ERR: red().bold('Invalid JSON Error.'),
+    DOWNLOAD_ERR: red().bold('Downloading couldn\'t completed.'),
+    FILE_READ_ERR: red().bold('File couldn\'t read.'),
 
     PROGRESS_BAR: {
         TITLE: `${green().bold('└───  Downloading')} [ :bar ] :percent :current`,

@@ -20,7 +20,7 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static clear(): void {
-        process.stdout.write(ansi.CLEARSCREEN)
+        process.stdout.write(ansi.CLEARSCREEN);
     }
 
     public static clearCursorToEnd(): void {
@@ -173,13 +173,20 @@ export default abstract class Terminal {
     }
 
     /*********************************************** */
+    public static clearPrinted(): void {
+        let prevCount: number = this.listedItemCount < this.renderingQueue.length ? 
+        this.listedItemCount : 
+        this.renderingQueue.length;
+
+        this.prevLineX(prevCount + 2);
+        this.clearCursorToEnd();
+    }
+
     private static renderList(): void {
         if (this.printedListingCount != 0) {
-            this.restoreCursorPos();
-            this.clearCursorToEnd();
+            this.clearPrinted();   
         }
-
-        this.saveCursorPos();
+        
         this.printedListingCount = 0;
 
         let listSize = this.renderingQueue.length >= this.listedItemCount ? 

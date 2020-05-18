@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "a simple tool to search and download pdfs via command line interface from libgen",
   "main": "./dist/index.js",
   "bin": {
@@ -9,13 +9,10 @@
   },
   "scripts": {
     "standalone": "pkg . --out-path ./standalone-executables",
-    "run": "node ./build/index.js",
-    "run-dev": "node ./dev/index.js",
+    "run": "node ./bin/index.js",
     "build": "tsc -b",
-    "minify": "minify ./dist -d ./build",
     "watch": "tsc -b --watch",
-    "link": "npm link --force",
-    "rmout": "rm -R ./dist"
+    "link": "npm link --force"
   },
   "keywords": [
     "libgen",
@@ -45,7 +42,6 @@
     "@types/node-fetch": "^2.5.4",
     "@types/progress": "^2.0.3",
     "pkg": "^4.4.4",
-    "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },
   "dependencies": {

@@ -26,7 +26,6 @@ export default abstract class Downloader {
 
         let entryIDs: string = entryIDArr.join(',');
 
-        // CONSTANTS.MD5_REQ_PATTERN = '';
         while (errCounter < errTolarance && !connectionSucceed) {
             App.state.runtimeError = false;
 
@@ -39,10 +38,6 @@ export default abstract class Downloader {
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
-
-                // debug if (errCounter == 3) {
-                //     CONSTANTS.MD5_REQ_PATTERN = `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`;
-                // }
             } else {
                 connectionSucceed = true;
             }
@@ -81,8 +76,6 @@ export default abstract class Downloader {
         let mirrorDocument: HTMLDocument | void;
         let downloadEndpoint: string = '';
 
-        // CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN = '';
-
         while (errCounter < errTolarance && !connectionSucceed) {
             App.state.runtimeError = false;
 
@@ -95,11 +88,6 @@ export default abstract class Downloader {
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
-
-                // if (errCounter == 3) {
-                //     CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN = `${CONFIG.DOWNLOAD_MIRROR}main/{MD5}`
-                // }
-
             } else if (mirrorDocument){
                 downloadEndpoint = Entries.getDownloadURL(mirrorDocument);
                 connectionSucceed = true;    

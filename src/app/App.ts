@@ -1,12 +1,3 @@
-// + DIST FOLDER NAME WILL BE CHANGED TO 'DEV' IN PACKAGE.JSON
-// Make the tests of connection error cases
-// + Add 'See Bulk Download Queue' option to results list
-// + Implement download functionlity
-// bulk download screen 
-// --md5file=file.txt and idfile=file.txt command line parameter
-// libgen downloader --md5=md5 output -> download url commandline parameter
-// user also can download via id 
-
 import { Interfaces } from './interfaces.namespace';
 import { UIInterfaces } from '../ui';
 
@@ -55,7 +46,7 @@ export default abstract class App {
         }
     }
 
-    private static clear(): void {
+    public static clear(): void {
         UI.Terminal.clear();
         this.promptHead();
     }
@@ -108,14 +99,10 @@ export default abstract class App {
                 
                 await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
 
-                if (this.state.runtimeError) {
-                    this.runtimeError();
-                    return;
-                }
-
                 UI.Terminal.resetCheckedListings();
 
-                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED);
+                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
+                    BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
 
                 App.promptAfterDownload();
             }
@@ -349,7 +336,7 @@ export default abstract class App {
         this.state.listObject = listObject;
 
         console.log(CONSTANTS.RESULTS_TITLE
-            .replace('{query}', this.state.query || ' ')
+            .replace('{query}', decodeURIComponent(this.state.query || '') || ' ')
             .replace('{page}', this.state.currentPage.toString()));
 
         UI.Terminal.setBulkDownloadOptionPosition(optionObjects.length);

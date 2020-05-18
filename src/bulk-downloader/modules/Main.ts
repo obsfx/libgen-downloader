@@ -73,7 +73,7 @@ export default abstract class Main {
         }
 
         if (this.completedMD5.length > 0) {
-            App.spinner.setSpinnerString(CONSTANTS.SPINNER.LIST_EXPORT);
+            App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.LIST_EXPORT);
             App.spinner.start();
 
             try {
@@ -89,5 +89,13 @@ export default abstract class Main {
                 console.log(CONSTANTS.LIST_EXPORT_ERR, e);
             }
         }
+    }
+
+    public static getCompletedItemsCount(): number {
+        return this.completedMD5.length;
+    }
+
+    public static getEntireItemsCount(): number {
+        return this.queue.length;
     }
 }

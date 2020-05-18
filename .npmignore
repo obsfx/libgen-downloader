@@ -2,9 +2,6 @@
 /src
 /standalone-executables
 
-/dev
-/bin/index_dev.js
-
 .gitignore
 
 logo.png
