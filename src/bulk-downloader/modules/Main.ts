@@ -72,7 +72,7 @@ export default abstract class Main {
             console.log(CONSTANTS.DOWNLOAD_COMPLETED, filename);
         }
 
-        if (this.completedMD5.length > 0) {
+        if (this.completedMD5.length > 0 && downloadMode == 'ID') {
             App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.LIST_EXPORT);
             App.spinner.start();
 
