@@ -50,10 +50,10 @@ export default {
     },
 
     HELP: [
-        `${yellow().bold('libgen downloader')}  start the main app without any argument.`,
-        `${yellow().bold('libgen downloader')} ${cyan().bold('--help')}  see available additional arguments.`,
-        `${yellow().bold('libgen downloader')} ${cyan().bold('--bulk=md5listfile.txt')}  start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.`,
-        `${yellow().bold('libgen downloader')} ${cyan().bold('--geturl=md5')}  get the download url of book by passing the md5.`,
+        `${yellow().bold('libgen-downloader')}  start the main app without any argument.`,
+        `${yellow().bold('libgen-downloader')} ${cyan().bold('--help')}  see available additional arguments.`,
+        `${yellow().bold('libgen-downloader')} ${cyan().bold('--bulk=md5listfile.txt')}  start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.`,
+        `${yellow().bold('libgen-downloader')} ${cyan().bold('--geturl=md5')}  get the download url of book by passing the md5.`,
     ],
 
     JSON_PARSE_ERR: red().bold('Invalid JSON Error.'),
