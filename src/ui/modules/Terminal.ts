@@ -174,11 +174,7 @@ export default abstract class Terminal {
 
     /*********************************************** */
     public static clearPrinted(): void {
-        let prevCount: number = this.listedItemCount < this.renderingQueue.length ? 
-        this.listedItemCount : 
-        this.renderingQueue.length;
-
-        this.prevLineX(prevCount + 2);
+        this.prevLineX(this.printedListingCount + 2);
         this.clearCursorToEnd();
     }
 
