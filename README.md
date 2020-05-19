@@ -46,7 +46,7 @@ if you start `libgen-downloader` with --bulk parameter, `libgen-downloader` trie
 libgen-downloader --geturl=md5_code_of_file
 ```
 
-If you have the MD5 code of file and want to get download URL of file directly, you can use `--geturl`parameter.
+If you have the MD5 code of file and want to get download URL of file directly, you can use `--geturl` parameter.
 
 [get url gif]
 
