@@ -1,73 +1,68 @@
 import { Interfaces } from './interfaces.namespace';
+import { UIInterfaces } from '../ui';
 
 import CONFIG from './config';
 import CONSTANTS from './constants';
 
-import Questions from './modules/questions';
-import Selectors from './modules/selectors';
-import Entries from './modules/entries';
+import UI from '../ui';
+import UIObjects from './modules/UIObjects';
+import Selectors from './modules/Selectors';
+import Entries from './modules/Entries';
+import Downloader from './modules/Downloader';
+import BulkDownloader from '../bulk-downloader';
 
 import fetch, { Response } from 'node-fetch';
-import inquirer from 'inquirer';
-import ProgressBar from 'progress';
 import { Spinner } from 'cli-spinner';
 import { JSDOM } from 'jsdom';
 
-import readline from 'readline';
 import { EventEmitter } from 'events';
-import fs from 'fs';
 
-export default class App implements Interfaces.App {
-    state: Interfaces.AppState;
-    prompt: inquirer.PromptModule;
-    spinner: Spinner;
-    eventEmitter: EventEmitter;
+export default abstract class App {
+    public static state: Interfaces.AppState;
+    public static spinner: Spinner = new Spinner();
 
-    events: {
-        USER_SELECTED_FROM_LIST: string,
-        USER_SELECTED_IN_ENTRY_DETAILS: string,
-        USER_SELECTED_AFTER_DOWNLOAD: string,
-        USER_SELECTED_AFTER_NORESULT: string
-    }
+    private static eventEmitter: EventEmitter = new EventEmitter();
 
-    constructor() {
-        this.state = this.createNewAppState();
-        this.prompt = inquirer.createPromptModule();
-        this.spinner = new Spinner();
-        this.eventEmitter = new EventEmitter();
-
-        this.events = {
-            USER_SELECTED_FROM_LIST: 'user_selected_from_list',
-            USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
-            USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
-            USER_SELECTED_AFTER_NORESULT: 'user_selected_after_noresult'
-        }
+    private static events: {
+        [key: string]: string
+    } = {
+        USER_SELECTED_FROM_LIST: 'user_selected_from_list',
+        USER_SELECTED_IN_ENTRY_DETAILS: 'user_selected_in_entry_details',
+        USER_SELECTED_AFTER_DOWNLOAD: 'user_selected_after_download',
+        USER_SELECTED_SEARCH_ANOTHER: 'user_selected_search_another'
     }
 
     /**  **************************************************  */
-    createNewAppState(): Interfaces.AppState {
+    private static createNewAppState(): Interfaces.AppState {
         return {
             currentPage: 1,
             url: '',
             query: null,
             isNextPageExist: false,
             errorText: '',
-            connectionError: false,
+            runtimeError: false,
             entryDataArr: [],
-            listQuestion: []
+            listObject: null
         }
     }
 
-    clear(): void {
-        readline.cursorTo(process.stdout, 0, 0);
-        readline.clearScreenDown(process.stdout);
+    public static clear(): void {
+        UI.Terminal.clear();
+        this.promptHead();
+    }
+
+    private static promptHead(): void {
         CONSTANTS.HEAD.forEach(line => console.log(line));
     }
 
     /**  **************************************************  */
-    async init(): Promise<void> {
+    public static async init(fileReadMode: boolean = false): Promise<void> {
         this.clear();
         this.state = this.createNewAppState();
+
+        if (fileReadMode) {
+            return;
+        }
 
         while (this.state.query == null) {
             await this.setInput();
@@ -76,49 +71,75 @@ export default class App implements Interfaces.App {
         await this.executePromptFlow();
     }
 
-    async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async (selectedChoice: Interfaces.ListQuestionResult) => {
-            if (selectedChoice.result.pagination) {
-                this.state.currentPage = (selectedChoice.result.pagination == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
+    public static exit(): void {
+        UI.Terminal.showCursor();
+        process.exit(0);
+    }
+
+    public static async initEventHandlers(): Promise<void> {
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
+                || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
+                this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
                 this.state.currentPage + 1 :
                 this.state.currentPage - 1;
-
+                
+                this.clear();
                 await this.executePromptFlow();
-            } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
+            } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
                 await this.init();
-            } else if (selectedChoice.result.id == CONSTANTS.PAGINATIONS.EXIT_RESULT_ID) {
-                process.exit(0);
-            } else {
-                await this.promptEntryDetails(Number(selectedChoice.result.id));
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                this.exit();
+            } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+                await this.download(Number(value));
+            } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
+                await this.promptEntryDetails(Number(value));
+            } else if (actionID == UI.constants.DOWNLOADBULKVAL) {
+                this.clear();
+                
+                await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
+
+                UI.Terminal.resetCheckedListings();
+
+                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
+                    BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+
+                App.promptAfterDownload();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.download) {
-                await this.download(Number(selectedChoice.result.id));
-            } else {
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+                await this.download(Number(value));
+            } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
+                let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
+
+                UI.Terminal.toggleCheckHashMap(entry.ID);
+
+                await this.promptEntryDetails(Number(value));
+            } else if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
                 await this.promptResults();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.id == CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID) {
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
                 await this.promptResults();
-            } else {
-                process.exit(0);
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID){
+                this.exit();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_NORESULT, async (selectedChoice: Interfaces.EntryDetailsQuestionResult) => {
-            if (selectedChoice.result.id == CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID) {
+        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+            if (actionID == CONSTANTS.SEARCH_ANOTHER_LISTINGS.SEARCH_ANOTHER_RESULT_ID) {
                 await this.init();
-            } else {
-                process.exit(0);
+            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                this.exit();
             }
         });
     }
 
-    constructURL(pageNumber: number): string {
+    private static constructURL(pageNumber: number): string {
         let url: string = CONFIG.MIRROR;
 
         url += `${CONFIG.URL_PARTS.SEARCH_PAGE}?`;
@@ -131,116 +152,138 @@ export default class App implements Interfaces.App {
         return url;
     }
 
-    constructPaginations(): Interfaces.QuestionChoice[] {
-        let choices: Interfaces.QuestionChoice[] = [];
+    private static constructOptions(): UIInterfaces.ListingObject[] {
+        let listings: UIInterfaces.ListingObject[] = [];
 
-        choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.SEARCH, {
-            pagination: false,
-            url: '',
-            id: CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID
-        }));
+        listings.push(UIObjects.getOptionListingObject(
+            CONSTANTS.PAGINATIONS.SEARCH,
+            CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID
+        ));
 
         if (this.state.isNextPageExist) {
-            let nextPageURL = this.constructURL(this.state.currentPage + 1);
-            choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.NEXT_PAGE, {
-                pagination: CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL,
-                url: nextPageURL,
-                id: ''
-            }));
+            let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
+            
+            listings.push(UIObjects.getOptionListingObject(
+                CONSTANTS.PAGINATIONS.NEXT_PAGE,
+                CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL,
+                nextPageURL
+            ));
         }
 
         if (this.state.currentPage > 1) {
-            let prevPageURL = this.constructURL(this.state.currentPage - 1);
-            choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.PREV_PAGE, {
-                pagination: CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL,
-                url: prevPageURL,
-                id: ''
-            }));
+            let prevPageURL: string = this.constructURL(this.state.currentPage - 1);
+
+            listings.push(UIObjects.getOptionListingObject(
+                CONSTANTS.PAGINATIONS.PREV_PAGE,
+                CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL,
+                prevPageURL
+            ));
         }
 
-        choices.push(Questions.getQuestionChoice(CONSTANTS.PAGINATIONS.EXIT, {
-            pagination: false,
-            url: '',
-            id: CONSTANTS.PAGINATIONS.EXIT_RESULT_ID
-        }));
+        listings.push(UIObjects.getOptionListingObject(
+            CONSTANTS.EXIT.EXIT,
+            CONSTANTS.EXIT.EXIT_RESULT_ID
+        ));
 
-        return choices;
+        return listings;
     }
 
-    connectionError(): void {
+    public static async runtimeError(): Promise<void> {
         if (this.spinner.isSpinning()) {
             this.spinner.stop(true);
         }
 
+        UI.Terminal.prevLine();
+        UI.Terminal.clearLine();
+
         console.log(CONSTANTS.CONNECTION_ERROR);
-        process.exit(1);
+
+        let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
+        this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
     }
 
     /**  **************************************************  */
-    isSearchInputExistInDocument(document: HTMLDocument): boolean {
+    public static sleep(ms: number): Promise<void> {
+        return new Promise((resolve: Function) => {
+            setTimeout(() => { resolve() }, ms);
+        });
+    }
+    
+    private static isSearchInputExistInDocument(document: HTMLDocument): boolean {
         const searchInput = document.querySelector(Selectors.CSS_SELECTORS.SEARCH_INPUT);
         return (searchInput) ? true : false;
     }
 
-    async isNextPageExist(): Promise<boolean> {
+    private static async isNextPageExist(): Promise<boolean> {
         let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
-        let document: HTMLDocument = await this.getDocument(nextPageURL);
+        let document: HTMLDocument | void = await this.getDocument(nextPageURL);
 
-        let entryAmount: number = document.querySelectorAll(Selectors.CSS_SELECTORS.ROW).length;
+        let entryAmount: number = 0;
+
+        if (document) {
+            entryAmount = document.querySelectorAll(Selectors.CSS_SELECTORS.ROW).length;
+        }
 
         return (entryAmount > 1) ? true : false;
     }
 
     /**  **************************************************  */
-    async setInput(): Promise<void> {
-        let input: Interfaces.InputQuestionResult = await this.prompt([
-            Questions.SearchQuestion
-        ]);
+    private static async setInput(): Promise<void> {
+        let inputObject: UIInterfaces.promptObject = {
+            type: 'input',
+            text: UI.outputs.SEARCH
+        }
 
-        if (input.result.trim().length < CONFIG.MIN_INPUTLEN) {
+        let input: UIInterfaces.ReturnObject = await UI.Main.prompt(inputObject);
+
+        if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             console.log(CONSTANTS.INPUT_MINLEN_WARNING);
         } else {
-            this.state.query = encodeURIComponent(input.result);
+            this.state.query = encodeURIComponent(input.value);
         }
     }
 
-    async setEntries(): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
-        this.spinner.start();
-
+    private static async setEntries(): Promise<void> {
         this.state.url = this.constructURL(this.state.currentPage);
-        let document: HTMLDocument = await this.getDocument(this.state.url);
+        let document: HTMLDocument | void = await this.getDocument(this.state.url);
 
-        if (!this.isSearchInputExistInDocument(document)) {
-            this.state.connectionError = true;
-            this.connectionError();
+        if (document) {
+            if (!this.isSearchInputExistInDocument(document)) {
+                this.state.runtimeError = true;
+                return;
+            }
+
+            this.state.isNextPageExist = await this.isNextPageExist();
+
+            if (this.state.runtimeError) {
+                return;
+            }
+    
+            let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
+            this.state.entryDataArr = entryData;
         }
-
-        let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
-        this.state.entryDataArr = entryData;
-
-        this.state.isNextPageExist = await this.isNextPageExist();
     }
 
     /**  **************************************************  */
-    async getResponse(url: string): Promise<Response> {
+    public static async getResponse(url: string): Promise<Response> {
         let response: Response = new Response();
 
         try {
             response = await fetch(url);
         } catch(error) {
-            this.state.connectionError = true;
+            this.state.runtimeError = true;
             this.state.errorText = error;
         }
 
         return response;
     }
 
-    async getDocument(url: string): Promise<HTMLDocument> {
+    public static async getDocument(url: string): Promise<HTMLDocument | void> {
         let response: Response = await this.getResponse(url) || new Response();
 
-        if (this.state.connectionError) {
-            this.connectionError();
+        if (this.state.runtimeError) {
+            return;
         }
 
         let plainText: string = await response.text();
@@ -249,94 +292,61 @@ export default class App implements Interfaces.App {
     }
 
     /**  **************************************************  */
-    async constructDownloadEndpoint(entry: Interfaces.Entry): Promise<string> {
-        let md5ReqURL: string = CONSTANTS.MD5_REQ_PATTERN.replace('{ID}', entry.ID);
-        let md5Response: Response = await this.getResponse(md5ReqURL) || new Response();
+    private static async download(entryIndex: number): Promise<void> {
+        let entryID: string = this.state.entryDataArr[entryIndex].ID;
+        let entryMD5Arr: { md5: string }[] | void = await Downloader.findEntriesMD5([entryID]);
 
-        if (this.state.connectionError) {
-            this.connectionError();
+        let URL: string = '';
+
+        if (this.state.runtimeError) {
+            return;
         }
 
-        let md5ResponseJson: [ {md5: string} ] = await md5Response.json();
-        let entrymd5: string = md5ResponseJson[0].md5;
-        
-        let mirrorURL: string = CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN.replace('{MD5}', entrymd5);
-        let mirrorDocument: HTMLDocument = await this.getDocument(mirrorURL);
-
-        let downloadEndpoint: string = Entries.getDownloadURL(mirrorDocument);
-
-        return downloadEndpoint;
-    }
-
-    async download(entryIndex: number): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.CONNECTING_MIRROR);
-        this.spinner.start();
-
-        let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
-
-        let downloadEndPoint: string = await this.constructDownloadEndpoint(selectedEntry);
-
-        let downloadResponse: Response = await this.getResponse(downloadEndPoint);
-
-        if (this.state.connectionError) {
-            this.connectionError();
+        if (entryMD5Arr) {
+            URL = await Downloader.findDownloadURL(entryMD5Arr[0].md5);
         }
-        
-        let fileAuthor: string = selectedEntry.Author;
-        let fileTitle: string = selectedEntry.Title;
-        let fileExtension: string = selectedEntry.Ext;
-        
-        let fileName: string = (`${fileAuthor} ${fileTitle}`).replace(CONSTANTS.STRING_REPLACE_REGEX,"");
-        fileName = fileName.split(' ').join('_');
 
-        let fullFileName: string = `./${fileName}.${fileExtension}`;
+        if  (this.state.runtimeError) {
+            return;
+        }
 
-        let file: fs.WriteStream = fs.createWriteStream(fullFileName);
 
-        let progressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
-            width: CONSTANTS.PROGRESS_BAR.WIDTH,
-            complete: CONSTANTS.PROGRESS_BAR.COMPLETE,
-            incomplete: CONSTANTS.PROGRESS_BAR.INCOMPLETE,
-            renderThrottle: CONSTANTS.PROGRESS_BAR.RENDER_THROTTLE,
-            total: parseInt(downloadResponse.headers.get('content-length') || '0')
-        });
+        let fileName: string = await Downloader.startDownloading(URL);
 
-        this.spinner.stop(true);
-        
-        console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
-        
-        downloadResponse.body.on('data', chunk => {
-            progressBar.tick(chunk.length);
-        });
-        
-        downloadResponse.body.on('finish', async () => {
-            this.promptAfterDownload(fileName, fileExtension);
-        });
-        
-        downloadResponse.body.on('error', this.connectionError);
-        
-        downloadResponse.body.pipe(file);
+        if (App.state.runtimeError) {
+            this.runtimeError();
+            return;
+        }
+
+        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName);
+
+        App.promptAfterDownload();
     }
 
     /**  **************************************************  */
-    async promptResults(): Promise<void> {
+    private static async promptResults(): Promise<void> {
         this.clear();
+        let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
+        let optionObjects: UIInterfaces.ListingObject[] = this.constructOptions();
 
-        let listQuestion: Interfaces.ListQuestion = Questions.getListQuestion(this.state.entryDataArr, this.state.currentPage);
-        let paginationQuestionChoices: Interfaces.QuestionChoice[] = this.constructPaginations();
-
-        if (paginationQuestionChoices.length > 0) {
-            listQuestion.choices = [ ... paginationQuestionChoices, ...listQuestion.choices];
+        if (optionObjects.length > 0) {
+            listObject.listings = [...optionObjects, ...listObject.listings];
         }
 
-        this.state.listQuestion = listQuestion;
+        this.state.listObject = listObject;
 
-        let selectedChoice: Interfaces.ListQuestionResult = await this.prompt(this.state.listQuestion);
+        console.log(CONSTANTS.RESULTS_TITLE
+            .replace('{query}', decodeURIComponent(this.state.query || '') || ' ')
+            .replace('{page}', this.state.currentPage.toString()));
+
+        UI.Terminal.setBulkDownloadOptionPosition(optionObjects.length);
+        
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
     }
 
-    async promptEntryDetails(entryIndex: number): Promise<void> {
+    private static async promptEntryDetails(entryIndex: number): Promise<void> {
         this.clear();
 
         let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
@@ -344,65 +354,67 @@ export default class App implements Interfaces.App {
 
         outputArr.forEach(output => console.log(output));
 
-        let detailsQuestion: Interfaces.ListQuestion = Questions.getEntryDetailsQuestion(entryIndex);
+        let entryCheckStatus: boolean = UI.Terminal.isListingChecked(selectedEntry.ID);
 
-        let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(detailsQuestion);
+        let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex, entryCheckStatus);
+
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(detailsListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    async promptAfterDownload(fileName: string, fileExtension: string): Promise<void> {
-        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName, fileExtension);
+    public static async promptAfterDownload(): Promise<void> {
+        let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
 
-        let afterDownloadQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
-            {
-                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.TURN_BACK_RESULT_ID
-            },
-
-            {
-                name: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT,
-                id: CONSTANTS.AFTER_DOWNLOAD_QUESTIONS.EXIT_RESULT_ID
-            }
-        ]);
-
-        let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterDownloadQuestion);
+        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterDownloadListObject);
 
         this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_DOWNLOAD, selectedChoice);
     }
 
     /**  **************************************************  */
-    async executePromptFlow(): Promise<void> {
-        this.state.connectionError = false;
+    private static async executePromptFlow(): Promise<void> {
+        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
+        this.spinner.start();
 
-        await this.setEntries();
+        let connectionSucceed: boolean = false;
 
-        if (this.state.connectionError) {
-            this.connectionError();
+        let errTolarance: number = CONFIG.ERR_TOLERANCE;
+        let errCounter: number = 0;
+
+        while (errCounter < errTolarance && !connectionSucceed) {
+            this.state.runtimeError = false;
+
+            await this.setEntries();
+
+            if (this.state.runtimeError) {
+                errCounter++;
+                this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS_ERR
+                    .replace('{errCounter}', errCounter.toString())
+                    .replace('{errTolarance}', errTolarance.toString()));
+                await this.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
+            } else {
+                connectionSucceed = true;
+            }
         }
 
         this.spinner.stop(true);
 
+        if (this.state.runtimeError) {
+            this.runtimeError();
+            return;
+        }
+
         if (this.state.entryDataArr.length > 0) {
             this.promptResults();
         } else {
+            UI.Terminal.prevLine();
+            UI.Terminal.clearLine();
+
             console.log(CONSTANTS.NO_RESULT);
 
-            let afterNoResultQuestion: Interfaces.ListQuestion = Questions.getAfterEventQuestion([
-                {
-                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER,
-                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.SEARCH_ANOTHER_RESULT_ID
-                },
-
-                {
-                    name: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT,
-                    id: CONSTANTS.AFTER_NORESULT_QUESTIONS.EXIT_RESULT_ID
-                }
-            ]);
-
-            let selectedChoice: Interfaces.EntryDetailsQuestionChoiceResult = await this.prompt(afterNoResultQuestion);
-
-            this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_NORESULT, selectedChoice);
+            let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
+            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
+            this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
         }
     }
 }

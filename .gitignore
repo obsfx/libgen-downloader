@@ -1,4 +1,9 @@
 /node_modules
-/dist
+/dev
 /build
 /standalone-executables
+
+
+/puntonite-uimodule/node_modules
+/puntonite-uimodule/dist
+/puntonite-uimodule/build

@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "a simple tool to search and download pdfs via command line interface from libgen",
   "main": "./dist/index.js",
   "bin": {
@@ -9,13 +9,10 @@
   },
   "scripts": {
     "standalone": "pkg . --out-path ./standalone-executables",
-    "run": "node ./build/index.js",
-    "run-dev": "node ./dist/index.js",
+    "run": "node ./bin/index.js",
     "build": "tsc -b",
-    "minify": "minify ./dist -d ./build",
     "watch": "tsc -b --watch",
-    "link": "npm link --force",
-    "rmout": "rm -R ./dist"
+    "link": "npm link --force"
   },
   "keywords": [
     "libgen",
@@ -38,21 +35,21 @@
   },
   "devDependencies": {
     "@types/cli-spinner": "^0.2.0",
-    "@types/inquirer": "^6.5.0",
+    "@types/content-disposition": "^0.5.3",
     "@types/jsdom": "^12.2.4",
-    "@types/node": "^12.12.21",
+    "@types/minimist": "^1.2.0",
+    "@types/node": "^12.12.38",
     "@types/node-fetch": "^2.5.4",
     "@types/progress": "^2.0.3",
-    "babel-minify": "^0.5.1",
     "pkg": "^4.4.4",
-    "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },
   "dependencies": {
     "cli-spinner": "^0.2.10",
-    "inquirer": "^7.0.1",
+    "content-disposition": "^0.5.3",
     "jsdom": "^16.2.0",
     "kleur": "^3.0.3",
+    "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
     "progress": "^2.0.3"
   }
