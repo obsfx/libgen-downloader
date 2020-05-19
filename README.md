@@ -34,7 +34,7 @@ In addition to single file download option, you can download more than one file 
 
 `libgen-downloader` does not download files at the same time to avoid breaking the libgen servers or blocking by the libgen servers because of too many requests. So, you have to be patient.
 
-At the end of the bulk downloading, `libgen-downloader` will export a `.txt`that contains MD5 codes of downloaded files line by line. When you want to download all files again you can use this file with this command line parameter that calls as `--bulk`.
+At the end of the bulk downloading, `libgen-downloader` will export a `.txt` that contains MD5 codes of downloaded files line by line. When you want to download all files again you can use this file with command line parameter that calls as `--bulk`.
 
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/3.gif)
 
