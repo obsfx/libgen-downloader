@@ -1,6 +1,8 @@
 import ansi from './ansi';
 
 const OUTPUTS = {
+    HOVERCURSOR: '>',
+
     STANDARTPREFIX: ' ',
     SUBMENUPREFIX: '    •',
     SUBMENUHOVEREDPREFIX: '  > •',

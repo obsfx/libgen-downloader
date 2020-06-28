@@ -1,19 +1,41 @@
+import { Types } from './types.namespace';
+
 export namespace Interfaces {
-    interface baseObject {
+    export interface promptObject {
+        type: 'input';
         text: string;
     }
 
-    export interface promptObject extends baseObject {
-        type: 'input';
-    }
-
-    export interface ListObject {
-        type: 'list';
-        bulkDownloadOption: boolean;
-        listings: ListingObject[];
+    export interface List {
+        listings: (Listing | Dropdown)[];
         listedItemCount: number;
     }
 
+    export interface Listing {
+        x: number;
+        y: number;
+
+        text: string;
+        value: string;
+        actionID: string;
+
+        color: Types.color;
+        hovercolor: Types.color;
+
+        prefix: string;
+        hoverprefix: string;
+    }
+
+    export interface Dropdown {
+        text: string;
+        value: string;
+        submenus: Submenu[];
+    }
+
+    export interface Submenu extends Listing{
+        parentOffset: number;
+    }
+/*
     export interface ListingObject extends baseObject {
         value: string;
         isCheckable: boolean;
@@ -39,4 +61,5 @@ export namespace Interfaces {
         value: string,
         actionID: string
     }
+*/
 }

@@ -67,6 +67,10 @@ export default abstract class Terminal {
         process.stdout.write(ansi.NEXTLINEX.replace('{x}', x.toString()));
     }
 
+    public static cursorXY(x: number, y: number) {
+        process.stdout.write(ansi.SETXY.replace('{x}', x.toString()).replace('{y}', y.toString()));
+    }
+
     /*********************************************** */
     public static promptList(arr: Interfaces.ListingObject[], listedItemCount: number, addBulkDownloadOption: boolean = false): void {
         this.cursorIndex = 0;

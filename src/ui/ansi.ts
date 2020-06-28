@@ -16,6 +16,8 @@ export default {
     PREVLINEX: '\u001b[{x}F',
     NEXTLINEX: '\u001b[{x}E',
 
+    SETXY: '\u001b[{y};{x}H',
+
     BLACK: '\u001b[30m',
     RED: '\u001b[31m',
     GREEN: '\u001b[32m',

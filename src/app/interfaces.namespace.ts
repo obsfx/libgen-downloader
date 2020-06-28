@@ -6,6 +6,7 @@ export namespace Interfaces {
         currentPage: number;
         url: string;
         query: string | null;
+        queryMinLenWarning: boolean;
         isNextPageExist: boolean;
         errorText: string;
         runtimeError: boolean;

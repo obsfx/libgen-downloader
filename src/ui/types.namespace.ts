@@ -16,4 +16,25 @@ export namespace Types {
      * prompt types
      */
     export type promptObjectType = 'input' | 'list';
+    
+    /**
+     * colors
+     */ 
+    export type color = 'black' |
+                        'red' |
+                        'green' |
+                        'yellow' |
+                        'blue' |
+                        'magenta' |
+                        'cyan' |
+                        'white' |
+                        'bblack' |
+                        'bred' |
+                        'bgreen' |
+                        'byellow' |
+                        'bblue' |
+                        'bmagenta' |
+                        'bcyan' |
+                        'bwhite';
+
 }

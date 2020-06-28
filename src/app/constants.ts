@@ -3,7 +3,7 @@ import CONFIG from './config';
 
 export default {
     HEAD: [
-        `┌  ${yellow().bold('libgen-downloader')} ${cyan().bold('@v1.0.0')}`,
+        `┌  ${yellow().bold('libgen-downloader')} ${cyan().bold('@v1.1.0')}`,
         '├───  Source Code: https://github.com/obsfx/libgen-downloader',
         '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
         ' '

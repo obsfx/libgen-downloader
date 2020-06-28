@@ -38,6 +38,7 @@ export default abstract class App {
             currentPage: 1,
             url: '',
             query: null,
+            queryMinLenWarning: false,
             isNextPageExist: false,
             errorText: '',
             runtimeError: false,
@@ -66,8 +67,9 @@ export default abstract class App {
 
         while (this.state.query == null) {
             await this.setInput();
+            this.clear();
         }
-    
+
         await this.executePromptFlow();
     }
 
@@ -230,6 +232,11 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async setInput(): Promise<void> {
+        if (this.state.queryMinLenWarning) {
+            console.log(this.state.queryMinLenWarning ? CONSTANTS.INPUT_MINLEN_WARNING : ' ');
+            this.state.queryMinLenWarning = false;
+        }
+
         let inputObject: UIInterfaces.promptObject = {
             type: 'input',
             text: UI.outputs.SEARCH
@@ -238,7 +245,7 @@ export default abstract class App {
         let input: UIInterfaces.ReturnObject = await UI.Main.prompt(inputObject);
 
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
-            console.log(CONSTANTS.INPUT_MINLEN_WARNING);
+            this.state.queryMinLenWarning = true;
         } else {
             this.state.query = encodeURIComponent(input.value);
         }
