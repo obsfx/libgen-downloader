@@ -6,11 +6,6 @@ export namespace Interfaces {
         text: string;
     }
 
-    export interface List {
-        listings: (Listing | Dropdown)[];
-        listedItemCount: number;
-    }
-
     export interface Listing {
         x: number;
         y: number;
@@ -24,6 +19,9 @@ export namespace Interfaces {
 
         prefix: string;
         hoverprefix: string;
+
+        setXY(x: number, y: number): void;
+        render(hover: boolean): void;
     }
 
     export interface Dropdown {
