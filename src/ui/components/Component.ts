@@ -13,15 +13,15 @@ export default abstract class Component implements Interfaces.Component {
     hovercolor: Types.color;
 
     constructor(params: Interfaces.ComponentParams) {
-        this.x = params.x;
-        this.y = params.y;
-
         this.text = params.text;
         this.value = params.value;
         this.actionID = params.actionID;
 
         this.color = params.color;
         this.hovercolor = params.hovercolor;
+        
+        this.x = 0;
+        this.y = 0;
     }
 
     setXY(x: number, y: number): void {

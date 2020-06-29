@@ -1,4 +1,4 @@
-import { Interfaces } from '../interfaces.namespace';
+import { Types } from '../types.namespace';
 
 import ListingContainer from './ListingContainer';
 
@@ -12,8 +12,6 @@ export default class List extends ListingContainer {
             this.clear();
         }
 
-        this.renderCursor();
-
         this.printedListingCount = 0; 
 
         let listLength: number = this.renderingQueue.length >= this.listLength ?
@@ -21,7 +19,7 @@ export default class List extends ListingContainer {
             this.renderingQueue.length;
 
         for (let i: number = 0; i < listLength; i++) {
-            let listing: Interfaces.Listing = this.renderingQueue[i];
+            let listing: Types.Listing = this.renderingQueue[i];
             let hover: boolean = i == this.cursorIndex ? true : false;
 
             listing.setXY(this.x + this.paddingLeft, this.y + i);
@@ -29,5 +27,7 @@ export default class List extends ListingContainer {
 
             this.printedListingCount++;
         }
+
+        this.renderCursor();
     }
 }

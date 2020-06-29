@@ -1,4 +1,4 @@
-import { UIInterfaces } from '../ui'
+import { UIInterfaces, List } from '../ui'
 
 export namespace Interfaces {
 
@@ -11,7 +11,7 @@ export namespace Interfaces {
         errorText: string;
         runtimeError: boolean;
         entryDataArr: Entry[] | [];
-        listObject: UIInterfaces.ListObject | null;
+        listObject: List | null;
     }
 
     export interface Entry {

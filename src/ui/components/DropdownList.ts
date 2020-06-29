@@ -22,9 +22,7 @@ export default class DropdownList extends ListingContainer {
             this.clear();
         }
 
-        if (!this.expanded) {
-            this.renderCursor();
-        }
+        this.renderCursor();
 
         this.printedListingCount = 0; 
 
@@ -49,7 +47,7 @@ export default class DropdownList extends ListingContainer {
         await this.renderingQueue[this.cursorIndex].expand();
     }
 
-    protected async eventHandler(key: Types.stdinOnKeyParam): Promise<void> {
+    public async eventHandler(key: Types.stdinOnKeyParam): Promise<void> {
         if (!this.expanded) {
             if (key.name == keymap.PREVLISTING) {
                 this.prev();

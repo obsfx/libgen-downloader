@@ -17,53 +17,53 @@ export default abstract class ListingContainer extends Component {
     protected activeAwait: boolean = false;
 
     protected cursor: string = Colors.get('cyan', '>');
+    protected cursorX: number = 0;
+    protected cursorY: number = 0;
 
     protected middleIndex: number = 0;
     protected renderingQueue: Types.Listing[] = [];
-    protected paddingLeft: number = 1;
+    protected paddingLeft: number = 2;
 
     constructor() {
         super({
-            x: 0,
-            y: 0,
-
             text: '',
             value: '',
             actionID: '',
 
             color: 'white',
             hovercolor: 'white'
-        })
+        });
+
+        this.cursorX = this.x;
+        this.cursorY = this.y;
     }
 
     setXY(x: number, y: number): void {
         this.x = x;
         this.y = y;
+
+        this.cursorX = x;
+        this.cursorY = y;
     }
 
-    protected attachListingArr(listingArr: Types.Listing[], listLength: number): void {
+    setPaddingLeft(paddingLeft: number): void {
+        this.paddingLeft = paddingLeft;
+    }
+
+    public attachListingArr(listingArr: Types.Listing[], listLength: number): void {
         this.cursorIndex = 0;
         this.listLength = listLength;
         this.middleIndex = Math.floor(this.listLength / 2);
 
         this.renderingQueue = listingArr;
 
-        this.paddingLeft = 1;
+        this.paddingLeft = 2;
     }
 
-    protected setCursorColor(cursorColor: Types.color): void {
-        this.cursor = Colors.get(cursorColor, this.cursor);
-    }
-
-    protected renderCursor(): void {
-        Terminal.cursorXY(this.x, this.cursorIndex);
-        process.stdout.write(this.cursor);
-    }
-
-    protected prev(fn: Function | null = null): void  {
+    protected prev(): void  {
         if (this.renderingQueue.length <= this.listLength) {
             this.cursorIndex = this.cursorIndex > 0 ?
-                this.cursorIndex-- :
+                this.cursorIndex - 1 :
                 this.renderingQueue.length - 1;
         } else {
             let pop: Types.Listing | undefined = this.renderingQueue.pop();
@@ -73,15 +73,13 @@ export default abstract class ListingContainer extends Component {
             }
         }
 
-        if (fn) {
-            fn();
-        }
+        this.prevCursor();
     }
 
-    protected next(fn: Function | null = null): void {
+    protected next(): void {
         if (this.renderingQueue.length <= this.listLength || this.cursorIndex < this.middleIndex) {
             this.cursorIndex = this.cursorIndex < this.renderingQueue.length - 1 ?
-                this.cursorIndex++ :
+                this.cursorIndex + 1 :
                 0;
         } else {
             let shift: Types.Listing | undefined = this.renderingQueue.shift();
@@ -91,8 +89,46 @@ export default abstract class ListingContainer extends Component {
             } 
         }
 
-        if (fn) {
-            fn();
+        this.nextCursor();
+    }
+
+    protected renderCursor(): void {
+        Terminal.cursorXY(this.cursorX, this.cursorY);
+        process.stdout.write(this.cursor);
+    }
+
+    protected clearCursor(): void {
+        Terminal.clearXY(this.cursorX, this.cursorY);
+    }
+
+    protected setCursorColor(cursorColor: Types.color): void {
+        this.cursor = Colors.get(cursorColor, this.cursor);
+    }
+
+    public setCursorXY(x: number, y: number): void {
+        this.cursorX = x;
+        this.cursorY = y;
+    }
+
+    protected prevCursor(): void {
+        if (this.renderingQueue.length <= this.listLength) {
+            let y: number = this.cursorY > this.y ?
+                this.cursorY - 1 :
+                this.renderingQueue.length - 1;
+
+            this.clearCursor();
+            this.setCursorXY(this.cursorX, y);
+        }
+    }
+
+    protected nextCursor(): void {
+        if (this.renderingQueue.length <= this.listLength || this.cursorY < this.y + this.middleIndex) {
+            let y: number = this.cursorY < this.renderingQueue.length - 1 ?
+                this.cursorY + 1 :
+                this.y;
+
+            this.clearCursor();
+            this.setCursorXY(this.cursorX, y);
         }
     }
 
@@ -114,13 +150,15 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected eventHandler(key: Types.stdinOnKeyParam): void {
+    public eventHandler(key: Types.stdinOnKeyParam): void {
         if (key.name == keymap.PREVLISTING) {
             this.prev();
+            this.render();
         }
 
         if (key.name == keymap.NEXTLISTING) {
             this.next();
+            this.render();
         }
 
         if (key.name == keymap.DOACTION && this.activeAwait) {
@@ -128,7 +166,7 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected awaitForReturn(): Promise<Interfaces.ReturnObject> {
+    public awaitForReturn(): Promise<Interfaces.ReturnObject> {
         this.terminateAwaiting = false;
         this.activeAwait = true;
 

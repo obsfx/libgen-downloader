@@ -7,9 +7,6 @@ export namespace Interfaces {
     }
 
     export interface ComponentParams {
-        x: number;
-        y: number;
-
         text: string;
         value: string;
         actionID: string;
@@ -22,10 +19,6 @@ export namespace Interfaces {
         setXY(x: number, y: number): void;
         render(hover: boolean): void;
         expand(): void;
-    }
-
-    export interface Submenu extends Listing {
-        parentOffset: number;
     }
 
     export interface ReturnObject {

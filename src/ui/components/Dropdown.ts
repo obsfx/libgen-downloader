@@ -57,5 +57,18 @@ export default class Dropdown extends ListingContainer {
          * find a way to clear only 1 char at specific row col 
          * position
          */
+
+        for (let i: number = 1; i <= this.renderingQueue.length; i++) {
+            let listing: Types.Listing = this.renderingQueue[i - 1];
+
+            let x: number = this.x + this.paddingLeft;
+            let y: number = this.y + i;
+
+            Terminal.cursorXY(x, y);
+            Terminal.clearLine();
+            
+            listing.setXY(x, y);
+            listing.render(false);
+        }
     }
 }
