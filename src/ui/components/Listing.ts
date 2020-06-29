@@ -2,7 +2,7 @@ import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import Terminal from '../modules/Terminal';
-import Color from '../modules/Colors';
+import Colors from '../modules/Colors';
 
 export default class Listing implements Interfaces.Listing {
     x: number;
@@ -15,10 +15,7 @@ export default class Listing implements Interfaces.Listing {
     color: Types.color;
     hovercolor: Types.color;
 
-    prefix: string;
-    hoverprefix: string;
-
-    constructor(params: Interfaces.Listing) {
+    constructor(params: Interfaces.ListingParams) {
         this.x = params.x;
         this.y = params.y;
 
@@ -28,9 +25,6 @@ export default class Listing implements Interfaces.Listing {
 
         this.color = params.color;
         this.hovercolor = params.hovercolor;
-
-        this.prefix = params.prefix;
-        this.hoverprefix = params.hoverprefix;
     }
 
     setXY(x: number, y: number): void {
@@ -42,13 +36,9 @@ export default class Listing implements Interfaces.Listing {
         Terminal.cursorXY(this.x, this.y);
 
         let output: string = hover ? 
-            Color.get(this.hovercolor, this.text) :
-            Color.get(this.color, this.text);
+            Colors.get(this.hovercolor, this.text) :
+            Colors.get(this.color, this.text);
 
-        let prefix: string = hover ?
-            this.hoverprefix :
-            this.prefix;
-
-        process.stdout.write(`${prefix}${output}`);
+        process.stdout.write(output);
     }
 }

@@ -42,7 +42,7 @@
     "@types/node-fetch": "^2.5.4",
     "@types/progress": "^2.0.3",
     "pkg": "^4.4.4",
-    "typescript": "^3.7.4"
+    "typescript": "^3.9.5"
   },
   "dependencies": {
     "cli-spinner": "^0.2.10",

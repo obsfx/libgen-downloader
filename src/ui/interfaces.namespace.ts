@@ -6,7 +6,7 @@ export namespace Interfaces {
         text: string;
     }
 
-    export interface Listing {
+    export interface ListingParams {
         x: number;
         y: number;
 
@@ -16,22 +16,24 @@ export namespace Interfaces {
 
         color: Types.color;
         hovercolor: Types.color;
+    }
 
-        prefix: string;
-        hoverprefix: string;
-
+    export interface Listing extends ListingParams {
         setXY(x: number, y: number): void;
         render(hover: boolean): void;
     }
 
-    export interface Dropdown {
-        text: string;
-        value: string;
-        submenus: Submenu[];
+    export interface DropdownParams extends ListingParams {
+        dropdownlist: Listing[];
     }
 
-    export interface Submenu extends Listing{
+    export interface Submenu extends Listing {
         parentOffset: number;
+    }
+
+    export interface ReturnObject {
+        value: string,
+        actionID: string
     }
 /*
     export interface ListingObject extends baseObject {
@@ -55,9 +57,5 @@ export namespace Interfaces {
         [key: string]: boolean;
     }
 
-    export interface ReturnObject {
-        value: string,
-        actionID: string
-    }
 */
 }
