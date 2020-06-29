@@ -1,42 +1,42 @@
-import { Interfaces } from '../interfaces.namespace';
+import {Types} from '../types.namespace';
 
 import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
-import Listing from './Listing';
+import ListingContainer from './ListingContainer';
 
-export default class Dropdown extends Listing {
-    dropdownlist: Interfaces.Listing[];
-
+export default class Dropdown extends ListingContainer {
     prefix: string;
     hoverprefix: string;
     expandedprefix: string;
 
     expanded: boolean;
 
-    constructor(params: Interfaces.DropdownParams) {
-        super({
-            x: params.x,
-            y: params.y,
+    text: string;
 
-            text: params.text,
-            value: params.value,
-            actionID: params.actionID,
+    color: Types.color;
+    hovercolor: Types.color;
 
-            color: params.color,
-            hovercolor: params.hovercolor
-        });
-
-        this.dropdownlist = params.dropdownlist;
+    constructor() {
+        super();
 
         this.prefix = '+';
         this.hoverprefix = '+';
         this.expandedprefix = '─';
 
         this.expanded = false;
+
+        this.text = ' ';
+
+        this.color = 'white';
+        this.hovercolor = 'cyan';
     }
 
-    render(hover: boolean = false): void {
+    setText(text: string): void {
+        this.text = text;
+    }
+
+    public render(hover: boolean = false): void {
         Terminal.cursorXY(this.x, this.y);
 
         let output: string = hover ? 
@@ -48,5 +48,14 @@ export default class Dropdown extends Listing {
             hover ? this.hoverprefix : this.prefix;
 
         process.stdout.write(`${prefix} ${output}`);
+    }
+
+    async expand(): Promise<void> {
+        /*
+         * TODO: make cursor separate. means when cursor moves
+         * only cursour should be rendered not the entire list.
+         * find a way to clear only 1 char at specific row col 
+         * position
+         */
     }
 }

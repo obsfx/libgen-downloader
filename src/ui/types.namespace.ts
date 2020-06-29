@@ -1,3 +1,7 @@
+import { Interfaces } from './interfaces.namespace';
+
+import Dropdown from './components/Dropdown';
+
 export namespace Types {
     /**
      * process.stdin params
@@ -37,4 +41,5 @@ export namespace Types {
                         'bcyan' |
                         'bwhite';
 
+    export type Listing = Interfaces.Component | Dropdown;
 }

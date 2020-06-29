@@ -6,7 +6,7 @@ export namespace Interfaces {
         text: string;
     }
 
-    export interface ListingParams {
+    export interface ComponentParams {
         x: number;
         y: number;
 
@@ -18,13 +18,10 @@ export namespace Interfaces {
         hovercolor: Types.color;
     }
 
-    export interface Listing extends ListingParams {
+    export interface Component extends ComponentParams {
         setXY(x: number, y: number): void;
         render(hover: boolean): void;
-    }
-
-    export interface DropdownParams extends ListingParams {
-        dropdownlist: Listing[];
+        expand(): void;
     }
 
     export interface Submenu extends Listing {

@@ -1,4 +1,3 @@
-import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import ListingContainer from './ListingContainer';
@@ -6,18 +5,16 @@ import ListingContainer from './ListingContainer';
 import keymap from '../keymap';
 
 export default class DropdownList extends ListingContainer { 
-    popupedListings: Interfaces.Listing[] | null;
-
     expanded: boolean;
-    expandedForeColor: Types.color;
+    expandedFadeColor: Types.color;
 
     constructor() {
         super();
 
-        this.popupedListings = null;
+        this.renderingQueue = [];
 
         this.expanded = false;
-        this.expandedForeColor = 'white';
+        this.expandedFadeColor = 'white';
     }
 
     public render(): void {
@@ -36,7 +33,7 @@ export default class DropdownList extends ListingContainer {
             this.renderingQueue.length;
 
         for (let i: number = 0; i < listLength; i++) {
-            let listing: Interfaces.Listing = this.renderingQueue[i];
+            let listing: Types.Listing = this.renderingQueue[i];
             let hover: boolean = i == this.cursorIndex ? true : false;
 
             listing.setXY(this.x + this.paddingLeft, this.y + i);
@@ -46,7 +43,13 @@ export default class DropdownList extends ListingContainer {
         }
     }
 
-    protected eventHandler(key: Types.stdinOnKeyParam): void {
+    private async expandListing(): Promise<void> {
+        this.expanded = true;
+
+        await this.renderingQueue[this.cursorIndex].expand();
+    }
+
+    protected async eventHandler(key: Types.stdinOnKeyParam): Promise<void> {
         if (!this.expanded) {
             if (key.name == keymap.PREVLISTING) {
                 this.prev();
@@ -54,6 +57,10 @@ export default class DropdownList extends ListingContainer {
 
             if (key.name == keymap.NEXTLISTING) {
                 this.next();
+            }
+
+            if (key.name == keymap.DOACTION) {
+                await this.expandListing();
             }
         }
 

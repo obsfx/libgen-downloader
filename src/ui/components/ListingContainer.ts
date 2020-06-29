@@ -4,12 +4,11 @@ import { Types } from '../types.namespace';
 import Terminal from '../modules/Terminal';
 import Colors from  '../modules/Colors';
 
+import Component from './Component';
+
 import keymap from '../keymap';
 
-export default abstract class ListingContainer {
-    protected x: number = 0;
-    protected y: number = 0;
-
+export default abstract class ListingContainer extends Component {
     protected cursorIndex: number = 0;
     protected printedListingCount : number = 0;
     protected listLength: number = 0;
@@ -20,17 +19,29 @@ export default abstract class ListingContainer {
     protected cursor: string = Colors.get('cyan', '>');
 
     protected middleIndex: number = 0;
-    protected renderingQueue: Interfaces.Listing[] = [];
+    protected renderingQueue: Types.Listing[] = [];
     protected paddingLeft: number = 1;
 
-    constructor() {  }
+    constructor() {
+        super({
+            x: 0,
+            y: 0,
 
-    protected setXY(x: number, y: number): void {
+            text: '',
+            value: '',
+            actionID: '',
+
+            color: 'white',
+            hovercolor: 'white'
+        })
+    }
+
+    setXY(x: number, y: number): void {
         this.x = x;
         this.y = y;
     }
 
-    protected attachListingArr(listingArr: Interfaces.Listing[], listLength: number): void {
+    protected attachListingArr(listingArr: Types.Listing[], listLength: number): void {
         this.cursorIndex = 0;
         this.listLength = listLength;
         this.middleIndex = Math.floor(this.listLength / 2);
@@ -55,7 +66,7 @@ export default abstract class ListingContainer {
                 this.cursorIndex-- :
                 this.renderingQueue.length - 1;
         } else {
-            let pop: Interfaces.Listing | undefined = this.renderingQueue.pop();
+            let pop: Types.Listing | undefined = this.renderingQueue.pop();
 
             if (pop) {
                 this.renderingQueue.unshift(pop);
@@ -73,7 +84,7 @@ export default abstract class ListingContainer {
                 this.cursorIndex++ :
                 0;
         } else {
-            let shift: Interfaces.Listing | undefined = this.renderingQueue.shift();
+            let shift: Types.Listing | undefined = this.renderingQueue.shift();
 
             if (shift) {
                 this.renderingQueue.push(shift);
@@ -92,10 +103,10 @@ export default abstract class ListingContainer {
         }
     }
 
-    protected render(): void {  }
+    render(): void {  }
 
     protected getCurrentListing(): Interfaces.ReturnObject {
-        let currentListing: Interfaces.Listing = this.renderingQueue[this.cursorIndex];
+        let currentListing: Types.Listing = this.renderingQueue[this.cursorIndex];
         
         return {
             value: currentListing.value,
