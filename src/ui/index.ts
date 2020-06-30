@@ -5,7 +5,12 @@ import Main from './modules/Main';
 import Terminal from './modules/Terminal';
 import EventHandler from './modules/EventHandler';
 
+import Listing from './components/Listing';
 import List from './components/List';
+
+import Dropdown from './components/Dropdown';
+import DropdownList from './components/DropdownList';
+
 import Input from './components/Input';
 
 import outputs from './outputs';
@@ -17,16 +22,18 @@ export {
     Types as UITypes,
 
     EventHandler,
-
-    List,
-    Input
-}
-
-export default {
     Main,
     Terminal,
 
-    outputs,
-    ansi,
-    constants
+    Listing,
+    List,
+
+    Dropdown,
+    DropdownList,
+
+    Input,
+
+    outputs as UIOutputs,
+    ansi as UIANSI,
+    constants as UIConstants
 }

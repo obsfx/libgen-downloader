@@ -1,5 +1,7 @@
 import { Types } from './types.namespace';
 
+import List from './components/List';
+
 export namespace Interfaces {
     export interface promptObject {
         type: 'input';
@@ -16,9 +18,18 @@ export namespace Interfaces {
     }
 
     export interface Component extends ComponentParams {
+        sublist: List | null;
+
         setXY(x: number, y: number): void;
+
+        attachSublist(sublist: List): void;
+        detachSublist(): void;
+
         render(hover: boolean): void;
-        expand(): void;
+
+        eventHandler(key: Types.stdinOnKeyParam): (void | boolean);
+
+        show(): void;
     }
 
     export interface ReturnObject {

@@ -7,14 +7,16 @@ import keymap from '../keymap';
 export default class DropdownList extends ListingContainer { 
     expanded: boolean;
     expandedFadeColor: Types.color;
+    expandedIndex: number | null;
 
     constructor() {
         super();
 
-        this.renderingQueue = [];
-
         this.expanded = false;
         this.expandedFadeColor = 'white';
+        this.expandedIndex = null;
+
+        this.setPaddingLeft(4);
     }
 
     public render(): void {
@@ -22,43 +24,45 @@ export default class DropdownList extends ListingContainer {
             this.clear();
         }
 
-        this.renderCursor();
-
         this.printedListingCount = 0; 
 
-        let listLength: number = this.renderingQueue.length >= this.listLength ?
-            this.listLength :
-            this.renderingQueue.length;
-
-        for (let i: number = 0; i < listLength; i++) {
+        for (let i: number = 0; i < this.listLength; i++) {
             let listing: Types.Listing = this.renderingQueue[i];
             let hover: boolean = i == this.cursorIndex ? true : false;
 
-            listing.setXY(this.x + this.paddingLeft, this.y + i);
+            listing.setXY(this.x + this.paddingLeft + this.containerPadding, this.y + i + this.containerPadding);
             listing.render(hover);
 
             this.printedListingCount++;
         }
+
+        this.renderCursor();
     }
 
-    private async expandListing(): Promise<void> {
-        this.expanded = true;
-
-        await this.renderingQueue[this.cursorIndex].expand();
-    }
-
-    public async eventHandler(key: Types.stdinOnKeyParam): Promise<void> {
+    public eventHandler(key: Types.stdinOnKeyParam): void {
         if (!this.expanded) {
             if (key.name == keymap.PREVLISTING) {
                 this.prev();
+                this.render();
             }
 
             if (key.name == keymap.NEXTLISTING) {
                 this.next();
+                this.render();
             }
 
             if (key.name == keymap.DOACTION) {
-                await this.expandListing();
+                this.expandedIndex = this.cursorIndex;
+                this.expanded = true;
+
+                this.renderingQueue[this.expandedIndex].show();
+            }
+        } else if (this.expandedIndex != null) {
+            let isDone: (void | boolean) = this.renderingQueue[this.expandedIndex].eventHandler(key);
+
+            if (isDone) {
+                this.expanded = false;
+                this.expandedIndex = null;
             }
         }
 

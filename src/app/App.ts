@@ -1,10 +1,21 @@
 import { Interfaces } from './interfaces.namespace';
-import { UIInterfaces, List, Input, EventHandler } from '../ui';
 
 import CONFIG from './config';
 import CONSTANTS from './constants';
 
-import UI from '../ui';
+import {
+    UIInterfaces,
+
+    EventHandler,
+    Terminal,
+
+    List,
+    DropdownList,
+
+    Input,
+
+    UIConstants
+} from '../ui';
 import UIObjects from './modules/UIObjects';
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
@@ -48,7 +59,7 @@ export default abstract class App {
     }
 
     public static clear(): void {
-        UI.Terminal.clear();
+        Terminal.clear();
         this.promptHead();
     }
 
@@ -74,7 +85,7 @@ export default abstract class App {
     }
 
     public static exit(): void {
-        UI.Terminal.showCursor();
+        Terminal.showCursor();
         process.exit(0);
     }
 
@@ -96,7 +107,7 @@ export default abstract class App {
                 await this.download(Number(value));
             } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
                 await this.promptEntryDetails(Number(value));
-            } else if (actionID == UI.constants.DOWNLOADBULKVAL) {
+            } else if (actionID == UIConstants.DOWNLOADBULKVAL) {
                 this.clear();
                 
                // await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
@@ -332,19 +343,25 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async promptResults(): Promise<void> {
-        this.clear();
+       this.clear();
 
-       let list: List = UIObjects.createList(this.state.entryDataArr); 
+       // let list: List = UIObjects.createList(this.state.entryDataArr); 
 
-       EventHandler.attach(list.eventHandler.bind(list));
+       // EventHandler.attach(list.eventHandler.bind(list));
 
-       list.setXY(1, 4);
-       list.renderContainer();
-       list.render();
+       // list.setXY(1, 4);
+       // list.show();
 
-       let k = await list.awaitForReturn();
-       
-       console.log(k);
+        let dd: DropdownList = UIObjects.createDropdownList(this.state.entryDataArr);
+
+        EventHandler.attach(dd.eventHandler.bind(dd))
+
+        dd.setXY(1, 4);
+        dd.show();
+
+        let k = await dd.awaitForReturn();
+        
+        console.log(k);
 
        // let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
        // let optionObjects: UIInterfaces.ListingObject[] = this.constructOptions();

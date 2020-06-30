@@ -2,10 +2,16 @@ import CONFIG from '../config';
 import CONSTANTS from '../constants';
 
 import { Interfaces } from '../interfaces.namespace';
-import { UIInterfaces, UITypes } from '../../ui';
+import { 
+    UIInterfaces, 
+    UITypes,
 
-import Listing from '../../ui/components/Listing';
-import List from '../../ui/components/List';
+    Listing,
+    List,
+
+    Dropdown,
+    DropdownList
+} from '../../ui';
 
 export default abstract class {
     public static buildTitle(title: string, ext: string, pageNumber: number, index: number): string {
@@ -23,8 +29,8 @@ export default abstract class {
         return finalTitle;
     }
 
-    public static createList(entries: Interfaces.Entry[]) {
-        let listings: UITypes.Listing[] = entries.map((e, i) => new Listing({
+    public static createList(entries: Interfaces.Entry[]): List {
+        let listings: UITypes.Listing[] = entries.map((e: Interfaces.Entry, i: number) => new Listing({
             text: i + '. ' + e.Title,
             value: e.ID,
             actionID: ' ',
@@ -38,6 +44,62 @@ export default abstract class {
         list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
 
         return list;
+    }
+
+    public static createDropdownList(entries: Interfaces.Entry[]): DropdownList {
+        let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
+            let sublistings: UITypes.Listing[] = [];
+
+            sublistings.push(new Listing({
+                text: 'See Details',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
+            sublistings.push(new Listing({
+                text: 'Download Directly',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
+            sublistings.push(new Listing({
+                text: 'Add to Bulk Downloading Queue',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
+            let sublist: List = new List();
+
+            sublist.attachListingArr(sublistings, sublistings.length);
+
+            let dropdown: Dropdown = new Dropdown({
+                text: e.Title,
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            });
+
+            dropdown.attachSublist(sublist);
+
+            return dropdown;
+        });
+
+        let dropdownList: DropdownList = new DropdownList();
+
+        dropdownList.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
+
+        return dropdownList;
     }
 
   //  public static getListObject(entries: Interfaces.Entry[], pageNumber: number): UIInterfaces.ListObject {

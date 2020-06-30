@@ -44,7 +44,7 @@ export default abstract class ListingContainer extends Component {
         this.cursorY = this.y;
     }
 
-    setXY(x: number, y: number): void {
+    public setXY(x: number, y: number): void {
         this.x = x;
         this.y = y;
 
@@ -52,7 +52,7 @@ export default abstract class ListingContainer extends Component {
         this.cursorY = y;
     }
 
-    setPaddingLeft(paddingLeft: number): void {
+    public setPaddingLeft(paddingLeft: number): void {
         this.paddingLeft = paddingLeft;
     }
 
@@ -62,8 +62,6 @@ export default abstract class ListingContainer extends Component {
         this.middleIndex = Math.floor(this.listLength / 2);
 
         this.renderingQueue = listingArr;
-
-        this.paddingLeft = 2;
 
         for (let i: number = 0; i < this.renderingQueue.length; i++) {
             if (this.longestTextLength < this.renderingQueue[i].text.length) {
@@ -80,7 +78,7 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected prev(): void  {
+    public prev(): void  {
         if (this.renderingQueue.length <= this.listLength) {
             this.cursorIndex = this.cursorIndex > 0 ?
                 this.cursorIndex - 1 :
@@ -96,7 +94,7 @@ export default abstract class ListingContainer extends Component {
         this.prevCursor();
     }
 
-    protected next(): void {
+    public next(): void {
         if (this.renderingQueue.length <= this.listLength || this.cursorIndex < this.middleIndex) {
             this.cursorIndex = this.cursorIndex < this.renderingQueue.length - 1 ?
                 this.cursorIndex + 1 :
@@ -159,9 +157,14 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    render(): void {  }
+    public render(): void {  }
 
-    renderContainer(): void {
+    public show(): void {
+        this.renderContainer();
+        this.render();
+    }
+
+    public renderContainer(): void {
         let w: number = this.containerWidth + this.containerPadding * 2 + this.paddingLeft;
         let h: number = this.listLength + this.containerPadding * 2;
 

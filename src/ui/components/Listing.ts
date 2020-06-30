@@ -10,7 +10,7 @@ export default class Listing extends Component {
         super(params);
     }
 
-    render(hover: boolean = false): void {
+    public render(hover: boolean = false): void {
         Terminal.cursorXY(this.x, this.y);
 
         let output: string = hover ? 

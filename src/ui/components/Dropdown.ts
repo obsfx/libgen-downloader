@@ -1,74 +1,67 @@
+import {Interfaces} from '../interfaces.namespace';
 import {Types} from '../types.namespace';
 
-import Terminal from '../modules/Terminal';
-import Colors from '../modules/Colors';
+import Listing from './Listing';
 
-import ListingContainer from './ListingContainer';
+import keymap from '../keymap';
 
-export default class Dropdown extends ListingContainer {
-    prefix: string;
-    hoverprefix: string;
-    expandedprefix: string;
-
+export default class Dropdown extends Listing {
     expanded: boolean;
-
-    text: string;
 
     color: Types.color;
     hovercolor: Types.color;
 
-    constructor() {
-        super();
-
-        this.prefix = '+';
-        this.hoverprefix = '+';
-        this.expandedprefix = '─';
+    constructor(params: Interfaces.ComponentParams) {
+        super(params);
 
         this.expanded = false;
-
-        this.text = ' ';
 
         this.color = 'white';
         this.hovercolor = 'cyan';
     }
 
-    setText(text: string): void {
-        this.text = text;
+    public setXY(x: number, y: number): void {
+        this.x = x;
+        this.y = y;
+
+        if (this.sublist) {
+            this.sublist.setXY(x, y);
+        }
     }
 
-    public render(hover: boolean = false): void {
-        Terminal.cursorXY(this.x, this.y);
+    public eventHandler(key: Types.stdinOnKeyParam): boolean {
+        let done: boolean = false;
 
-        let output: string = hover ? 
-            Colors.get(this.hovercolor, this.text) :
-            Colors.get(this.color, this.text);
+        if (key.name == keymap.PREVLISTING) {
+            if (this.sublist) {
+                this.sublist.prev(); 
+                this.sublist.render();
+            }
+        }
 
-        let prefix: string = this.expanded ?
-            this.expandedprefix : 
-            hover ? this.hoverprefix : this.prefix;
+        if (key.name == keymap.NEXTLISTING) {
+            if (this.sublist) {
+                this.sublist.next();
+                this.sublist.render();
+            }
+        }
 
-        process.stdout.write(`${prefix} ${output}`);
-    }
+        if (key.name == keymap.DOACTION) {
+            done = true;
+        }
 
-    async expand(): Promise<void> {
         /*
-         * TODO: make cursor separate. means when cursor moves
-         * only cursour should be rendered not the entire list.
-         * find a way to clear only 1 char at specific row col 
-         * position
+         * TODO: make every dropwdown component an instance of ListContainer
+         * when a dropdown expanded fade and disable dropdown list and await for a return from child dropdownlisting
          */
 
-        for (let i: number = 1; i <= this.renderingQueue.length; i++) {
-            let listing: Types.Listing = this.renderingQueue[i - 1];
+        return done;
+    }
 
-            let x: number = this.x + this.paddingLeft;
-            let y: number = this.y + i;
-
-            Terminal.cursorXY(x, y);
-            Terminal.clearLine();
-            
-            listing.setXY(x, y);
-            listing.render(false);
+    public show() {
+        if (this.sublist) {
+            this.sublist.renderContainer();
+            this.sublist.render();
         }
     }
 }
