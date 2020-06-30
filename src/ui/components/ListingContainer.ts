@@ -24,6 +24,12 @@ export default abstract class ListingContainer extends Component {
     protected renderingQueue: Types.Listing[] = [];
     protected paddingLeft: number = 2;
 
+    protected longestTextLength: number = 0;
+    protected containerWidth: number = 70;
+    protected containerPadding: number = 1;
+
+    protected clearStr: string = ' ';
+
     constructor() {
         super({
             text: '',
@@ -52,12 +58,26 @@ export default abstract class ListingContainer extends Component {
 
     public attachListingArr(listingArr: Types.Listing[], listLength: number): void {
         this.cursorIndex = 0;
-        this.listLength = listLength;
+        this.listLength = listingArr.length > listLength ? listLength : listingArr.length;
         this.middleIndex = Math.floor(this.listLength / 2);
 
         this.renderingQueue = listingArr;
 
         this.paddingLeft = 2;
+
+        for (let i: number = 0; i < this.renderingQueue.length; i++) {
+            if (this.longestTextLength < this.renderingQueue[i].text.length) {
+                this.longestTextLength = this.renderingQueue[i].text.length;
+            }
+        }
+
+        this.containerWidth = Math.max(this.longestTextLength, this.containerWidth);
+
+        this.clearStr = '';
+
+        for (let i: number = 0; i < this.containerWidth; i++) {
+            this.clearStr += ' ';
+        }
     }
 
     protected prev(): void  {
@@ -93,12 +113,12 @@ export default abstract class ListingContainer extends Component {
     }
 
     protected renderCursor(): void {
-        Terminal.cursorXY(this.cursorX, this.cursorY);
+        Terminal.cursorXY(this.cursorX + this.containerPadding, this.cursorY + this.containerPadding);
         process.stdout.write(this.cursor);
     }
 
     protected clearCursor(): void {
-        Terminal.clearXY(this.cursorX, this.cursorY);
+        Terminal.clearXY(this.cursorX + this.containerPadding, this.cursorY + this.containerPadding);
     }
 
     protected setCursorColor(cursorColor: Types.color): void {
@@ -134,12 +154,41 @@ export default abstract class ListingContainer extends Component {
 
     protected clear(): void {
         for (let i: number = 0; i < this.printedListingCount; i++) {
-            Terminal.cursorXY(this.x + this.paddingLeft, this.y + i);
-            Terminal.clearLine();
+            Terminal.cursorXY(this.x + this.containerPadding + this.paddingLeft, this.y + i + this.containerPadding);
+            process.stdout.write(this.clearStr);
         }
     }
 
     render(): void {  }
+
+    renderContainer(): void {
+        let w: number = this.containerWidth + this.containerPadding * 2 + this.paddingLeft;
+        let h: number = this.listLength + this.containerPadding * 2;
+
+        for (let y: number = 0; y < h; y++) {
+            for (let x: number = 0; x < w; x++) {
+                if (x == 0 && y == 0) {
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('┌');
+                } else if (x == w - 1 && y == 0) {
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('┐');
+                } else if (x == 0 && y == h - 1) { 
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('└');
+                } else if (x == w - 1 && y == h - 1) {
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('┘');
+                } else if (y == 0 || y == h - 1) {
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('─');
+                } else if (x == 0 || x == w - 1) {
+                    Terminal.cursorXY(this.x + x, this.y + y);
+                    process.stdout.write('│');
+                }
+            }
+        }
+    }
 
     protected getCurrentListing(): Interfaces.ReturnObject {
         let currentListing: Types.Listing = this.renderingQueue[this.cursorIndex];
@@ -176,7 +225,7 @@ export default abstract class ListingContainer extends Component {
                     this.activeAwait = false;
                     resolve(this.getCurrentListing());
                 } else {
-                    setImmediate(controlLoop);
+                    setTimeout(controlLoop);
                 }
             }
 

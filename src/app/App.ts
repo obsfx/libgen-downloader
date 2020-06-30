@@ -339,6 +339,7 @@ export default abstract class App {
        EventHandler.attach(list.eventHandler.bind(list));
 
        list.setXY(1, 4);
+       list.renderContainer();
        list.render();
 
        let k = await list.awaitForReturn();

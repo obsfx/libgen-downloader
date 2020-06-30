@@ -26,8 +26,9 @@ export default abstract class EventHandler {
     
     public static attach(attachedFn: Function): void {
         this.attachedFn = attachedFn;
-
         process.stdin.setRawMode(true);
+
+        Terminal.hideCursor();
     }
 
     public static detach(): void {

@@ -57,7 +57,7 @@ export default abstract class Input {
                 if (this.returnValue) {
                     resolve(this.returnValue);
                 } else {
-                    setImmediate(controlLoop);
+                    setTimeout(controlLoop);
                 }
             }
 
