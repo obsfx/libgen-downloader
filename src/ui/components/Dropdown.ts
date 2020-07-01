@@ -1,6 +1,9 @@
 import {Interfaces} from '../interfaces.namespace';
 import {Types} from '../types.namespace';
 
+import Terminal from '../modules/Terminal';
+import Colors from '../modules/Colors';
+
 import Listing from './Listing';
 
 import keymap from '../keymap';
@@ -8,30 +11,41 @@ import keymap from '../keymap';
 export default class Dropdown extends Listing {
     expanded: boolean;
 
-    color: Types.color;
-    hovercolor: Types.color;
+    prefix: string;
+    expandedprefix: string;
 
     constructor(params: Interfaces.ComponentParams) {
         super(params);
 
         this.expanded = false;
 
-        this.color = 'white';
-        this.hovercolor = 'cyan';
+        this.prefix = '[+]';
+        this.expandedprefix = Colors.get('yellow', '[-]');
     }
 
-    public setXY(x: number, y: number): void {
-        this.x = x;
-        this.y = y;
+    public render(hover: boolean = false): void {
+        Terminal.cursorXY(this.x, this.y);
 
-        if (this.sublist) {
-            this.sublist.setXY(x, y);
-        }
+        let output: string = hover ? 
+            Colors.get(this.hovercolor, this.text) :
+            Colors.get(this.color, this.text);
+
+        process.stdout.write(output);
+
+        this.renderPrefix();
+    }
+
+    private renderPrefix(): void {
+        Terminal.cursorXY(this.x - (this.prefix.length + 1), this.y);
+
+        let prefix: string = this.expanded ?
+            this.expandedprefix :
+            this.prefix;
+
+        process.stdout.write(prefix)
     }
 
     public eventHandler(key: Types.stdinOnKeyParam): boolean {
-        let done: boolean = false;
-
         if (key.name == keymap.PREVLISTING) {
             if (this.sublist) {
                 this.sublist.prev(); 
@@ -47,21 +61,26 @@ export default class Dropdown extends Listing {
         }
 
         if (key.name == keymap.DOACTION) {
-            done = true;
+            if (this.sublist) {
+                this.expanded = false;
+                this.sublist.clearComplete();
+            }
         }
 
-        /*
-         * TODO: make every dropwdown component an instance of ListContainer
-         * when a dropdown expanded fade and disable dropdown list and await for a return from child dropdownlisting
-         */
-
-        return done;
+        return !this.expanded;
     }
 
     public show() {
         if (this.sublist) {
+            this.expanded = true;
+
+            if (this.sublist) {
+                this.sublist.setXY(this.x, this.y + 1);
+            }
+
             this.sublist.renderContainer();
             this.sublist.render();
+            this.renderPrefix();
         }
     }
 }

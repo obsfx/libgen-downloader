@@ -1,6 +1,7 @@
 import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
+import EventHandler from '../modules/EventHandler';
 import Terminal from '../modules/Terminal';
 import Colors from  '../modules/Colors';
 
@@ -27,7 +28,8 @@ export default abstract class ListingContainer extends Component {
     protected containerWidth: number = 40;
     protected containerPadding: number = 1;
 
-    protected clearStr: string = ' ';
+    protected clearStr: string = '';
+    protected clearCompStr: string = '';
 
     constructor() {
         super({
@@ -47,7 +49,7 @@ export default abstract class ListingContainer extends Component {
         this.x = x;
         this.y = y;
 
-        this.setCursorXY(x, y);
+        this.setCursorXY(x, y + this.cursorIndex);
     }
 
     public setPaddingLeft(paddingLeft: number): void {
@@ -69,11 +71,9 @@ export default abstract class ListingContainer extends Component {
 
         this.containerWidth = Math.max(this.longestTextLength, this.containerWidth);
 
-        this.clearStr = '';
+        this.clearStr = ' '.repeat(this.containerWidth + this.paddingLeft);
 
-        for (let i: number = 0; i < this.containerWidth + this.paddingLeft; i++) {
-            this.clearStr += ' ';
-        }
+        this.clearCompStr = ' '.repeat(this.containerWidth + this.containerPadding * 2 + this.paddingLeft);
     }
 
     public prev(): void  {
@@ -155,11 +155,28 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
+    public clearComplete(): void {
+        for (let i: number = 0; i < this.listLength + this.containerPadding * 2; i++) {
+            Terminal.cursorXY(this.x, this.y + i);
+            process.stdout.write(this.clearCompStr);
+        }
+    }
+
     public render(): void {  }
 
     public show(): void {
+        EventHandler.attachKeyEvent(this.id, this.eventHandler.bind(this));
+        EventHandler.rawMode(true);
+
         this.renderContainer();
         this.render();
+    }
+
+    public hide(): void {
+        EventHandler.detachKeyEvent(this.id);
+        EventHandler.rawMode(false);
+
+        this.clearComplete();
     }
 
     public renderContainer(): void {

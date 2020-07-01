@@ -16,7 +16,7 @@ export default class DropdownList extends ListingContainer {
         this.expandedFadeColor = 'white';
         this.expandedIndex = null;
 
-        this.setPaddingLeft(4);
+        this.setPaddingLeft(6);
     }
 
     public render(): void {
@@ -57,6 +57,8 @@ export default class DropdownList extends ListingContainer {
             if (isDone) {
                 this.expanded = false;
                 this.expandedIndex = null;
+
+                this.show();
             }
         }
 

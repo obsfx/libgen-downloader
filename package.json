@@ -41,6 +41,7 @@
     "@types/node": "^12.12.38",
     "@types/node-fetch": "^2.5.4",
     "@types/progress": "^2.0.3",
+    "@types/uuid": "^8.0.0",
     "pkg": "^4.4.4",
     "typescript": "^3.9.5"
   },
@@ -51,6 +52,7 @@
     "kleur": "^3.0.3",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "uuid": "^8.2.0"
   }
 }

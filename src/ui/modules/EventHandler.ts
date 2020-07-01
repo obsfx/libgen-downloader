@@ -5,13 +5,13 @@ import Terminal from '../modules/Terminal';
 import readline from 'readline';
 
 export default abstract class EventHandler {
-    private static attachedFn: Function | null = null;
-
     private static rl: readline.Interface = readline.createInterface({
         input: process.stdin
     });
 
-    private static attachedFnOnline: Function | null =  null;
+    private static keyEventMap: Map<string, Function> = new Map();
+    private static onLineEventMap: Map<string, Function> = new Map();
+    private static resizeEventMap: Map<string, Function> = new Map();
 
     public static init(): void {
         process.stdin.on('keypress', (_: Types.stdinOnStrParam, key: Types.stdinOnKeyParam) => {
@@ -20,43 +20,56 @@ export default abstract class EventHandler {
                 process.exit(0);
             }
 
-            if (this.attachedFn) {
-                this.attachedFn(key);
+            for (let fn of this.keyEventMap.values()) {
+                fn(key);
             }
         });
 
         this.rl.on('line', (line: string) => {
-            if (this.attachedFnOnline) {
-                this.attachedFnOnline(line);
+            for (let fn of this.onLineEventMap.values()) {
+                fn(line);
             }
         });
+
+        process.stdin.on('resize', () => {
+            for (let fn of this.resizeEventMap.values()) {
+                fn();
+            }
+        });
+    }
+
+    public static rawMode(mode: boolean): void {
+        process.stdin.setRawMode(mode);
     }
 
     public static emitKeypressEvents(): void {
         readline.emitKeypressEvents(process.stdin);
     }
-    
-    public static attach(attachedFn: Function): void {
-        this.attachedFn = attachedFn;
 
-        process.stdin.setRawMode(true);
-
-        Terminal.hideCursor();
+    /* ************************************* */
+    public static attachKeyEvent(key: string, fn: Function): void {
+        this.keyEventMap.set(key, fn);
     }
 
-    public static detach(): void {
-        this.attachedFn = null;
-
-        Terminal.showCursor();
-
-        process.stdin.setRawMode(false);
+    public static detachKeyEvent(key: string): void {
+        this.keyEventMap.delete(key);
     }
 
-    public static attachOnLine(attachedFn: Function): void {
-        this.attachedFnOnline = attachedFn;
-    } 
+    /* ************************************* */
+    public static attachOnLineEvent(key: string, fn: Function): void {
+        this.onLineEventMap.set(key, fn);
+    }
 
-    public static detachOnLine(): void {
-        this.attachedFnOnline = null;
+    public static detachOnLineEvent(key: string): void {
+        this.onLineEventMap.delete(key);
+    }
+
+    /* ************************************* */
+    public static attachResizeEvent(key: string, fn: Function): void {
+        this.resizeEventMap.set(key, fn);
+    }
+
+    public static detachResizeEventMap(key: string): void {
+        this.resizeEventMap.delete(key);
     }
 }

@@ -249,9 +249,6 @@ export default abstract class App {
         }  
 
         Input.set(1, 4,'Search ?:  ');
-
-        EventHandler.attachOnLine(Input.eventHandler.bind(Input));
-
         Input.render();
 
         let input: UIInterfaces.ReturnObject = await Input.awaitForReturn();
@@ -259,7 +256,6 @@ export default abstract class App {
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             this.state.queryMinLenWarning = true;
         } else {
-            EventHandler.detachOnLine();
             this.state.query = encodeURIComponent(input.value);
         }
     }
@@ -355,8 +351,6 @@ export default abstract class App {
        // list.show();
 
         let dd: DropdownList = UIObjects.createDropdownList(this.state.entryDataArr);
-
-        EventHandler.attach(dd.eventHandler.bind(dd))
 
         dd.setXY(1, 4);
         dd.show();

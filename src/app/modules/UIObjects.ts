@@ -77,6 +77,33 @@ export default abstract class {
                 hovercolor: 'byellow'
             }));
 
+            sublistings.push(new Listing({
+                text: 'See Details',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
+            sublistings.push(new Listing({
+                text: 'Download Directly',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
+            sublistings.push(new Listing({
+                text: 'Add to Bulk Downloading Queue',
+                value: e.ID,
+                actionID: ' ',
+
+                color: 'bwhite',
+                hovercolor: 'byellow'
+            }));
+
             let sublist: List = new List();
 
             sublist.attachListingArr(sublistings, sublistings.length);
@@ -86,8 +113,8 @@ export default abstract class {
                 value: e.ID,
                 actionID: ' ',
 
-                color: 'bwhite',
-                hovercolor: 'byellow'
+                color: 'white',
+                hovercolor: 'bcyan'
             });
 
             dropdown.attachSublist(sublist);

@@ -3,7 +3,11 @@ import { Types } from '../types.namespace';
 
 import List from '../components/List';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export default abstract class Component implements Interfaces.Component {
+    id: string;
+
     x: number;
     y: number;
 
@@ -17,6 +21,8 @@ export default abstract class Component implements Interfaces.Component {
     sublist: List | null;
 
     constructor(params: Interfaces.ComponentParams) {
+        this.id = uuidv4();
+
         this.x = 0;
         this.y = 0;
 
@@ -26,7 +32,7 @@ export default abstract class Component implements Interfaces.Component {
 
         this.color = params.color;
         this.hovercolor = params.hovercolor;
-        
+
         this.sublist = null;
     }
 
@@ -48,4 +54,6 @@ export default abstract class Component implements Interfaces.Component {
     public eventHandler(_: Types.stdinOnKeyParam) {  }
 
     public show(): void {  }
+
+    public hide(): void {  }
 }

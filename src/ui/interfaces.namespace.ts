@@ -18,6 +18,8 @@ export namespace Interfaces {
     }
 
     export interface Component extends ComponentParams {
+        id: string;
+
         sublist: List | null;
 
         setXY(x: number, y: number): void;
@@ -30,6 +32,7 @@ export namespace Interfaces {
         eventHandler(key: Types.stdinOnKeyParam): (void | boolean);
 
         show(): void;
+        hide(): void;
     }
 
     export interface ReturnObject {

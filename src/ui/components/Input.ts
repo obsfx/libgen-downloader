@@ -1,8 +1,13 @@
 import { Interfaces } from '../interfaces.namespace';
 
+import EventHandler from '../modules/EventHandler';
 import Terminal from '../modules/Terminal';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export default abstract class Input {
+    private static id: string = uuidv4();
+
     private static x: number;
     private static y: number;
 
@@ -16,6 +21,8 @@ export default abstract class Input {
         this.head = headstr;
 
         this.returnValue = null;
+
+        EventHandler.attachOnLineEvent(this.id, this.eventHandler.bind(this));
     }
 
     public static eventHandler(line: string) {
@@ -37,6 +44,7 @@ export default abstract class Input {
         return new Promise((resolve: Function) => {
             const controlLoop = (): void => {
                 if (this.returnValue) {
+                    EventHandler.detachOnLineEvent(this.id);
                     resolve(this.returnValue);
                 } else {
                     setTimeout(controlLoop);
