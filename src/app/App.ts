@@ -248,9 +248,10 @@ export default abstract class App {
             this.state.queryMinLenWarning = false;
         }  
 
-        Input.attach();
-        Input.setHead('Search ?:  ');
-        Input.setXY(1, 4);
+        Input.set(1, 4,'Search ?:  ');
+
+        EventHandler.attachOnLine(Input.eventHandler.bind(Input));
+
         Input.render();
 
         let input: UIInterfaces.ReturnObject = await Input.awaitForReturn();
@@ -258,6 +259,7 @@ export default abstract class App {
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             this.state.queryMinLenWarning = true;
         } else {
+            EventHandler.detachOnLine();
             this.state.query = encodeURIComponent(input.value);
         }
     }

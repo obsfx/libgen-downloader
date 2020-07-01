@@ -10,7 +10,6 @@ import keymap from '../keymap';
 
 export default abstract class ListingContainer extends Component {
     protected cursorIndex: number = 0;
-    protected printedListingCount : number = 0;
     protected listLength: number = 0;
 
     protected terminateAwaiting: boolean = false;
@@ -25,7 +24,7 @@ export default abstract class ListingContainer extends Component {
     protected paddingLeft: number = 2;
 
     protected longestTextLength: number = 0;
-    protected containerWidth: number = 70;
+    protected containerWidth: number = 40;
     protected containerPadding: number = 1;
 
     protected clearStr: string = ' ';
@@ -48,8 +47,7 @@ export default abstract class ListingContainer extends Component {
         this.x = x;
         this.y = y;
 
-        this.cursorX = x;
-        this.cursorY = y;
+        this.setCursorXY(x, y);
     }
 
     public setPaddingLeft(paddingLeft: number): void {
@@ -73,7 +71,7 @@ export default abstract class ListingContainer extends Component {
 
         this.clearStr = '';
 
-        for (let i: number = 0; i < this.containerWidth; i++) {
+        for (let i: number = 0; i < this.containerWidth + this.paddingLeft; i++) {
             this.clearStr += ' ';
         }
     }
@@ -132,7 +130,7 @@ export default abstract class ListingContainer extends Component {
         if (this.renderingQueue.length <= this.listLength) {
             let y: number = this.cursorY > this.y ?
                 this.cursorY - 1 :
-                this.renderingQueue.length - 1;
+                this.y + this.renderingQueue.length - 1;
 
             this.clearCursor();
             this.setCursorXY(this.cursorX, y);
@@ -141,7 +139,7 @@ export default abstract class ListingContainer extends Component {
 
     protected nextCursor(): void {
         if (this.renderingQueue.length <= this.listLength || this.cursorY < this.y + this.middleIndex) {
-            let y: number = this.cursorY < this.renderingQueue.length - 1 ?
+            let y: number = this.cursorY < this.y +this.renderingQueue.length - 1 ?
                 this.cursorY + 1 :
                 this.y;
 
@@ -151,8 +149,8 @@ export default abstract class ListingContainer extends Component {
     }
 
     protected clear(): void {
-        for (let i: number = 0; i < this.printedListingCount; i++) {
-            Terminal.cursorXY(this.x + this.containerPadding + this.paddingLeft, this.y + i + this.containerPadding);
+        for (let i: number = 0; i < this.listLength; i++) {
+            Terminal.cursorXY(this.x + this.containerPadding, this.y + i + this.containerPadding);
             process.stdout.write(this.clearStr);
         }
     }

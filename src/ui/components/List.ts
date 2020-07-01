@@ -8,11 +8,7 @@ export default class List extends ListingContainer {
     }
 
     public render(): void {
-        if (this.printedListingCount > 0) {
-            this.clear();
-        }
-
-        this.printedListingCount = 0; 
+        this.clear();
 
         for (let i: number = 0; i < this.listLength; i++) {
             let listing: Types.Listing = this.renderingQueue[i];
@@ -20,8 +16,6 @@ export default class List extends ListingContainer {
 
             listing.setXY(this.x + this.paddingLeft + this.containerPadding, this.y + i + this.containerPadding);
             listing.render(hover);
-
-            this.printedListingCount++;
         }
 
         this.renderCursor();
