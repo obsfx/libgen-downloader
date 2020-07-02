@@ -11,7 +11,7 @@ export default abstract class EventHandler {
 
     private static keyEventMap: Map<string, Function> = new Map();
     private static onLineEventMap: Map<string, Function> = new Map();
-    private static resizeEventMap: Map<string, Function> = new Map();
+    private static resizeReRenderEventMapArr: Map<string, Function>[] = [];
 
     public static init(): void {
         process.stdin.on('keypress', (_: Types.stdinOnStrParam, key: Types.stdinOnKeyParam) => {
@@ -31,9 +31,18 @@ export default abstract class EventHandler {
             }
         });
 
-        process.stdin.on('resize', () => {
-            for (let fn of this.resizeEventMap.values()) {
-                fn();
+        process.stdout.on('resize', () => {
+            Terminal.cursorXY(0, 4);
+            Terminal.clearCursorToEnd();
+
+            for (let i: number = 0; i < this.resizeReRenderEventMapArr.length; i++) {
+                let map: Map<string, Function> | undefined = this.resizeReRenderEventMapArr[i];
+
+                if (map) {
+                    for (let fn of map.values()) {
+                        fn();
+                    }
+                }
             }
         });
     }
@@ -65,11 +74,17 @@ export default abstract class EventHandler {
     }
 
     /* ************************************* */
-    public static attachResizeEvent(key: string, fn: Function): void {
-        this.resizeEventMap.set(key, fn);
+    public static attachResizeReRenderEvent(zindex: number, key: string, fn: Function): void {
+        if (!this.resizeReRenderEventMapArr[zindex]) {
+            this.resizeReRenderEventMapArr[zindex] = new Map();
+        }
+
+        this.resizeReRenderEventMapArr[zindex].set(key, fn);
     }
 
-    public static detachResizeEventMap(key: string): void {
-        this.resizeEventMap.delete(key);
+    public static detachResizeReRenderEventMap(zindex: number, key: string): void {
+        if (this.resizeReRenderEventMapArr[zindex]) {
+            this.resizeReRenderEventMapArr[zindex].delete(key);
+        }
     }
 }

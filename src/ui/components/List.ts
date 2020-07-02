@@ -3,8 +3,8 @@ import { Types } from '../types.namespace';
 import ListingContainer from './ListingContainer';
 
 export default class List extends ListingContainer {
-    constructor() {
-        super();
+    constructor(zindex: number = 0) {
+        super(zindex);
     }
 
     public render(): void {

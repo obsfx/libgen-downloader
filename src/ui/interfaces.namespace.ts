@@ -20,9 +20,15 @@ export namespace Interfaces {
     export interface Component extends ComponentParams {
         id: string;
 
+        x: number;
+        y: number;
+
+        zindex: number;
+
         sublist: List | null;
 
         setXY(x: number, y: number): void;
+        setZIndex(zindex: number): void;
 
         attachSublist(sublist: List): void;
         detachSublist(): void;
@@ -30,6 +36,7 @@ export namespace Interfaces {
         render(hover: boolean): void;
 
         eventHandler(key: Types.stdinOnKeyParam): (void | boolean);
+        onResize(): void;
 
         show(): void;
         hide(): void;

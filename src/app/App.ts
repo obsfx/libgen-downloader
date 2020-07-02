@@ -352,7 +352,7 @@ export default abstract class App {
 
         let dd: DropdownList = UIObjects.createDropdownList(this.state.entryDataArr);
 
-        dd.setXY(1, 4);
+        dd.setXY(5, 4);
         dd.show();
 
         let k = await dd.awaitForReturn();

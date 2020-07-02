@@ -29,15 +29,22 @@ export default abstract class {
         return finalTitle;
     }
 
-    public static createList(entries: Interfaces.Entry[]): List {
-        let listings: UITypes.Listing[] = entries.map((e: Interfaces.Entry, i: number) => new Listing({
-            text: i + '. ' + e.Title,
-            value: e.ID,
-            actionID: ' ',
+    public static createListing(text: string, value: string, actionID: string, 
+                                color: UITypes.color, hovercolor: UITypes.color): UITypes.Listing {
+        return new Listing({
+            text,
+            value,
+            actionID,
 
-            color: 'white',
-            hovercolor: 'cyan'
-        }));
+            color,
+            hovercolor
+        });
+    }
+
+    public static createList(entries: Interfaces.Entry[]): List {
+        let listings: UITypes.Listing[] = entries.map((e: Interfaces.Entry, i: number) => (
+           this.createListing(e.Title, e.ID, ' ', 'white', 'cyan') 
+        ))
 
         let list: List = new List();
 
@@ -50,61 +57,14 @@ export default abstract class {
         let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
             let sublistings: UITypes.Listing[] = [];
 
-            sublistings.push(new Listing({
-                text: 'See Details',
-                value: e.ID,
-                actionID: ' ',
+            sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
+            sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
+            sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
+            sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
+            sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
+            sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
 
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            sublistings.push(new Listing({
-                text: 'Download Directly',
-                value: e.ID,
-                actionID: ' ',
-
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            sublistings.push(new Listing({
-                text: 'Add to Bulk Downloading Queue',
-                value: e.ID,
-                actionID: ' ',
-
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            sublistings.push(new Listing({
-                text: 'See Details',
-                value: e.ID,
-                actionID: ' ',
-
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            sublistings.push(new Listing({
-                text: 'Download Directly',
-                value: e.ID,
-                actionID: ' ',
-
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            sublistings.push(new Listing({
-                text: 'Add to Bulk Downloading Queue',
-                value: e.ID,
-                actionID: ' ',
-
-                color: 'bwhite',
-                hovercolor: 'byellow'
-            }));
-
-            let sublist: List = new List();
+            let sublist: List = new List(1);
 
             sublist.attachListingArr(sublistings, sublistings.length);
 

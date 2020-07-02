@@ -11,6 +11,8 @@ export default abstract class Component implements Interfaces.Component {
     x: number;
     y: number;
 
+    zindex: number;
+
     text: string;
     value: string;
     actionID: string;
@@ -25,6 +27,8 @@ export default abstract class Component implements Interfaces.Component {
 
         this.x = 0;
         this.y = 0;
+
+        this.zindex = 0;
 
         this.text = params.text;
         this.value = params.value;
@@ -41,6 +45,10 @@ export default abstract class Component implements Interfaces.Component {
         this.y = y;
     }
 
+    public setZIndex(zindex: number): void {
+        this.zindex = zindex;
+    }
+
     public attachSublist(sublist: List): void {
         this.sublist = sublist;
     }
@@ -52,6 +60,10 @@ export default abstract class Component implements Interfaces.Component {
     public render(): void {  }
 
     public eventHandler(_: Types.stdinOnKeyParam) {  }
+
+    public onResize(): void {
+        this.show();
+    }
 
     public show(): void {  }
 

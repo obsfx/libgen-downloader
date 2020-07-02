@@ -31,7 +31,7 @@ export default abstract class ListingContainer extends Component {
     protected clearStr: string = '';
     protected clearCompStr: string = '';
 
-    constructor() {
+    constructor(zindex: number) {
         super({
             text: '',
             value: '',
@@ -40,6 +40,8 @@ export default abstract class ListingContainer extends Component {
             color: 'white',
             hovercolor: 'white'
         });
+
+        this.setZIndex(zindex);
 
         this.cursorX = this.x;
         this.cursorY = this.y;
@@ -165,16 +167,20 @@ export default abstract class ListingContainer extends Component {
     public render(): void {  }
 
     public show(): void {
-        EventHandler.attachKeyEvent(this.id, this.eventHandler.bind(this));
         EventHandler.rawMode(true);
+        EventHandler.attachKeyEvent(this.id, this.eventHandler.bind(this));
+
+        EventHandler.attachResizeReRenderEvent(this.zindex, this.id, this.onResize.bind(this));
 
         this.renderContainer();
         this.render();
     }
 
     public hide(): void {
-        EventHandler.detachKeyEvent(this.id);
         EventHandler.rawMode(false);
+        EventHandler.detachKeyEvent(this.id);
+
+        EventHandler.detachResizeReRenderEventMap(this.zindex, this.id);
 
         this.clearComplete();
     }

@@ -1,6 +1,7 @@
 import {Interfaces} from '../interfaces.namespace';
 import {Types} from '../types.namespace';
 
+import EventHandler from '../modules/EventHandler';
 import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
@@ -46,41 +47,22 @@ export default class Dropdown extends Listing {
     }
 
     public eventHandler(key: Types.stdinOnKeyParam): boolean {
-        if (key.name == keymap.PREVLISTING) {
-            if (this.sublist) {
-                this.sublist.prev(); 
-                this.sublist.render();
-            }
-        }
-
-        if (key.name == keymap.NEXTLISTING) {
-            if (this.sublist) {
-                this.sublist.next();
-                this.sublist.render();
-            }
-        }
-
         if (key.name == keymap.DOACTION) {
             if (this.sublist) {
                 this.expanded = false;
-                this.sublist.clearComplete();
+                this.sublist.hide();
             }
         }
 
         return !this.expanded;
     }
 
-    public show() {
+    public show(): void {
         if (this.sublist) {
             this.expanded = true;
 
-            if (this.sublist) {
-                this.sublist.setXY(this.x, this.y + 1);
-            }
-
-            this.sublist.renderContainer();
-            this.sublist.render();
-            this.renderPrefix();
+            this.sublist.setXY(this.x, this.y + 1);
+            this.sublist.show();
         }
     }
 }

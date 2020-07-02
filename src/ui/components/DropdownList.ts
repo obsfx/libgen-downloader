@@ -9,8 +9,8 @@ export default class DropdownList extends ListingContainer {
     expandedFadeColor: Types.color;
     expandedIndex: number | null;
 
-    constructor() {
-        super();
+    constructor(zindex: number = 0) {
+        super(zindex);
 
         this.expanded = false;
         this.expandedFadeColor = 'white';
@@ -61,10 +61,5 @@ export default class DropdownList extends ListingContainer {
                 this.show();
             }
         }
-
-        /*
-         * TODO: make every dropwdown component an instance of ListContainer
-         * when a dropdown expanded fade and disable dropdown list and await for a return from child dropdownlisting
-         */
     }
 }
