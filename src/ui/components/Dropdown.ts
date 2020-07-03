@@ -1,7 +1,6 @@
 import {Interfaces} from '../interfaces.namespace';
 import {Types} from '../types.namespace';
 
-import EventHandler from '../modules/EventHandler';
 import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
@@ -25,14 +24,7 @@ export default class Dropdown extends Listing {
     }
 
     public render(hover: boolean = false): void {
-        Terminal.cursorXY(this.x, this.y);
-
-        let output: string = hover ? 
-            Colors.get(this.hovercolor, this.text) :
-            Colors.get(this.color, this.text);
-
-        process.stdout.write(output);
-
+        this.text.render(hover);
         this.renderPrefix();
     }
 
@@ -51,6 +43,8 @@ export default class Dropdown extends Listing {
             if (this.sublist) {
                 this.expanded = false;
                 this.sublist.hide();
+
+                this.renderPrefix();
             }
         }
 
@@ -63,6 +57,8 @@ export default class Dropdown extends Listing {
 
             this.sublist.setXY(this.x, this.y + 1);
             this.sublist.show();
+
+            this.renderPrefix();
         }
     }
 }

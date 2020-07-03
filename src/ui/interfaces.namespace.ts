@@ -3,13 +3,30 @@ import { Types } from './types.namespace';
 import List from './components/List';
 
 export namespace Interfaces {
-    export interface promptObject {
-        type: 'input';
+    export interface Text {
+        x: number;
+        y: number;
+
         text: string;
+        renderedtext: string;
+
+        color: Types.color;
+        hovercolor: Types.color;
+
+        maxLength: number;
+        clearStr: string;
+
+        setXY(x: number, y: number): void;
+        setText(text: string): void;
+        setMaxLength(maxlen: number): void;
+        setColors(color: Types.color, hovercolor: Types.color): void;
+        adjustText(): void;
+        render(hover: boolean): void;
+        clear(): void;
     }
 
     export interface ComponentParams {
-        text: string;
+        title: string;
         value: string;
         actionID: string;
 
@@ -19,6 +36,8 @@ export namespace Interfaces {
 
     export interface Component extends ComponentParams {
         id: string;
+
+        text: Text;
 
         x: number;
         y: number;

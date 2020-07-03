@@ -32,7 +32,7 @@ export default abstract class EventHandler {
         });
 
         process.stdout.on('resize', () => {
-            Terminal.cursorXY(0, 4);
+            Terminal.cursorXY(0, 0);
             Terminal.clearCursorToEnd();
 
             for (let i: number = 0; i < this.resizeReRenderEventMapArr.length; i++) {

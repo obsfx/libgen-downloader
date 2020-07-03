@@ -2,23 +2,26 @@ import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import List from '../components/List';
+import Text from '../components/Text';
 
 import { v4 as uuidv4 } from 'uuid';
 
 export default abstract class Component implements Interfaces.Component {
-    id: string;
-
-    x: number;
-    y: number;
-
-    zindex: number;
-
-    text: string;
+    title: string;
     value: string;
     actionID: string;
 
     color: Types.color;
     hovercolor: Types.color;
+
+    id: string;
+
+    text: Text;
+
+    x: number;
+    y: number;
+
+    zindex: number;
 
     sublist: List | null;
 
@@ -30,7 +33,9 @@ export default abstract class Component implements Interfaces.Component {
 
         this.zindex = 0;
 
-        this.text = params.text;
+        this.title = params.title;
+        this.text = new Text(this.title, 'white', 'cyan');
+
         this.value = params.value;
         this.actionID = params.actionID;
 
@@ -43,6 +48,8 @@ export default abstract class Component implements Interfaces.Component {
     public setXY(x: number, y: number): void {
         this.x = x;
         this.y = y;
+
+        this.text.setXY(this.x, this.y);
     }
 
     public setZIndex(zindex: number): void {

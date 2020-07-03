@@ -23,17 +23,18 @@ export default abstract class ListingContainer extends Component {
     protected middleIndex: number = 0;
     protected renderingQueue: Types.Listing[] = [];
     protected paddingLeft: number = 2;
-
-    protected longestTextLength: number = 0;
     protected containerWidth: number = 40;
+
+    protected completeWidth: number = 40;
+    protected currentWidth: number = 0;
+    protected currentTextWidth: number = 0;
     protected containerPadding: number = 1;
 
-    protected clearStr: string = '';
     protected clearCompStr: string = '';
 
     constructor(zindex: number) {
         super({
-            text: '',
+            title: '',
             value: '',
             actionID: '',
 
@@ -58,6 +59,11 @@ export default abstract class ListingContainer extends Component {
         this.paddingLeft = paddingLeft;
     }
 
+    public setContainerWidth(width: number): void {
+        this.containerWidth = width;
+        this.completeWidth = this.containerWidth + this.containerPadding * 2 + this.paddingLeft;
+    }
+
     public attachListingArr(listingArr: Types.Listing[], listLength: number): void {
         this.cursorIndex = 0;
         this.listLength = listingArr.length > listLength ? listLength : listingArr.length;
@@ -65,17 +71,7 @@ export default abstract class ListingContainer extends Component {
 
         this.renderingQueue = listingArr;
 
-        for (let i: number = 0; i < this.renderingQueue.length; i++) {
-            if (this.longestTextLength < this.renderingQueue[i].text.length) {
-                this.longestTextLength = this.renderingQueue[i].text.length;
-            }
-        }
-
-        this.containerWidth = Math.max(this.longestTextLength, this.containerWidth);
-
-        this.clearStr = ' '.repeat(this.containerWidth + this.paddingLeft);
-
-        this.clearCompStr = ' '.repeat(this.containerWidth + this.containerPadding * 2 + this.paddingLeft);
+        this.completeWidth = this.containerWidth + this.containerPadding * 2 + this.paddingLeft;
     }
 
     public prev(): void  {
@@ -150,13 +146,6 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected clear(): void {
-        for (let i: number = 0; i < this.listLength; i++) {
-            Terminal.cursorXY(this.x + this.containerPadding, this.y + i + this.containerPadding);
-            process.stdout.write(this.clearStr);
-        }
-    }
-
     public clearComplete(): void {
         for (let i: number = 0; i < this.listLength + this.containerPadding * 2; i++) {
             Terminal.cursorXY(this.x, this.y + i);
@@ -166,12 +155,30 @@ export default abstract class ListingContainer extends Component {
 
     public render(): void {  }
 
+    public adjustContainer(): void {
+        this.currentWidth = this.x + this.completeWidth >= process.stdout.columns - 5 ?
+            process.stdout.columns - 5 - this.x:
+            this.completeWidth;
+
+        this.currentTextWidth = this.currentWidth - (this.containerPadding * 2 + this.paddingLeft);
+
+        this.clearCompStr = ' '.repeat(this.currentWidth);
+    }
+
     public show(): void {
         EventHandler.rawMode(true);
         EventHandler.attachKeyEvent(this.id, this.eventHandler.bind(this));
 
         EventHandler.attachResizeReRenderEvent(this.zindex, this.id, this.onResize.bind(this));
 
+        this.adjustContainer();
+
+        for (let i: number = 0; i < this.renderingQueue.length; i++) {
+            this.renderingQueue[i].text.setMaxLength(this.currentTextWidth);
+            this.renderingQueue[i].text.adjustText();
+        }
+
+        this.clearComplete();
         this.renderContainer();
         this.render();
     }
@@ -186,7 +193,7 @@ export default abstract class ListingContainer extends Component {
     }
 
     public renderContainer(): void {
-        let w: number = this.containerWidth + this.containerPadding * 2 + this.paddingLeft;
+        let w: number = this.currentWidth;
         let h: number = this.listLength + this.containerPadding * 2;
 
         for (let y: number = 0; y < h; y++) {

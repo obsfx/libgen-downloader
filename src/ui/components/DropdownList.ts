@@ -20,13 +20,12 @@ export default class DropdownList extends ListingContainer {
     }
 
     public render(): void {
-        this.clear();
-
         for (let i: number = 0; i < this.listLength; i++) {
             let listing: Types.Listing = this.renderingQueue[i];
             let hover: boolean = i == this.cursorIndex ? true : false;
 
             listing.setXY(this.x + this.paddingLeft + this.containerPadding, this.y + i + this.containerPadding);
+            listing.text.clear();
             listing.render(hover);
         }
 

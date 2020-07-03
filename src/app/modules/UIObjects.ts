@@ -29,10 +29,10 @@ export default abstract class {
         return finalTitle;
     }
 
-    public static createListing(text: string, value: string, actionID: string, 
+    public static createListing(title: string, value: string, actionID: string, 
                                 color: UITypes.color, hovercolor: UITypes.color): UITypes.Listing {
         return new Listing({
-            text,
+            title,
             value,
             actionID,
 
@@ -69,7 +69,7 @@ export default abstract class {
             sublist.attachListingArr(sublistings, sublistings.length);
 
             let dropdown: Dropdown = new Dropdown({
-                text: e.Title,
+                title: e.Title,
                 value: e.ID,
                 actionID: ' ',
 
