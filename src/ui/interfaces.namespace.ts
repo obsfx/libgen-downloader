@@ -4,6 +4,8 @@ import List from './components/List';
 
 export namespace Interfaces {
     export interface Text {
+        id: string;
+
         x: number;
         y: number;
 
@@ -13,7 +15,7 @@ export namespace Interfaces {
         color: Types.color;
         hovercolor: Types.color;
 
-        maxLength: number;
+        maxLength: number | null;
         clearStr: string;
 
         setXY(x: number, y: number): void;
@@ -23,6 +25,7 @@ export namespace Interfaces {
         adjustText(): void;
         render(hover: boolean): void;
         clear(): void;
+        onResize(): void;
     }
 
     export interface ComponentParams {

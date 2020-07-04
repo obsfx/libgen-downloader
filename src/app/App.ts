@@ -73,7 +73,7 @@ export default abstract class App {
 
     public static clear(): void {
         Terminal.clear();
-        this.promptHead();
+        //this.promptHead();
     }
 
     private static promptHead(): void {
@@ -281,6 +281,7 @@ export default abstract class App {
             this.state.queryMinLenWarning = true;
         } else {
             this.state.query = encodeURIComponent(input.value);
+            InputScene.hide();
         }
     }
 

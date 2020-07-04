@@ -6,6 +6,8 @@ import Terminal from './modules/Terminal';
 import EventHandler from './modules/EventHandler';
 import Colors from './modules/Colors';
 
+import Text from './components/Text';
+
 import Listing from './components/Listing';
 import List from './components/List';
 
@@ -26,6 +28,8 @@ export {
     Main,
     Terminal,
     Colors,
+
+    Text,
 
     Listing,
     List,

@@ -39,7 +39,8 @@ export namespace Types {
                         'bblue' |
                         'bmagenta' |
                         'bcyan' |
-                        'bwhite';
+                        'bwhite' |
+                        'none';
 
     export type Listing = Interfaces.Component | Dropdown;
 }

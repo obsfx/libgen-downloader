@@ -2,6 +2,8 @@ import { Interfaces } from '../interfaces.namespace';
 
 import CONFIG from '../config';
 
+import TitleScene from './TitleScene';
+
 import { 
     UIInterfaces, 
     UITypes, 
@@ -22,6 +24,8 @@ export default abstract class ResultsScene {
     private static list: DropdownList = new DropdownList();
 
     public static show(entries: Interfaces.Entry[]): void {
+        TitleScene.show();
+
         let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
             let sublistings: UITypes.Listing[] = ResultsSceneListings.map(
                 (listing: UIInterfaces.ComponentParams) => (
@@ -60,6 +64,8 @@ export default abstract class ResultsScene {
 
     public static hide(): void {
         this.list.hide();
+
+        TitleScene.hide();
     }
 
     public static async awaitForReturn(): Promise<UIInterfaces.ReturnObject> {

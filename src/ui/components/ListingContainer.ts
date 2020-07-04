@@ -157,7 +157,7 @@ export default abstract class ListingContainer extends Component {
 
     public adjustContainer(): void {
         this.currentWidth = this.x + this.completeWidth >= process.stdout.columns - 5 ?
-            process.stdout.columns - 5 - this.x:
+            process.stdout.columns - 5 - this.x :
             this.completeWidth;
 
         this.currentTextWidth = this.currentWidth - (this.containerPadding * 2 + this.paddingLeft);

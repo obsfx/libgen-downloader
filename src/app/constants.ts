@@ -4,21 +4,23 @@ import CONFIG from './config';
 
 export default {
     HEAD: [
-        `┌  ${Colors.get('byellow', 'libgen-downloader')} ${Colors.get('cyan', '@v1.1.0')}`,
+        `┌  ${Colors.get('byellow', 'libgen-downloader')} @v1.1.0`,
         '├───  Source Code: https://github.com/obsfx/libgen-downloader',
         '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
         ' '
     ],
     
+    /* ******************** OUTPUTS ******************* */
     BULK_QUEUE_INDICATOR_TEXT: 'Books in Bulk Download Queue:',
+
     BULK_DOWNLOAD_INDICATOR_TEXT: '@  Start The Bulk Downloading:',
 
     RESULTS_TITLE: Colors.get('white', 'Results for: \'{query}\' Page: {page}'),
 
     INPUT_MINLEN_WARNING: `${Colors.get('yellow', 'Search string must contain minimum 3 characters.')} Please, type in a longer request and try again.`,
-    
+
     CONNECTION_ERROR: `${Colors.get('red', 'Connection Error.')} Probably libgen servers are not currently available. Please try again after a while.`,
-        
+
     NO_RESULT: `${Colors.get('cyan', 'No Result.')}`,
 
     DOWNLOAD_COMPLETED: `\n${Colors.get('green', 'DONE')} ${Colors.get('yellow', '%s')} downloaded on working directory.\n`,
@@ -32,12 +34,16 @@ export default {
     REMAINING_BOOKS: Colors.get('white', '[Remaining Books: %s]'),
 
     MD5_INDICATOR: `MD5: ${Colors.get('green', '%s')}`,
+
     LIST_EXPORT_SUCCESS: `${Colors.get('green', 'List of MD5(s) of Downloaded Book(s) Successfully Created.')} ${Colors.get('byellow', '%s')}`,
+
     LIST_EXPORT_ERR: Colors.get('red', 'List of MD5(s) of Downloaded Book(s) Couldn\'t Created.'),
 
     DOWNLOAD_URL: `Here is your download URL: ${Colors.get('yellow', '%s')}`,
 
     BULK_DOWNLOAD_TITLE: `─ ${Colors.get('cyan', 'Bulk Downloader')}\n`,
+
+    USAGE_INFO: '(UP and DOWN arrow keys to reveal listings, ENTER key to interact.)',
 
     SPINNER: {
         GETTING_RESULTS: Colors.get('cyan', '%s Getting Results'),

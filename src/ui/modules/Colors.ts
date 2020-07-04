@@ -24,6 +24,7 @@ export default abstract class Color {
     }
 
     public static get(color: Types.color, text: string): string {
-        return this.map[color](text);
+        if (color != 'none') return this.map[color](text);
+        else return text;
     }
 }

@@ -4,7 +4,11 @@ import { Types } from '../types.namespace';
 import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export default class Text implements Interfaces.Text {
+    id: string;
+
     x: number;
     y: number;
 
@@ -14,10 +18,12 @@ export default class Text implements Interfaces.Text {
     color: Types.color;
     hovercolor: Types.color;
 
-    maxLength: number;
+    maxLength: number | null;
     clearStr: string;
 
-    constructor(text: string, color: Types.color, hovercolor: Types.color) {
+    constructor(text: string, color: Types.color, hovercolor: Types.color = 'white') {
+        this.id = uuidv4();
+
         this.x = -1;
         this.y = -1;
 
@@ -27,8 +33,8 @@ export default class Text implements Interfaces.Text {
         this.color = color;
         this.hovercolor = hovercolor;
 
-        this.maxLength = 40;
-        this.clearStr = '';
+        this.maxLength = null;
+        this.clearStr = ' '.repeat(this.text.length);
     }
 
     public setXY(x: number, y: number): void {
@@ -38,6 +44,7 @@ export default class Text implements Interfaces.Text {
 
     public setText(text: string): void {
         this.text = text;
+        this.clearStr = ' '.repeat(this.text.length);
     }
 
     public setMaxLength(maxlen: number): void {
@@ -53,8 +60,10 @@ export default class Text implements Interfaces.Text {
     public adjustText(): void {
         this.renderedtext = this.text;
 
-        if (this.maxLength < this.renderedtext.length) {
-            this.renderedtext = `${this.text.substr(0, this.maxLength - 3)}...`;
+        if (this.maxLength != null) { 
+            if (this.maxLength < this.renderedtext.length) {
+                this.renderedtext = `${this.text.substr(0, this.maxLength - 3)}...`;
+            }
         }
     }
 
@@ -75,5 +84,16 @@ export default class Text implements Interfaces.Text {
             Terminal.cursorXY(this.x, this.y);
             process.stdout.write(this.clearStr);
         }
+    }
+
+    public onResize(): void {
+        let width: number = this.x + this.text.length >= process.stdout.columns - 5 ?
+            process.stdout.columns - 5 - this.x : 
+            this.text.length;
+
+        this.clear();
+        this.setMaxLength(width);
+        this.adjustText();
+        this.render(false);
     }
 }
