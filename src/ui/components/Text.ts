@@ -42,7 +42,7 @@ export default class Text implements Interfaces.Text {
 
     public setMaxLength(maxlen: number): void {
         this.maxLength = maxlen;
-        this.clearStr = ' '.repeat(this.maxLength);
+        this.clearStr = ' '.repeat(Math.abs(this.maxLength));
     }
 
     public setColors(color: Types.color, hovercolor: Types.color): void {
@@ -51,7 +51,9 @@ export default class Text implements Interfaces.Text {
     }
 
     public adjustText(): void {
-        if (this.maxLength < this.text.length) {
+        this.renderedtext = this.text;
+
+        if (this.maxLength < this.renderedtext.length) {
             this.renderedtext = `${this.text.substr(0, this.maxLength - 3)}...`;
         }
     }

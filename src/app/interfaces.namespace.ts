@@ -5,6 +5,7 @@ export namespace Interfaces {
     export interface AppState {
         currentPage: number;
         url: string;
+        category: string | null;
         query: string | null;
         queryMinLenWarning: boolean;
         isNextPageExist: boolean;

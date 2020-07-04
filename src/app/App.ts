@@ -1,3 +1,11 @@
+/*
+ * TODO: Create 'abstract screen classes' for every ui screen
+ * of app.
+ *
+ * Create ui-templates.ts
+ */
+
+
 import { Interfaces } from './interfaces.namespace';
 
 import CONFIG from './config';
@@ -6,7 +14,6 @@ import CONSTANTS from './constants';
 import {
     UIInterfaces,
 
-    EventHandler,
     Terminal,
 
     List,
@@ -16,11 +23,16 @@ import {
 
     UIConstants
 } from '../ui';
+
 import UIObjects from './modules/UIObjects';
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
 import Downloader from './modules/Downloader';
 import BulkDownloader from '../bulk-downloader';
+
+import CategoryScene from'./scenes/CategoryScene';
+import InputScene from './scenes/InputScene';
+import ResultsScene from './scenes/ResultsScene';
 
 import fetch, { Response } from 'node-fetch';
 import { Spinner } from 'cli-spinner';
@@ -48,6 +60,7 @@ export default abstract class App {
         return {
             currentPage: 1,
             url: '',
+            category: null,
             query: null,
             queryMinLenWarning: false,
             isNextPageExist: false,
@@ -75,6 +88,8 @@ export default abstract class App {
         if (fileReadMode) {
             return;
         }
+
+        await this.setCategory();
 
         while (this.state.query == null) {
             await this.setInput();
@@ -242,16 +257,25 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
+    private static async setCategory(): Promise<void> {
+        CategoryScene.show();
+        
+        let category: UIInterfaces.ReturnObject = await CategoryScene.awaitForReturn();
+        
+        this.state.category = category.value; 
+
+        CategoryScene.hide();
+    }
+
     private static async setInput(): Promise<void> {
         if (this.state.queryMinLenWarning) {
             console.log(this.state.queryMinLenWarning ? CONSTANTS.INPUT_MINLEN_WARNING : ' ');
             this.state.queryMinLenWarning = false;
         }  
 
-        Input.set(1, 4,'Search ?:  ');
-        Input.render();
+        InputScene.show();
 
-        let input: UIInterfaces.ReturnObject = await Input.awaitForReturn();
+        let input: UIInterfaces.ReturnObject = await InputScene.awaitForReturn();
 
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             this.state.queryMinLenWarning = true;
@@ -341,22 +365,11 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async promptResults(): Promise<void> {
-       this.clear();
+        this.clear();
 
-       // let list: List = UIObjects.createList(this.state.entryDataArr); 
+        ResultsScene.show(this.state.entryDataArr);
 
-       // EventHandler.attach(list.eventHandler.bind(list));
-
-       // list.setXY(1, 4);
-       // list.show();
-
-        let dd: DropdownList = UIObjects.createDropdownList(this.state.entryDataArr);
-
-        dd.setContainerWidth(60);
-        dd.setXY(1, 4);
-        dd.show();
-
-        let k = await dd.awaitForReturn();
+        let k = await ResultsScene.awaitForReturn();
         
         console.log(k);
 

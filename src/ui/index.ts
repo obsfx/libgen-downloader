@@ -4,6 +4,7 @@ import { Types } from './types.namespace';
 import Main from './modules/Main';
 import Terminal from './modules/Terminal';
 import EventHandler from './modules/EventHandler';
+import Colors from './modules/Colors';
 
 import Listing from './components/Listing';
 import List from './components/List';
@@ -24,6 +25,7 @@ export {
     EventHandler,
     Main,
     Terminal,
+    Colors,
 
     Listing,
     List,

@@ -29,65 +29,102 @@ export default abstract class {
         return finalTitle;
     }
 
-    public static createListing(title: string, value: string, actionID: string, 
-                                color: UITypes.color, hovercolor: UITypes.color): UITypes.Listing {
-        return new Listing({
-            title,
-            value,
-            actionID,
+   // public static createListing(title: string, value: string, actionID: string, 
+   //                             color: UITypes.color, hovercolor: UITypes.color): UITypes.Listing {
+   //     return new Listing({
+   //         title,
+   //         value,
+   //         actionID,
 
-            color,
-            hovercolor
-        });
-    }
+   //         color,
+   //         hovercolor
+   //     });
+   // }
 
-    public static createList(entries: Interfaces.Entry[]): List {
-        let listings: UITypes.Listing[] = entries.map((e: Interfaces.Entry, i: number) => (
-           this.createListing(e.Title, e.ID, ' ', 'white', 'cyan') 
-        ))
+   // public static createList(entries: Interfaces.Entry[]): List {
+   //     let listings: UITypes.Listing[] = entries.map((e: Interfaces.Entry, i: number) => (
+   //        this.createListing(e.Title, e.ID, ' ', 'white', 'cyan') 
+   //     ))
 
-        let list: List = new List();
+   //     let list: List = new List();
 
-        list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
+   //     list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
 
-        return list;
-    }
+   //     return list;
+   // }
 
-    public static createDropdownList(entries: Interfaces.Entry[]): DropdownList {
-        let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
-            let sublistings: UITypes.Listing[] = [];
+   // public static createDropdownList(entries: Interfaces.Entry[]): DropdownList {
+   //     let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
+   //         let sublistings: UITypes.Listing[] = [];
 
-            sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
-            sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
-            sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
-            sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
-            sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
-            sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('See Details', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('Download Directly', e.ID, ' ', 'bwhite', 'byellow'));
+   //         sublistings.push(this.createListing('Add to Bul Download Queue', e.ID, ' ', 'bwhite', 'byellow'));
 
-            let sublist: List = new List(1);
+   //         let sublist: List = new List(1);
 
-            sublist.attachListingArr(sublistings, sublistings.length);
+   //         sublist.attachListingArr(sublistings, sublistings.length);
 
-            let dropdown: Dropdown = new Dropdown({
-                title: e.Title,
-                value: e.ID,
-                actionID: ' ',
+   //         let dropdown: Dropdown = new Dropdown({
+   //             title: e.Title,
+   //             value: e.ID,
+   //             actionID: ' ',
 
-                color: 'white',
-                hovercolor: 'bcyan'
-            });
+   //             color: 'white',
+   //             hovercolor: 'bcyan'
+   //         });
 
-            dropdown.attachSublist(sublist);
+   //         dropdown.attachSublist(sublist);
 
-            return dropdown;
-        });
+   //         return dropdown;
+   //     });
 
-        let dropdownList: DropdownList = new DropdownList();
+   //     let dropdownList: DropdownList = new DropdownList();
 
-        dropdownList.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
+   //     dropdownList.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
 
-        return dropdownList;
-    }
+   //     return dropdownList;
+   // }
+
+   // public static createInputList(): List {
+   //     let list: List = new List();
+
+   //     let listings: UITypes.Listing[] = [
+   //         new Listing({
+   //             title: 'libgen',
+   //             value: ' ',
+   //             actionID: 'libgen',
+
+   //             color: 'white',
+   //             hovercolor: 'red'
+   //         }),
+
+   //         new Listing({
+   //             title: 'libgen / fiction',
+   //             value: ' ',
+   //             actionID: 'libgen fiction',
+
+   //             color: 'white',
+   //             hovercolor: 'red'
+   //         }),
+
+   //         new Listing({
+   //             title: 'libgen / comics',
+   //             value: ' ',
+   //             actionID: 'libgen comics',
+
+   //             color: 'white',
+   //             hovercolor: 'red'
+   //         })
+   //     ]
+
+   //     list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
+
+   //     return list;
+   // }
 
   //  public static getListObject(entries: Interfaces.Entry[], pageNumber: number): UIInterfaces.ListObject {
   //      return {

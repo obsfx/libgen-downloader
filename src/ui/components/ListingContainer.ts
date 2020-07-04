@@ -162,7 +162,7 @@ export default abstract class ListingContainer extends Component {
 
         this.currentTextWidth = this.currentWidth - (this.containerPadding * 2 + this.paddingLeft);
 
-        this.clearCompStr = ' '.repeat(this.currentWidth);
+        this.clearCompStr = ' '.repeat(Math.abs(this.currentWidth));
     }
 
     public show(): void {
