@@ -1,35 +1,15 @@
-import { Interfaces } from './interfaces.namespace';
-
 import {
     CategorySceneActionIDS,
     ResultsSceneActionIDS
 } from './ui-actionids';
 
-import { 
-    UIInterfaces,
-
-    Text,
-
-    Colors 
-} from '../ui'
+import { UIInterfaces,} from '../ui'
 
 /* ******************************************* */
-export const Input = {
-    x: 1,
-    y: 5,
-    title: `${Colors.get('cyan', '?')} Search: `
-}
-
-/* ******************************************* */
-export const CategorySceneList = {
-    x: 2, 
-    y: 7
-}
-
 export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
     {
         title: 'libgen',
-        value: '',
+        value: 'libgen',
         actionID: CategorySceneActionIDS.LIBGEN,
         color: 'white',
         hovercolor: 'cyan'
@@ -37,7 +17,7 @@ export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
 
     {
         title: 'libgen/fiction',
-        value: '',
+        value: 'libgen/fiction',
         actionID: CategorySceneActionIDS.LIBGEN_FICTION,
         color: 'white',
         hovercolor: 'cyan'
@@ -45,66 +25,15 @@ export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
 
     {
         title: 'libgen/comics',
-        value: '',
+        value: 'libgen/comics',
         actionID: CategorySceneActionIDS.LIBGEN_COMICS,
         color: 'white',
         hovercolor: 'cyan'
     }
 ]
 
-/* ******************************************* */
-export const TitleSceneParts: Interfaces.TextObj[] = [
-    {
-        x: 1,
-        y: 1,
-        text: new Text('┌', 'white'),
-    },
-
-    {
-        x: 1,
-        y: 2,
-        text: new Text('├───', 'white'),
-    },
-
-    {
-        x: 1,
-        y: 3,
-        text: new Text('└───', 'white'),
-    },
-
-    {
-        x: 3,
-        y: 1,
-        text: new Text('libgen-downloader', 'byellow'),
-    },
-
-    {
-        x: 21,
-        y: 1,
-        text: new Text('@v1.1.0', 'white'),
-    },
-
-    {
-        x: 6,
-        y: 2,
-        text: new Text('Source Code: https://github.com/obsfx/libgen-downloader', 'white'),
-    },
-
-    {
-        x: 6,
-        y: 3,
-        text: new Text('NPM Page: https://www.npmjs.com/package/libgen-downloader', 'white'),
-    },
-];
-
 
 /* ******************************************* */
-export const ResultsSceneList = {
-    x: 2,
-    y: 5,
-    containerWidth: 60
-}
-
 export const ResultsSceneListings: UIInterfaces.ComponentParams[]  = [
     {
         title: 'See Details',

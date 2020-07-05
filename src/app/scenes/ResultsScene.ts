@@ -16,8 +16,7 @@ import {
 } from '../../ui';
 
 import { 
-    ResultsSceneList,
-    ResultsSceneListings,
+    ResultsSceneListings
 } from '../ui-templates';
 
 export default abstract class ResultsScene {
@@ -56,8 +55,8 @@ export default abstract class ResultsScene {
             return dropdown;
         });
 
-        this.list.setContainerWidth(ResultsSceneList.containerWidth);
-        this.list.setXY(ResultsSceneList.x, ResultsSceneList.y);
+        this.list.setContainerWidth(60);
+        this.list.setXY(2, 7);
         this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
         this.list.show();
     }

@@ -6,7 +6,7 @@ import Terminal from '../modules/Terminal';
 import { v4 as uuidv4 } from 'uuid';
 
 export default abstract class Input {
-    private static id: string = uuidv4();
+    public static id: string = uuidv4();
 
     private static x: number;
     private static y: number;
@@ -38,6 +38,10 @@ export default abstract class Input {
     public static render(): void {
         Terminal.cursorXY(this.x, this.y);
         process.stdout.write(this.head);
+    }
+
+    public static onResize(): void {
+        this.render();
     }
 
     public static awaitForReturn(): Promise<Interfaces.ReturnObject> {

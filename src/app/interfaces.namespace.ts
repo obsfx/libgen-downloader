@@ -1,7 +1,4 @@
-import { 
-    Text, 
-    List 
-} from '../ui'
+import { List } from '../ui'
 
 export namespace Interfaces {
 
@@ -36,11 +33,5 @@ export namespace Interfaces {
         title: string;
         author: string;
         extension: string;
-    }
-
-    export interface TextObj {
-        x: number;
-        y: number;
-        text: Text;
     }
 }

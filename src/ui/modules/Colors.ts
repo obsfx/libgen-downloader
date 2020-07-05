@@ -4,27 +4,28 @@ import ansi from '../ansi';
 
 export default abstract class Color {
     private static map = {
-        black: (text: string): string => `${ansi.BLACK}${text}${ansi.RESETCOLOR}`, 
-        red: (text: string): string => `${ansi.RED}${text}${ansi.RESETCOLOR}`, 
-        green: (text: string): string => `${ansi.GREEN}${text}${ansi.RESETCOLOR}`, 
-        yellow: (text: string): string => `${ansi.YELLOW}${text}${ansi.RESETCOLOR}`, 
-        blue: (text: string): string => `${ansi.BLUE}${text}${ansi.RESETCOLOR}`, 
-        magenta: (text: string): string => `${ansi.MAGENTA}${text}${ansi.RESETCOLOR}`, 
-        cyan: (text: string): string => `${ansi.CYAN}${text}${ansi.RESETCOLOR}`, 
-        white: (text: string): string => `${ansi.WHITE}${text}${ansi.RESETCOLOR}`, 
+        none: (text: string): string => `${ansi.RESETCOLOR}${text}`,
 
-        bblack: (text: string): string => `${ansi.BRIGHTBLACK}${text}${ansi.RESETCOLOR}`, 
-        bred: (text: string): string => `${ansi.BRIGHTRED}${text}${ansi.RESETCOLOR}`, 
-        bgreen: (text: string): string => `${ansi.BRIGHTGREEN}${text}${ansi.RESETCOLOR}`, 
-        byellow: (text: string): string => `${ansi.BRIGHTYELLOW}${text}${ansi.RESETCOLOR}`, 
-        bblue: (text: string): string => `${ansi.BRIGHTBLUE}${text}${ansi.RESETCOLOR}`, 
-        bmagenta: (text: string): string => `${ansi.BRIGHTMAGENTA}${text}${ansi.RESETCOLOR}`, 
-        bcyan: (text: string): string => `${ansi.BRIGHTCYAN}${text}${ansi.RESETCOLOR}`, 
-        bwhite: (text: string): string => `${ansi.BRIGHTWHITE}${text}${ansi.RESETCOLOR}` 
+        black: (text: string): string => `${ansi.RESETCOLOR}${ansi.BLACK}${text}`, 
+        red: (text: string): string => `${ansi.RESETCOLOR}${ansi.RED}${text}`, 
+        green: (text: string): string => `${ansi.RESETCOLOR}${ansi.GREEN}${text}`, 
+        yellow: (text: string): string => `${ansi.RESETCOLOR}${ansi.YELLOW}${text}`, 
+        blue: (text: string): string => `${ansi.RESETCOLOR}${ansi.BLUE}${text}`, 
+        magenta: (text: string): string => `${ansi.RESETCOLOR}${ansi.MAGENTA}${text}`, 
+        cyan: (text: string): string => `${ansi.RESETCOLOR}${ansi.CYAN}${text}`, 
+        white: (text: string): string => `${ansi.RESETCOLOR}${ansi.WHITE}${text}`, 
+
+        bblack: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTBLACK}${text}`, 
+        bred: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTRED}${text}`, 
+        bgreen: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTGREEN}${text}`, 
+        byellow: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTYELLOW}${text}`, 
+        bblue: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTBLUE}${text}`, 
+        bmagenta: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTMAGENTA}${text}`, 
+        bcyan: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTCYAN}${text}`, 
+        bwhite: (text: string): string => `${ansi.RESETCOLOR}${ansi.BRIGHTWHITE}${text}` 
     }
 
     public static get(color: Types.color, text: string): string {
-        if (color != 'none') return this.map[color](text);
-        else return text;
+        return this.map[color](text);
     }
 }

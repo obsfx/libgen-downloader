@@ -1,13 +1,15 @@
 import CONFIG from '../config';
-import CONSTANTS from '../constants';
+import { 
+    CATEGORY,
+    USAGE_INFO
+} from '../outputs';
 
+import Scene from './Scene';
 import TitleScene from './TitleScene';
 
 import { 
     UIInterfaces, 
     UITypes, 
-
-    EventHandler,
 
     Text,
 
@@ -15,14 +17,11 @@ import {
     List
 } from '../../ui';
 
-import { 
-    CategorySceneList,
-    CategorySceneListings,
-} from '../ui-templates';
+import { CategorySceneListings } from '../ui-templates';
 
-export default abstract class CategoryScene {
-    private static headText: Text = new Text('Which category will you search in ?', 'yellow');
-    private static infoText: Text = new Text(CONSTANTS.USAGE_INFO, 'white');
+export default abstract class CategoryScene extends Scene {
+    private static headText: Text = new Text(CATEGORY.WHICH_CAT, 'yellow');
+    private static infoText: Text = new Text(USAGE_INFO, 'white');
     private static list: List = new List();
 
     public static show(): void {
@@ -40,28 +39,22 @@ export default abstract class CategoryScene {
             )
         );
 
-        this.list.setXY(CategorySceneList.x, CategorySceneList.y);
+        this.list.setXY(2, 7);
         this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
-
-        this.headText.setXY(CategorySceneList.x - 1, CategorySceneList.y - 1);
-        EventHandler.attachResizeReRenderEvent(0, this.headText.id, this.headText.onResize.bind(this.headText));
-        this.headText.onResize();
-
         this.list.show();
 
-        this.infoText.setXY(CategorySceneList.x - 1, CategorySceneList.y + listings.length + 2);
-        EventHandler.attachResizeReRenderEvent(0, this.infoText.id, this.infoText.onResize.bind(this.infoText));
-        this.infoText.onResize();
+        this.headText.setXY(1, 6)
+        this.attachText(this.headText)
+
+        this.infoText.setXY(1, 7 + listings.length + 2)
+        this.attachText(this.infoText);
     }
 
     public static hide(): void {
-        EventHandler.detachResizeReRenderEventMap(0, this.headText.id);
-        this.headText.clear();
-
         this.list.hide();
 
-        EventHandler.detachResizeReRenderEventMap(0, this.infoText.id);
-        this.infoText.clear();
+        this.detachText(this.headText);
+        this.detachText(this.infoText);
 
         TitleScene.hide();
     }

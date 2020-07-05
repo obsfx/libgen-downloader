@@ -9,6 +9,9 @@
 import { Interfaces } from './interfaces.namespace';
 
 import CONFIG from './config';
+import {
+    INPUT_MINLEN_WARNING
+} from './outputs';
 import CONSTANTS from './constants';
 
 import {
@@ -124,8 +127,8 @@ export default abstract class App {
 
                // UI.Terminal.resetCheckedListings();
 
-                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
-                    BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+                //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
+                    //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
 
                 App.promptAfterDownload();
             }
@@ -263,19 +266,16 @@ export default abstract class App {
     }
 
     private static async setInput(): Promise<void> {
-        if (this.state.queryMinLenWarning) {
-            console.log(this.state.queryMinLenWarning ? CONSTANTS.INPUT_MINLEN_WARNING : ' ');
-            this.state.queryMinLenWarning = false;
-        }  
-
-        InputScene.show();
+        InputScene.show(this.state.category || '', this.state.queryMinLenWarning);
 
         let input: UIInterfaces.ReturnObject = await InputScene.awaitForReturn();
 
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             this.state.queryMinLenWarning = true;
         } else {
+            this.state.queryMinLenWarning = false;
             this.state.query = encodeURIComponent(input.value);
+
             InputScene.hide();
         }
     }

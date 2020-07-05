@@ -1,28 +1,26 @@
-import {
-    TitleSceneParts
-} from '../ui-templates';
+import { TITLE }from '../outputs'; 
 
-import { 
-    EventHandler,
-} from '../../ui';
+import { Text } from '../../ui';
 
-export default abstract class TitleScene {
+import Scene from './Scene';
+
+export default abstract class TitleScene extends Scene {
+    private static titleParts: Text[] = TITLE.map((e: string, i: number) => {
+        let text: Text = new Text(e, 'none');
+        text.setXY(1, 1 + i);
+
+        return text;
+    });
+
     public static show(): void {
-        for (let i: number = 0; i < TitleSceneParts.length; i++) {
-            TitleSceneParts[i].text.setXY(TitleSceneParts[i].x, TitleSceneParts[i].y);
-
-            EventHandler.attachResizeReRenderEvent(0, TitleSceneParts[i].text.id, 
-            TitleSceneParts[i].text.onResize.bind(TitleSceneParts[i].text));
-
-            TitleSceneParts[i].text.onResize();
+        for (let i: number = 0; i < this.titleParts.length; i++) {
+            this.attachText(this.titleParts[i]);
         }
     }
 
     public static hide(): void {
-        for (let i: number = 0; i < TitleSceneParts.length; i++) {
-            EventHandler.detachResizeReRenderEventMap(0, TitleSceneParts[i].text.id);
-
-            TitleSceneParts[i].text.clear();
+        for (let i: number = 0; i < this.titleParts.length; i++) {
+            this.detachText(this.titleParts[i]);
         }
     }
 }

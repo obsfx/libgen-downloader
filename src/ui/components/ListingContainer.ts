@@ -200,22 +200,22 @@ export default abstract class ListingContainer extends Component {
             for (let x: number = 0; x < w; x++) {
                 if (x == 0 && y == 0) {
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('┌');
+                    process.stdout.write(Colors.get('none', '┌'));
                 } else if (x == w - 1 && y == 0) {
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('┐');
+                    process.stdout.write(Colors.get('none', '┐'));
                 } else if (x == 0 && y == h - 1) { 
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('└');
+                    process.stdout.write(Colors.get('none', '└'));
                 } else if (x == w - 1 && y == h - 1) {
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('┘');
+                    process.stdout.write(Colors.get('none', '┘'));
                 } else if (y == 0 || y == h - 1) {
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('─');
+                    process.stdout.write(Colors.get('none', '─'));
                 } else if (x == 0 || x == w - 1) {
                     Terminal.cursorXY(this.x + x, this.y + y);
-                    process.stdout.write('│');
+                    process.stdout.write(Colors.get('none', '│'));
                 }
             }
         }

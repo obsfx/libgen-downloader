@@ -32,8 +32,8 @@ const main = async (): Promise<void> => {
             return;
         }
 
-        console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED,  
-            BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+            //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED,  
+            //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
 
         App.exit();
     } else if (typeof argv.geturl == 'string') {
@@ -42,7 +42,7 @@ const main = async (): Promise<void> => {
         let URL: string = await Downloader.findDownloadURL(argv.geturl);
 
         if (App.state.runtimeError) {
-            console.log(CONSTANTS.CONNECTION_ERROR);
+            //console.log(CONSTANTS.CONNECTION_ERROR);
             return;
         }
 
