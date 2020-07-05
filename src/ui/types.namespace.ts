@@ -41,6 +41,7 @@ export namespace Types {
                         'bcyan' |
                         'bwhite' |
                         'none';
+    export type coloredText = { prefix: string, text: string, suffix: string }
 
     export type Listing = Interfaces.Component | Dropdown;
 }

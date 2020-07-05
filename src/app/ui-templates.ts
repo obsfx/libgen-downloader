@@ -1,3 +1,5 @@
+import { Interfaces } from './interfaces.namespace';
+
 import {
     CategorySceneActionIDS,
     ResultsSceneActionIDS
@@ -5,6 +7,8 @@ import {
 
 import { 
     UIInterfaces,
+
+    Text,
 
     Colors 
 } from '../ui'
@@ -19,7 +23,7 @@ export const Input = {
 /* ******************************************* */
 export const CategorySceneList = {
     x: 2, 
-    y: 5
+    y: 7
 }
 
 export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
@@ -47,6 +51,52 @@ export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
         hovercolor: 'cyan'
     }
 ]
+
+/* ******************************************* */
+export const TitleSceneParts: Interfaces.TextObj[] = [
+    {
+        x: 1,
+        y: 1,
+        text: new Text('┌', 'white'),
+    },
+
+    {
+        x: 1,
+        y: 2,
+        text: new Text('├───', 'white'),
+    },
+
+    {
+        x: 1,
+        y: 3,
+        text: new Text('└───', 'white'),
+    },
+
+    {
+        x: 3,
+        y: 1,
+        text: new Text('libgen-downloader', 'byellow'),
+    },
+
+    {
+        x: 21,
+        y: 1,
+        text: new Text('@v1.1.0', 'white'),
+    },
+
+    {
+        x: 6,
+        y: 2,
+        text: new Text('Source Code: https://github.com/obsfx/libgen-downloader', 'white'),
+    },
+
+    {
+        x: 6,
+        y: 3,
+        text: new Text('NPM Page: https://www.npmjs.com/package/libgen-downloader', 'white'),
+    },
+];
+
 
 /* ******************************************* */
 export const ResultsSceneList = {

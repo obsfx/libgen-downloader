@@ -3,14 +3,15 @@ import { Colors } from '../ui';
 import CONFIG from './config';
 
 export default {
+    /*
     HEAD: [
-        `┌  ${Colors.get('byellow', 'libgen-downloader')} @v1.1.0`,
+        ['┌', Colors.get('byellow', 'libgen-downloader'), '@v1.1.0'],
         '├───  Source Code: https://github.com/obsfx/libgen-downloader',
         '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
-        ' '
     ],
-    
+   */ 
     /* ******************** OUTPUTS ******************* */
+
     BULK_QUEUE_INDICATOR_TEXT: 'Books in Bulk Download Queue:',
 
     BULK_DOWNLOAD_INDICATOR_TEXT: '@  Start The Bulk Downloading:',

@@ -1,27 +1,28 @@
-import CONSTANTS from '../constants';
+import {
+    TitleSceneParts
+} from '../ui-templates';
 
 import { 
     EventHandler,
-
-    Text,
 } from '../../ui';
 
 export default abstract class TitleScene {
-    private static headParts: Text[] = CONSTANTS.HEAD.map((e: string) => new Text(e, 'none'))
-
     public static show(): void {
-        for (let i: number = 0; i < this.headParts.length; i++) {
-            this.headParts[i].setXY(1, 1 + i);
-            EventHandler.attachResizeReRenderEvent(0, this.headParts[i].id, 
-                                                   this.headParts[i].onResize.bind(this.headParts[i]));
-            this.headParts[i].onResize();
+        for (let i: number = 0; i < TitleSceneParts.length; i++) {
+            TitleSceneParts[i].text.setXY(TitleSceneParts[i].x, TitleSceneParts[i].y);
+
+            EventHandler.attachResizeReRenderEvent(0, TitleSceneParts[i].text.id, 
+            TitleSceneParts[i].text.onResize.bind(TitleSceneParts[i].text));
+
+            TitleSceneParts[i].text.onResize();
         }
     }
 
     public static hide(): void {
-        for (let i: number = 0; i < this.headParts.length; i++) {
-            EventHandler.detachResizeReRenderEventMap(0, this.headParts[i].id);
-            this.headParts[i].clear();
+        for (let i: number = 0; i < TitleSceneParts.length; i++) {
+            EventHandler.detachResizeReRenderEventMap(0, TitleSceneParts[i].text.id);
+
+            TitleSceneParts[i].text.clear();
         }
     }
 }

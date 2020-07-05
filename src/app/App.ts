@@ -73,11 +73,6 @@ export default abstract class App {
 
     public static clear(): void {
         Terminal.clear();
-        //this.promptHead();
-    }
-
-    private static promptHead(): void {
-        CONSTANTS.HEAD.forEach(line => console.log(line));
     }
 
     /**  **************************************************  */
