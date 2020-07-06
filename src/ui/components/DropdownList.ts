@@ -6,17 +6,15 @@ import keymap from '../keymap';
 
 export default class DropdownList extends ListingContainer { 
     expanded: boolean;
-    expandedFadeColor: Types.color;
-    expandedIndex: number | null;
+    onSublistReturnFn: Function | null;
 
     constructor(zindex: number = 0) {
         super(zindex);
 
         this.expanded = false;
-        this.expandedFadeColor = 'white';
-        this.expandedIndex = null;
+        this.onSublistReturnFn = null
 
-        this.setPaddingLeft(6);
+        this.setPaddingLeft(7);
     }
 
     public render(): void {
@@ -32,6 +30,18 @@ export default class DropdownList extends ListingContainer {
         this.renderCursor();
     }
 
+    public attachOnSublistReturnFn(fn: Function): void {
+        this.onSublistReturnFn = fn
+    }
+
+    public detachOnSublistReturnFn(): void {
+        this.onSublistReturnFn = null;
+    }
+
+    public toggleCheckCurrentListing(): void {
+        this.renderingQueue[this.cursorIndex].toggleChecked();
+    }
+
     public eventHandler(key: Types.stdinOnKeyParam): void {
         if (!this.expanded) {
             if (key.name == keymap.PREVLISTING) {
@@ -45,19 +55,22 @@ export default class DropdownList extends ListingContainer {
             }
 
             if (key.name == keymap.DOACTION) {
-                this.expandedIndex = this.cursorIndex;
                 this.expanded = true;
 
-                this.renderingQueue[this.expandedIndex].show();
+                this.renderingQueue[this.cursorIndex].show();
             }
-        } else if (this.expandedIndex != null) {
-            let isDone: (void | boolean) = this.renderingQueue[this.expandedIndex].eventHandler(key);
+        } else {
+            let sublistReturnObject: Types.ReturnObject | null | void = this.renderingQueue[this.cursorIndex].eventHandler(key);
 
-            if (isDone) {
+            if (sublistReturnObject) {
+
                 this.expanded = false;
-                this.expandedIndex = null;
 
                 this.show();
+
+                if (this.onSublistReturnFn) {
+                    this.onSublistReturnFn(this, sublistReturnObject);
+                }
             }
         }
     }

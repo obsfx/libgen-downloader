@@ -1,7 +1,7 @@
 import {
     CategorySceneActionIDS,
     ResultsSceneActionIDS
-} from './ui-actionids';
+} from './action-ids';
 
 import { UITypes } from '../ui'
 
@@ -46,7 +46,7 @@ export const ResultsSceneListings: UITypes.ComponentParams[]  = [
     {
         title: 'Download Directly',
         value: '',
-        actionID: ResultsSceneActionIDS.SEE_DETAILS,
+        actionID: ResultsSceneActionIDS.DOWNLOAD_DIRECTLY,
         color: 'white',
         hovercolor: 'cyan'
     },

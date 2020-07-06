@@ -12,6 +12,7 @@ export default class Dropdown extends Listing {
 
     prefix: string;
     expandedprefix: string;
+    checkmark: string;
 
     constructor(params: Types.ComponentParams) {
         super(params);
@@ -20,11 +21,13 @@ export default class Dropdown extends Listing {
 
         this.prefix = '[+]';
         this.expandedprefix = Colors.get('yellow', '[-]');
+        this.checkmark = Colors.get('bgreen', 'X');
     }
 
     public render(hover: boolean = false): void {
         this.text.render(hover);
         this.renderPrefix();
+        this.renderCheckmark();
     }
 
     private renderPrefix(): void {
@@ -34,20 +37,54 @@ export default class Dropdown extends Listing {
             this.expandedprefix :
             this.prefix;
 
-        process.stdout.write(prefix)
+        process.stdout.write(prefix);
     }
 
-    public eventHandler(key: Types.stdinOnKeyParam): boolean {
+    private renderCheckmark(): void {
+        Terminal.cursorXY(this.x - (this.prefix.length + 1) - 2, this.y);
+
+        let checkmark: string = this.checked ?
+            this.checkmark :
+            ' ';
+
+        process.stdout.write(checkmark);
+    }
+
+    public toggleChecked(): void {
+        this.checked = !this.checked;
+
+        if (this.sublist) {
+            let oldText: string = !this.checked ?
+                'Remove from Bulk Downloading Queue' :
+                'Add to Bulk Downloading Queue';
+            
+            let newText: string = this.checked ?
+                'Remove from Bulk Downloading Queue' :
+                'Add to Bulk Downloading Queue';
+
+            for (let i: number = 0; i < this.sublist.renderingQueue.length; i++) {
+                if (this.sublist.renderingQueue[i].text.text == oldText) {
+                    this.sublist.renderingQueue[i].text.setText(newText);
+                }
+            }
+        }
+
+        this.render(true);
+    }
+
+    public eventHandler(key: Types.stdinOnKeyParam): Types.ReturnObject | null | void {
         if (key.name == keymap.DOACTION) {
             if (this.sublist) {
                 this.expanded = false;
                 this.sublist.hide();
 
                 this.renderPrefix();
+
+                return this.sublist.getCurrentListing();
             }
         }
 
-        return !this.expanded;
+        return null;
     }
 
     public show(): void {

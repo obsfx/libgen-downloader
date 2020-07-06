@@ -10,7 +10,9 @@ import {
     DropdownList,
 } from '../../ui';
 
-import { Entry } from '../App';
+import { ResultsSceneActionIDS } from '../../app/action-ids';
+
+import App, { Entry } from '../App';
 
 import { 
     ResultsSceneListings
@@ -49,6 +51,10 @@ export default abstract class ResultsScene {
 
             dropdown.attachSublist(sublist);
 
+            if (App.state.bulkQueue[e.ID]) {
+                dropdown.toggleChecked();
+            }
+
             return dropdown;
         });
 
@@ -56,6 +62,22 @@ export default abstract class ResultsScene {
         this.list.setXY(2, 7);
         this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
         this.list.show();
+
+        this.list.attachOnSublistReturnFn((dropdownlist: DropdownList, sublistReturnObject: UITypes.ReturnObject) => {
+            if (sublistReturnObject.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
+                dropdownlist.toggleCheckCurrentListing();
+
+                if (App.state.bulkQueue[sublistReturnObject.value]) {
+                    delete App.state.bulkQueue[sublistReturnObject.value];
+                } else {
+                    App.state.bulkQueue[sublistReturnObject.value] = true;
+                }
+            } else if (sublistReturnObject.actionID == ResultsSceneActionIDS.SEE_DETAILS || 
+                       sublistReturnObject.actionID == ResultsSceneActionIDS.DOWNLOAD_DIRECTLY) {
+                dropdownlist.terminateAwaiting = true;
+                dropdownlist.setCurrentListingActionID(sublistReturnObject.actionID);
+            }
+        });
     }
 
     public static hide(): void {

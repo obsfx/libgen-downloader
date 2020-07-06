@@ -36,7 +36,7 @@ type AppState = {
     errorText: string;
     runtimeError: boolean;
     entryDataArr: Entry[] | [];
-    listObject: List | null;
+    bulkQueue: { [key: string]: boolean };
 }
 
 export type Entry = {
@@ -85,7 +85,7 @@ export default abstract class App {
             errorText: '',
             runtimeError: false,
             entryDataArr: [],
-            listObject: null
+            bulkQueue: {}
         }
     }
 

@@ -13,6 +13,8 @@ type TComponent = {
     color: Types.color;
     hovercolor: Types.color;
 
+    checked: boolean;
+
     id: string;
 
     text: Text;
@@ -47,6 +49,8 @@ export default abstract class Component implements TComponent {
     color: Types.color;
     hovercolor: Types.color;
 
+    checked: boolean;
+
     id: string;
 
     text: Text;
@@ -74,6 +78,8 @@ export default abstract class Component implements TComponent {
 
         this.color = params.color;
         this.hovercolor = params.hovercolor;
+
+        this.checked = false;
 
         this.sublist = null;
     }
@@ -108,4 +114,6 @@ export default abstract class Component implements TComponent {
     public show(): void {  }
 
     public hide(): void {  }
+
+    public toggleChecked(): void {  }
 }

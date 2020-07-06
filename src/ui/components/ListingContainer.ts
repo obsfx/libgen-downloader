@@ -12,7 +12,7 @@ export default abstract class ListingContainer extends Component {
     protected cursorIndex: number = 0;
     protected listLength: number = 0;
 
-    protected terminateAwaiting: boolean = false;
+    public terminateAwaiting: boolean = false;
     protected activeAwait: boolean = false;
 
     protected cursor: string = Colors.get('cyan', '>');
@@ -20,7 +20,7 @@ export default abstract class ListingContainer extends Component {
     protected cursorY: number = 0;
 
     protected middleIndex: number = 0;
-    protected renderingQueue: Types.Listing[] = [];
+    public renderingQueue: Types.Listing[] = [];
     protected paddingLeft: number = 2;
     protected containerWidth: number = 40;
 
@@ -220,13 +220,17 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected getCurrentListing(): Types.ReturnObject {
+    public getCurrentListing(): Types.ReturnObject {
         let currentListing: Types.Listing = this.renderingQueue[this.cursorIndex];
         
         return {
             value: currentListing.value,
             actionID: currentListing.actionID
         }
+    }
+
+    public setCurrentListingActionID(actionID: string): void {
+        this.renderingQueue[this.cursorIndex].actionID = actionID;
     }
 
     public eventHandler(key: Types.stdinOnKeyParam): void {
