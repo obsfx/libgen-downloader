@@ -1,33 +1,30 @@
-import { Interfaces } from '../interfaces.namespace';
-
 import CONFIG from '../config';
 
 import TitleScene from './TitleScene';
 
 import { 
-    UIInterfaces, 
     UITypes, 
-
     Listing,
     List,
-
     Dropdown,
     DropdownList,
 } from '../../ui';
 
+import { Entry } from '../App';
+
 import { 
     ResultsSceneListings
-} from '../ui-templates';
+} from '../action-templates';
 
 export default abstract class ResultsScene {
     private static list: DropdownList = new DropdownList();
 
-    public static show(entries: Interfaces.Entry[]): void {
+    public static show(entries: Entry[]): void {
         TitleScene.show();
 
-        let listings: Dropdown[] = entries.map((e: Interfaces.Entry) => {
+        let listings: Dropdown[] = entries.map((e: Entry) => {
             let sublistings: UITypes.Listing[] = ResultsSceneListings.map(
-                (listing: UIInterfaces.ComponentParams) => (
+                (listing: UITypes.ComponentParams) => (
                     new Listing({
                         title: listing.title,
                         value: listing.value,
@@ -67,7 +64,7 @@ export default abstract class ResultsScene {
         TitleScene.hide();
     }
 
-    public static async awaitForReturn(): Promise<UIInterfaces.ReturnObject> {
+    public static async awaitForReturn(): Promise<UITypes.ReturnObject> {
         return await this.list.awaitForReturn();
     }
 }

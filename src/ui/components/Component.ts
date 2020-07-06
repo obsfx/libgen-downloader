@@ -1,4 +1,3 @@
-import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import List from '../components/List';
@@ -6,7 +5,7 @@ import Text from '../components/Text';
 
 import { v4 as uuidv4 } from 'uuid';
 
-export default abstract class Component implements Interfaces.Component {
+type TComponent = {
     title: string;
     value: string;
     actionID: string;
@@ -25,7 +24,41 @@ export default abstract class Component implements Interfaces.Component {
 
     sublist: List | null;
 
-    constructor(params: Interfaces.ComponentParams) {
+    setXY(x: number, y: number): void;
+    setZIndex(zindex: number): void;
+
+    attachSublist(sublist: List): void;
+    detachSublist(): void;
+
+    render(hover: boolean): void;
+
+    eventHandler(key: Types.stdinOnKeyParam): (void | boolean);
+    onResize(): void;
+
+    show(): void;
+    hide(): void;
+}
+
+export default abstract class Component implements TComponent {
+    title: string;
+    value: string;
+    actionID: string;
+
+    color: Types.color;
+    hovercolor: Types.color;
+
+    id: string;
+
+    text: Text;
+
+    x: number;
+    y: number;
+
+    zindex: number;
+
+    sublist: List | null;
+
+    constructor(params: Types.ComponentParams) {
         this.id = uuidv4();
 
         this.x = 0;

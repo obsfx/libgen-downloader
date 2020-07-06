@@ -1,4 +1,4 @@
-import { Interfaces } from '../interfaces.namespace';
+import { Types } from '../types.namespace';
 
 import EventHandler from '../modules/EventHandler';
 import Terminal from '../modules/Terminal';
@@ -12,7 +12,7 @@ export default abstract class Input {
     private static y: number;
 
     private static head: string = '';
-    private static returnValue: Interfaces.ReturnObject | null;
+    private static returnValue: Types.ReturnObject | null;
 
     public static set(x: number, y: number, headstr: string): void {
         this.x = x;
@@ -44,7 +44,7 @@ export default abstract class Input {
         this.render();
     }
 
-    public static awaitForReturn(): Promise<Interfaces.ReturnObject> {
+    public static awaitForReturn(): Promise<Types.ReturnObject> {
         return new Promise((resolve: Function) => {
             const controlLoop = (): void => {
                 if (this.returnValue) {

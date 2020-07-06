@@ -1,4 +1,3 @@
-import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import Terminal from '../modules/Terminal';
@@ -6,7 +5,32 @@ import Colors from '../modules/Colors';
 
 import { v4 as uuidv4 } from 'uuid';
 
-export default class Text implements Interfaces.Text {
+type TText = {
+    id: string;
+
+    x: number;
+    y: number;
+
+    text: string;
+    renderedtext: string;
+
+    color: Types.color;
+    hovercolor: Types.color;
+
+    maxLength: number | null;
+    clearStr: string;
+
+    setXY(x: number, y: number): void;
+    setText(text: string): void;
+    setMaxLength(maxlen: number): void;
+    setColors(color: Types.color, hovercolor: Types.color): void;
+    adjustText(): void;
+    render(hover: boolean): void;
+    clear(): void;
+    onResize(): void;
+}
+
+export default class Text implements TText {
     id: string;
 
     x: number;

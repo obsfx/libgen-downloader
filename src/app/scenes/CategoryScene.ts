@@ -8,16 +8,13 @@ import Scene from './Scene';
 import TitleScene from './TitleScene';
 
 import { 
-    UIInterfaces, 
     UITypes, 
-
     Text,
-
     Listing,
     List
 } from '../../ui';
 
-import { CategorySceneListings } from '../ui-templates';
+import { CategorySceneListings } from '../action-templates';
 
 export default abstract class CategoryScene extends Scene {
     private static headText: Text = new Text(CATEGORY.WHICH_CAT, 'yellow');
@@ -28,7 +25,7 @@ export default abstract class CategoryScene extends Scene {
         TitleScene.show();
 
         let listings: UITypes.Listing[] = CategorySceneListings.map(
-            (e: UIInterfaces.ComponentParams) => (
+            (e: UITypes.ComponentParams) => (
                 new Listing({
                     title: e.title,
                     value: e.value,
@@ -59,7 +56,7 @@ export default abstract class CategoryScene extends Scene {
         TitleScene.hide();
     }
 
-    public static async awaitForReturn(): Promise<UIInterfaces.ReturnObject> {
+    public static async awaitForReturn(): Promise<UITypes.ReturnObject> {
         return await this.list.awaitForReturn();
     }
 }

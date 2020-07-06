@@ -1,9 +1,9 @@
-import { Interfaces } from '../interfaces.namespace';
+import { Types } from '../types.namespace';
 
 import Component from './Component';
 
 export default class Listing extends Component {
-    constructor(params: Interfaces.ComponentParams) {
+    constructor(params: Types.ComponentParams) {
         super(params);
     }
 

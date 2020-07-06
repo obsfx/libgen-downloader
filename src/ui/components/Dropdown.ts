@@ -1,5 +1,4 @@
-import {Interfaces} from '../interfaces.namespace';
-import {Types} from '../types.namespace';
+import { Types } from '../types.namespace';
 
 import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
@@ -14,7 +13,7 @@ export default class Dropdown extends Listing {
     prefix: string;
     expandedprefix: string;
 
-    constructor(params: Interfaces.ComponentParams) {
+    constructor(params: Types.ComponentParams) {
         super(params);
 
         this.expanded = false;

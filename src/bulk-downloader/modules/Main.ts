@@ -1,6 +1,7 @@
 import { Types } from '../types.namespace';
 
 import CONSTANTS from '../../app/constants';
+import { DOWNLOAD_COMPLETED } from '../../app/outputs';
 
 import App from '../../app/App';
 import Downloader from '../../app/modules/Downloader';
@@ -69,7 +70,7 @@ export default abstract class Main {
 
             this.completedMD5.push(this.queue[i]);
 
-            console.log(CONSTANTS.DOWNLOAD_COMPLETED, filename);
+            console.log(DOWNLOAD_COMPLETED, filename);
         }
 
         if (this.completedMD5.length > 0 && downloadMode == 'ID') {

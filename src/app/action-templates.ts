@@ -3,10 +3,10 @@ import {
     ResultsSceneActionIDS
 } from './ui-actionids';
 
-import { UIInterfaces,} from '../ui'
+import { UITypes } from '../ui'
 
 /* ******************************************* */
-export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
+export const CategorySceneListings: UITypes.ComponentParams[] = [
     {
         title: 'libgen',
         value: 'libgen',
@@ -34,7 +34,7 @@ export const CategorySceneListings: UIInterfaces.ComponentParams[] = [
 
 
 /* ******************************************* */
-export const ResultsSceneListings: UIInterfaces.ComponentParams[]  = [
+export const ResultsSceneListings: UITypes.ComponentParams[]  = [
     {
         title: 'See Details',
         value: '',

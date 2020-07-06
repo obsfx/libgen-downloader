@@ -1,4 +1,3 @@
-import { Interfaces } from '../interfaces.namespace';
 import { Types } from '../types.namespace';
 
 import EventHandler from '../modules/EventHandler';
@@ -221,7 +220,7 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    protected getCurrentListing(): Interfaces.ReturnObject {
+    protected getCurrentListing(): Types.ReturnObject {
         let currentListing: Types.Listing = this.renderingQueue[this.cursorIndex];
         
         return {
@@ -246,7 +245,7 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    public awaitForReturn(): Promise<Interfaces.ReturnObject> {
+    public awaitForReturn(): Promise<Types.ReturnObject> {
         this.terminateAwaiting = false;
         this.activeAwait = true;
 

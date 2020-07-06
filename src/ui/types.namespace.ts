@@ -1,5 +1,4 @@
-import { Interfaces } from './interfaces.namespace';
-
+import Component from './components/Component';
 import Dropdown from './components/Dropdown';
 
 export namespace Types {
@@ -43,5 +42,19 @@ export namespace Types {
                         'none';
     export type coloredText = { prefix: string, text: string, suffix: string }
 
-    export type Listing = Interfaces.Component | Dropdown;
+    export type Listing = Component | Dropdown;
+
+    export type ComponentParams = {
+        title: string;
+        value: string;
+        actionID: string;
+
+        color: Types.color;
+        hovercolor: Types.color;
+    }
+
+    export type ReturnObject = {
+        value: string,
+        actionID: string
+    }
 }

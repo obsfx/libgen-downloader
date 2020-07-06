@@ -1,7 +1,6 @@
 import App from './app/App';
 import { 
     EventHandler,
-    Main
 } from './ui';
 
 import CONSTANTS from './app/constants';
@@ -21,7 +20,6 @@ const main = async (): Promise<void> => {
     EventHandler.init();
 
     if (typeof argv.bulk == 'string') {
-        Main.init();
 
         App.init(true);
 
@@ -54,7 +52,6 @@ const main = async (): Promise<void> => {
 
         App.exit();
     } else {
-        Main.init();
 
 //        UI.Terminal.setBulkDownloadOptionText(CONSTANTS.BULK_DOWNLOAD_INDICATOR_TEXT);
 //        UI.Terminal.setIndicatorText(CONSTANTS.BULK_QUEUE_INDICATOR_TEXT);

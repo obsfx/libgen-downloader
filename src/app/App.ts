@@ -1,33 +1,16 @@
-/*
- * TODO: Create 'abstract screen classes' for every ui screen
- * of app.
- *
- * Create ui-templates.ts
- */
-
-
-import { Interfaces } from './interfaces.namespace';
-
 import CONFIG from './config';
-import {
-    INPUT_MINLEN_WARNING
-} from './outputs';
 import CONSTANTS from './constants';
+import { DOWNLOAD_COMPLETED } from './outputs';
 
 import {
-    UIInterfaces,
-
+    UITypes,
     Terminal,
-
     List,
     DropdownList,
-
     Input,
-
     UIConstants
 } from '../ui';
 
-import UIObjects from './modules/UIObjects';
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
 import Downloader from './modules/Downloader';
@@ -43,10 +26,42 @@ import { JSDOM } from 'jsdom';
 
 import { EventEmitter } from 'events';
 
-export default abstract class App {
-    public static state: Interfaces.AppState;
-    public static spinner: Spinner = new Spinner();
+type AppState = {
+    currentPage: number;
+    url: string;
+    category: string | null;
+    query: string | null;
+    queryMinLenWarning: boolean;
+    isNextPageExist: boolean;
+    errorText: string;
+    runtimeError: boolean;
+    entryDataArr: Entry[] | [];
+    listObject: List | null;
+}
 
+export type Entry = {
+    ID: string;
+    Author: string;
+    Title: string;
+    Publisher: string;
+    Year: string;
+    Pages: string;
+    Lang: string;
+    Size: string;
+    Ext: string;
+    Mirror: string;
+}
+
+type EntryData = {
+    md5: string;
+    title: string;
+    author: string;
+    extension: string;
+}
+
+export default abstract class App {
+    public static state: AppState;
+    public static spinner: Spinner = new Spinner(); 
     private static eventEmitter: EventEmitter = new EventEmitter();
 
     private static events: {
@@ -59,7 +74,7 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static createNewAppState(): Interfaces.AppState {
+    private static createNewAppState(): AppState {
         return {
             currentPage: 1,
             url: '',
@@ -103,7 +118,7 @@ export default abstract class App {
     }
 
     public static async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
                 || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
                 this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
@@ -134,11 +149,11 @@ export default abstract class App {
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
                 await this.download(Number(value));
             } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
-                let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
+                let entry: Entry = this.state.entryDataArr[Number(value)];
 
                // UI.Terminal.toggleCheckHashMap(entry.ID);
 
@@ -148,7 +163,7 @@ export default abstract class App {
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
                 await this.promptResults();
             } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID){
@@ -156,7 +171,7 @@ export default abstract class App {
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == CONSTANTS.SEARCH_ANOTHER_LISTINGS.SEARCH_ANOTHER_RESULT_ID) {
                 await this.init();
             } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
@@ -258,7 +273,7 @@ export default abstract class App {
     private static async setCategory(): Promise<void> {
         CategoryScene.show();
         
-        let category: UIInterfaces.ReturnObject = await CategoryScene.awaitForReturn();
+        let category: UITypes.ReturnObject = await CategoryScene.awaitForReturn();
         
         this.state.category = category.value; 
 
@@ -268,7 +283,7 @@ export default abstract class App {
     private static async setInput(): Promise<void> {
         InputScene.show(this.state.category || '', this.state.queryMinLenWarning);
 
-        let input: UIInterfaces.ReturnObject = await InputScene.awaitForReturn();
+        let input: UITypes.ReturnObject = await InputScene.awaitForReturn();
 
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
             this.state.queryMinLenWarning = true;
@@ -296,7 +311,7 @@ export default abstract class App {
                 return;
             }
     
-            let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
+            let entryData: Entry[] = Entries.getAllEntries(document);
             this.state.entryDataArr = entryData;
         }
     }
@@ -354,7 +369,7 @@ export default abstract class App {
             return;
         }
 
-        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName);
+        console.log(DOWNLOAD_COMPLETED, fileName);
 
         App.promptAfterDownload();
     }

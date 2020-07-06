@@ -1,7 +1,5 @@
-import { Interfaces } from './interfaces.namespace';
 import { Types } from './types.namespace';
 
-import Main from './modules/Main';
 import Terminal from './modules/Terminal';
 import EventHandler from './modules/EventHandler';
 import Colors from './modules/Colors';
@@ -21,11 +19,9 @@ import ansi from './ansi';
 import constants from './constants';
 
 export {
-    Interfaces as UIInterfaces,
     Types as UITypes,
 
     EventHandler,
-    Main,
     Terminal,
     Colors,
 

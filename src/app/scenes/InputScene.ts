@@ -5,10 +5,8 @@ import {
 } from '../outputs';
 
 import { 
-    UIInterfaces,
-    
+    UITypes, 
     EventHandler,
-
     Text
 } from '../../ui';
 
@@ -60,7 +58,7 @@ export default abstract class InputScene extends Scene {
         EventHandler.detachResizeReRenderEventMap(0, Input.id);
     }
 
-    public static async awaitForReturn(): Promise<UIInterfaces.ReturnObject> {
+    public static async awaitForReturn(): Promise<UITypes.ReturnObject> {
         return await Input.awaitForReturn();
     }
 }

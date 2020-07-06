@@ -1,4 +1,4 @@
-import { Interfaces } from '../interfaces.namespace';
+import { Entry } from '../App';
 
 // const THeads: Interfaces.Entry = getEntrySelector(THeadRow);
 
@@ -33,7 +33,7 @@ export default abstract class Selectors {
         return `${this.CSS_SELECTORS.TABLE_CONTAINER} tr:nth-child(${row}) td:nth-child(${col})`;
     }
     
-    public static getEntrySelector(rowOrder: number): Interfaces.Entry {
+    public static getEntrySelector(rowOrder: number): Entry {
         return {
             ID: this.buildCellSelector(rowOrder, this.TSections.ID),
             Author: this.buildCellSelector(rowOrder, this.TSections.Author),
