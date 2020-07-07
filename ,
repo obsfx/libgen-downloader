@@ -25,17 +25,11 @@ export default abstract class ResultsScene {
     public static show(entries: Entry[]): void {
         TitleScene.show();
 
-        let options: Listing[] = ResultsSceneOptionListings.map(
-            (listing: UITypes.ComponentParams) => (
-                new Listing({
-                    title: listing.title,
-                    value: listing.value,
-                    actionID: listing.actionID,
-                    color: listing.color,
-                    hovercolor: listing.hovercolor
-                })
-            )
-        );
+        let options: Listing[] = ResultsSceneOptionListings.map((listing: UITypes.ComponentParams) => (
+            new Listing({
+
+            })
+        ))
 
         let listings: Dropdown[] = entries.map((e: Entry) => {
             let sublistings: UITypes.Listing[] = ResultsSceneSubListings.map(
@@ -74,7 +68,7 @@ export default abstract class ResultsScene {
 
         this.list.setContainerWidth(60);
         this.list.setXY(2, 7);
-        this.list.attachListingArr([...options, ...listings], CONFIG.UI_PAGE_SIZE);
+        this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
         this.list.show();
 
         this.list.attachOnSublistReturnFn((dropdownlist: DropdownList, sublistReturnObject: UITypes.ReturnObject) => {

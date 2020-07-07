@@ -39,6 +39,9 @@ type TComponent = {
 
     show(): void;
     hide(): void;
+
+    clearPrefix(): void;
+    clearCheckmark(): void;
 }
 
 export default abstract class Component implements TComponent {
@@ -70,14 +73,14 @@ export default abstract class Component implements TComponent {
 
         this.zindex = 0;
 
+        this.color = params.color;
+        this.hovercolor = params.hovercolor;
+
         this.title = params.title;
-        this.text = new Text(this.title, 'white', 'cyan');
+        this.text = new Text(this.title, this.color, this.hovercolor);
 
         this.value = params.value;
         this.actionID = params.actionID;
-
-        this.color = params.color;
-        this.hovercolor = params.hovercolor;
 
         this.checked = false;
 
@@ -116,4 +119,7 @@ export default abstract class Component implements TComponent {
     public hide(): void {  }
 
     public toggleChecked(): void {  }
+
+    public clearPrefix(): void {  }
+    public clearCheckmark(): void {  }
 }

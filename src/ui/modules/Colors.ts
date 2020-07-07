@@ -3,6 +3,28 @@ import { Types } from '../types.namespace';
 import ansi from '../ansi';
 
 export default abstract class Color {
+    private static ansiarr: string[] = [
+        ansi.RESETCOLOR,
+
+        ansi.BLACK, 
+        ansi.RED,
+        ansi.GREEN,
+        ansi.YELLOW,
+        ansi.BLUE,
+        ansi.MAGENTA,
+        ansi.CYAN,
+        ansi.WHITE,
+
+        ansi.BRIGHTBLACK,
+        ansi.BRIGHTRED,
+        ansi.BRIGHTGREEN,
+        ansi.BRIGHTYELLOW,
+        ansi.BRIGHTBLUE,
+        ansi.BRIGHTMAGENTA,
+        ansi.BRIGHTCYAN,
+        ansi.BRIGHTWHITE
+    ];
+
     private static map = {
         none: (text: string): string => `${ansi.RESETCOLOR}${text}`,
 
@@ -27,5 +49,13 @@ export default abstract class Color {
 
     public static get(color: Types.color, text: string): string {
         return this.map[color](text);
+    }
+
+    public static purify(text: string): string {
+        for (let i: number = 0; i < this.ansiarr.length; i++) {
+            text = text.replace(this.ansiarr[i], '');
+        }
+
+        return text;
     }
 }

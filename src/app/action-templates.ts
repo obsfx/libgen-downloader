@@ -34,7 +34,49 @@ export const CategorySceneListings: UITypes.ComponentParams[] = [
 
 
 /* ******************************************* */
-export const ResultsSceneListings: UITypes.ComponentParams[]  = [
+export const ResultsSceneOptionListings: UITypes.ComponentParams[] = [
+    {
+        title: 'Search',
+        value: '',
+        actionID: ResultsSceneActionIDS.SEARCH,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: '→ Next Page',
+        value: '',
+        actionID: ResultsSceneActionIDS.NEXT_PAGE,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: '→ Previous Page',
+        value: '',
+        actionID: ResultsSceneActionIDS.PREV_PAGE,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: '@ Start Bulk Downloading',
+        value: '',
+        actionID: ResultsSceneActionIDS.START_BULK,
+        color: 'yellow',
+        hovercolor: 'byellow'
+    },
+
+    {
+        title: 'X EXIT',
+        value: '',
+        actionID: ResultsSceneActionIDS.EXIT,
+        color: 'red',
+        hovercolor: 'bred'
+    }
+]
+
+export const ResultsSceneSubListings: UITypes.ComponentParams[]  = [
     {
         title: 'See Details',
         value: '',
@@ -55,7 +97,7 @@ export const ResultsSceneListings: UITypes.ComponentParams[]  = [
         title: 'Add to Bulk Downloading Queue',
         value: '',
         actionID: ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE,
-        color: 'yellow',
+        color: 'white',
         hovercolor: 'cyan'
     },
 

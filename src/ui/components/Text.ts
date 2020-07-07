@@ -78,14 +78,16 @@ export default class Text implements TText {
 
     public setColors(color: Types.color, hovercolor: Types.color): void {
         this.color = color;
-        this.color = hovercolor;
+        this.hovercolor = hovercolor;
     }
 
     public adjustText(): void {
         this.renderedtext = this.text;
 
         if (this.maxLength != null) { 
-            if (this.maxLength < this.renderedtext.length) {
+            let purifiedText: string = Colors.purify(this.text);
+
+            if (this.maxLength < purifiedText.length) {
                 this.renderedtext = `${this.text.substr(0, this.maxLength - 3)}...`;
             }
         }

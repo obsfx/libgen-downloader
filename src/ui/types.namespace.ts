@@ -1,4 +1,4 @@
-import Component from './components/Component';
+import ListingC from './components/Listing';
 import Dropdown from './components/Dropdown';
 
 export namespace Types {
@@ -40,9 +40,8 @@ export namespace Types {
                         'bcyan' |
                         'bwhite' |
                         'none';
-    export type coloredText = { prefix: string, text: string, suffix: string }
 
-    export type Listing = Component | Dropdown;
+    export type Listing = ListingC | Dropdown;
 
     export type ComponentParams = {
         title: string;

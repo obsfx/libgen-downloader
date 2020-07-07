@@ -1,5 +1,7 @@
 import { Types } from '../types.namespace';
 
+import Terminal from '../modules/Terminal';
+
 import ListingContainer from './ListingContainer';
 
 import keymap from '../keymap';
@@ -20,7 +22,13 @@ export default class DropdownList extends ListingContainer {
     public render(): void {
         for (let i: number = 0; i < this.listLength; i++) {
             let listing: Types.Listing = this.renderingQueue[i];
-            let hover: boolean = i == this.cursorIndex ? true : false;
+
+            if (listing.constructor.name == 'Listing') {
+                Terminal.cursorXY(this.x + this.containerPadding, this.y + i + this.containerPadding);
+                process.stdout.write(' '.repeat(6));
+            }
+
+            let hover: boolean = i == this.cursorIndex ? true : false;            
 
             listing.setXY(this.x + this.paddingLeft + this.containerPadding, this.y + i + this.containerPadding);
             listing.text.clear();
@@ -44,6 +52,9 @@ export default class DropdownList extends ListingContainer {
 
     public eventHandler(key: Types.stdinOnKeyParam): void {
         if (!this.expanded) {
+            if (key.name == keymap.PREVLISTING || key.name == keymap.NEXTLISTING) {
+            }
+
             if (key.name == keymap.PREVLISTING) {
                 this.prev();
                 this.render();
@@ -55,9 +66,13 @@ export default class DropdownList extends ListingContainer {
             }
 
             if (key.name == keymap.DOACTION) {
-                this.expanded = true;
+                if (this.renderingQueue[this.cursorIndex].constructor.name == 'Dropdown') {
+                    this.expanded = true;
 
-                this.renderingQueue[this.cursorIndex].show();
+                    this.renderingQueue[this.cursorIndex].show();
+                } else {
+                    this.terminateAwaiting = true;
+                }
             }
         } else {
             let sublistReturnObject: Types.ReturnObject | null | void = this.renderingQueue[this.cursorIndex].eventHandler(key);

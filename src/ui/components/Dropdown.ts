@@ -14,6 +14,10 @@ export default class Dropdown extends Listing {
     expandedprefix: string;
     checkmark: string;
 
+    /*
+     * ADD FOREGROUND ASCII COLORS
+     */
+
     constructor(params: Types.ComponentParams) {
         super(params);
 
@@ -40,7 +44,7 @@ export default class Dropdown extends Listing {
         process.stdout.write(prefix);
     }
 
-    private renderCheckmark(): void {
+    public renderCheckmark(): void {
         Terminal.cursorXY(this.x - (this.prefix.length + 1) - 2, this.y);
 
         let checkmark: string = this.checked ?
@@ -52,6 +56,12 @@ export default class Dropdown extends Listing {
 
     public toggleChecked(): void {
         this.checked = !this.checked;
+
+        if (this.checked) {
+            this.text.setColors('bgreen', 'byellow');
+        } else { 
+            this.text.setColors('white', 'cyan');
+        }
 
         if (this.sublist) {
             let oldText: string = !this.checked ?

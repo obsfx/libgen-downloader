@@ -5,6 +5,12 @@ export const CategorySceneActionIDS = {
 }
 
 export const ResultsSceneActionIDS = {
+    SEARCH: 'search',
+    NEXT_PAGE: 'next_page',
+    PREV_PAGE: 'prev_page',
+    START_BULK: 'start_bulk',
+    EXIT: 'exit',
+
     SEE_DETAILS: 'see_details',
     DOWNLOAD_DIRECTLY: 'download_directly',
     ADD_TO_BULK_DOWNLOADING_QUEUE: 'add_to_bulk_downloading_queue',
