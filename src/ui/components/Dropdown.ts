@@ -73,7 +73,10 @@ export default class Dropdown extends Listing {
                 this.expanded = false;
                 this.sublist.hide();
 
-                this.setXY(this.x - 5, this.y);
+                this.text.clear();
+                this.text.setPaddingLeft(0);
+                this.text.adjustText();
+                
                 this.render();
 
                 return this.sublist.getCurrentListing();
@@ -88,10 +91,10 @@ export default class Dropdown extends Listing {
             this.expanded = true;
 
             this.text.clear();
+            this.text.setPaddingLeft(5);
+            this.text.adjustText();
 
-            this.setXY(this.x + 5, this.y);
-
-            this.sublist.setXY(this.x, this.y + 1);
+            this.sublist.setXY(this.x + 5, this.y + 1);
             this.sublist.show();
             this.render(true);
         }

@@ -16,7 +16,7 @@ export default class DropdownList extends ListingContainer {
         this.expanded = false;
         this.onSublistReturnFn = null
 
-        this.setPaddingLeft(4);
+        this.setPaddingLeft(3);
     }
 
     public render(): void {

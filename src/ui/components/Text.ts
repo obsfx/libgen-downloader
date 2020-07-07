@@ -42,6 +42,7 @@ export default class Text implements TText {
     color: Types.color;
     hovercolor: Types.color;
 
+    paddingLeft: number;
     maxLength: number | null;
     clearStr: string;
 
@@ -59,6 +60,7 @@ export default class Text implements TText {
 
         this.maxLength = null;
         this.clearStr = ' '.repeat(this.text.length);
+        this.paddingLeft = 0;
     }
 
     public setXY(x: number, y: number): void {
@@ -81,14 +83,22 @@ export default class Text implements TText {
         this.hovercolor = hovercolor;
     }
 
+    public setPaddingLeft(paddingLeft: number) {
+        this.paddingLeft = paddingLeft;
+    }
+
     public adjustText(): void {
-        this.renderedtext = this.text;
+        let paddingText: string = this.paddingLeft > 0 ?
+            ' '.repeat(this.paddingLeft) :
+            '';
+
+        this.renderedtext = paddingText + this.text;
 
         if (this.maxLength != null) { 
             let purifiedText: string = Colors.purify(this.text);
 
-            if (this.maxLength < purifiedText.length) {
-                this.renderedtext = `${this.text.substr(0, this.maxLength - 3)}...`;
+            if (this.maxLength < purifiedText.length + paddingText.length) {
+                this.renderedtext = `${paddingText}${this.text.substr(0, this.maxLength - 3 - paddingText.length)}...`;
             }
         }
     }

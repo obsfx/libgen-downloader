@@ -32,7 +32,7 @@ type TComponent = {
     attachSublist(sublist: List): void;
     detachSublist(): void;
 
-    render(hover: boolean): void;
+    render(): void;
 
     eventHandler(key: Types.stdinOnKeyParam): (void | boolean);
     onResize(): void;

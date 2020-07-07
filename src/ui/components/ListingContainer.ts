@@ -152,8 +152,6 @@ export default abstract class ListingContainer extends Component {
         }
     }
 
-    public render(): void {  }
-
     public adjustContainer(): void {
         this.currentWidth = this.x + this.completeWidth >= process.stdout.columns - 5 ?
             process.stdout.columns - 5 - this.x :
