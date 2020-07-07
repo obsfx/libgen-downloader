@@ -16,7 +16,7 @@ export default class DropdownList extends ListingContainer {
         this.expanded = false;
         this.onSublistReturnFn = null
 
-        this.setPaddingLeft(7);
+        this.setPaddingLeft(4);
     }
 
     public render(): void {
@@ -24,8 +24,7 @@ export default class DropdownList extends ListingContainer {
             let listing: Types.Listing = this.renderingQueue[i];
 
             if (listing.constructor.name == 'Listing') {
-                Terminal.cursorXY(this.x + this.containerPadding, this.y + i + this.containerPadding);
-                process.stdout.write(' '.repeat(6));
+                this.removePrefixes(this.y + i + this.containerPadding);
             }
 
             let hover: boolean = i == this.cursorIndex ? true : false;            
@@ -50,11 +49,13 @@ export default class DropdownList extends ListingContainer {
         this.renderingQueue[this.cursorIndex].toggleChecked();
     }
 
+    private removePrefixes(y: number): void {
+        Terminal.cursorXY(this.x + this.containerPadding, y);
+        process.stdout.write(' '.repeat(this.paddingLeft));
+    }
+
     public eventHandler(key: Types.stdinOnKeyParam): void {
         if (!this.expanded) {
-            if (key.name == keymap.PREVLISTING || key.name == keymap.NEXTLISTING) {
-            }
-
             if (key.name == keymap.PREVLISTING) {
                 this.prev();
                 this.render();
@@ -69,6 +70,7 @@ export default class DropdownList extends ListingContainer {
                 if (this.renderingQueue[this.cursorIndex].constructor.name == 'Dropdown') {
                     this.expanded = true;
 
+                    this.removePrefixes(this.renderingQueue[this.cursorIndex].y);
                     this.renderingQueue[this.cursorIndex].show();
                 } else {
                     this.terminateAwaiting = true;

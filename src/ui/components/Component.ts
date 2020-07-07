@@ -39,9 +39,6 @@ type TComponent = {
 
     show(): void;
     hide(): void;
-
-    clearPrefix(): void;
-    clearCheckmark(): void;
 }
 
 export default abstract class Component implements TComponent {
@@ -119,7 +116,4 @@ export default abstract class Component implements TComponent {
     public hide(): void {  }
 
     public toggleChecked(): void {  }
-
-    public clearPrefix(): void {  }
-    public clearCheckmark(): void {  }
 }

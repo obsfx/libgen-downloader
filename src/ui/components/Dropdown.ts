@@ -9,13 +9,11 @@ import keymap from '../keymap';
 
 export default class Dropdown extends Listing {
     expanded: boolean;
-
-    prefix: string;
-    expandedprefix: string;
     checkmark: string;
 
     /*
      * ADD FOREGROUND ASCII COLORS
+     * REDUCE PREFIX SINGLE CHARACTER
      */
 
     constructor(params: Types.ComponentParams) {
@@ -23,29 +21,16 @@ export default class Dropdown extends Listing {
 
         this.expanded = false;
 
-        this.prefix = '[+]';
-        this.expandedprefix = Colors.get('yellow', '[-]');
         this.checkmark = Colors.get('bgreen', 'X');
     }
 
     public render(hover: boolean = false): void {
         this.text.render(hover);
-        this.renderPrefix();
         this.renderCheckmark();
     }
 
-    private renderPrefix(): void {
-        Terminal.cursorXY(this.x - (this.prefix.length + 1), this.y);
-
-        let prefix: string = this.expanded ?
-            this.expandedprefix :
-            this.prefix;
-
-        process.stdout.write(prefix);
-    }
-
     public renderCheckmark(): void {
-        Terminal.cursorXY(this.x - (this.prefix.length + 1) - 2, this.y);
+        Terminal.cursorXY(this.x - 2, this.y);
 
         let checkmark: string = this.checked ?
             this.checkmark :
@@ -88,7 +73,8 @@ export default class Dropdown extends Listing {
                 this.expanded = false;
                 this.sublist.hide();
 
-                this.renderPrefix();
+                this.setXY(this.x - 5, this.y);
+                this.render();
 
                 return this.sublist.getCurrentListing();
             }
@@ -101,10 +87,13 @@ export default class Dropdown extends Listing {
         if (this.sublist) {
             this.expanded = true;
 
+            this.text.clear();
+
+            this.setXY(this.x + 5, this.y);
+
             this.sublist.setXY(this.x, this.y + 1);
             this.sublist.show();
-
-            this.renderPrefix();
+            this.render(true);
         }
     }
 }
