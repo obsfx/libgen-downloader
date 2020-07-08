@@ -1,10 +1,14 @@
+import { USAGE_INFO } from '../outputs';
 import CONFIG from '../config';
 
+import Scene from './Scene';
 import TitleScene from './TitleScene';
+import BulkQueueScene from './BulkQueueScene';
 
 import { 
     UITypes, 
     Listing,
+    Text,
     List,
     Dropdown,
     DropdownList,
@@ -19,11 +23,15 @@ import {
     ResultsSceneSubListings
 } from '../action-templates';
 
-export default abstract class ResultsScene {
+export default abstract class ResultsScene extends Scene {
     private static list: DropdownList = new DropdownList();
+    private static infoText: Text = new Text(USAGE_INFO, 'white');
 
     public static show(entries: Entry[]): void {
         TitleScene.show();
+
+        BulkQueueScene.show(1, 5);
+        BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
 
         let options: Listing[] = ResultsSceneOptionListings.map(
             (listing: UITypes.ComponentParams) => (
@@ -71,33 +79,40 @@ export default abstract class ResultsScene {
             return dropdown;
         });
 
-
         this.list.setContainerWidth(60);
-        this.list.setXY(2, 7);
+        this.list.setXY(2, 6);
         this.list.attachListingArr([...options, ...listings], CONFIG.UI_PAGE_SIZE);
         this.list.show();
 
         this.list.attachOnSublistReturnFn((dropdownlist: DropdownList, sublistReturnObject: UITypes.ReturnObject) => {
             if (sublistReturnObject.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 dropdownlist.toggleCheckCurrentListing();
+                
+                let currentListing: UITypes.ReturnObject = dropdownlist.getCurrentListing();
 
-                if (App.state.bulkQueue[sublistReturnObject.value]) {
-                    delete App.state.bulkQueue[sublistReturnObject.value];
+                if (App.state.bulkQueue[currentListing.value]) {
+                    delete App.state.bulkQueue[currentListing.value];
                 } else {
-                    App.state.bulkQueue[sublistReturnObject.value] = true;
+                    App.state.bulkQueue[currentListing.value] = true;
                 }
+
+                BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
             } else if (sublistReturnObject.actionID == ResultsSceneActionIDS.SEE_DETAILS || 
                        sublistReturnObject.actionID == ResultsSceneActionIDS.DOWNLOAD_DIRECTLY) {
                 dropdownlist.terminateAwaiting = true;
                 dropdownlist.setCurrentListingActionID(sublistReturnObject.actionID);
             }
         });
+
+        this.infoText.setXY(1, 6 + CONFIG.UI_PAGE_SIZE + 2);
+        this.attachText(this.infoText);
     }
 
     public static hide(): void {
-        this.list.hide();
-
         TitleScene.hide();
+        BulkQueueScene.hide();
+        this.list.hide();
+        this.detachText(this.infoText);
     }
 
     public static async awaitForReturn(): Promise<UITypes.ReturnObject> {

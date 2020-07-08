@@ -7,13 +7,12 @@ import {
 import { 
     UITypes, 
     EventHandler,
+    Input,
     Text
 } from '../../ui';
 
 import TitleScene from './TitleScene';
 import Scene from './Scene';
-
-import { Input } from '../../ui';
 
 export default abstract class InputScene extends Scene {
     private static category: string = '';
@@ -35,7 +34,6 @@ export default abstract class InputScene extends Scene {
 
         this.selectedCategory.setXY(1, 6);
         this.selectedCategory.setText(this.selectedCategory.text.replace('{category}', this.category));
-
         this.attachText(this.selectedCategory);
 
         Input.set(2, 7, INPUT_TITLE);

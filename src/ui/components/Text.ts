@@ -70,7 +70,7 @@ export default class Text implements TText {
 
     public setText(text: string): void {
         this.text = text;
-        this.clearStr = ' '.repeat(this.text.length);
+        this.clearStr = 'x'.repeat(this.text.length);
     }
 
     public setMaxLength(maxlen: number): void {
@@ -127,7 +127,6 @@ export default class Text implements TText {
             process.stdout.columns - 5 - this.x : 
             this.text.length;
 
-        this.clear();
         this.setMaxLength(width);
         this.adjustText();
         this.render(false);

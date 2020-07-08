@@ -36,14 +36,14 @@ export default abstract class CategoryScene extends Scene {
             )
         );
 
-        this.list.setXY(2, 7);
+        this.list.setXY(2, 6);
         this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
         this.list.show();
 
-        this.headText.setXY(1, 6)
+        this.headText.setXY(1, 5)
         this.attachText(this.headText)
 
-        this.infoText.setXY(1, 7 + listings.length + 2)
+        this.infoText.setXY(1, 6 + listings.length + 2)
         this.attachText(this.infoText);
     }
 
