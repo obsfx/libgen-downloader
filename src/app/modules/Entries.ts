@@ -1,8 +1,8 @@
 import { Entry } from '../App';
 
 import Selectors from './Selectors';
-import CONSTANTS from '../constants';
 
+import { ENTRY_DETAILS } from '../outputs';
 
 export default abstract class Entries {
     public static querySelectText(document: HTMLDocument, selector: string): string {
@@ -40,19 +40,18 @@ export default abstract class Entries {
 
     public static getDetails(entry: Entry): string[] {
         let textArr: string[] = [
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.ID}: ${entry.ID}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Author}: ${entry.Author}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Title}: ${entry.Title}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Publisher}: ${entry.Publisher}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Year}: ${entry.Year}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Pages}: ${entry.Pages}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Lang}: ${entry.Lang}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Size}: ${entry.Size}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Ext}: ${entry.Ext}`,
-            `${CONSTANTS.ENTRY_DETAILS_HEAD.Mirror}: ${entry.Mirror}`,
-            ' '
+            ENTRY_DETAILS.ID.replace('{ID}', entry.ID),
+            ENTRY_DETAILS.Author.replace('{Author}', entry.Author),
+            ENTRY_DETAILS.Title.replace('{Title}', entry.Title),
+            ENTRY_DETAILS.Publisher.replace('{Publisher}', entry.Publisher),
+            ENTRY_DETAILS.Year.replace('{Year}', entry.Year),
+            ENTRY_DETAILS.Pages.replace('{Pages}', entry.Pages),
+            ENTRY_DETAILS.Lang.replace('{Lang}', entry.Lang),
+            ENTRY_DETAILS.Size.replace('{Size}', entry.Size),
+            ENTRY_DETAILS.Ext.replace('{Ext}', entry.Ext),
+            ENTRY_DETAILS.Mirror.replace('{Mirror}', entry.Mirror),
         ];
-    
+
         return textArr;
     }
 

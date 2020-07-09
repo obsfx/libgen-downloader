@@ -41,24 +41,33 @@ export default abstract class ResultsScene extends Scene {
             .replace('{page}', App.state.currentPage.toString()));
         this.attachText(this.results);
 
-        let options: Listing[] = ResultsSceneOptionListings.map(
-            (listing: UITypes.ComponentParams) => (
+        let options: Listing[] = []
+
+        for (let i: number = 0; i < ResultsSceneOptionListings.length; i++) {
+            let option: UITypes.ComponentParams = ResultsSceneOptionListings[i];
+
+            if ((App.state.currentPage == 1 && option.actionID == ResultsSceneActionIDS.PREV_PAGE) ||
+                !App.isNextPageExist()) {
+                continue;
+            }
+
+            options.push(
                 new Listing({
-                    title: listing.title,
-                    value: listing.value,
-                    actionID: listing.actionID,
-                    color: listing.color,
-                    hovercolor: listing.hovercolor
+                    title: option.title,
+                    value: option.value,
+                    actionID: option.actionID,
+                    color: option.color,
+                    hovercolor: option.hovercolor
                 })
-            )
-        );
+            );
+        }
 
         let listings: Dropdown[] = App.state.entryDataArr.map((e: Entry, i: number) => {
             let sublistings: UITypes.Listing[] = ResultsSceneSubListings.map(
                 (listing: UITypes.ComponentParams) => (
                     new Listing({
                         title: listing.title,
-                        value: listing.value,
+                        value: e.ID,
                         actionID: listing.actionID,
                         color: listing.color,
                         hovercolor: listing.hovercolor
@@ -74,7 +83,7 @@ export default abstract class ResultsScene extends Scene {
 
             let dropdown: Dropdown = new Dropdown({
                 title: dropdownTitle,
-                value: e.ID,
+                value: i.toString(),
                 actionID: '',
                 color: 'white',
                 hovercolor: 'cyan'
@@ -83,7 +92,7 @@ export default abstract class ResultsScene extends Scene {
             dropdown.attachSublist(sublist);
 
             if (App.state.bulkQueue[e.ID]) {
-                dropdown.toggleChecked();
+                dropdown.applyCheckedStyle();
             }
 
             return dropdown;
@@ -100,13 +109,11 @@ export default abstract class ResultsScene extends Scene {
 
             if (sublistReturnObject.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 dropdownlist.toggleCheckCurrentListing();
-                
-                let currentListing: UITypes.ReturnObject = dropdownlist.getCurrentListing();
 
-                if (App.state.bulkQueue[currentListing.value]) {
-                    delete App.state.bulkQueue[currentListing.value];
+                if (App.state.bulkQueue[sublistReturnObject.value]) {
+                    delete App.state.bulkQueue[sublistReturnObject.value];
                 } else {
-                    App.state.bulkQueue[currentListing.value] = true;
+                    App.state.bulkQueue[sublistReturnObject.value] = true;
                 }
 
                 BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);

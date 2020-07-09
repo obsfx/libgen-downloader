@@ -56,6 +56,8 @@ export default abstract class ListingContainer extends Component {
         this.x = x;
         this.y = y;
 
+        this.cursorIndex = 0;
+
         this.setCursorXY(x, y + this.cursorIndex);
     }
 

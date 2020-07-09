@@ -109,3 +109,30 @@ export const ResultsSceneSubListings: UITypes.ComponentParams[]  = [
         hovercolor: 'cyan'
     }
 ]
+
+/* ******************************************* */
+export const EntryDetailsSceneOptions: UITypes.ComponentParams[]  = [
+    {
+        title: 'Turn Back to The List',
+        value: '',
+        actionID: ResultsSceneActionIDS.TURN_BACK_TO_THE_LIST,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: 'Download Directly',
+        value: '',
+        actionID: ResultsSceneActionIDS.DOWNLOAD_DIRECTLY,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: 'Add to Bulk Downloading Queue',
+        value: '',
+        actionID: ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+]

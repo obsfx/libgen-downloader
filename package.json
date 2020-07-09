@@ -10,6 +10,7 @@
   "scripts": {
     "standalone": "pkg . --out-path ./standalone-executables",
     "run": "node ./bin/index.js",
+    "inspect": "node --inspect ./bin/index.js",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "link": "npm link --force"

@@ -39,7 +39,7 @@ export default class Dropdown extends Listing {
         process.stdout.write(checkmark);
     }
 
-    public toggleChecked(): void {
+    public applyCheckedStyle(): void {
         this.checked = !this.checked;
 
         if (this.checked) {
@@ -63,7 +63,10 @@ export default class Dropdown extends Listing {
                 }
             }
         }
+    }
 
+    public toggleChecked(): void {
+        this.applyCheckedStyle();
         this.render(true);
     }
 

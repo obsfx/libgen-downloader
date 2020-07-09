@@ -1,6 +1,21 @@
+/*
+ * TODO:
+ *
+ * [] spinner
+ * [x] add pagination
+ * [] entry details
+ * [] entry details listing
+ * [] comics selectors
+ * [] fiction selectors
+ */
+
 import CONFIG from './config';
 import CONSTANTS from './constants';
 import { DOWNLOAD_COMPLETED } from './outputs';
+
+import {
+    ResultsSceneActionIDS
+} from './action-ids';
 
 import {
     UITypes,
@@ -19,6 +34,7 @@ import BulkDownloader from '../bulk-downloader';
 import CategoryScene from'./scenes/CategoryScene';
 import InputScene from './scenes/InputScene';
 import ResultsScene from './scenes/ResultsScene';
+import EntryDetailsScene from './scenes/EntryDetailsScene';
 
 import fetch, { Response } from 'node-fetch';
 import { Spinner } from 'cli-spinner';
@@ -119,35 +135,34 @@ export default abstract class App {
 
     public static async initEventHandlers(): Promise<void> {
         this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UITypes.ReturnObject) => {
-            console.log(value, actionID);
-           // if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
-           //     || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
-           //     this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
-           //     this.state.currentPage + 1 :
-           //     this.state.currentPage - 1;
-           //     
-           //     this.clear();
-           //     await this.executePromptFlow();
-           // } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
-           //     await this.init();
-           // } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
-           //     this.exit();
-           // } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-           //     await this.download(Number(value));
-           // } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
-           //     await this.promptEntryDetails(Number(value));
-           // } else if (actionID == UIConstants.DOWNLOADBULKVAL) {
-           //     this.clear();
-           //     
-           //    // await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
+            if (actionID == ResultsSceneActionIDS.PREV_PAGE 
+                || actionID == ResultsSceneActionIDS.NEXT_PAGE) {
+                this.state.currentPage = (actionID == ResultsSceneActionIDS.NEXT_PAGE) ?
+                this.state.currentPage + 1 :
+                this.state.currentPage - 1;
+                
+                this.clear();
+                await this.executePromptFlow();
+            } else if (actionID == ResultsSceneActionIDS.SEARCH) {
+                await this.init();
+            } else if (actionID == ResultsSceneActionIDS.EXIT) {
+                this.exit();
+            } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+                //await this.download(Number(value));
+            } else if (actionID == ResultsSceneActionIDS.SEE_DETAILS) {
+                await this.promptEntryDetails(Number(value));
+            } else if (actionID == UIConstants.DOWNLOADBULKVAL) {
+                //this.clear();
+                
+               // await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
 
-           //    // UI.Terminal.resetCheckedListings();
+               // UI.Terminal.resetCheckedListings();
 
-           //     //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
-           //         //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+                //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
+                    //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
 
-           //     App.promptAfterDownload();
-           // }
+                //App.promptAfterDownload();
+            }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
@@ -257,7 +272,7 @@ export default abstract class App {
         return (searchInput) ? true : false;
     }
 
-    private static async isNextPageExist(): Promise<boolean> {
+    public static async isNextPageExist(): Promise<boolean> {
         let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
         let document: HTMLDocument | void = await this.getDocument(nextPageURL);
 
@@ -406,10 +421,12 @@ export default abstract class App {
     }
 
     private static async promptEntryDetails(entryIndex: number): Promise<void> {
-       // this.clear();
+        this.clear();
 
-       // let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
-       // let outputArr: string[] = Entries.getDetails(selectedEntry);
+        EntryDetailsScene.show(entryIndex);
+
+       //let selectedEntry: Entry = this.state.entryDataArr[entryIndex];
+       //let outputArr: string[] = Entries.getDetails(selectedEntry);
 
        // outputArr.forEach(output => console.log(output));
 
@@ -417,9 +434,9 @@ export default abstract class App {
 
        // let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex, entryCheckStatus);
 
-       // let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(detailsListObject);
+        let selectedChoice: UITypes.ReturnObject = await EntryDetailsScene.awaitForReturn();
 
-       // this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
+        this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
     public static async promptAfterDownload(): Promise<void> {

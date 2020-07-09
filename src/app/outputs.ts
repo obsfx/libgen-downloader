@@ -16,7 +16,7 @@ export const INPUT_MINLEN_WARNING = `${c.get('yellow', 'Search string must conta
 
 export const USAGE_INFO = '(UP and DOWN arrow keys to reveal listings, ENTER key to interact.)';
 
-export const RESULTS_TITLE = `${c.get('none', 'Results for:')} ${c.get('none', '\'{query}\'')} ${c.get('none', 'Page:')} ${c.get('none', '{page}')}`;
+export const RESULTS_TITLE = `${c.get('none', 'Results for:')} ${c.get('green', '\'{query}\'')} ${c.get('none', 'Page:')} ${c.get('yellow', '{page}')}`;
 
 export const NO_RESULT = c.get('cyan', 'No Result.');
 
@@ -29,4 +29,17 @@ export const BULK = {
     QUEUE_LEN: `Files in Bulk Downloading Queue: ${c.get('bgreen', '{count}')}`,
     DOWNLOAD_COMPLETED: `${c.get('green', 'DONE')} ${c.get('byellow', `Bulk Downloading`)} ${c.get('none', 'completed.')} ${c.get('green', '%s / %s')} ${c.get('none', 'item(s) downloaded.')}`,
     NO_FILE: `${c.get('yellow', 'There is no added file to')} ${c.get('bgreen', 'Start Bulk Downloading')}` 
+}
+
+export const ENTRY_DETAILS = {
+    ID: `${c.get('byellow', 'ID')} ${c.get('none', '{ID}')}`,
+    Author: `${c.get('byellow', 'Author')} ${c.get('none', '{Author}')}`,
+    Title: `${c.get('byellow', 'Title')} ${c.get('none', '{Title}')}`,
+    Publisher: `${c.get('byellow', 'Publisher')} ${c.get('none', '{Publisher}')}`,
+    Year: `${c.get('byellow', 'Year')} ${c.get('none', '{Year}')}`,
+    Pages: `${c.get('byellow', 'Pages')} ${c.get('none', '{Pages}')}`,
+    Lang: `${c.get('byellow', 'Lang')} ${c.get('none', '{Lang}')}`,
+    Size: `${c.get('byellow', 'Size')} ${c.get('none', '{Size}')}`,
+    Ext: `${c.get('byellow', 'Extension')} ${c.get('none', '{Ext}')}`,
+    Mirror: `${c.get('byellow', 'Mirror')} ${c.get('none', '{Mirror}')}`,
 }
