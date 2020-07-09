@@ -70,7 +70,7 @@ export default class Text implements TText {
 
     public setText(text: string): void {
         this.text = text;
-        this.clearStr = 'x'.repeat(this.text.length);
+        this.clearStr = ' '.repeat(this.text.length);
     }
 
     public setMaxLength(maxlen: number): void {
@@ -97,8 +97,8 @@ export default class Text implements TText {
         if (this.maxLength != null) { 
             let purifiedText: string = Colors.purify(this.text);
 
-            if (this.maxLength < purifiedText.length + paddingText.length) {
-                this.renderedtext = `${paddingText}${this.text.substr(0, this.maxLength - 3 - paddingText.length)}...`;
+            if (this.maxLength < purifiedText.length + this.paddingLeft) {
+                this.renderedtext = `${paddingText}${purifiedText.substr(0, this.maxLength - 3 - this.paddingLeft)}...`;
             }
         }
     }
@@ -123,9 +123,11 @@ export default class Text implements TText {
     }
 
     public onResize(): void {
-        let width: number = this.x + this.text.length >= process.stdout.columns - 5 ?
-            process.stdout.columns - 5 - this.x : 
-            this.text.length;
+        let purifiedText: string = Colors.purify(this.text);
+
+        let width: number = this.x + purifiedText.length + this.paddingLeft >= process.stdout.columns ?
+            process.stdout.columns - this.x : 
+            purifiedText.length;
 
         this.setMaxLength(width);
         this.adjustText();

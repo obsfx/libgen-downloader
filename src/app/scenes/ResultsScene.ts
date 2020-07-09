@@ -1,4 +1,4 @@
-import { USAGE_INFO } from '../outputs';
+import { RESULTS_TITLE } from '../outputs';
 import CONFIG from '../config';
 
 import Scene from './Scene';
@@ -7,8 +7,9 @@ import BulkQueueScene from './BulkQueueScene';
 
 import { 
     UITypes, 
-    Listing,
+    Terminal,
     Text,
+    Listing,
     List,
     Dropdown,
     DropdownList,
@@ -25,13 +26,20 @@ import {
 
 export default abstract class ResultsScene extends Scene {
     private static list: DropdownList = new DropdownList();
-    private static infoText: Text = new Text(USAGE_INFO, 'white');
+    private static results: Text = new Text(RESULTS_TITLE, 'none');
 
-    public static show(entries: Entry[]): void {
+    public static show(): void {
+        Terminal.hideCursor();
         TitleScene.show();
 
-        BulkQueueScene.show(1, 5);
+        BulkQueueScene.show(1, 6);
         BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+
+        this.results.setXY(1, 7);
+        this.results.setText(RESULTS_TITLE
+            .replace('{query}', decodeURIComponent(App.state.query || ''))
+            .replace('{page}', App.state.currentPage.toString()));
+        this.attachText(this.results);
 
         let options: Listing[] = ResultsSceneOptionListings.map(
             (listing: UITypes.ComponentParams) => (
@@ -45,7 +53,7 @@ export default abstract class ResultsScene extends Scene {
             )
         );
 
-        let listings: Dropdown[] = entries.map((e: Entry) => {
+        let listings: Dropdown[] = App.state.entryDataArr.map((e: Entry, i: number) => {
             let sublistings: UITypes.Listing[] = ResultsSceneSubListings.map(
                 (listing: UITypes.ComponentParams) => (
                     new Listing({
@@ -62,8 +70,10 @@ export default abstract class ResultsScene extends Scene {
 
             sublist.attachListingArr(sublistings, sublistings.length);
 
+            let dropdownTitle: string = `[${(i + 1) + CONFIG.RESULTS_PAGE_SIZE * (App.state.currentPage- 1)}] [${e.Ext}] ${e.Title}`;
+
             let dropdown: Dropdown = new Dropdown({
-                title: e.Title,
+                title: dropdownTitle,
                 value: e.ID,
                 actionID: '',
                 color: 'white',
@@ -79,12 +89,15 @@ export default abstract class ResultsScene extends Scene {
             return dropdown;
         });
 
-        this.list.setContainerWidth(60);
-        this.list.setXY(2, 6);
+        this.list.setContainerWidth(70);
+        this.list.setXY(2, 8);
         this.list.attachListingArr([...options, ...listings], CONFIG.UI_PAGE_SIZE);
         this.list.show();
+        this.list.showInfo();
 
         this.list.attachOnSublistReturnFn((dropdownlist: DropdownList, sublistReturnObject: UITypes.ReturnObject) => {
+            dropdownlist.showInfo();
+
             if (sublistReturnObject.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 dropdownlist.toggleCheckCurrentListing();
                 
@@ -104,15 +117,26 @@ export default abstract class ResultsScene extends Scene {
             }
         });
 
-        this.infoText.setXY(1, 6 + CONFIG.UI_PAGE_SIZE + 2);
-        this.attachText(this.infoText);
+        this.list.attachListingOnReturnFn((dropdown: DropdownList) => {
+            let currentListing: UITypes.ReturnObject = dropdown.getCurrentListing();
+
+            if (currentListing.actionID == ResultsSceneActionIDS.START_BULK &&
+                Object.keys(App.state.bulkQueue).length < 1) {
+                dropdown.terminateAwaiting = false;
+                BulkQueueScene.showNoFileWarning(1, 5);
+            } else {
+                dropdown.terminateAwaiting = true;
+            }
+        });
     }
 
     public static hide(): void {
+        Terminal.showCursor();
         TitleScene.hide();
+        this.detachText(this.results);
         BulkQueueScene.hide();
         this.list.hide();
-        this.detachText(this.infoText);
+        this.list.hideInfo();
     }
 
     public static async awaitForReturn(): Promise<UITypes.ReturnObject> {

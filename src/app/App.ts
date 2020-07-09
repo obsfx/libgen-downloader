@@ -35,7 +35,7 @@ type AppState = {
     isNextPageExist: boolean;
     errorText: string;
     runtimeError: boolean;
-    entryDataArr: Entry[] | [];
+    entryDataArr: Entry[];
     bulkQueue: { [key: string]: boolean };
 }
 
@@ -119,34 +119,35 @@ export default abstract class App {
 
     public static async initEventHandlers(): Promise<void> {
         this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UITypes.ReturnObject) => {
-            if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
-                || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
-                this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
-                this.state.currentPage + 1 :
-                this.state.currentPage - 1;
-                
-                this.clear();
-                await this.executePromptFlow();
-            } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
-                await this.init();
-            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
-                this.exit();
-            } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-                await this.download(Number(value));
-            } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
-                await this.promptEntryDetails(Number(value));
-            } else if (actionID == UIConstants.DOWNLOADBULKVAL) {
-                this.clear();
-                
-               // await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
+            console.log(value, actionID);
+           // if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
+           //     || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
+           //     this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
+           //     this.state.currentPage + 1 :
+           //     this.state.currentPage - 1;
+           //     
+           //     this.clear();
+           //     await this.executePromptFlow();
+           // } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
+           //     await this.init();
+           // } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+           //     this.exit();
+           // } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
+           //     await this.download(Number(value));
+           // } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
+           //     await this.promptEntryDetails(Number(value));
+           // } else if (actionID == UIConstants.DOWNLOADBULKVAL) {
+           //     this.clear();
+           //     
+           //    // await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
 
-               // UI.Terminal.resetCheckedListings();
+           //    // UI.Terminal.resetCheckedListings();
 
-                //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
-                    //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+           //     //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
+           //         //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
 
-                App.promptAfterDownload();
-            }
+           //     App.promptAfterDownload();
+           // }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
@@ -371,18 +372,18 @@ export default abstract class App {
 
         console.log(DOWNLOAD_COMPLETED, fileName);
 
-        App.promptAfterDownload();
+        this.promptAfterDownload();
     }
 
     /**  **************************************************  */
     private static async promptResults(): Promise<void> {
         this.clear();
 
-        ResultsScene.show(this.state.entryDataArr);
+        ResultsScene.show();
 
-        let k = await ResultsScene.awaitForReturn();
-        
-        console.log(k);
+        let selectedChoice: UITypes.ReturnObject = await ResultsScene.awaitForReturn();
+
+        ResultsScene.hide();
 
        // let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
        // let optionObjects: UIInterfaces.ListingObject[] = this.constructOptions();
@@ -401,7 +402,7 @@ export default abstract class App {
        // 
        // let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
 
-       // this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
+        this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
     }
 
     private static async promptEntryDetails(entryIndex: number): Promise<void> {

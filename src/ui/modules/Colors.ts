@@ -53,7 +53,7 @@ export default abstract class Color {
 
     public static purify(text: string): string {
         for (let i: number = 0; i < this.ansiarr.length; i++) {
-            text = text.replace(this.ansiarr[i], '');
+            text = text.split(this.ansiarr[i]).join('');
         }
 
         return text;

@@ -8,13 +8,17 @@ import keymap from '../keymap';
 
 export default class DropdownList extends ListingContainer { 
     expanded: boolean;
-    onSublistReturnFn: Function | null;
+
+    sublistOnReturnFn: Function | null;
+    listingOnReturnFn: Function | null;
 
     constructor(zindex: number = 0) {
         super(zindex);
 
         this.expanded = false;
-        this.onSublistReturnFn = null
+
+        this.sublistOnReturnFn = null;
+        this.listingOnReturnFn = null;
 
         this.setPaddingLeft(3);
     }
@@ -38,11 +42,19 @@ export default class DropdownList extends ListingContainer {
     }
 
     public attachOnSublistReturnFn(fn: Function): void {
-        this.onSublistReturnFn = fn
+        this.sublistOnReturnFn = fn
     }
 
     public detachOnSublistReturnFn(): void {
-        this.onSublistReturnFn = null;
+        this.sublistOnReturnFn = null;
+    }
+
+    public attachListingOnReturnFn(fn: Function): void {
+        this.listingOnReturnFn = fn;
+    }
+
+    public detachListingOnReturnFn(): void {
+        this.listingOnReturnFn = null;
     }
 
     public toggleCheckCurrentListing(): void {
@@ -73,9 +85,11 @@ export default class DropdownList extends ListingContainer {
                     this.removePrefixes(this.renderingQueue[this.cursorIndex].y);
                     this.renderingQueue[this.cursorIndex].show();
                 } else {
-                    this.terminateAwaiting = true;
+                    if (this.listingOnReturnFn) {
+                        this.listingOnReturnFn(this);
+                    }
                 }
-            }
+            } 
         } else {
             let sublistReturnObject: Types.ReturnObject | null | void = this.renderingQueue[this.cursorIndex].eventHandler(key);
 
@@ -85,8 +99,8 @@ export default class DropdownList extends ListingContainer {
 
                 this.show();
 
-                if (this.onSublistReturnFn) {
-                    this.onSublistReturnFn(this, sublistReturnObject);
+                if (this.sublistOnReturnFn) {
+                    this.sublistOnReturnFn(this, sublistReturnObject);
                 }
             }
         }

@@ -16,7 +16,7 @@ export const INPUT_MINLEN_WARNING = `${c.get('yellow', 'Search string must conta
 
 export const USAGE_INFO = '(UP and DOWN arrow keys to reveal listings, ENTER key to interact.)';
 
-export const RESULTS_TITLE = c.get('white', 'Results for: \'{query}\' Page: {page}'); 
+export const RESULTS_TITLE = `${c.get('none', 'Results for:')} ${c.get('none', '\'{query}\'')} ${c.get('none', 'Page:')} ${c.get('none', '{page}')}`;
 
 export const NO_RESULT = c.get('cyan', 'No Result.');
 
@@ -26,6 +26,7 @@ export const CATEGORY = {
 }
 
 export const BULK = {
-    QUEUE_LEN: `Files in Bulk Downloading Queue: ${c.get('bcyan', '{count}')}`,
+    QUEUE_LEN: `Files in Bulk Downloading Queue: ${c.get('bgreen', '{count}')}`,
     DOWNLOAD_COMPLETED: `${c.get('green', 'DONE')} ${c.get('byellow', `Bulk Downloading`)} ${c.get('none', 'completed.')} ${c.get('green', '%s / %s')} ${c.get('none', 'item(s) downloaded.')}`,
+    NO_FILE: `${c.get('yellow', 'There is no added file to')} ${c.get('bgreen', 'Start Bulk Downloading')}` 
 }

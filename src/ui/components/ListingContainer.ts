@@ -1,3 +1,5 @@
+import { USAGE_INFO } from '../../app/outputs';
+
 import { Types } from '../types.namespace';
 
 import EventHandler from '../modules/EventHandler';
@@ -5,6 +7,7 @@ import Terminal from '../modules/Terminal';
 import Colors from  '../modules/Colors';
 
 import Component from './Component';
+import Text from './Text';
 
 import keymap from '../keymap';
 
@@ -30,6 +33,8 @@ export default abstract class ListingContainer extends Component {
     protected containerPadding: number = 1;
 
     protected clearCompStr: string = '';
+
+    private infoText: Text = new Text(USAGE_INFO, 'white');
 
     constructor(zindex: number) {
         super({
@@ -153,8 +158,8 @@ export default abstract class ListingContainer extends Component {
     }
 
     public adjustContainer(): void {
-        this.currentWidth = this.x + this.completeWidth >= process.stdout.columns - 5 ?
-            process.stdout.columns - 5 - this.x :
+        this.currentWidth = this.x + this.completeWidth >= process.stdout.columns ?
+            process.stdout.columns - this.x :
             this.completeWidth;
 
         this.currentTextWidth = this.currentWidth - (this.containerPadding * 2 + this.paddingLeft);
@@ -187,6 +192,17 @@ export default abstract class ListingContainer extends Component {
         EventHandler.detachResizeReRenderEventMap(this.zindex, this.id);
 
         this.clearComplete();
+    }
+
+    public showInfo(): void {
+        this.infoText.setXY(this.x, this.y + this.listLength + this.containerPadding * 2);
+        EventHandler.attachResizeReRenderEvent(0, this.infoText.id, this.infoText.onResize.bind(this.infoText));
+        this.infoText.onResize();
+    }
+
+    public hideInfo(): void {
+        EventHandler.detachResizeReRenderEventMap(0, this.infoText.id);
+        this.infoText.clear();
     }
 
     public renderContainer(): void {

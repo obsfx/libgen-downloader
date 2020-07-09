@@ -39,7 +39,7 @@ export const ResultsSceneOptionListings: UITypes.ComponentParams[] = [
         title: 'Search',
         value: '',
         actionID: ResultsSceneActionIDS.SEARCH,
-        color: 'white',
+        color: 'yellow',
         hovercolor: 'cyan'
     },
 
@@ -47,15 +47,15 @@ export const ResultsSceneOptionListings: UITypes.ComponentParams[] = [
         title: '→ Next Page',
         value: '',
         actionID: ResultsSceneActionIDS.NEXT_PAGE,
-        color: 'white',
+        color: 'yellow',
         hovercolor: 'cyan'
     },
 
     {
-        title: '→ Previous Page',
+        title: '← Previous Page',
         value: '',
         actionID: ResultsSceneActionIDS.PREV_PAGE,
-        color: 'white',
+        color: 'yellow',
         hovercolor: 'cyan'
     },
 
@@ -63,8 +63,8 @@ export const ResultsSceneOptionListings: UITypes.ComponentParams[] = [
         title: '@ Start Bulk Downloading',
         value: '',
         actionID: ResultsSceneActionIDS.START_BULK,
-        color: 'yellow',
-        hovercolor: 'byellow'
+        color: 'green',
+        hovercolor: 'cyan'
     },
 
     {
@@ -72,7 +72,7 @@ export const ResultsSceneOptionListings: UITypes.ComponentParams[] = [
         value: '',
         actionID: ResultsSceneActionIDS.EXIT,
         color: 'red',
-        hovercolor: 'bred'
+        hovercolor: 'cyan'
     }
 ]
 
