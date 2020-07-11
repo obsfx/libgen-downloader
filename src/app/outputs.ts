@@ -10,7 +10,9 @@ export const INPUT_TITLE = `${c.get('bgreen', '?')} ${c.get('none', 'Search :  '
 
 export const CONNECTION_ERROR = `${c.get('red', 'Connection Error.')} ${c.get('none', 'Probably libgen servers are not currently available. Please try again after a while.')}`;
 
-export const DOWNLOAD_COMPLETED = `${c.get('green', 'DONE')} ${c.get('yellow', '%s')} ${c.get('none', 'downloaded on working directory.')}`;
+export const DOWNLOAD_COMPLETED = `${c.get('green', 'DOWNLOAD_COMPLETED')}`;
+
+export const DOWNLOAD_COMPLETED_FILE = `${c.get('green', 'DONE')} ${c.get('yellow', '%s')} ${c.get('none', 'downloaded on working directory.')}`;
 
 export const INPUT_MINLEN_WARNING = `${c.get('yellow', 'Search string must contain minimum 3 characters.')} ${c.get('none', 'Please, type in a longer request and try again.')}`;
 

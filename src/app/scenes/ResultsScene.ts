@@ -15,7 +15,7 @@ import {
     DropdownList,
 } from '../../ui';
 
-import { ResultsSceneActionIDS } from '../../app/action-ids';
+import ACTIONID from '../../app/action-ids';
 
 import App, { Entry } from '../App';
 
@@ -46,7 +46,7 @@ export default abstract class ResultsScene extends Scene {
         for (let i: number = 0; i < ResultsSceneOptionListings.length; i++) {
             let option: UITypes.ComponentParams = ResultsSceneOptionListings[i];
 
-            if ((App.state.currentPage == 1 && option.actionID == ResultsSceneActionIDS.PREV_PAGE) ||
+            if ((App.state.currentPage == 1 && option.actionID == ACTIONID.PREV_PAGE) ||
                 !App.isNextPageExist()) {
                 continue;
             }
@@ -107,7 +107,7 @@ export default abstract class ResultsScene extends Scene {
         this.list.attachOnSublistReturnFn((dropdownlist: DropdownList, sublistReturnObject: UITypes.ReturnObject) => {
             dropdownlist.showInfo();
 
-            if (sublistReturnObject.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
+            if (sublistReturnObject.actionID == ACTIONID.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 dropdownlist.toggleCheckCurrentListing();
 
                 if (App.state.bulkQueue[sublistReturnObject.value]) {
@@ -117,8 +117,8 @@ export default abstract class ResultsScene extends Scene {
                 }
 
                 BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
-            } else if (sublistReturnObject.actionID == ResultsSceneActionIDS.SEE_DETAILS || 
-                       sublistReturnObject.actionID == ResultsSceneActionIDS.DOWNLOAD_DIRECTLY) {
+            } else if (sublistReturnObject.actionID == ACTIONID.SEE_DETAILS || 
+                       sublistReturnObject.actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
                 dropdownlist.terminateAwaiting = true;
                 dropdownlist.setCurrentListingActionID(sublistReturnObject.actionID);
             }
@@ -127,7 +127,7 @@ export default abstract class ResultsScene extends Scene {
         this.list.attachListingOnReturnFn((dropdown: DropdownList) => {
             let currentListing: UITypes.ReturnObject = dropdown.getCurrentListing();
 
-            if (currentListing.actionID == ResultsSceneActionIDS.START_BULK &&
+            if (currentListing.actionID == ACTIONID.START_BULK &&
                 Object.keys(App.state.bulkQueue).length < 1) {
                 dropdown.terminateAwaiting = false;
                 BulkQueueScene.showNoFileWarning(1, 5);

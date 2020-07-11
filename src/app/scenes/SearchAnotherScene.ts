@@ -1,32 +1,27 @@
-import CONFIG from '../config';
-import { CATEGORY } from '../outputs';
-
 import Scene from './Scene';
-import TitleScene from './TitleScene';
 
-import { 
-    UITypes, 
+import {
+    UITypes,
     Terminal,
     Text,
     Listing,
     List
 } from '../../ui';
 
-import { CategorySceneListings } from '../action-templates';
+import { SearchAnotherSceneOptions } from '../action-templates';
 
-export default abstract class CategoryScene extends Scene {
-    private static headText: Text = new Text(CATEGORY.WHICH_CAT, 'yellow');
+export default abstract class SearchAnotherScene extends Scene {
+    private static message: Text = new Text('', 'none');
     private static list: List = new List();
 
-    public static show(): void {
+    public static show(x: number, y: number, message: string): void {
         Terminal.hideCursor();
 
-        TitleScene.show();
+        this.message.setXY(x, y);
+        this.message.setText(message)
+        this.attachText(this.message);
 
-        this.headText.setXY(1, 5)
-        this.attachText(this.headText)
-
-        let listings: UITypes.Listing[] = CategorySceneListings.map(
+        let listings: UITypes.Listing[] = SearchAnotherSceneOptions.map(
             (e: UITypes.ComponentParams) => (
                 new Listing({
                     title: e.title,
@@ -38,21 +33,17 @@ export default abstract class CategoryScene extends Scene {
             )
         );
 
-        this.list.setXY(2, 6);
-        this.list.attachListingArr(listings, CONFIG.UI_PAGE_SIZE);
+        this.list.setXY(x + 1, y + 1);
+        this.list.attachListingArr(listings, listings.length);
         this.list.show();
         this.list.showInfo();
     }
 
     public static hide(): void {
-        Terminal.showCursor();
+        this.detachText(this.message);
 
         this.list.hide();
         this.list.hideInfo();
-
-        this.detachText(this.headText);
-
-        TitleScene.hide();
     }
 
     public static async awaitForReturn(): Promise<UITypes.ReturnObject> {

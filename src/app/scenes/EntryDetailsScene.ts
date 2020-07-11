@@ -13,7 +13,7 @@ import {
 
 import { EntryDetailsSceneOptions } from '../action-templates';
 
-import { ResultsSceneActionIDS } from '../action-ids';
+import ACTIONID from '../action-ids';
 
 import App, { Entry } from '../App';
 import Entries from '../modules/Entries';
@@ -39,6 +39,7 @@ export default abstract class EntryDetailsScene extends Scene {
         BulkQueueScene.hide();
         EventHandler.detachResizeReRenderEventMap(0, 'EntryDetailsScene');
         this.list.hide();
+        this.list.hideInfo();
     }
 
     public static render(): void {
@@ -82,7 +83,7 @@ export default abstract class EntryDetailsScene extends Scene {
         this.list.attachListingOnReturnFn((list: List) => {
             let currentListing: UITypes.ReturnObject = list.getCurrentListing();
 
-            if (currentListing.actionID == ResultsSceneActionIDS.ADD_TO_BULK_DOWNLOADING_QUEUE) {
+            if (currentListing.actionID == ACTIONID.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 if (App.state.bulkQueue[currentListing.value]) {
                     delete App.state.bulkQueue[currentListing.value];
                     list.toggleChecked(false);

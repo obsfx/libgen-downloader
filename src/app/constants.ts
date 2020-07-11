@@ -5,8 +5,6 @@ import CONFIG from './config';
 export default {
     /* ******************** OUTPUTS ******************* */
 
-    BULK_DOWNLOAD_INDICATOR_TEXT: '@  Start The Bulk Downloading:',
-
     DIRECTORY_STRING: `┌  Your book is being downloaded to this directory:\n├───  ${Colors.get('cyan', `%s`)}`,
 
     DOWNLOADING_FILE: `├───  ${Colors.get('byellow', '%s')}`,
@@ -59,67 +57,6 @@ export default {
         INCOMPLETE: ' ',
         RENDER_THROTTLE: 1
     },
-    
-    PAGINATIONS: {
-        SEARCH: '?  Search',
-        SEARCH_RESULT_ID: '@SRCAGAIN',
-        NEXT_PAGE: '→  Next Page',
-        NEXT_PAGE_RESULT_VAL: '@NEXTPAGE',
-        PREV_PAGE: '←  Previous Page',
-        PREV_PAGE_RESULT_VAL: '@PREVPAGE',
-    },
-
-    EXIT: {
-        EXIT: 'X  Exit',
-        EXIT_RESULT_ID: '@EXIT'
-    },
-
-    ENTRY_DETAILS_CHECK: {
-        ENTRY_DETAILS_CHECK_ADD: '• Add This Book To Bulk Download Queue',
-        ENTRY_DETAILS_CHECK_REMOVE: '• Remove This Book From Bulk Download Queue',
-        ENTRY_DETAILS_CHECK_RES_VAL: '@EDCHECK'
-    },
-
-    SUBMENU_LISTINGS: {
-        CHECK: 'Add To Bulk Download Queue',
-        UNCHECK: 'Remove From Bulk Download Queue',
-        CLOSEBTN: 'Close The Sublist'
-    },
-
-    SEE_DETAILS_LISTING: {
-        SEE_DETAILS: 'See Details',
-        SEE_DETAILS_RES_VAL: '@SEEDETAILS'
-    },
-
-    DOWNLOAD_LISTING: {
-        DOWNLOAD_DIRECTLY: 'Download Directly',
-        DOWNLOAD: '• Download This Book',
-        DOWNLOAD_RES_VAL: '@DOWNLOAD' 
-    },
-
-    TURN_BACK_LISTING: {
-        TURN_BACK: '• Turn Back To The List',
-        TURN_BACK_RESULT_ID: '@TRNBACK',
-    },
-
-    SEARCH_ANOTHER_LISTINGS: {
-        SEARCH_ANOTHER: '• Search Another Thing',
-        SEARCH_ANOTHER_RESULT_ID: '@SRCANOTHER',
-    },
-
-    ENTRY_DETAILS_HEAD: {
-        ID: `${Colors.get('byellow', 'ID')}`,
-        Author: `${Colors.get('byellow', 'Author')}`,
-        Title: `${Colors.get('byellow', 'Title')}`,
-        Publisher: `${Colors.get('byellow', 'Publisher')}`,
-        Year: `${Colors.get('byellow', 'Year')}`,
-        Pages: `${Colors.get('byellow', 'Pages')}`,
-        Lang: `${Colors.get('byellow', 'Lang')}`,
-        Size: `${Colors.get('byellow', 'Size')}`,
-        Ext: `${Colors.get('byellow', 'Extension')}`,
-        Mirror: `${Colors.get('byellow', 'Mirror')}`,
-    },
-
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
 
     MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`,
