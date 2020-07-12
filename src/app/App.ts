@@ -2,20 +2,20 @@
  * TODO:
  *
  * [] custom spinner
- * [] custom progress bar
+ * [x] custom progress bar
  * [x] add pagination
  * [x] entry details
  * [x] entry details listing
- * [] comics selectors
+ * [] comics selectors // noooppeee
  * [] fiction selectors
  */
 
 import CONFIG from './config';
 import CONSTANTS from './constants';
 import { 
-    DOWNLOAD_COMPLETED,
     NO_RESULT,
     CONNECTION_ERROR,
+    BULK,
     DOWNLOAD_COMPLETED_FILE
 } from './outputs';
 
@@ -151,10 +151,7 @@ export default abstract class App {
             } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             } else if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
-                DownloadScene.show(Number(value));
-                await DownloadScene.waitForDownloading();
-                DownloadScene.hide();
-                this.promptAfterDownload();
+                this.promptDownloadProcess(Number(value))
             } else if (actionID == ACTIONID.SEE_DETAILS) {
                 await this.promptEntryDetails(Number(value));
             } else if (actionID == ACTIONID.START_BULK) {
@@ -164,19 +161,17 @@ export default abstract class App {
 
                 this.state.bulkQueue = {};
 
-               // console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
-               // BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+                let title: string = BULK.DOWNLOAD_COMPLETED
+                            .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
+                            .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
 
-                this.promptAfterDownload();
+                this.promptAfterDownload(title, true);
             }
         });
 
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
-                DownloadScene.show(Number(value));
-                await DownloadScene.waitForDownloading();
-                DownloadScene.hide();
-                this.promptAfterDownload();
+                this.promptDownloadProcess(Number(value));
             } else if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
                 await this.promptResults();
             }
@@ -324,36 +319,6 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    public static async download(entryID: string, onData: Function): Promise<void> {
-        let entryMD5Arr: { md5: string }[] | void = await Downloader.findEntriesMD5([entryID]);
-
-        let URL: string = '';
-
-        if (this.state.runtimeError) {
-            return;
-        }
-
-        if (entryMD5Arr) {
-            URL = await Downloader.findDownloadURL(entryMD5Arr[0].md5);
-        }
-
-        if  (this.state.runtimeError) {
-            return;
-        }
-
-        let fileName: string = await Downloader.startDownloading(URL, onData);
-
-        if (App.state.runtimeError) {
-            this.runtimeError();
-            return;
-        }
-
-        console.log(DOWNLOAD_COMPLETED_FILE, fileName);
-
-        //this.promptAfterDownload();
-    }
-
-    /**  **************************************************  */
     private static async promptResults(): Promise<void> {
         this.clear();
 
@@ -378,8 +343,18 @@ export default abstract class App {
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    public static async promptAfterDownload(): Promise<void> {
-        SearchAnotherScene.show(1, 5, DOWNLOAD_COMPLETED);
+    private static async promptDownloadProcess(entryIndex: number): Promise<void> {
+        DownloadScene.show(Number(entryIndex));
+
+        let filename: string = await DownloadScene.waitForDownloading();
+
+        DownloadScene.hide();
+
+        this.promptAfterDownload(DOWNLOAD_COMPLETED_FILE.replace('{file}', filename), true);
+    }
+
+    public static async promptAfterDownload(title: string, showDIR: boolean = false): Promise<void> {
+        SearchAnotherScene.show(1, 5, title, showDIR);
 
         let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
 

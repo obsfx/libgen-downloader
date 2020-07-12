@@ -4,6 +4,7 @@ import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
 import { v4 as uuidv4 } from 'uuid';
+import Color from '../modules/Colors';
 
 type TText = {
     id: string;
@@ -39,6 +40,9 @@ export default class Text implements TText {
     text: string;
     renderedtext: string;
 
+    purifiedText: string;
+    colorPositions: { color: string, index: number }[];
+
     color: Types.color;
     hovercolor: Types.color;
 
@@ -54,6 +58,9 @@ export default class Text implements TText {
 
         this.text = text;
         this.renderedtext = text;
+
+        this.purifiedText = Colors.purify(this.text);
+        this.colorPositions = Colors.explode(this.text);
 
         this.color = color;
         this.hovercolor = hovercolor;
@@ -71,6 +78,9 @@ export default class Text implements TText {
     public setText(text: string): void {
         this.text = text;
         this.clearStr = ' '.repeat(this.text.length);
+
+        this.purifiedText = Colors.purify(this.text);
+        this.colorPositions = Colors.explode(this.text);
     }
 
     public setMaxLength(maxlen: number): void {
@@ -95,16 +105,28 @@ export default class Text implements TText {
         this.renderedtext = paddingText + this.text;
 
         if (this.maxLength != null) { 
-            let purifiedText: string = Colors.purify(this.text);
+            if (this.maxLength < this.purifiedText.length + this.paddingLeft) {
+                let text: string = this.purifiedText;
 
-            if (this.maxLength < purifiedText.length + this.paddingLeft) {
-                this.renderedtext = `${paddingText}${purifiedText.substr(0, this.maxLength - 3 - this.paddingLeft)}...`;
+                for (let i: number = 0; i < this.colorPositions.length; i++) {
+
+                    /*
+                     *
+                     * FIX THE FUCKING TEXT
+                     */
+
+                    if (this.colorPositions[i].index < this.maxLength) {
+                        text = Color.insert(text, this.colorPositions[i].index, this.colorPositions[i].color);
+                    }
+                }
+
+                this.renderedtext = `${paddingText}${text.substr(0, this.maxLength - 3 - this.paddingLeft)}...`;
             }
         }
     }
 
     public render(hover: boolean): void {
-        if (this.x != -1 && this.y != - 1) {
+        if (this.x != -1 && this.y != -1) {
             Terminal.cursorXY(this.x, this.y);
 
             let output: string = hover ? 
@@ -123,11 +145,9 @@ export default class Text implements TText {
     }
 
     public onResize(): void {
-        let purifiedText: string = Colors.purify(this.text);
-
-        let width: number = this.x + purifiedText.length + this.paddingLeft >= process.stdout.columns ?
+        let width: number = this.x + this.purifiedText.length + this.paddingLeft >= process.stdout.columns ?
             process.stdout.columns - this.x : 
-            purifiedText.length;
+            this.purifiedText.length;
 
         this.setMaxLength(width);
         this.adjustText();

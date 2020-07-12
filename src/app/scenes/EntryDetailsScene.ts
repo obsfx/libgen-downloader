@@ -30,41 +30,7 @@ export default abstract class EntryDetailsScene extends Scene {
         this.selectedEntry = App.state.entryDataArr[this.entryIndex];
         this.entryDetailsText = Entries.getDetails(this.selectedEntry);
 
-        EventHandler.attachResizeReRenderEvent(0, 'EntryDetailsScene', this.onResize.bind(this));
-
-        this.render();
-    }
-
-    public static hide(): void {
-        Terminal.showCursor();
-        TitleScene.hide();
-        BulkQueueScene.hide();
-        EventHandler.detachResizeReRenderEventMap(0, 'EntryDetailsScene');
-        this.list.hide();
-        this.list.hideInfo();
-
-        App.clear();
-    }
-
-    public static render(): void {
-        this.ymargin = 0;
-
-        Terminal.hideCursor();
-
-        TitleScene.show();
-
-        Terminal.cursorXY(1, 5);
-
-        for (let i: number = 0; i < this.entryDetailsText.length; i++) {
-            let detail: string = this.entryDetailsText[i];
-            this.ymargin += Math.floor(Colors.purify(detail).length / process.stdout.columns);
-            console.log(detail);
-        }
-
-        BulkQueueScene.show(1, 6 + this.entryDetailsText.length + this.ymargin);
-        BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
-
-        let options: UITypes.Listing[] = EntryDetailsSceneOptions.map(
+        let listings: UITypes.Listing[] = EntryDetailsSceneOptions.map(
             (e: UITypes.ComponentParams) => (
                 new Listing({
                     title: e.title,
@@ -76,15 +42,7 @@ export default abstract class EntryDetailsScene extends Scene {
             )
         )
 
-        this.list.setXY(2, 7 + this.entryDetailsText.length + this.ymargin);
-        this.list.attachListingArr(options, options.length);
-
-        if (App.state.bulkQueue[this.selectedEntry.ID]) {
-            this.list.applyCheckedStyle(true);
-        }
-
-        this.list.show();
-        this.list.showInfo();
+        this.list.attachListingArr(listings, listings.length);
 
         this.list.attachListingOnReturnFn((list: List) => {
             let currentListing: UITypes.ReturnObject = list.getCurrentListing();
@@ -103,6 +61,52 @@ export default abstract class EntryDetailsScene extends Scene {
                 list.terminateAwaiting = true;
             }
         });
+
+        EventHandler.attachResizeReRenderEvent(0, 'EntryDetailsScene', this.onResize.bind(this));
+
+        Terminal.hideCursor();
+        TitleScene.show();
+        this.render();
+    }
+
+    public static hide(): void {
+        Terminal.showCursor();
+        TitleScene.hide();
+
+        for (let i: number = 5; i < 5 + this.entryDetailsText.length + this.ymargin; i++) {
+            Terminal.cursorXY(1, i);
+            Terminal.clearLine();
+        }
+
+        BulkQueueScene.hide();
+        EventHandler.detachResizeReRenderEventMap(0, 'EntryDetailsScene');
+        this.list.hide();
+        this.list.hideInfo();
+    }
+
+    public static render(): void {
+        this.ymargin = 0;
+
+        Terminal.cursorXY(1, 5);
+
+        for (let i: number = 0; i < this.entryDetailsText.length; i++) {
+            let detail: string = this.entryDetailsText[i];
+            this.ymargin += Math.floor(Colors.purify(detail).length / process.stdout.columns);
+            console.log(detail);
+        }
+
+        BulkQueueScene.show(1, 6 + this.entryDetailsText.length + this.ymargin);
+        BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+
+        this.list.setXY(2, 7 + this.entryDetailsText.length + this.ymargin);
+
+        if (App.state.bulkQueue[this.selectedEntry.ID]) {
+            this.list.applyCheckedStyle(true);
+        }
+
+        this.list.show();
+        this.list.showInfo();
+
     }
 
     public static onResize(): void {

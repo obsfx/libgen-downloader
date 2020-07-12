@@ -51,7 +51,7 @@ export default class ProgressBar {
             let percentage: number = Math.floor((100 / this.total) * this.progress);
 
             let output: string = this.title
-                    .replace('{bar}', `[ ${bar} ]`)
+                    .replace('{bar}', `${bar}`)
                     .replace('{percent}', `${percentage}%`);
 
             this.output.clear();
@@ -63,5 +63,6 @@ export default class ProgressBar {
 
     public hide(): void {
         EventHandler.detachResizeReRenderEventMap(0, this.output.id);
+        this.output.clear();
     }
 }

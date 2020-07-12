@@ -58,4 +58,26 @@ export default abstract class Color {
 
         return text;
     }
+
+    public static explode(text: string): { color: string, index: number }[] {
+        let pieces: { color: string, index: number }[] = []
+
+        for (let i: number = 0; i < this.ansiarr.length; i++) {
+            while (text.includes(this.ansiarr[i])) {
+                let index: number = text.indexOf(this.ansiarr[i]);
+                text = text.replace(this.ansiarr[i], '');
+
+                pieces.push({
+                    color: this.ansiarr[i],
+                    index
+                });
+            }
+        }
+
+        return pieces;
+    }
+
+    public static insert(text: string, index: number, insertion: string): string {
+        return text.substring(0, index) + insertion + text.substring(index);
+    }
 }

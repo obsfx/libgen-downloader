@@ -3,7 +3,6 @@ import Entries from '../modules/Entries';
 
 import CONFIG from '../config';
 import CONSTANTS from '../constants';
-import { DOWNLOADING } from '../outputs';
 
 import { Response } from 'node-fetch';
 import contentDisposition from 'content-disposition';
@@ -168,5 +167,32 @@ export default abstract class Downloader {
             
             downloadResponse.body.pipe(file);
         });
+    }
+
+    public static async download(entryID: string, onData: Function): Promise<void | string> {
+        let entryMD5Arr: { md5: string }[] | void = await this.findEntriesMD5([entryID]);
+
+        let URL: string = '';
+
+        if (App.state.runtimeError) {
+            return;
+        }
+
+        if (entryMD5Arr) {
+            URL = await this.findDownloadURL(entryMD5Arr[0].md5);
+        }
+
+        if  (App.state.runtimeError) {
+            return;
+        }
+
+        let fileName: string = await Downloader.startDownloading(URL, onData);
+
+        if (App.state.runtimeError) {
+            App.runtimeError();
+            return;
+        }
+
+        return fileName;
     }
 }
