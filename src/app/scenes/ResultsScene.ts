@@ -67,7 +67,7 @@ export default abstract class ResultsScene extends Scene {
                 (listing: UITypes.ComponentParams) => (
                     new Listing({
                         title: listing.title,
-                        value: e.ID,
+                        value: listing.actionID == ACTIONID.DOWNLOAD_DIRECTLY ? i.toString() : e.ID, 
                         actionID: listing.actionID,
                         color: listing.color,
                         hovercolor: listing.hovercolor

@@ -5,10 +5,6 @@ import CONFIG from './config';
 export default {
     /* ******************** OUTPUTS ******************* */
 
-    DIRECTORY_STRING: `┌  Your book is being downloaded to this directory:\n├───  ${Colors.get('cyan', `%s`)}`,
-
-    DOWNLOADING_FILE: `├───  ${Colors.get('byellow', '%s')}`,
-
     REMAINING_BOOKS: Colors.get('white', '[Remaining Books: %s]'),
 
     MD5_INDICATOR: `MD5: ${Colors.get('green', '%s')}`,
@@ -50,13 +46,6 @@ export default {
     DOWNLOAD_ERR: Colors.get('red', 'Downloading couldn\'t completed.'),
     FILE_READ_ERR: Colors.get('red', 'File couldn\'t read.'),
 
-    PROGRESS_BAR: {
-        TITLE: `${Colors.get('green', '└───  Downloading')} [ :bar ] :percent :current`,
-        WIDTH: 25,
-        COMPLETE: '█',
-        INCOMPLETE: ' ',
-        RENDER_THROTTLE: 1
-    },
     STRING_REPLACE_REGEX: /(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,
 
     MD5_REQ_PATTERN: `${CONFIG.MIRROR}json.php?ids={ID}&fields=md5`,

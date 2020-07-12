@@ -22,10 +22,12 @@ export default abstract class EntryDetailsScene extends Scene {
     private static ymargin: number;
     private static list: List = new List();
     private static selectedEntry: Entry;
+    private static entryIndex: number;
     private static entryDetailsText: string[];
 
     public static show(entryIndex: number): void {
-        this.selectedEntry = App.state.entryDataArr[entryIndex];
+        this.entryIndex = entryIndex;
+        this.selectedEntry = App.state.entryDataArr[this.entryIndex];
         this.entryDetailsText = Entries.getDetails(this.selectedEntry);
 
         EventHandler.attachResizeReRenderEvent(0, 'EntryDetailsScene', this.onResize.bind(this));
@@ -40,15 +42,19 @@ export default abstract class EntryDetailsScene extends Scene {
         EventHandler.detachResizeReRenderEventMap(0, 'EntryDetailsScene');
         this.list.hide();
         this.list.hideInfo();
+
+        App.clear();
     }
 
     public static render(): void {
         this.ymargin = 0;
 
         Terminal.hideCursor();
+
         TitleScene.show();
 
         Terminal.cursorXY(1, 5);
+
         for (let i: number = 0; i < this.entryDetailsText.length; i++) {
             let detail: string = this.entryDetailsText[i];
             this.ymargin += Math.floor(Colors.purify(detail).length / process.stdout.columns);
@@ -62,7 +68,7 @@ export default abstract class EntryDetailsScene extends Scene {
             (e: UITypes.ComponentParams) => (
                 new Listing({
                     title: e.title,
-                    value: this.selectedEntry.ID,
+                    value: e.actionID == ACTIONID.DOWNLOAD_DIRECTLY ? this.entryIndex.toString() : this.selectedEntry.ID,
                     actionID: e.actionID,
                     color: e.color,
                     hovercolor: e.hovercolor

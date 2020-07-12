@@ -2,7 +2,7 @@
   "name": "libgen-downloader",
   "version": "1.0.0",
   "description": "a simple tool to search and download pdfs via command line interface from libgen",
-  "main": "./dist/index.js",
+  "main": "./bin/index.js",
   "bin": {
     "libgen-downloader": "./bin/index.js",
     "obsfx@libgen-downloader": "./bin/index.js"
@@ -32,7 +32,7 @@
   "license": "WTFPL",
   "repository": {
     "type": "git",
-    "url": "https://github.com/obsfx/libgen-cli-downloader.git"
+    "url": "https://github.com/obsfx/libgen-downloader.git"
   },
   "devDependencies": {
     "@types/cli-spinner": "^0.2.0",

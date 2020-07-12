@@ -1,11 +1,11 @@
 import App from '../App';
 import Entries from '../modules/Entries';
 
-import CONSTANTS from '../constants';
 import CONFIG from '../config';
+import CONSTANTS from '../constants';
+import { DOWNLOADING } from '../outputs';
 
 import { Response } from 'node-fetch';
-import ProgressBar from 'progress';
 import contentDisposition from 'content-disposition';
 
 import fs from 'fs';
@@ -99,8 +99,7 @@ export default abstract class Downloader {
         return downloadEndpoint;
     }
 
-    public static startDownloading(downloadEndpoint: string): Promise<string> {
-        
+    public static startDownloading(downloadEndpoint: string, onData: Function): Promise<string> {
         return new Promise(async (resolve: Function) => {
             App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD);
             App.spinner.start();
@@ -150,20 +149,14 @@ export default abstract class Downloader {
 
             let file: fs.WriteStream = fs.createWriteStream(fullFileName);
 
-            let progressBar: ProgressBar = new ProgressBar(CONSTANTS.PROGRESS_BAR.TITLE, {
-                width: CONSTANTS.PROGRESS_BAR.WIDTH,
-                complete: CONSTANTS.PROGRESS_BAR.COMPLETE,
-                incomplete: CONSTANTS.PROGRESS_BAR.INCOMPLETE,
-                renderThrottle: CONSTANTS.PROGRESS_BAR.RENDER_THROTTLE,
-                total: parseInt(downloadResponse.headers.get('content-length') || '0')
+            let total: number = Number(downloadResponse.headers.get('content-length') || 0);
+            let dir: string = process.cwd();
+            let filename: string = parsedContentDisposition.parameters.filename;
+
+            downloadResponse.body.on('data', chunk => {
+                onData(chunk.length, total, dir, filename);
             });
 
-            console.log(CONSTANTS.DIRECTORY_STRING, process.cwd());
-            console.log(CONSTANTS.DOWNLOADING_FILE, parsedContentDisposition.parameters.filename);
-            
-            downloadResponse.body.on('data', chunk => {
-                progressBar.tick(chunk.length);
-            });
             downloadResponse.body.on('finish', async () => {
                 resolve(parsedContentDisposition.parameters.filename);
             });

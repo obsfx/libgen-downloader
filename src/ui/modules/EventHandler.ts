@@ -32,8 +32,10 @@ export default abstract class EventHandler {
         });
 
         process.stdout.on('resize', () => {
+            Terminal.saveCursorPos();
             Terminal.cursorXY(0, 0);
             Terminal.clearCursorToEnd();
+            Terminal.restoreCursorPos();
 
             for (let i: number = 0; i < this.resizeReRenderEventMapArr.length; i++) {
                 let map: Map<string, Function> | undefined = this.resizeReRenderEventMapArr[i];

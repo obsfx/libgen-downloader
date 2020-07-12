@@ -45,3 +45,10 @@ export const ENTRY_DETAILS = {
     Ext: `${c.get('byellow', 'Extension')} ${c.get('none', '{Ext}')}`,
     Mirror: `${c.get('byellow', 'Mirror')} ${c.get('none', '{Mirror}')}`,
 }
+
+export const DOWNLOADING = {
+    DIR: `${c.get('none', '┌  Your book is being downloaded to this directory:')} ${c.get('cyan', `{dir}`)}`,
+    FILE: `${c.get('none', '├───')}  ${c.get('byellow', '{file}')}`
+}
+
+export const BAR = `${c.get('green', '└───  Downloading')} ${c.get('none', '{bar} {percent}')}`;

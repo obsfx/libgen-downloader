@@ -23,7 +23,7 @@ const main = async (): Promise<void> => {
 
         App.init(true);
 
-        await BulkDownloader.Main.startMD5(argv.bulk);
+        await BulkDownloader.startMD5(argv.bulk);
 
         if (App.state.runtimeError) {
             App.exit();

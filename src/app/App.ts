@@ -1,9 +1,10 @@
 /*
  * TODO:
  *
- * [] spinner
+ * [] custom spinner
+ * [] custom progress bar
  * [x] add pagination
- * [] entry details
+ * [x] entry details
  * [x] entry details listing
  * [] comics selectors
  * [] fiction selectors
@@ -36,6 +37,7 @@ import InputScene from './scenes/InputScene';
 import ResultsScene from './scenes/ResultsScene';
 import EntryDetailsScene from './scenes/EntryDetailsScene';
 import SearchAnotherScene from './scenes/SearchAnotherScene';
+import DownloadScene from './scenes/DownloadScene';
 
 import fetch, { Response } from 'node-fetch';
 import { Spinner } from 'cli-spinner';
@@ -149,13 +151,16 @@ export default abstract class App {
             } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             } else if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
-                await this.download(value);
+                DownloadScene.show(Number(value));
+                await DownloadScene.waitForDownloading();
+                DownloadScene.hide();
+                this.promptAfterDownload();
             } else if (actionID == ACTIONID.SEE_DETAILS) {
                 await this.promptEntryDetails(Number(value));
             } else if (actionID == ACTIONID.START_BULK) {
                 this.clear();
 
-                await BulkDownloader.Main.start(Object.keys(this.state.bulkQueue), 'ID');
+                await BulkDownloader.start(Object.keys(this.state.bulkQueue), 'ID');
 
                 this.state.bulkQueue = {};
 
@@ -168,7 +173,10 @@ export default abstract class App {
 
         this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
-                await this.download(value);
+                DownloadScene.show(Number(value));
+                await DownloadScene.waitForDownloading();
+                DownloadScene.hide();
+                this.promptAfterDownload();
             } else if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
                 await this.promptResults();
             }
@@ -316,7 +324,7 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async download(entryID: string): Promise<void> {
+    public static async download(entryID: string, onData: Function): Promise<void> {
         let entryMD5Arr: { md5: string }[] | void = await Downloader.findEntriesMD5([entryID]);
 
         let URL: string = '';
@@ -333,7 +341,7 @@ export default abstract class App {
             return;
         }
 
-        let fileName: string = await Downloader.startDownloading(URL);
+        let fileName: string = await Downloader.startDownloading(URL, onData);
 
         if (App.state.runtimeError) {
             this.runtimeError();
@@ -342,7 +350,7 @@ export default abstract class App {
 
         console.log(DOWNLOAD_COMPLETED_FILE, fileName);
 
-        this.promptAfterDownload();
+        //this.promptAfterDownload();
     }
 
     /**  **************************************************  */

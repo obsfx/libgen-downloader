@@ -14,6 +14,8 @@ import DropdownList from './components/DropdownList';
 
 import Input from './components/Input';
 
+import ProgressBar from './components/ProgressBar';
+
 import outputs from './outputs';
 import ansi from './ansi';
 import constants from './constants';
@@ -34,6 +36,8 @@ export {
     DropdownList,
 
     Input,
+
+    ProgressBar,
 
     outputs as UIOutputs,
     ansi as UIANSI,
