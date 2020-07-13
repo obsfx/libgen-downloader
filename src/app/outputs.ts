@@ -53,3 +53,22 @@ export const DOWNLOADING = {
 }
 
 export const BAR = `${c.get('green', '└───  Downloading [ {bar} ]')} ${c.get('white', '{percent}')}`;
+
+export const SPINNER = {
+    GETTING_RESULTS: c.get('cyan', '%s Getting Results'),
+    GETTING_RESULTS_ERR: `${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Getting Results')}`,
+
+    GETTING_ENTRY_DATA: c.get('cyan', '%s Finding MD5(s) of Book(s)'),
+    GETTING_ENTRY_DATA_ERR: ` ${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Finding MD5(s) of Book(s)')}`,
+
+    GETTING_DOWNLOAD_URL: c.get('cyan', '%s Finding The Download URL'),
+    GETTING_DOWNLOAD_URL_ERR: `${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Finding The Download URL')}`,
+
+    STARTING_DOWNLOAD: c.get('cyan', '%s Starting Download'),
+    STARTING_DOWNLOAD_ERR: `${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Starting Download')}`,
+
+    LIST_EXPORT: c.get('byellow', '%s Creating a List of MD5(s) of Downloaded Book(s)'),
+
+    READING_MD5_LIST: c.get('cyan', '%s Reading File')
+
+} 

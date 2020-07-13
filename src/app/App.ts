@@ -1,22 +1,25 @@
 /*
  * TODO:
  *
- * [] custom spinner
+ * [x] custom spinner
+ *  [] fix crash
+ *  [] better styling
+ * [] bulk downloader
+ * [] cli
+ * [] exit
  * [x] custom progress bar
  * [x] add pagination
  * [x] entry details
  * [x] entry details listing
- * [] comics selectors // noooppeee
- * [] fiction selectors
  */
 
 import CONFIG from './config';
-import CONSTANTS from './constants';
 import { 
     NO_RESULT,
     CONNECTION_ERROR,
     BULK,
-    DOWNLOAD_COMPLETED_FILE
+    DOWNLOAD_COMPLETED_FILE,
+    SPINNER
 } from './outputs';
 
 import ACTIONID from './action-ids';
@@ -24,15 +27,13 @@ import ACTIONID from './action-ids';
 import {
     UITypes,
     Terminal,
-    UIConstants
+    Spinner
 } from '../ui';
 
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
-import Downloader from './modules/Downloader';
 import BulkDownloader from '../bulk-downloader';
 
-import CategoryScene from'./scenes/CategoryScene';
 import InputScene from './scenes/InputScene';
 import ResultsScene from './scenes/ResultsScene';
 import EntryDetailsScene from './scenes/EntryDetailsScene';
@@ -40,7 +41,6 @@ import SearchAnotherScene from './scenes/SearchAnotherScene';
 import DownloadScene from './scenes/DownloadScene';
 
 import fetch, { Response } from 'node-fetch';
-import { Spinner } from 'cli-spinner';
 import { JSDOM } from 'jsdom';
 
 import { EventEmitter } from 'events';
@@ -48,7 +48,6 @@ import { EventEmitter } from 'events';
 type AppState = {
     currentPage: number;
     url: string;
-    category: string | null;
     query: string | null;
     queryMinLenWarning: boolean;
     isNextPageExist: boolean;
@@ -71,13 +70,6 @@ export type Entry = {
     Mirror: string;
 }
 
-type EntryData = {
-    md5: string;
-    title: string;
-    author: string;
-    extension: string;
-}
-
 export default abstract class App {
     public static state: AppState;
     public static spinner: Spinner = new Spinner(); 
@@ -97,7 +89,6 @@ export default abstract class App {
         return {
             currentPage: 1,
             url: '',
-            category: null,
             query: null,
             queryMinLenWarning: false,
             isNextPageExist: false,
@@ -120,8 +111,6 @@ export default abstract class App {
         if (fileReadMode) {
             return;
         }
-
-        await this.setCategory();
 
         while (this.state.query == null) {
             await this.setInput();
@@ -165,7 +154,7 @@ export default abstract class App {
                             .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
                             .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
 
-                this.promptAfterDownload(title, true);
+                this.promptSearchAnother(title, true);
             }
         });
 
@@ -208,9 +197,8 @@ export default abstract class App {
     }
 
     public static async runtimeError(): Promise<void> {
-        if (this.spinner.isSpinning()) {
-            this.spinner.stop(true);
-        }
+        this.spinner.stop();
+        
         SearchAnotherScene.show(1, 5, CONNECTION_ERROR);
 
         let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
@@ -245,19 +233,8 @@ export default abstract class App {
         return (entryAmount > 1) ? true : false;
     }
 
-    /**  **************************************************  */
-    private static async setCategory(): Promise<void> {
-        CategoryScene.show();
-        
-        let category: UITypes.ReturnObject = await CategoryScene.awaitForReturn();
-        
-        this.state.category = category.value; 
-
-        CategoryScene.hide();
-    }
-
     private static async setInput(): Promise<void> {
-        InputScene.show(this.state.category || '', this.state.queryMinLenWarning);
+        InputScene.show(this.state.queryMinLenWarning);
 
         let input: UITypes.ReturnObject = await InputScene.awaitForReturn();
 
@@ -350,10 +327,10 @@ export default abstract class App {
 
         DownloadScene.hide();
 
-        this.promptAfterDownload(DOWNLOAD_COMPLETED_FILE.replace('{file}', filename), true);
+        this.promptSearchAnother(DOWNLOAD_COMPLETED_FILE.replace('{file}', filename), true);
     }
 
-    public static async promptAfterDownload(title: string, showDIR: boolean = false): Promise<void> {
+    public static async promptSearchAnother(title: string, showDIR: boolean = false): Promise<void> {
         SearchAnotherScene.show(1, 5, title, showDIR);
 
         let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
@@ -365,7 +342,8 @@ export default abstract class App {
 
     /**  **************************************************  */
     private static async executePromptFlow(): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
+        this.spinner.setXY(1, 5);
+        this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS);
         this.spinner.start();
 
         let connectionSucceed: boolean = false;
@@ -380,7 +358,7 @@ export default abstract class App {
 
             if (this.state.runtimeError) {
                 errCounter++;
-                this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS_ERR
+                this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS_ERR
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await this.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
@@ -389,7 +367,7 @@ export default abstract class App {
             }
         }
 
-        this.spinner.stop(true);
+        this.spinner.stop();
 
         if (this.state.runtimeError) {
             this.runtimeError();
@@ -399,13 +377,7 @@ export default abstract class App {
         if (this.state.entryDataArr.length > 0) {
             this.promptResults();
         } else {
-            SearchAnotherScene.show(1, 5, NO_RESULT);
-
-            let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
-
-            SearchAnotherScene.hide();
-
-            this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
+            this.promptSearchAnother(NO_RESULT);
         }
     }
 }

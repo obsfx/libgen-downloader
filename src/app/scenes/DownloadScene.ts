@@ -80,6 +80,8 @@ export default abstract class DownloadScene extends Scene {
         this.dir.setXY(2, 5 + this.ymargin + this.entryDetailsText.length + 2);
         this.file.setXY(2, 5 + this.ymargin + this.entryDetailsText.length + 3);
         this.progressBar.setXY(2, 5 + this.ymargin + this.entryDetailsText.length + 4);
+
+        App.spinner.setXY(2, 5 + this.ymargin + this.entryDetailsText.length);
     }
 
     public static onResize(): void {

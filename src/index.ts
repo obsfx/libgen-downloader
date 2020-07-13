@@ -13,9 +13,6 @@ import minimist from 'minimist';
 const main = async (): Promise<void> => {
     const argv: minimist.ParsedArgs = minimist(process.argv.slice(2));
 
-    App.spinner.setSpinnerString(0);
-    App.spinner.setSpinnerDelay(60);
-
     EventHandler.emitKeypressEvents();
     EventHandler.init();
 

@@ -3,6 +3,7 @@ import Entries from '../modules/Entries';
 
 import CONFIG from '../config';
 import CONSTANTS from '../constants';
+import { SPINNER } from '../outputs';
 
 import { Response } from 'node-fetch';
 import contentDisposition from 'content-disposition';
@@ -10,9 +11,9 @@ import contentDisposition from 'content-disposition';
 import fs from 'fs';
 
 export default abstract class Downloader {
-    public static async findEntriesMD5(entryIDArr: string[]): Promise<{md5: string}[] | void> {
-        App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_ENTRY_DATA);
-        App.spinner.start();
+    public static async findEntriesMD5(entryIDArr: string[], logmode: boolean = false): Promise<{md5: string}[] | void> {
+        App.spinner.setSpinnerTitle(SPINNER.GETTING_ENTRY_DATA);
+        App.spinner.start(logmode);
 
         let connectionSucceed: boolean = false;
 
@@ -33,7 +34,7 @@ export default abstract class Downloader {
 
             if (App.state.runtimeError) {
                 errCounter++;
-                App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_ENTRY_DATA_ERR
+                App.spinner.setSpinnerTitle(SPINNER.GETTING_ENTRY_DATA_ERR
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
@@ -43,16 +44,16 @@ export default abstract class Downloader {
         }
 
         if (App.state.runtimeError) {
-            App.spinner.stop(true);
+            App.spinner.stop();
             return;
         }
 
         try {
             MD5Arr = await MD5Response.json();
 
-            App.spinner.stop(true);
+            App.spinner.stop();
         } catch(err) {
-            App.spinner.stop(true);
+            App.spinner.stop();
             console.log(CONSTANTS.JSON_PARSE_ERR, err);
 
             App.state.runtimeError = true;
@@ -62,9 +63,9 @@ export default abstract class Downloader {
         return MD5Arr;
     }
 
-    public static async findDownloadURL(entryMD5: string): Promise<string> {
-        App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_DOWNLOAD_URL);
-        App.spinner.start();
+    public static async findDownloadURL(entryMD5: string, logmode: boolean = false): Promise<string> {
+        App.spinner.setSpinnerTitle(SPINNER.GETTING_DOWNLOAD_URL);
+        App.spinner.start(logmode);
 
         let connectionSucceed: boolean = false;
 
@@ -83,7 +84,7 @@ export default abstract class Downloader {
 
             if (App.state.runtimeError || !mirrorDocument) {
                 errCounter++;
-                App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_DOWNLOAD_URL_ERR
+                App.spinner.setSpinnerTitle(SPINNER.GETTING_DOWNLOAD_URL_ERR
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
@@ -93,15 +94,15 @@ export default abstract class Downloader {
             }
         }
 
-        App.spinner.stop(true);
+        App.spinner.stop();
 
         return downloadEndpoint;
     }
 
-    public static startDownloading(downloadEndpoint: string, onData: Function): Promise<string> {
+    public static startDownloading(downloadEndpoint: string, onData: Function, logmode: boolean = false): Promise<string> {
         return new Promise(async (resolve: Function) => {
-            App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD);
-            App.spinner.start();
+            App.spinner.setSpinnerTitle(SPINNER.STARTING_DOWNLOAD);
+            App.spinner.start(logmode);
 
             let connectionSucceed: boolean = false;
 
@@ -117,7 +118,7 @@ export default abstract class Downloader {
 
                 if (App.state.runtimeError) {
                     errCounter++;
-                    App.spinner.setSpinnerTitle(CONSTANTS.SPINNER.STARTING_DOWNLOAD_ERR
+                    App.spinner.setSpinnerTitle(SPINNER.STARTING_DOWNLOAD_ERR
                         .replace('{errCounter}', errCounter.toString())
                         .replace('{errTolarance}', errTolarance.toString()));
                     await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
@@ -126,7 +127,7 @@ export default abstract class Downloader {
                 }
             }
 
-            App.spinner.stop(true);
+            App.spinner.stop();
 
             if (App.state.runtimeError) {
                 resolve('');

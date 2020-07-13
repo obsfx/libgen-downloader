@@ -1,4 +1,5 @@
 import { 
+    Terminal,
     EventHandler,
     Text
 } from '../../ui'
@@ -18,7 +19,9 @@ export default class ProgressBar {
 
     private output: Text;
 
-    constructor(title: string) {
+    private logmode: boolean;
+
+    constructor(title: string, logmode: boolean = false) {
         this.x = 0;
         this.y = 0;
 
@@ -33,7 +36,11 @@ export default class ProgressBar {
 
         this.output = new Text('', 'none');
 
-        EventHandler.attachResizeReRenderEvent(0, this.output.id, this.output.onResize.bind(this.output));
+        this.logmode = logmode;
+
+        if (!this.logmode) {
+            EventHandler.attachResizeReRenderEvent(0, this.output.id, this.output.onResize.bind(this.output));
+        }
     }
 
     public setXY(x: number, y: number): void {
@@ -54,15 +61,26 @@ export default class ProgressBar {
                     .replace('{bar}', `${bar}`)
                     .replace('{percent}', `${percentage}%`);
 
-            this.output.clear();
-            this.output.setXY(this.x, this.y);
-            this.output.setText(output);
-            this.output.onResize();
+            if (!this.logmode) {
+                this.output.clear();
+                this.output.setXY(this.x, this.y);
+                this.output.setText(output);
+                this.output.onResize();
+            } else {
+                Terminal.turnBackToBeginningOfLine();
+                Terminal.clearLine();
+                process.stdout.write(output);
+            }
         }
     }
 
     public hide(): void {
-        EventHandler.detachResizeReRenderEventMap(0, this.output.id);
-        this.output.clear();
+        if (!this.logmode) {
+            EventHandler.detachResizeReRenderEventMap(0, this.output.id);
+            this.output.clear();
+        } else {
+            Terminal.turnBackToBeginningOfLine();
+            process.stdout.write('\n');
+        }
     }
 }

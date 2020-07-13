@@ -270,7 +270,7 @@ export default abstract class ListingContainer extends Component {
         this.activeAwait = true;
 
         return new Promise((resolve: Function) => {
-            const controlLoop = (): void => {
+            const controlLoop: Function = (): void => {
                 if (this.terminateAwaiting) {
                     this.activeAwait = false;
                     resolve(this.getCurrentListing());

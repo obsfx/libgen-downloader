@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a simple tool to search and download pdfs via command line interface from libgen",
   "main": "./bin/index.js",
   "bin": {
@@ -35,24 +35,20 @@
     "url": "https://github.com/obsfx/libgen-downloader.git"
   },
   "devDependencies": {
-    "@types/cli-spinner": "^0.2.0",
     "@types/content-disposition": "^0.5.3",
     "@types/jsdom": "^12.2.4",
     "@types/minimist": "^1.2.0",
     "@types/node": "^12.12.38",
     "@types/node-fetch": "^2.5.4",
-    "@types/progress": "^2.0.3",
     "@types/uuid": "^8.0.0",
     "pkg": "^4.4.4",
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "cli-spinner": "^0.2.10",
     "content-disposition": "^0.5.3",
     "jsdom": "^16.2.0",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
-    "progress": "^2.0.3",
     "uuid": "^8.2.0"
   }
 }

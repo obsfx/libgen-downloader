@@ -5,16 +5,13 @@ import EventHandler from './modules/EventHandler';
 import Colors from './modules/Colors';
 
 import Text from './components/Text';
-
 import Listing from './components/Listing';
 import List from './components/List';
-
 import Dropdown from './components/Dropdown';
 import DropdownList from './components/DropdownList';
-
 import Input from './components/Input';
-
 import ProgressBar from './components/ProgressBar';
+import Spinner from './components/Spinner';
 
 import outputs from './outputs';
 import ansi from './ansi';
@@ -28,16 +25,13 @@ export {
     Colors,
 
     Text,
-
     Listing,
     List,
-
     Dropdown,
     DropdownList,
-
     Input,
-
     ProgressBar,
+    Spinner,
 
     outputs as UIOutputs,
     ansi as UIANSI,

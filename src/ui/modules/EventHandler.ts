@@ -11,12 +11,15 @@ export default abstract class EventHandler {
 
     private static keyEventMap: Map<string, Function> = new Map();
     private static onLineEventMap: Map<string, Function> = new Map();
+
+    private static resizeCleaning: boolean = false;
     private static resizeReRenderEventMapArr: Map<string, Function>[] = [];
 
     public static init(): void {
         process.stdin.on('keypress', (_: Types.stdinOnStrParam, key: Types.stdinOnKeyParam) => {
             if (key.ctrl && key.name == 'c') {
                 Terminal.showCursor();
+                Terminal.clear();
                 process.exit(0);
             }
 
@@ -32,10 +35,10 @@ export default abstract class EventHandler {
         });
 
         process.stdout.on('resize', () => {
-            Terminal.saveCursorPos();
-            Terminal.cursorXY(0, 0);
-            Terminal.clearCursorToEnd();
-            Terminal.restoreCursorPos();
+            if (this.resizeCleaning) {
+                Terminal.cursorXY(0, 0);
+                Terminal.clearCursorToEnd();
+            }
 
             for (let i: number = 0; i < this.resizeReRenderEventMapArr.length; i++) {
                 let map: Map<string, Function> | undefined = this.resizeReRenderEventMapArr[i];
@@ -55,6 +58,10 @@ export default abstract class EventHandler {
 
     public static emitKeypressEvents(): void {
         readline.emitKeypressEvents(process.stdin);
+    }
+
+    public static setResizeCleaning(status: boolean): void {
+        this.resizeCleaning = status;
     }
 
     /* ************************************* */

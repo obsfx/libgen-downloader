@@ -17,24 +17,6 @@ export default {
 
     BULK_DOWNLOAD_TITLE: `─ ${Colors.get('cyan', 'Bulk Downloader')}\n`,
 
-    SPINNER: {
-        GETTING_RESULTS: Colors.get('cyan', '%s Getting Results'),
-        GETTING_RESULTS_ERR: `${Colors.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${Colors.get('cyan', 'Getting Results')}`,
-        
-        GETTING_ENTRY_DATA: Colors.get('cyan', '%s Finding MD5(s) of Book(s)'),
-        GETTING_ENTRY_DATA_ERR: ` ${Colors.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${Colors.get('cyan', 'Finding MD5(s) of Book(s)')}`,
-                
-        GETTING_DOWNLOAD_URL: Colors.get('cyan', '%s Finding The Download URL'),
-        GETTING_DOWNLOAD_URL_ERR: `${Colors.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${Colors.get('cyan', 'Finding The Download URL')}`,
-        
-        STARTING_DOWNLOAD: Colors.get('cyan', '%s Starting Download'),
-        STARTING_DOWNLOAD_ERR: `${Colors.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${Colors.get('cyan', 'Starting Download')}`,
-
-        LIST_EXPORT: Colors.get('byellow', '%s Creating a List of MD5(s) of Downloaded Book(s)'),
-
-        READING_MD5_LIST: Colors.get('cyan', '%s Reading File')
-    },
-
     HELP: [
         `${Colors.get('byellow', 'libgen-downloader')}  start the main app without any argument.`,
         `${Colors.get('byellow', 'libgen-downloader')} ${Colors.get('cyan', '--help')}  see available additional arguments.`,
