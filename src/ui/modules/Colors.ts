@@ -3,6 +3,9 @@ import { Types } from '../types.namespace';
 import ansi from '../ansi';
 
 export default abstract class Color {
+    private static delimeter: string = '#';
+    private static sign: string = '$';
+
     private static ansiarr: string[] = [
         ansi.RESETCOLOR,
 
@@ -59,25 +62,39 @@ export default abstract class Color {
         return text;
     }
 
-    public static explode(text: string): { color: string, index: number }[] {
-        let pieces: { color: string, index: number }[] = []
-
+    public static explode(text: string): string[] {
         for (let i: number = 0; i < this.ansiarr.length; i++) {
             while (text.includes(this.ansiarr[i])) {
-                let index: number = text.indexOf(this.ansiarr[i]);
-                text = text.replace(this.ansiarr[i], '');
-
-                pieces.push({
-                    color: this.ansiarr[i],
-                    index
-                });
+                text = text.replace(this.ansiarr[i], `${this.delimeter}${this.sign}${i.toString()}${this.delimeter}`);
             }
         }
 
-        return pieces;
+        return text.split(this.delimeter);
     }
 
-    public static insert(text: string, index: number, insertion: string): string {
-        return text.substring(0, index) + insertion + text.substring(index);
+    public static reCreateColoredText(explodedText: string[], length: number): string {
+        let remainingChars: number = length;
+        let text: string = '';
+
+        for (let i: number = 0; i < explodedText.length; i++) {
+            let piece: string = explodedText[i];
+
+            if (piece[0] == this.sign) {
+                let color: string = this.ansiarr[Number(piece.substr(1))]
+                text += color;
+            } else if (remainingChars > 0) {
+                text += piece.substr(0, remainingChars);
+
+                remainingChars -= remainingChars > piece.length ?
+                    piece.length :
+                    remainingChars;
+
+                if (remainingChars < 1) {
+                    break;
+                }
+            }
+        }
+
+        return text;
     }
 }

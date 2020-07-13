@@ -41,7 +41,7 @@ export default class Text implements TText {
     renderedtext: string;
 
     purifiedText: string;
-    colorPositions: { color: string, index: number }[];
+    explodedText: string[];
 
     color: Types.color;
     hovercolor: Types.color;
@@ -60,7 +60,7 @@ export default class Text implements TText {
         this.renderedtext = text;
 
         this.purifiedText = Colors.purify(this.text);
-        this.colorPositions = Colors.explode(this.text);
+        this.explodedText = Colors.explode(this.text);
 
         this.color = color;
         this.hovercolor = hovercolor;
@@ -80,7 +80,7 @@ export default class Text implements TText {
         this.clearStr = ' '.repeat(this.text.length);
 
         this.purifiedText = Colors.purify(this.text);
-        this.colorPositions = Colors.explode(this.text);
+        this.explodedText = Colors.explode(this.text);
     }
 
     public setMaxLength(maxlen: number): void {
@@ -106,21 +106,9 @@ export default class Text implements TText {
 
         if (this.maxLength != null) { 
             if (this.maxLength < this.purifiedText.length + this.paddingLeft) {
-                let text: string = this.purifiedText;
+                let newtext: string = Colors.reCreateColoredText(this.explodedText, this.maxLength - 3 - this.paddingLeft);
 
-                for (let i: number = 0; i < this.colorPositions.length; i++) {
-
-                    /*
-                     *
-                     * FIX THE FUCKING TEXT
-                     */
-
-                    if (this.colorPositions[i].index < this.maxLength) {
-                        text = Color.insert(text, this.colorPositions[i].index, this.colorPositions[i].color);
-                    }
-                }
-
-                this.renderedtext = `${paddingText}${text.substr(0, this.maxLength - 3 - this.paddingLeft)}...`;
+                this.renderedtext = `${paddingText}${newtext}...`;
             }
         }
     }
