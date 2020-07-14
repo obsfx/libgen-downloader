@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Libgen Downloader</title>
+
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="img">
+                <img src="https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/1.gif" alt="">
+            </div>
+
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="text1">┌──── libgen</div>
+                    <div class="text1">└ downloader</div>
+                </div>
+                <div class="logo-author">created by <a href="https://github.com/obsfx">@obsfx</a></div>
+            </div>
+
+            <div class="info">
+                ──── <span class="ld">libgen downloader</span> is a simple command line tool to search and download ebooks from libgen that was developed in <span class="njs">nodejs</span> with <span class="ts">typescript</span>. 
+            </div>
+
+            <div>
+                <h1>features</h1>
+
+                <div class="command">
+                    libgen-downloader --bulk=md5list.txt
+                </div>
+
+                <div class="info">
+                    ──── In addition to single file download option, you can download more than one file sequentially by using bulk downloading feature.
+                </div>
+
+                <div class="info img">
+                    <img src="https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/2.gif" alt="">
+                </div>
+
+                <div class="info">
+                    ──── <span class="ld">libgen-downloader</span> does not download files at the same time to avoid breaking the libgen servers or blocking by the libgen servers because of too many requests. So, you have to be patient.
+                </div>
+
+                <div class="info">
+                    ──── At the end of the bulk downloading, <span class="ld">libgen-downloader</span> will export a .txt that contains MD5 codes of downloaded files line by line. When you want to download all files again you can use this file with command line parameter that calls as --bulk.
+                </div>
+
+                <div class="info img">
+                    <img src="https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/3.gif" alt="">
+                </div>
+
+                <div class="info">
+                    ──── if you start <span class="ld">libgen-downloader</span> with --bulk parameter, <span class="ld">libgen-downloader</span> tries to read target file line by line to get MD5 codes and directly starts in bulk downloading mode. You can also use your own list file that contains MD5 codes but you must be sure about that all md5 codes listed line by line.
+                </div>
+
+                <div class="command">
+                    libgen-downloader --geturl=md5_code_of_file
+                </div>
+
+                <div class="info">
+                    ──── If you have the MD5 code of file and want to get download URL of file directly, you can use --geturl parameter.
+                </div>
+
+                <div class="info img">
+                    <img src="https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/4.gif" alt="">
+                </div>
+
+                <h1>installation</h1>
+
+                <div class="info">
+                    ──── if you have already installed nodejs and npm, you can directly install with npm
+                </div>
+
+                <div class="command">
+                    npm i -g libgen-downloader
+                </div>
+
+                <div class="info" style="margin-top: 15px;">
+                    or you can download one of the standalone executable versions. <i>(You can directly click and execute windows executable but in macOS / Linux you have to run in your terminal)</i>
+                </div>
+
+                <div class="command" style="background: none;">
+                    <a class="btn" href="https://github.com/obsfx/libgen-downloader/releases">
+                        Download (Windows, Linux and MacOS) Standalone Executable
+                    </a>
+                </div>
+
+                <div class="info btns">
+                    <a class="btn-50" href="https://github.com/obsfx/libgen-downloader">
+                        Source Code (Github)
+                    </a>
+
+                    <a class="btn-50" href="https://www.npmjs.com/package/libgen-downloader">
+                        NPM Page
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
