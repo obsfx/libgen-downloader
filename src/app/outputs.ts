@@ -10,10 +10,6 @@ export const INPUT_TITLE = `${c.get('bgreen', '?')} ${c.get('none', 'Search :  '
 
 export const CONNECTION_ERROR = `${c.get('red', 'Connection Error.')} ${c.get('none', 'Probably libgen servers are not currently available. Please try again after a while.')}`;
 
-export const DOWNLOAD_COMPLETED = `${c.get('green', 'DOWNLOAD_COMPLETED')}`;
-
-export const DOWNLOAD_COMPLETED_FILE = `${c.get('green', 'DONE')} ${c.get('yellow', '{file}')} ${c.get('none', 'downloaded on working directory.')}`;
-
 export const INPUT_MINLEN_WARNING = `${c.get('yellow', 'Search string must contain minimum 3 characters.')} ${c.get('none', 'Please, type in a longer request and try again.')}`;
 
 export const USAGE_INFO = '(UP and DOWN arrow keys to reveal listings, ENTER key to interact.)';
@@ -30,7 +26,8 @@ export const CATEGORY = {
 export const BULK = {
     QUEUE_LEN: `Files in Bulk Downloading Queue: ${c.get('bgreen', '{count}')}`,
     DOWNLOAD_COMPLETED: `${c.get('green', 'DONE')} ${c.get('byellow', `Bulk Downloading`)} ${c.get('none', 'completed.')} ${c.get('green', '{completed} / {total}')} ${c.get('none', 'item(s) downloaded.')}`,
-    NO_FILE: `${c.get('yellow', 'There is no added file to')} ${c.get('bgreen', 'Start Bulk Downloading')}` 
+    NO_FILE: `${c.get('yellow', 'There is no added file to')} ${c.get('bgreen', 'Start Bulk Downloading')}`, 
+    TITLE: `${c.get('cyan', 'Bulk Downloader')}`
 }
 
 export const ENTRY_DETAILS = {
@@ -49,10 +46,14 @@ export const ENTRY_DETAILS = {
 export const DOWNLOADING = {
     DIR_HEAD: `${c.get('white', '┌  Your book is being downloaded to this directory:')}`,
     DIR_BODY: `${c.get('white', '├───')}    ${c.get('cyan', '{dir}')}`,
-    FILE: `${c.get('white', '├───')}  ${c.get('byellow', '{file}')}`
+    FILE: `${c.get('white', '├───')}  ${c.get('byellow', '{file}')}`,
+    URL: `${c.get('white', 'Here is your download URL:')} ${c.get('yellow', '%s')}`, 
+    COMPLETED: `${c.get('green', 'DOWNLOAD COMPLETED')} ${c.get('white', '')}`,
+    COMPLETED_FILE: `${c.get('green', 'DONE')} ${c.get('yellow', '{file}')} ${c.get('none', 'downloaded on working directory.')}`,
+    ERR: c.get('red', 'Downloading couldn\'t completed.')
 }
 
-export const BAR = `${c.get('green', '└───  Downloading [ {bar} ]')} ${c.get('white', '{percent}')}`;
+export const BAR = `${c.get('white', '└───')} ${c.get('bgreen', 'Downloading [ {bar} ]')} ${c.get('white', '{percent} {completed}')}`;
 
 export const SPINNER = {
     GETTING_RESULTS: c.get('cyan', '%s Getting Results'),
@@ -70,5 +71,24 @@ export const SPINNER = {
     LIST_EXPORT: c.get('byellow', '%s Creating a List of MD5(s) of Downloaded Book(s)'),
 
     READING_MD5_LIST: c.get('cyan', '%s Reading File')
-
 } 
+
+export const REMAINING_BOOKS = c.get('white', '[Remaining Files: %s]');
+
+export const MD5_INDICATOR = `${c.get('white', 'MD5:')} ${c.get('green', '%s')}`;
+
+export const LIST = {
+    EXPORT_SUCCESS: `${c.get('green', 'List of MD5(s) of Downloaded Book(s) Successfully Created.')}\n${c.get('byellow', '{file}')}`,
+    EXPORT_ERR: c.get('red', 'List of MD5(s) of Downloaded Book(s) Couldn\'t Created.')
+}
+
+export const HELP = [
+    `${c.get('byellow', 'libgen-downloader')}  ${c.get('white', 'start the main app without any argument.')}`,
+    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--help')}  ${c.get('white', 'see available additional arguments.')}`,
+    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--bulk=md5listfile.txt')}  ${c.get('white', 'start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.')}`,
+    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--geturl=md5')}  ${c.get('white', 'get the download url of book by passing the md5.')}`,
+];
+
+export const JSON_PARSE_ERR = c.get('red', 'Invalid JSON Error.');
+
+export const FILE_READ_ERR = c.get('red', 'File couldn\'t read.');

@@ -48,15 +48,15 @@ export default abstract class EntryDetailsScene extends Scene {
             let currentListing: UITypes.ReturnObject = list.getCurrentListing();
 
             if (currentListing.actionID == ACTIONID.ADD_TO_BULK_DOWNLOADING_QUEUE) {
-                if (App.state.bulkQueue[currentListing.value]) {
-                    delete App.state.bulkQueue[currentListing.value];
+                if (App.bulkQueue[currentListing.value]) {
+                    delete App.bulkQueue[currentListing.value];
                     list.toggleChecked(false);
                 } else {
-                    App.state.bulkQueue[currentListing.value] = true;
+                    App.bulkQueue[currentListing.value] = true;
                     list.toggleChecked(true);
                 }
 
-                BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+                BulkQueueScene.updateQueueLen(Object.keys(App.bulkQueue).length);
             } else {
                 list.terminateAwaiting = true;
             }
@@ -96,11 +96,11 @@ export default abstract class EntryDetailsScene extends Scene {
         }
 
         BulkQueueScene.show(1, 6 + this.entryDetailsText.length + this.ymargin);
-        BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+        BulkQueueScene.updateQueueLen(Object.keys(App.bulkQueue).length);
 
         this.list.setXY(2, 7 + this.entryDetailsText.length + this.ymargin);
 
-        if (App.state.bulkQueue[this.selectedEntry.ID]) {
+        if (App.bulkQueue[this.selectedEntry.ID]) {
             this.list.applyCheckedStyle(true);
         }
 

@@ -1,9 +1,15 @@
 import App from './app/App';
+
 import { 
     EventHandler,
 } from './ui';
 
-import CONSTANTS from './app/constants';
+import {
+    DOWNLOADING,
+    BULK,
+    CONNECTION_ERROR,
+    HELP
+} from './app/outputs';
 
 import Downloader from './app/modules/Downloader';
 import BulkDownloader from './bulk-downloader';
@@ -13,11 +19,7 @@ import minimist from 'minimist';
 const main = async (): Promise<void> => {
     const argv: minimist.ParsedArgs = minimist(process.argv.slice(2));
 
-    EventHandler.emitKeypressEvents();
-    EventHandler.init();
-
     if (typeof argv.bulk == 'string') {
-
         App.init(true);
 
         await BulkDownloader.startMD5(argv.bulk);
@@ -27,31 +29,31 @@ const main = async (): Promise<void> => {
             return;
         }
 
-            //console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED,  
-            //BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
+        let result: string = BULK.DOWNLOAD_COMPLETED
+                    .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
+                    .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
 
-        App.exit();
+        console.log(result); 
+        process.exit(0);
     } else if (typeof argv.geturl == 'string') {
         App.init(true);
 
         let URL: string = await Downloader.findDownloadURL(argv.geturl);
 
         if (App.state.runtimeError) {
-            //console.log(CONSTANTS.CONNECTION_ERROR);
+            console.log(CONNECTION_ERROR);
             return;
         }
 
-        console.log(CONSTANTS.DOWNLOAD_URL, URL);
+        console.log(DOWNLOADING.URL, URL);
 
-        App.exit();
+        process.exit(0);
     } else if (typeof argv.help == 'boolean') {
-        CONSTANTS.HELP.forEach((e: string) => console.log(e));
-
-        App.exit();
+        HELP.forEach((e: string) => console.log(e));
+        process.exit(0);
     } else {
-
-//        UI.Terminal.setBulkDownloadOptionText(CONSTANTS.BULK_DOWNLOAD_INDICATOR_TEXT);
-//        UI.Terminal.setIndicatorText(CONSTANTS.BULK_QUEUE_INDICATOR_TEXT);
+        EventHandler.emitKeypressEvents();
+        EventHandler.init();
 
         App.initEventHandlers();
         App.init();

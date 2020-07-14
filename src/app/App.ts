@@ -2,23 +2,25 @@
  * TODO:
  *
  * [x] custom spinner
- *  [] fix crash
- *  [] better styling
- * [] bulk downloader
- * [] cli
- * [] exit
+ *  [x] better styling
+ * [x] next page issue
+ * [x] bulk indicator at input scene
+ * [x] bulk downloader
  * [x] custom progress bar
  * [x] add pagination
  * [x] entry details
  * [x] entry details listing
+ *
+ * javascript good parts rendering issue
  */
 
 import CONFIG from './config';
 import { 
+    DOWNLOADING,
     NO_RESULT,
     CONNECTION_ERROR,
     BULK,
-    DOWNLOAD_COMPLETED_FILE,
+    LIST,
     SPINNER
 } from './outputs';
 
@@ -27,13 +29,16 @@ import ACTIONID from './action-ids';
 import {
     UITypes,
     Terminal,
-    Spinner
+    Spinner,
+    EventHandler
 } from '../ui';
 
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
 import BulkDownloader from '../bulk-downloader';
 
+import TitleScene from './scenes/TitleScene';
+import BulkQueueScene from './scenes/BulkQueueScene';
 import InputScene from './scenes/InputScene';
 import ResultsScene from './scenes/ResultsScene';
 import EntryDetailsScene from './scenes/EntryDetailsScene';
@@ -54,7 +59,6 @@ type AppState = {
     errorText: string;
     runtimeError: boolean;
     entryDataArr: Entry[];
-    bulkQueue: { [key: string]: boolean };
 }
 
 export type Entry = {
@@ -73,6 +77,7 @@ export type Entry = {
 export default abstract class App {
     public static state: AppState;
     public static spinner: Spinner = new Spinner(); 
+    public static bulkQueue: { [key: string]: boolean } = {}
     private static eventEmitter: EventEmitter = new EventEmitter();
 
     private static events: {
@@ -95,7 +100,6 @@ export default abstract class App {
             errorText: '',
             runtimeError: false,
             entryDataArr: [],
-            bulkQueue: {}
         }
     }
 
@@ -125,58 +129,48 @@ export default abstract class App {
         process.exit(0);
     }
 
-    public static async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UITypes.ReturnObject) => {
+    public static initEventHandlers(): void {
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.PREV_PAGE 
                 || actionID == ACTIONID.NEXT_PAGE) {
                 this.state.currentPage = (actionID == ACTIONID.NEXT_PAGE) ?
                 this.state.currentPage + 1 :
                 this.state.currentPage - 1;
-                
+
                 this.clear();
-                await this.executePromptFlow();
+                this.executePromptFlow();
             } else if (actionID == ACTIONID.SEARCH) {
-                await this.init();
+                this.init();
             } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             } else if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
-                this.promptDownloadProcess(Number(value))
+                this.promptDownloadProcess(Number(value));
             } else if (actionID == ACTIONID.SEE_DETAILS) {
-                await this.promptEntryDetails(Number(value));
+                this.promptEntryDetails(Number(value));
             } else if (actionID == ACTIONID.START_BULK) {
-                this.clear();
-
-                await BulkDownloader.start(Object.keys(this.state.bulkQueue), 'ID');
-
-                this.state.bulkQueue = {};
-
-                let title: string = BULK.DOWNLOAD_COMPLETED
-                            .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
-                            .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
-
-                this.promptSearchAnother(title, true);
+                this.promptBulkDownloading();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UITypes.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
                 this.promptDownloadProcess(Number(value));
             } else if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
-                await this.promptResults();
+                this.promptResults();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UITypes.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, ({ actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
-                await this.promptResults();
+                this.promptResults();
             } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UITypes.ReturnObject) => {
+        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, ({ actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.SEARCH_ANOTHER) {
-                await this.init();
+                this.init();
             } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             }
@@ -327,7 +321,7 @@ export default abstract class App {
 
         DownloadScene.hide();
 
-        this.promptSearchAnother(DOWNLOAD_COMPLETED_FILE.replace('{file}', filename), true);
+        this.promptSearchAnother(DOWNLOADING.COMPLETED_FILE.replace('{file}', filename), true);
     }
 
     public static async promptSearchAnother(title: string, showDIR: boolean = false): Promise<void> {
@@ -340,8 +334,31 @@ export default abstract class App {
         this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
     }
 
+    public static async promptBulkDownloading(): Promise<void> {
+        EventHandler.setResizeCleaning(false);
+        this.clear();
+
+        await BulkDownloader.start(Object.keys(this.bulkQueue), 'ID');
+
+        BulkQueueScene.hide();
+
+        this.bulkQueue = {};
+
+        let title: string = BULK.DOWNLOAD_COMPLETED
+                    .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
+                    .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
+
+        title += `\n${LIST.EXPORT_SUCCESS.replace('{file}', BulkDownloader.getExportedListFileName())}`
+        EventHandler.setResizeCleaning(true);
+        this.clear();
+
+        this.promptSearchAnother(title, true);
+    }
+
     /**  **************************************************  */
     private static async executePromptFlow(): Promise<void> {
+        
+        TitleScene.show();
         this.spinner.setXY(1, 5);
         this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS);
         this.spinner.start();

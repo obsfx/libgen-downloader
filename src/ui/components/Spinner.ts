@@ -9,28 +9,24 @@ export default class Spinner {
     private y: number;
 
     private title: string;
-
     private spinning: boolean;
-
     private spinner: string;
-
     private spinnerIndex: number;
-
     private output: Text;
+    private logmode: boolean;
+    private timeout: number | null;
 
     constructor() {
         this.x = 0;
         this.y = 0;
 
         this.title = '';
-
         this.spinning = false;
-
         this.spinner = '|/-\\';
-
         this.spinnerIndex = 0;
-
         this.output = new Text('', 'none');
+        this.logmode = false;
+        this.timeout = null;
     }
 
     public setXY(x: number, y: number): void {
@@ -46,8 +42,9 @@ export default class Spinner {
 
     public start(logmode: boolean = false): void {
         this.spinning = true;
+        this.logmode = logmode;
 
-        if (!logmode) {
+        if (!this.logmode) {
             EventHandler.attachResizeReRenderEvent(0, this.output.id, this.output.onResize.bind(this.output));
         }
 
@@ -56,7 +53,7 @@ export default class Spinner {
 
             let output: string = this.title.replace('%s', this.spinner[this.spinnerIndex]);
 
-            if (!logmode) {
+            if (!this.logmode) {
                 this.output.setText(output);
                 this.output.onResize();
             } else {
@@ -66,16 +63,8 @@ export default class Spinner {
             }
 
             if (this.spinning) {
-                setTimeout(loop, 100);
-            } else {
-                if (!logmode) {
-                    EventHandler.detachResizeReRenderEventMap(0, this.output.id);
-                    this.output.clear();
-                } else {
-                    Terminal.turnBackToBeginningOfLine();
-                    Terminal.clearLine();
-                }
-            }
+                this.timeout = setTimeout(loop, 80);
+            } 
         }
 
         loop();
@@ -83,5 +72,18 @@ export default class Spinner {
 
     public stop(): void {
         this.spinning = false;
+
+        if (!this.logmode) {
+            EventHandler.detachResizeReRenderEventMap(0, this.output.id);
+            this.output.clear();
+        } else {
+            Terminal.turnBackToBeginningOfLine();
+            Terminal.clearLine();
+        }
+
+        if (this.timeout != null) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
     }
 }

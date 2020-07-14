@@ -4,7 +4,6 @@ import Terminal from '../modules/Terminal';
 import Colors from '../modules/Colors';
 
 import { v4 as uuidv4 } from 'uuid';
-import Color from '../modules/Colors';
 
 type TText = {
     id: string;

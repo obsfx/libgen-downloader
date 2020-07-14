@@ -11,8 +11,11 @@ import {
     Text
 } from '../../ui';
 
-import TitleScene from './TitleScene';
 import Scene from './Scene';
+import TitleScene from './TitleScene';
+import BulkQueueScene from './BulkQueueScene';
+
+import App from '../App';
 
 export default abstract class InputScene extends Scene {
     private static queryMinLenWarning: boolean;
@@ -25,8 +28,11 @@ export default abstract class InputScene extends Scene {
 
         TitleScene.show();
 
+        BulkQueueScene.show(1, 5);
+        BulkQueueScene.updateQueueLen(Object.keys(App.bulkQueue).length);
+
         if (this.queryMinLenWarning) {
-            this.minLenWarning.setXY(1, 5);
+            this.minLenWarning.setXY(1, 4);
             this.attachText(this.minLenWarning);
         }
 
@@ -38,6 +44,7 @@ export default abstract class InputScene extends Scene {
 
     public static hide(): void {
         TitleScene.hide();
+        BulkQueueScene.hide();
 
         if (this.queryMinLenWarning) {
             this.queryMinLenWarning = false;

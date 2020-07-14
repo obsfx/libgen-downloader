@@ -3,7 +3,11 @@ import Entries from '../modules/Entries';
 
 import CONFIG from '../config';
 import CONSTANTS from '../constants';
-import { SPINNER } from '../outputs';
+import { 
+    SPINNER,
+    JSON_PARSE_ERR,
+    DOWNLOADING
+} from '../outputs';
 
 import { Response } from 'node-fetch';
 import contentDisposition from 'content-disposition';
@@ -54,7 +58,7 @@ export default abstract class Downloader {
             App.spinner.stop();
         } catch(err) {
             App.spinner.stop();
-            console.log(CONSTANTS.JSON_PARSE_ERR, err);
+            console.log(JSON_PARSE_ERR, err);
 
             App.state.runtimeError = true;
             return;
@@ -162,7 +166,7 @@ export default abstract class Downloader {
             });
             
             downloadResponse.body.on('error', () => {
-                console.log(CONSTANTS.DOWNLOAD_ERR);
+                console.log(DOWNLOADING.ERR);
                 App.state.runtimeError = true;
             });
             

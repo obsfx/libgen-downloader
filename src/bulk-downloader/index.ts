@@ -1,10 +1,15 @@
 import { Types } from './types.namespace';
 
-import CONSTANTS from '../app/constants';
 import { 
-    DOWNLOAD_COMPLETED, 
+    TITLE,
+    DOWNLOADING,
+    BULK,
     BAR,
-    SPINNER
+    LIST,
+    SPINNER,
+    FILE_READ_ERR,
+    REMAINING_BOOKS,
+    MD5_INDICATOR
 } from '../app/outputs';
 
 import App from '../app/App';
@@ -20,6 +25,7 @@ import fs from 'fs';
 export default abstract class Main {
     private static queue: string[];
     private static completedMD5: string[];
+    private static exportedListFileName: string;
 
     public static async startMD5(filename: string): Promise<void> {
         App.spinner.setSpinnerTitle(SPINNER.READING_MD5_LIST);
@@ -35,13 +41,18 @@ export default abstract class Main {
             App.state.runtimeError = true;
             
             App.spinner.stop();
-            console.log(CONSTANTS.FILE_READ_ERR);
+            console.log(FILE_READ_ERR);
         }
     }
 
     public static async start(ID_or_MD5Arr: string[], downloadMode: Types.bulkDownloadMode) {
         Terminal.cursorXY(0, 0);
-        console.log(CONSTANTS.BULK_DOWNLOAD_TITLE);
+        this.exportedListFileName = '';
+
+        TITLE.forEach((e: string) => console.log(e));
+
+        console.log('');
+        console.log(BULK.TITLE);
 
         this.queue = ID_or_MD5Arr;
         this.completedMD5 = [];
@@ -61,13 +72,13 @@ export default abstract class Main {
         }
 
         for (let i: number = 0; i < this.queue.length; i++) {
-            console.log(CONSTANTS.REMAINING_BOOKS, this.queue.length - i);
-            console.log(CONSTANTS.MD5_INDICATOR, this.queue[i]);
+            console.log(REMAINING_BOOKS, this.queue.length - i);
+            console.log(MD5_INDICATOR, this.queue[i]);
 
             let URL: string = await Downloader.findDownloadURL(this.queue[i], true);
 
             if (App.state.runtimeError) {
-                console.log(CONSTANTS.DOWNLOAD_ERR);
+                console.log(DOWNLOADING.ERR);
                 continue;
             }
 
@@ -81,14 +92,16 @@ export default abstract class Main {
                 progressBar.tick(chunkLen);
             }, true);
 
+            progressBar.hide();
+
             if (App.state.runtimeError) {
-                console.log(CONSTANTS.DOWNLOAD_ERR);
+                console.log(DOWNLOADING.ERR);
                 continue;
             }
 
             this.completedMD5.push(this.queue[i]);
 
-            console.log(DOWNLOAD_COMPLETED, filename);
+            console.log(DOWNLOADING.COMPLETED_FILE.replace('{file}', filename));
         }
 
         if (this.completedMD5.length > 0 && downloadMode == 'ID') {
@@ -96,16 +109,14 @@ export default abstract class Main {
             App.spinner.start(true);
 
             try {
-                let exportedListFileName: string = `BULK_DOWNLOADED_MD5_LIST_${Date.now().toString()}.txt`;
-                await fs.promises.writeFile(exportedListFileName, this.completedMD5.join('\n'));
+                this.exportedListFileName = `MD5_LIST_${Date.now().toString()}.txt`;
+                await fs.promises.writeFile(this.exportedListFileName, this.completedMD5.join('\n'));
                 
                 App.spinner.stop();
-
-                console.log(CONSTANTS.LIST_EXPORT_SUCCESS, exportedListFileName);
             } catch(e) {
                 App.spinner.stop();
 
-                console.log(CONSTANTS.LIST_EXPORT_ERR, e);
+                console.log(LIST.EXPORT_ERR, e);
             }
         }
     }
@@ -116,5 +127,9 @@ export default abstract class Main {
 
     public static getEntireItemsCount(): number {
         return this.queue.length;
+    }
+
+    public static getExportedListFileName(): string {
+        return this.exportedListFileName;
     }
 }

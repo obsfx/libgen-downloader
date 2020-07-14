@@ -12,13 +12,14 @@ export default abstract class EventHandler {
     private static keyEventMap: Map<string, Function> = new Map();
     private static onLineEventMap: Map<string, Function> = new Map();
 
-    private static resizeCleaning: boolean = false;
+    private static resizeCleaning: boolean = true;
     private static resizeReRenderEventMapArr: Map<string, Function>[] = [];
 
     public static init(): void {
         process.stdin.on('keypress', (_: Types.stdinOnStrParam, key: Types.stdinOnKeyParam) => {
             if (key.ctrl && key.name == 'c') {
                 Terminal.showCursor();
+                Terminal.cursorXY(0, 0);
                 Terminal.clear();
                 process.exit(0);
             }

@@ -1,5 +1,6 @@
 import { 
     Terminal,
+    Colors,
     EventHandler,
     Text
 } from '../../ui'
@@ -27,7 +28,7 @@ export default class ProgressBar {
 
         this.title = title;
 
-        this.width = 25;
+        this.width = 18;
         this.progress = 0;
         this.total = null;
 
@@ -59,7 +60,8 @@ export default class ProgressBar {
 
             let output: string = this.title
                     .replace('{bar}', `${bar}`)
-                    .replace('{percent}', `${percentage}%`);
+                    .replace('{percent}', `${percentage}%`)
+                    .replace('{completed}', this.progress.toString());
 
             if (!this.logmode) {
                 this.output.clear();
@@ -69,6 +71,14 @@ export default class ProgressBar {
             } else {
                 Terminal.turnBackToBeginningOfLine();
                 Terminal.clearLine();
+
+                let purifiedOutput: string = Colors.purify(output);
+
+                if (purifiedOutput.length > process.stdout.columns) {
+                    let explodedOutput: string[] = Colors.explode(output);
+                    output = Colors.reCreateColoredText(explodedOutput, process.stdout.columns);
+                }
+
                 process.stdout.write(output);
             }
         }

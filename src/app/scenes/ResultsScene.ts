@@ -32,10 +32,10 @@ export default abstract class ResultsScene extends Scene {
         Terminal.hideCursor();
         TitleScene.show();
 
-        BulkQueueScene.show(1, 6);
-        BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+        BulkQueueScene.show(1, 5);
+        BulkQueueScene.updateQueueLen(Object.keys(App.bulkQueue).length);
 
-        this.results.setXY(1, 7);
+        this.results.setXY(1, 6);
         this.results.setText(RESULTS_TITLE
             .replace('{query}', decodeURIComponent(App.state.query || ''))
             .replace('{page}', App.state.currentPage.toString()));
@@ -47,7 +47,7 @@ export default abstract class ResultsScene extends Scene {
             let option: UITypes.ComponentParams = ResultsSceneOptionListings[i];
 
             if ((App.state.currentPage == 1 && option.actionID == ACTIONID.PREV_PAGE) ||
-                !App.isNextPageExist()) {
+                (!App.state.isNextPageExist && option.actionID == ACTIONID.NEXT_PAGE)) {
                 continue;
             }
 
@@ -91,7 +91,7 @@ export default abstract class ResultsScene extends Scene {
 
             dropdown.attachSublist(sublist);
 
-            if (App.state.bulkQueue[e.ID]) {
+            if (App.bulkQueue[e.ID]) {
                 dropdown.applyCheckedStyle();
             }
 
@@ -99,7 +99,7 @@ export default abstract class ResultsScene extends Scene {
         });
 
         this.list.setContainerWidth(70);
-        this.list.setXY(2, 8);
+        this.list.setXY(2, 7);
         this.list.attachListingArr([...options, ...listings], CONFIG.UI_PAGE_SIZE);
         this.list.show();
         this.list.showInfo();
@@ -110,13 +110,13 @@ export default abstract class ResultsScene extends Scene {
             if (sublistReturnObject.actionID == ACTIONID.ADD_TO_BULK_DOWNLOADING_QUEUE) {
                 dropdownlist.toggleCheckCurrentListing();
 
-                if (App.state.bulkQueue[sublistReturnObject.value]) {
-                    delete App.state.bulkQueue[sublistReturnObject.value];
+                if (App.bulkQueue[sublistReturnObject.value]) {
+                    delete App.bulkQueue[sublistReturnObject.value];
                 } else {
-                    App.state.bulkQueue[sublistReturnObject.value] = true;
+                    App.bulkQueue[sublistReturnObject.value] = true;
                 }
 
-                BulkQueueScene.updateQueueLen(Object.keys(App.state.bulkQueue).length);
+                BulkQueueScene.updateQueueLen(Object.keys(App.bulkQueue).length);
             } else if (sublistReturnObject.actionID == ACTIONID.SEE_DETAILS || 
                        sublistReturnObject.actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
                 dropdownlist.terminateAwaiting = true;
@@ -128,7 +128,7 @@ export default abstract class ResultsScene extends Scene {
             let currentListing: UITypes.ReturnObject = dropdown.getCurrentListing();
 
             if (currentListing.actionID == ACTIONID.START_BULK &&
-                Object.keys(App.state.bulkQueue).length < 1) {
+                Object.keys(App.bulkQueue).length < 1) {
                 dropdown.terminateAwaiting = false;
                 BulkQueueScene.showNoFileWarning(1, 5);
             } else {

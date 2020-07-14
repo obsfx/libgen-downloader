@@ -13,7 +13,6 @@ import Input from './components/Input';
 import ProgressBar from './components/ProgressBar';
 import Spinner from './components/Spinner';
 
-import outputs from './outputs';
 import ansi from './ansi';
 import constants from './constants';
 
@@ -33,7 +32,6 @@ export {
     ProgressBar,
     Spinner,
 
-    outputs as UIOutputs,
     ansi as UIANSI,
     constants as UIConstants
 }
