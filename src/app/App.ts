@@ -1,26 +1,69 @@
-import { Interfaces } from './interfaces.namespace';
-import { UIInterfaces } from '../ui';
-
 import CONFIG from './config';
-import CONSTANTS from './constants';
 
-import UI from '../ui';
-import UIObjects from './modules/UIObjects';
+import { 
+    DOWNLOADING,
+    NO_RESULT,
+    CONNECTION_ERROR,
+    BULK,
+    LIST,
+    SPINNER
+} from './outputs';
+
+import ACTIONID from './action-ids';
+
+import {
+    UITypes,
+    Terminal,
+    Spinner,
+    EventHandler
+} from '../ui';
+
 import Selectors from './modules/Selectors';
 import Entries from './modules/Entries';
-import Downloader from './modules/Downloader';
 import BulkDownloader from '../bulk-downloader';
 
+import TitleScene from './scenes/TitleScene';
+import BulkQueueScene from './scenes/BulkQueueScene';
+import InputScene from './scenes/InputScene';
+import ResultsScene from './scenes/ResultsScene';
+import EntryDetailsScene from './scenes/EntryDetailsScene';
+import AfterDownloadScene from './scenes/AfterDownloadScene';
+import SearchAnotherScene from './scenes/SearchAnotherScene';
+import DownloadScene from './scenes/DownloadScene';
+
 import fetch, { Response } from 'node-fetch';
-import { Spinner } from 'cli-spinner';
 import { JSDOM } from 'jsdom';
 
 import { EventEmitter } from 'events';
 
-export default abstract class App {
-    public static state: Interfaces.AppState;
-    public static spinner: Spinner = new Spinner();
+type AppState = {
+    currentPage: number;
+    url: string;
+    query: string | null;
+    queryMinLenWarning: boolean;
+    isNextPageExist: boolean;
+    errorText: string;
+    runtimeError: boolean;
+    entryDataArr: Entry[];
+}
 
+export type Entry = {
+    ID: string;
+    Author: string;
+    Title: string;
+    Publisher: string;
+    Year: string;
+    Pages: string;
+    Lang: string;
+    Size: string;
+    Ext: string;
+    Mirror: string;
+}
+
+export default abstract class App {
+    public static state: AppState;
+    public static spinner: Spinner = new Spinner(); 
+    public static bulkQueue: { [key: string]: boolean } = {}
     private static eventEmitter: EventEmitter = new EventEmitter();
 
     private static events: {
@@ -33,26 +76,21 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static createNewAppState(): Interfaces.AppState {
+    private static createNewAppState(): AppState {
         return {
             currentPage: 1,
             url: '',
             query: null,
+            queryMinLenWarning: false,
             isNextPageExist: false,
             errorText: '',
             runtimeError: false,
             entryDataArr: [],
-            listObject: null
         }
     }
 
     public static clear(): void {
-        UI.Terminal.clear();
-        this.promptHead();
-    }
-
-    private static promptHead(): void {
-        CONSTANTS.HEAD.forEach(line => console.log(line));
+        Terminal.clear();
     }
 
     /**  **************************************************  */
@@ -66,74 +104,60 @@ export default abstract class App {
 
         while (this.state.query == null) {
             await this.setInput();
+            this.clear();
         }
-    
+
         await this.executePromptFlow();
     }
 
     public static exit(): void {
-        UI.Terminal.showCursor();
+        Terminal.showCursor();
         process.exit(0);
     }
 
-    public static async initEventHandlers(): Promise<void> {
-        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
-            if (actionID == CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL 
-                || actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) {
-                this.state.currentPage = (actionID == CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL) ?
+    public static initEventHandlers(): void {
+        this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, ({ value, actionID }: UITypes.ReturnObject) => {
+            if (actionID == ACTIONID.PREV_PAGE 
+                || actionID == ACTIONID.NEXT_PAGE) {
+                this.state.currentPage = (actionID == ACTIONID.NEXT_PAGE) ?
                 this.state.currentPage + 1 :
                 this.state.currentPage - 1;
-                
+
                 this.clear();
-                await this.executePromptFlow();
-            } else if (actionID == CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID) {
-                await this.init();
-            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+                this.executePromptFlow();
+            } else if (actionID == ACTIONID.SEARCH) {
+                this.init();
+            } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
-            } else if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-                await this.download(Number(value));
-            } else if (actionID == CONSTANTS.SEE_DETAILS_LISTING.SEE_DETAILS_RES_VAL) {
-                await this.promptEntryDetails(Number(value));
-            } else if (actionID == UI.constants.DOWNLOADBULKVAL) {
-                this.clear();
-                
-                await BulkDownloader.Main.start(Object.keys(UI.Terminal.getCheckedListings()), 'ID');
-
-                UI.Terminal.resetCheckedListings();
-
-                console.log(CONSTANTS.BULK_DOWNLOAD_COMPLETED, 
-                    BulkDownloader.Main.getCompletedItemsCount(), BulkDownloader.Main.getEntireItemsCount());
-
-                App.promptAfterDownload();
+            } else if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
+                this.promptDownloadProcess(Number(value));
+            } else if (actionID == ACTIONID.SEE_DETAILS) {
+                this.promptEntryDetails(Number(value));
+            } else if (actionID == ACTIONID.START_BULK) {
+                this.promptBulkDownloading();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
-            if (actionID == CONSTANTS.DOWNLOAD_LISTING.DOWNLOAD_RES_VAL) {
-                await this.download(Number(value));
-            } else if (actionID == CONSTANTS.ENTRY_DETAILS_CHECK.ENTRY_DETAILS_CHECK_RES_VAL) {
-                let entry: Interfaces.Entry = this.state.entryDataArr[Number(value)];
-
-                UI.Terminal.toggleCheckHashMap(entry.ID);
-
-                await this.promptEntryDetails(Number(value));
-            } else if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
-                await this.promptResults();
+        this.eventEmitter.on(this.events.USER_SELECTED_IN_ENTRY_DETAILS, ({ value, actionID }: UITypes.ReturnObject) => {
+            if (actionID == ACTIONID.DOWNLOAD_DIRECTLY) {
+                this.promptDownloadProcess(Number(value));
+            } else if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
+                this.promptResults();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
-            if (actionID == CONSTANTS.TURN_BACK_LISTING.TURN_BACK_RESULT_ID) {
-                await this.promptResults();
-            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID){
+        this.eventEmitter.on(this.events.USER_SELECTED_AFTER_DOWNLOAD, ({ actionID }: UITypes.ReturnObject) => {
+            if (actionID == ACTIONID.TURN_BACK_TO_THE_LIST) {
+                this.promptResults();
+            } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             }
         });
 
-        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, async ({ value, actionID }: UIInterfaces.ReturnObject) => {
-            if (actionID == CONSTANTS.SEARCH_ANOTHER_LISTINGS.SEARCH_ANOTHER_RESULT_ID) {
-                await this.init();
-            } else if (actionID == CONSTANTS.EXIT.EXIT_RESULT_ID) {
+        this.eventEmitter.on(this.events.USER_SELECTED_SEARCH_ANOTHER, ({ actionID }: UITypes.ReturnObject) => {
+            if (actionID == ACTIONID.SEARCH_ANOTHER) {
+                this.init();
+            } else if (actionID == ACTIONID.EXIT) {
                 this.exit();
             }
         });
@@ -152,54 +176,15 @@ export default abstract class App {
         return url;
     }
 
-    private static constructOptions(): UIInterfaces.ListingObject[] {
-        let listings: UIInterfaces.ListingObject[] = [];
-
-        listings.push(UIObjects.getOptionListingObject(
-            CONSTANTS.PAGINATIONS.SEARCH,
-            CONSTANTS.PAGINATIONS.SEARCH_RESULT_ID
-        ));
-
-        if (this.state.isNextPageExist) {
-            let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
-            
-            listings.push(UIObjects.getOptionListingObject(
-                CONSTANTS.PAGINATIONS.NEXT_PAGE,
-                CONSTANTS.PAGINATIONS.NEXT_PAGE_RESULT_VAL,
-                nextPageURL
-            ));
-        }
-
-        if (this.state.currentPage > 1) {
-            let prevPageURL: string = this.constructURL(this.state.currentPage - 1);
-
-            listings.push(UIObjects.getOptionListingObject(
-                CONSTANTS.PAGINATIONS.PREV_PAGE,
-                CONSTANTS.PAGINATIONS.PREV_PAGE_RESULT_VAL,
-                prevPageURL
-            ));
-        }
-
-        listings.push(UIObjects.getOptionListingObject(
-            CONSTANTS.EXIT.EXIT,
-            CONSTANTS.EXIT.EXIT_RESULT_ID
-        ));
-
-        return listings;
-    }
-
     public static async runtimeError(): Promise<void> {
-        if (this.spinner.isSpinning()) {
-            this.spinner.stop(true);
-        }
+        this.spinner.stop();
+        
+        SearchAnotherScene.show(1, 5, CONNECTION_ERROR);
 
-        UI.Terminal.prevLine();
-        UI.Terminal.clearLine();
+        let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
 
-        console.log(CONSTANTS.CONNECTION_ERROR);
+        SearchAnotherScene.hide();
 
-        let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
-        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
         this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
     }
 
@@ -215,7 +200,7 @@ export default abstract class App {
         return (searchInput) ? true : false;
     }
 
-    private static async isNextPageExist(): Promise<boolean> {
+    public static async isNextPageExist(): Promise<boolean> {
         let nextPageURL: string = this.constructURL(this.state.currentPage + 1);
         let document: HTMLDocument | void = await this.getDocument(nextPageURL);
 
@@ -228,19 +213,18 @@ export default abstract class App {
         return (entryAmount > 1) ? true : false;
     }
 
-    /**  **************************************************  */
     private static async setInput(): Promise<void> {
-        let inputObject: UIInterfaces.promptObject = {
-            type: 'input',
-            text: UI.outputs.SEARCH
-        }
+        InputScene.show(this.state.queryMinLenWarning);
 
-        let input: UIInterfaces.ReturnObject = await UI.Main.prompt(inputObject);
+        let input: UITypes.ReturnObject = await InputScene.awaitForReturn();
 
         if (input.value.trim().length < CONFIG.MIN_INPUTLEN) {
-            console.log(CONSTANTS.INPUT_MINLEN_WARNING);
+            this.state.queryMinLenWarning = true;
         } else {
+            this.state.queryMinLenWarning = false;
             this.state.query = encodeURIComponent(input.value);
+
+            InputScene.hide();
         }
     }
 
@@ -260,7 +244,7 @@ export default abstract class App {
                 return;
             }
     
-            let entryData: Interfaces.Entry[] = Entries.getAllEntries(document);
+            let entryData: Entry[] = Entries.getAllEntries(document);
             this.state.entryDataArr = entryData;
         }
     }
@@ -292,56 +276,14 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async download(entryIndex: number): Promise<void> {
-        let entryID: string = this.state.entryDataArr[entryIndex].ID;
-        let entryMD5Arr: { md5: string }[] | void = await Downloader.findEntriesMD5([entryID]);
-
-        let URL: string = '';
-
-        if (this.state.runtimeError) {
-            return;
-        }
-
-        if (entryMD5Arr) {
-            URL = await Downloader.findDownloadURL(entryMD5Arr[0].md5);
-        }
-
-        if  (this.state.runtimeError) {
-            return;
-        }
-
-
-        let fileName: string = await Downloader.startDownloading(URL);
-
-        if (App.state.runtimeError) {
-            this.runtimeError();
-            return;
-        }
-
-        console.log(CONSTANTS.DOWNLOAD_COMPLETED, fileName);
-
-        App.promptAfterDownload();
-    }
-
-    /**  **************************************************  */
     private static async promptResults(): Promise<void> {
         this.clear();
-        let listObject: UIInterfaces.ListObject = UIObjects.getListObject(this.state.entryDataArr, this.state.currentPage);
-        let optionObjects: UIInterfaces.ListingObject[] = this.constructOptions();
 
-        if (optionObjects.length > 0) {
-            listObject.listings = [...optionObjects, ...listObject.listings];
-        }
+        ResultsScene.show();
 
-        this.state.listObject = listObject;
+        let selectedChoice: UITypes.ReturnObject = await ResultsScene.awaitForReturn();
 
-        console.log(CONSTANTS.RESULTS_TITLE
-            .replace('{query}', decodeURIComponent(this.state.query || '') || ' ')
-            .replace('{page}', this.state.currentPage.toString()));
-
-        UI.Terminal.setBulkDownloadOptionPosition(optionObjects.length);
-        
-        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(this.state.listObject);
+        ResultsScene.hide();
 
         this.eventEmitter.emit(this.events.USER_SELECTED_FROM_LIST, selectedChoice);
     }
@@ -349,31 +291,82 @@ export default abstract class App {
     private static async promptEntryDetails(entryIndex: number): Promise<void> {
         this.clear();
 
-        let selectedEntry: Interfaces.Entry = this.state.entryDataArr[entryIndex];
-        let outputArr: string[] = Entries.getDetails(selectedEntry);
+        EntryDetailsScene.show(entryIndex);
 
-        outputArr.forEach(output => console.log(output));
+        let selectedChoice: UITypes.ReturnObject = await EntryDetailsScene.awaitForReturn();
 
-        let entryCheckStatus: boolean = UI.Terminal.isListingChecked(selectedEntry.ID);
-
-        let detailsListObject: UIInterfaces.ListObject = UIObjects.getEntryDetailsListObject(entryIndex, entryCheckStatus);
-
-        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(detailsListObject);
+        EntryDetailsScene.hide();
 
         this.eventEmitter.emit(this.events.USER_SELECTED_IN_ENTRY_DETAILS, selectedChoice);
     }
 
-    public static async promptAfterDownload(): Promise<void> {
-        let afterDownloadListObject: UIInterfaces.ListObject = UIObjects.getAfterDownloadListObject();
+    private static async promptDownloadProcess(entryIndex: number): Promise<void> {
+        DownloadScene.show(Number(entryIndex));
 
-        let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(afterDownloadListObject);
+        let filename: string = await DownloadScene.waitForDownloading();
+
+        DownloadScene.hide();
+
+        let title = App.state.runtimeError ? 
+            DOWNLOADING.ERR : 
+            DOWNLOADING.COMPLETED_FILE.replace('{file}', filename);
+
+        let showDIR: boolean = App.state.runtimeError ?
+            false :
+            true;
+
+        App.state.runtimeError = false;
+
+        this.promptAfterDownload(title, showDIR);
+    }
+
+    public static async promptAfterDownload(title: string, showDIR: boolean = false): Promise<void> {
+        AfterDownloadScene.show(1, 5, title, showDIR);
+
+        let selectedChoice: UITypes.ReturnObject = await AfterDownloadScene.awaitForReturn();
+
+        AfterDownloadScene.hide();
 
         this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_DOWNLOAD, selectedChoice);
     }
 
+    public static async promptSearchAnother(title: string, showDIR: boolean = false): Promise<void> {
+        SearchAnotherScene.show(1, 5, title, showDIR);
+
+        let selectedChoice: UITypes.ReturnObject = await SearchAnotherScene.awaitForReturn();
+
+        SearchAnotherScene.hide();
+
+        this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
+    }
+
+    public static async promptBulkDownloading(): Promise<void> {
+        EventHandler.setResizeCleaning(false);
+        this.clear();
+
+        await BulkDownloader.start(Object.keys(this.bulkQueue), 'ID');
+
+        BulkQueueScene.hide();
+
+        this.bulkQueue = {};
+
+        let title: string = BULK.DOWNLOAD_COMPLETED
+                    .replace('{completed}',  BulkDownloader.getCompletedItemsCount().toString())
+                    .replace('{total}', BulkDownloader.getEntireItemsCount().toString());
+
+        title += `\n${LIST.EXPORT_SUCCESS.replace('{file}', BulkDownloader.getExportedListFileName())}`
+        EventHandler.setResizeCleaning(true);
+        this.clear();
+
+        this.promptSearchAnother(title, true);
+    }
+
     /**  **************************************************  */
     private static async executePromptFlow(): Promise<void> {
-        this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS);
+        
+        TitleScene.show();
+        this.spinner.setXY(1, 5);
+        this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS);
         this.spinner.start();
 
         let connectionSucceed: boolean = false;
@@ -388,7 +381,7 @@ export default abstract class App {
 
             if (this.state.runtimeError) {
                 errCounter++;
-                this.spinner.setSpinnerTitle(CONSTANTS.SPINNER.GETTING_RESULTS_ERR
+                this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS_ERR
                     .replace('{errCounter}', errCounter.toString())
                     .replace('{errTolarance}', errTolarance.toString()));
                 await this.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
@@ -397,7 +390,7 @@ export default abstract class App {
             }
         }
 
-        this.spinner.stop(true);
+        this.spinner.stop();
 
         if (this.state.runtimeError) {
             this.runtimeError();
@@ -407,14 +400,7 @@ export default abstract class App {
         if (this.state.entryDataArr.length > 0) {
             this.promptResults();
         } else {
-            UI.Terminal.prevLine();
-            UI.Terminal.clearLine();
-
-            console.log(CONSTANTS.NO_RESULT);
-
-            let searchAnotherObject: UIInterfaces.ListObject = UIObjects.getSearchAnotherListObject();
-            let selectedChoice: UIInterfaces.ReturnObject = await UI.Main.prompt(searchAnotherObject);
-            this.eventEmitter.emit(this.events.USER_SELECTED_SEARCH_ANOTHER, selectedChoice);
+            this.promptSearchAnother(NO_RESULT);
         }
     }
 }

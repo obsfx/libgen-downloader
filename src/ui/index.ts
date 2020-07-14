@@ -1,23 +1,35 @@
-import { Interfaces } from './interfaces.namespace';
 import { Types } from './types.namespace';
 
-import Main from './modules/Main';
 import Terminal from './modules/Terminal';
+import EventHandler from './modules/EventHandler';
+import Colors from './modules/Colors';
 
-import outputs from './outputs';
+import Text from './components/Text';
+import Listing from './components/Listing';
+import List from './components/List';
+import Dropdown from './components/Dropdown';
+import DropdownList from './components/DropdownList';
+import Input from './components/Input';
+import ProgressBar from './components/ProgressBar';
+import Spinner from './components/Spinner';
+
 import ansi from './ansi';
-import constants from './constants';
 
 export {
-    Interfaces as UIInterfaces,
-    Types as UITypes
-}
+    Types as UITypes,
 
-export default {
-    Main,
+    EventHandler,
     Terminal,
+    Colors,
 
-    outputs,
-    ansi,
-    constants
+    Text,
+    Listing,
+    List,
+    Dropdown,
+    DropdownList,
+    Input,
+    ProgressBar,
+    Spinner,
+
+    ansi as UIANSI,
 }

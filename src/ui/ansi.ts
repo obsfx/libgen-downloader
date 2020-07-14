@@ -2,7 +2,7 @@ export default {
     CLEARSCREEN: '\u001b[H\u001bc',
     CLEARCURSORTOEND: '\u001b[0J',
 
-    TURNBACKTOBEGINNINGOFLINE: '\u001b[{n}D',
+    TURNBACKTOBEGINNINGOFLINE: '\u001b[1000D',
 
     HIDECURSOR: '\u001b[?25l',
     SHOWCURSOR: '\u001b[?25h',
@@ -15,6 +15,8 @@ export default {
 
     PREVLINEX: '\u001b[{x}F',
     NEXTLINEX: '\u001b[{x}E',
+
+    SETXY: '\u001b[{y};{x}H',
 
     BLACK: '\u001b[30m',
     RED: '\u001b[31m',
