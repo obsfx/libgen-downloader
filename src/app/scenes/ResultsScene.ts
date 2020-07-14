@@ -82,7 +82,7 @@ export default abstract class ResultsScene extends Scene {
             let dropdownTitle: string = `[${(i + 1) + CONFIG.RESULTS_PAGE_SIZE * (App.state.currentPage- 1)}] [${e.Ext}] ${e.Title}`;
 
             let dropdown: Dropdown = new Dropdown({
-                title: dropdownTitle,
+                title: this.clearChineseChars(dropdownTitle),
                 value: i.toString(),
                 actionID: '',
                 color: 'white',
@@ -144,6 +144,10 @@ export default abstract class ResultsScene extends Scene {
         BulkQueueScene.hide();
         this.list.hide();
         this.list.hideInfo();
+    }
+
+    public static clearChineseChars(text: string): string {
+        return text.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '');
     }
 
     public static async awaitForReturn(): Promise<UITypes.ReturnObject> {

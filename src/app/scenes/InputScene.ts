@@ -6,6 +6,7 @@ import {
 
 import { 
     UITypes, 
+    Terminal,
     EventHandler,
     Input,
     Text

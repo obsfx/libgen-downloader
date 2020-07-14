@@ -1,7 +1,5 @@
 import { Entry } from '../App';
 
-// const THeads: Interfaces.Entry = getEntrySelector(THeadRow);
-
 export default abstract class Selectors {
     public static THeadRow: number = 1;
 

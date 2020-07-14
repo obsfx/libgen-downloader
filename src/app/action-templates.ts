@@ -152,3 +152,22 @@ export const SearchAnotherSceneOptions: UITypes.ComponentParams[] = [
         hovercolor: 'cyan'
     },
 ]
+
+/* ******************************************* */
+export const AfterDownloadSceneOptions: UITypes.ComponentParams[] = [
+    {
+        title: 'Turn Back to The List',
+        value: '',
+        actionID: ACTIONID.TURN_BACK_TO_THE_LIST,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+
+    {
+        title: 'X Exit',
+        value: '',
+        actionID: ACTIONID.EXIT,
+        color: 'white',
+        hovercolor: 'cyan'
+    },
+]

@@ -1,20 +1,5 @@
-/*
- * TODO:
- *
- * [x] custom spinner
- *  [x] better styling
- * [x] next page issue
- * [x] bulk indicator at input scene
- * [x] bulk downloader
- * [x] custom progress bar
- * [x] add pagination
- * [x] entry details
- * [x] entry details listing
- *
- * javascript good parts rendering issue
- */
-
 import CONFIG from './config';
+
 import { 
     DOWNLOADING,
     NO_RESULT,
@@ -42,6 +27,7 @@ import BulkQueueScene from './scenes/BulkQueueScene';
 import InputScene from './scenes/InputScene';
 import ResultsScene from './scenes/ResultsScene';
 import EntryDetailsScene from './scenes/EntryDetailsScene';
+import AfterDownloadScene from './scenes/AfterDownloadScene';
 import SearchAnotherScene from './scenes/SearchAnotherScene';
 import DownloadScene from './scenes/DownloadScene';
 
@@ -321,7 +307,27 @@ export default abstract class App {
 
         DownloadScene.hide();
 
-        this.promptSearchAnother(DOWNLOADING.COMPLETED_FILE.replace('{file}', filename), true);
+        let title = App.state.runtimeError ? 
+            DOWNLOADING.ERR : 
+            DOWNLOADING.COMPLETED_FILE.replace('{file}', filename);
+
+        let showDIR: boolean = App.state.runtimeError ?
+            false :
+            true;
+
+        App.state.runtimeError = false;
+
+        this.promptAfterDownload(title, showDIR);
+    }
+
+    public static async promptAfterDownload(title: string, showDIR: boolean = false): Promise<void> {
+        AfterDownloadScene.show(1, 5, title, showDIR);
+
+        let selectedChoice: UITypes.ReturnObject = await AfterDownloadScene.awaitForReturn();
+
+        AfterDownloadScene.hide();
+
+        this.eventEmitter.emit(this.events.USER_SELECTED_AFTER_DOWNLOAD, selectedChoice);
     }
 
     public static async promptSearchAnother(title: string, showDIR: boolean = false): Promise<void> {

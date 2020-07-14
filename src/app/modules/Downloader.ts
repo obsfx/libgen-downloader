@@ -138,10 +138,19 @@ export default abstract class Downloader {
                 return;
             }
 
+            let content_disposition: string = '';
+
+            try {
+                content_disposition = downloadResponse.headers.get('content-disposition') || '';
+            } catch (e) {
+                App.state.runtimeError = true;
+                resolve('');
+            }
+
             let parsedContentDisposition: {
                 type: string,
                 parameters: { filename: string }
-            } = contentDisposition.parse(downloadResponse.headers.get('content-disposition') || '');
+            } = contentDisposition.parse(content_disposition || '');
 
             if (parsedContentDisposition.type != 'attachment') {
                 App.state.runtimeError = true;

@@ -14,7 +14,6 @@ import ProgressBar from './components/ProgressBar';
 import Spinner from './components/Spinner';
 
 import ansi from './ansi';
-import constants from './constants';
 
 export {
     Types as UITypes,
@@ -33,5 +32,4 @@ export {
     Spinner,
 
     ansi as UIANSI,
-    constants as UIConstants
 }

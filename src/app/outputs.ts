@@ -44,9 +44,9 @@ export const ENTRY_DETAILS = {
 }
 
 export const DOWNLOADING = {
-    DIR_HEAD: `${c.get('white', '┌  Your book is being downloaded to this directory:')}`,
-    DIR_BODY: `${c.get('white', '├───')}    ${c.get('cyan', '{dir}')}`,
-    FILE: `${c.get('white', '├───')}  ${c.get('byellow', '{file}')}`,
+    DIR_HEAD: `${c.get('white', '┌ Your book is being downloaded to this directory:')}`,
+    DIR_BODY: `${c.get('white', '├───')} ${c.get('cyan', '{dir}')}`,
+    FILE: `${c.get('white', '├───')} ${c.get('byellow', '{file}')}`,
     URL: `${c.get('white', 'Here is your download URL:')} ${c.get('yellow', '%s')}`, 
     COMPLETED: `${c.get('green', 'DOWNLOAD COMPLETED')} ${c.get('white', '')}`,
     COMPLETED_FILE: `${c.get('green', 'DONE')} ${c.get('yellow', '{file}')} ${c.get('none', 'downloaded on working directory.')}`,

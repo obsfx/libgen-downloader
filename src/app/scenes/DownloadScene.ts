@@ -62,6 +62,9 @@ export default abstract class DownloadScene extends Scene {
         this.detachText(this.dir);
         this.detachText(this.file);
 
+        this.dirhead.setText('');
+        this.dir.setText('');
+        this.file.setText('');
         this.progressBar.hide();
     }
 
