@@ -51,6 +51,10 @@ If you have the MD5 code of file and want to get download URL of file directly, 
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/4.gif)
 
 
+#### v1.1 changelog
+
+- New and mostly resizeable UI.
+
 
 #### v1.0 changelog
 
