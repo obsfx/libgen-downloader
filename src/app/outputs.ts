@@ -1,7 +1,7 @@
 import { Colors as c } from '../ui';
 
 export const TITLE = [
-    `┌ ${c.get('byellow', 'libgen-downloader')} ${c.get('none', '@v1.1.0')}`,
+    `┌ ${c.get('byellow', 'libgen-downloader')} ${c.get('none', '@v1.1')}`,
     '├───  Source Code: https://github.com/obsfx/libgen-downloader',
     '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
 ];
