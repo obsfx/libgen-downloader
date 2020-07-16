@@ -6,7 +6,6 @@ import {
 
 import { 
     UITypes, 
-    Terminal,
     EventHandler,
     Input,
     Text
@@ -16,7 +15,7 @@ import Scene from './Scene';
 import TitleScene from './TitleScene';
 import BulkQueueScene from './BulkQueueScene';
 
-import App from '../App';
+import App from '../';
 
 export default abstract class InputScene extends Scene {
     private static queryMinLenWarning: boolean;

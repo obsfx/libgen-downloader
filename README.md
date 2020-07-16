@@ -1,10 +1,10 @@
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/logo.png)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo.png)
 
 
 
 # [libgen-downloader](https://obsfx.github.io/libgen-downloader) [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/1.gif)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/1.gif)
 
 `libgen-downloader` is a simple command line tool to search and download ebooks from libgen that was developed in `nodejs` with `typescript`. It is not using a searching API. It basically accesses the web page like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.
 
@@ -23,6 +23,14 @@ or you can download one of the `standalone executable` versions. *(You can direc
 
 
 # features
+```
+libgen-downloader --download=md5
+```
+
+You can directly download a file by passing the md5 with --download command line parameter.
+
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/5.gif)
+
 
 ```
 libgen-downloader --bulk=md5list.txt
@@ -30,13 +38,13 @@ libgen-downloader --bulk=md5list.txt
 
 In addition to single file download option, you can download more than one file sequentially by using `bulk downloading` feature.
 
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/2.gif)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/2.gif)
 
 `libgen-downloader` does not download files at the same time to avoid breaking the libgen servers or blocking by the libgen servers because of too many requests. So, you have to be patient.
 
 At the end of the bulk downloading, `libgen-downloader` will export a `.txt` that contains MD5 codes of downloaded files line by line. When you want to download all files again you can use this file with command line parameter that calls as `--bulk`.
 
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/3.gif)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/3.gif)
 
 if you start `libgen-downloader` with --bulk parameter, `libgen-downloader` tries to read target file line by line to get MD5 codes and directly starts in bulk downloading mode. You can also use your own list file that contains MD5 codes but you must be sure about that all md5 codes listed line by line.
 
@@ -48,7 +56,10 @@ libgen-downloader --geturl=md5_code_of_file
 
 If you have the MD5 code of file and want to get download URL of file directly, you can use `--geturl` parameter.
 
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/master/media/4.gif)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/4.gif)
+#### v1.2 changelog
+
+- Direct download option added as a cli functionality.
 
 
 #### v1.1 changelog

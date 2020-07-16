@@ -17,7 +17,7 @@ import {
 
 import ACTIONID from '../../app/action-ids';
 
-import App, { Entry } from '../App';
+import App, { Entry } from '../';
 
 import { 
     ResultsSceneOptionListings,

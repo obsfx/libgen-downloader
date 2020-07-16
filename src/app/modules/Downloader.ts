@@ -1,4 +1,4 @@
-import App from '../App';
+import App from '../';
 import Entries from '../modules/Entries';
 
 import CONFIG from '../config';

@@ -15,7 +15,7 @@ import { EntryDetailsSceneOptions } from '../action-templates';
 
 import ACTIONID from '../action-ids';
 
-import App, { Entry } from '../App';
+import App, { Entry } from '../';
 import Entries from '../modules/Entries';
 
 export default abstract class EntryDetailsScene extends Scene {
