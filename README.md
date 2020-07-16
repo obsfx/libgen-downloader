@@ -57,6 +57,9 @@ libgen-downloader --geturl=md5_code_of_file
 If you have the MD5 code of file and want to get download URL of file directly, you can use `--geturl` parameter.
 
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/4.gif)
+#### v1.2 changelog
+
+- Direct download option added as a cli functionality.
 
 
 #### v1.1 changelog
