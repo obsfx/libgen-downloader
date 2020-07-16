@@ -68,6 +68,7 @@ body {
 }
 
 .command {
+    font-family: 'Nanum Gothic Coding', monospace;
     margin-top: 15px;
     padding: 15px;
     background-color: #212220;
@@ -104,6 +105,7 @@ body {
 
 .btns {
     display: flex;
+    font-family: 'Nanum Gothic Coding', monospace;
 }
 
 .btn-50 {
