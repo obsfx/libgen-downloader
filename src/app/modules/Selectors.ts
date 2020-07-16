@@ -1,4 +1,4 @@
-import { Entry } from '../App';
+import { Entry } from '../';
 
 export default abstract class Selectors {
     public static THeadRow: number = 1;

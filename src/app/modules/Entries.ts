@@ -1,4 +1,4 @@
-import { Entry } from '../App';
+import { Entry } from '../';
 
 import Selectors from './Selectors';
 

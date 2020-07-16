@@ -12,7 +12,7 @@ import {
     MD5_INDICATOR
 } from '../app/outputs';
 
-import App from '../app/App';
+import App from '../app';
 import Downloader from '../app/modules/Downloader';
 
 import {

@@ -1,7 +1,7 @@
 import { Colors as c } from '../ui';
 
 export const TITLE = [
-    `┌ ${c.get('byellow', 'libgen-downloader')} ${c.get('none', '@v1.1')}`,
+    `┌ ${c.get('byellow', 'libgen-downloader')} ${c.get('none', '@v1.2')}`,
     '├───  Source Code: https://github.com/obsfx/libgen-downloader',
     '└───  NPM Page: https://www.npmjs.com/package/libgen-downloader',
 ];
@@ -84,9 +84,10 @@ export const LIST = {
 
 export const HELP = [
     `${c.get('byellow', 'libgen-downloader')}  ${c.get('white', 'start the main app without any argument.')}`,
-    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--help')}  ${c.get('white', 'see available additional arguments.')}`,
-    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--bulk=md5listfile.txt')}  ${c.get('white', 'start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.')}`,
-    `${c.get('byellow', 'libgen-downloader')} ${c.get('cyan', '--geturl=md5')}  ${c.get('white', 'get the download url of book by passing the md5.')}`,
+    `${c.get('byellow', '                 ')} ${c.get('cyan', '--help')}  ${c.get('white', 'see available additional arguments.')}`,
+    `${c.get('byellow', '                 ')} ${c.get('cyan', '--bulk=md5listfile.txt')}  ${c.get('white', 'start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.')}`,
+    `${c.get('byellow', '                 ')} ${c.get('cyan', '--geturl=md5')}  ${c.get('white', 'get the download url of file by passing the md5.')}`,
+    `${c.get('byellow', '                 ')} ${c.get('cyan', '--download=md5')}  ${c.get('white', 'directly download the file by passing the md5.')}`,
 ];
 
 export const JSON_PARSE_ERR = c.get('red', 'Invalid JSON Error.');

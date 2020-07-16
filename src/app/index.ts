@@ -76,8 +76,8 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static createNewAppState(): AppState {
-        return {
+    public static createNewAppState(): void {
+        this.state = {
             currentPage: 1,
             url: '',
             query: null,
@@ -94,13 +94,9 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    public static async init(fileReadMode: boolean = false): Promise<void> {
+    public static async init(): Promise<void> {
         this.clear();
-        this.state = this.createNewAppState();
-
-        if (fileReadMode) {
-            return;
-        }
+        this.createNewAppState();
 
         while (this.state.query == null) {
             await this.setInput();
@@ -116,6 +112,9 @@ export default abstract class App {
     }
 
     public static initEventHandlers(): void {
+        EventHandler.emitKeypressEvents();
+        EventHandler.init();
+
         this.eventEmitter.on(this.events.USER_SELECTED_FROM_LIST, ({ value, actionID }: UITypes.ReturnObject) => {
             if (actionID == ACTIONID.PREV_PAGE 
                 || actionID == ACTIONID.NEXT_PAGE) {
@@ -213,6 +212,10 @@ export default abstract class App {
         return (entryAmount > 1) ? true : false;
     }
 
+    public static setQuery(query: string): void {
+        this.state.query = encodeURIComponent(query);
+    }
+
     private static async setInput(): Promise<void> {
         InputScene.show(this.state.queryMinLenWarning);
 
@@ -222,8 +225,7 @@ export default abstract class App {
             this.state.queryMinLenWarning = true;
         } else {
             this.state.queryMinLenWarning = false;
-            this.state.query = encodeURIComponent(input.value);
-
+            this.setQuery(input.value);
             InputScene.hide();
         }
     }
@@ -362,8 +364,7 @@ export default abstract class App {
     }
 
     /**  **************************************************  */
-    private static async executePromptFlow(): Promise<void> {
-        
+    public static async executePromptFlow(): Promise<void> {
         TitleScene.show();
         this.spinner.setXY(1, 5);
         this.spinner.setSpinnerTitle(SPINNER.GETTING_RESULTS);
@@ -394,7 +395,6 @@ export default abstract class App {
 
         if (this.state.runtimeError) {
             this.runtimeError();
-            return;
         }
 
         if (this.state.entryDataArr.length > 0) {
