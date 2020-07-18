@@ -6,6 +6,7 @@ import {
 
 import { 
     UITypes, 
+    Terminal,
     EventHandler,
     Input,
     Text
@@ -39,6 +40,8 @@ export default abstract class InputScene extends Scene {
         Input.set(2, 6, INPUT_TITLE);
         Input.render();
 
+        Terminal.showCursor();
+        EventHandler.rawMode(false);
         EventHandler.attachResizeReRenderEvent(0, Input.id, Input.onResize.bind(Input))
     }
 
@@ -53,6 +56,8 @@ export default abstract class InputScene extends Scene {
 
         this.detachText(this.selectedCategory);
 
+        Terminal.hideCursor();
+        EventHandler.rawMode(true);
         EventHandler.detachResizeReRenderEventMap(0, Input.id);
     }
 

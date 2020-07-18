@@ -1,5 +1,6 @@
 export default {
     CLEARSCREEN: '\u001b[H\u001bc',
+    CLEARSCREEN_WIN: '\u001b[2J]',
     CLEARCURSORTOEND: '\u001b[0J',
 
     TURNBACKTOBEGINNINGOFLINE: '\u001b[1000D',

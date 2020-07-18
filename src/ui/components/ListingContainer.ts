@@ -170,7 +170,6 @@ export default abstract class ListingContainer extends Component {
     }
 
     public show(): void {
-        EventHandler.rawMode(true);
         EventHandler.attachKeyEvent(this.id, this.eventHandler.bind(this));
 
         EventHandler.attachResizeReRenderEvent(this.zindex, this.id, this.onResize.bind(this));
@@ -188,7 +187,6 @@ export default abstract class ListingContainer extends Component {
     }
 
     public hide(): void {
-        EventHandler.rawMode(false);
         EventHandler.detachKeyEvent(this.id);
 
         EventHandler.detachResizeReRenderEventMap(this.zindex, this.id);

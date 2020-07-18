@@ -3,7 +3,11 @@ import ansi from '../ansi';
 export default abstract class Terminal {
     /*********************************************** */
     public static clear(): void {
-        process.stdout.write(ansi.CLEARSCREEN);
+        if (process.platform == 'win32') {
+            process.stdout.write(ansi.CLEARSCREEN_WIN);
+        } else {
+            process.stdout.write(ansi.CLEARSCREEN);
+        }
     }
 
     public static clearCursorToEnd(): void {
