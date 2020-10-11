@@ -66,7 +66,7 @@ export default abstract class AfterDownloadScene extends Scene {
             console.log(output);
         }
  
-        this.list.setXY(this.x + 1, this.y + this.outputs.length + this.ymargin + 1);
+        this.list.setXY(this.x + 1, this.y + this.outputs.length + this.ymargin + 3);
         this.list.show();
         this.list.showInfo();
     }

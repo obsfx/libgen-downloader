@@ -75,7 +75,14 @@ export default abstract class Main {
             console.log(REMAINING_BOOKS, this.queue.length - i);
             console.log(MD5_INDICATOR, this.queue[i]);
 
-            let URL: string = await Downloader.findDownloadURL(this.queue[i], true);
+            let mirrorURL: string = await Downloader.findMirror(this.queue[i], true);
+
+            if (App.state.runtimeError) {
+                console.log(DOWNLOADING.ERR);
+                continue;
+            }
+
+            let URL: string = await Downloader.findDownloadURL(mirrorURL, true);
 
             if (App.state.runtimeError) {
                 console.log(DOWNLOADING.ERR);

@@ -1,4 +1,4 @@
-import App from '../';
+import App, { Entry } from '../';
 import Entries from '../modules/Entries';
 
 import CONFIG from '../config';
@@ -67,7 +67,44 @@ export default abstract class Downloader {
         return MD5Arr;
     }
 
-    public static async findDownloadURL(entryMD5: string, logmode: boolean = false): Promise<string> {
+    public static async findMirror(md5: string, logmode: boolean = false): Promise<string> {
+        App.spinner.setSpinnerTitle(SPINNER.GETTING_MIRROR);
+        App.spinner.start(logmode);
+
+        let connectionSucceed: boolean = false;
+
+        let errTolarance: number = CONFIG.ERR_TOLERANCE;
+        let errCounter: number = 0;
+        
+        let searchURL: string = CONSTANTS.MD5_SEARCH_PATTERN.replace('{MD5}', md5);
+        let resultDocument: HTMLDocument | void;
+        let mirrorPageURL: string = '';
+
+        while (errCounter < errTolarance && !connectionSucceed) {
+            App.state.runtimeError = false;
+
+            resultDocument = await App.getDocument(searchURL);
+
+            if (App.state.runtimeError || !resultDocument) {
+                errCounter++;
+                App.spinner.setSpinnerTitle(SPINNER.GETTING_MIRROR_ERR
+                    .replace('{errCounter}', errCounter.toString())
+                    .replace('{errTolarance}', errTolarance.toString()));
+                await App.sleep(CONFIG.ERR_RECONNECT_DELAYMS);
+            } else if (resultDocument){
+                let entryData: Entry[] = Entries.getAllEntries(resultDocument);
+
+                mirrorPageURL = entryData[0].Mirror;
+                connectionSucceed = true;    
+            }
+        }
+
+        App.spinner.stop();
+
+        return mirrorPageURL;
+    }
+
+    public static async findDownloadURL(mirrorURL: string, logmode: boolean = false): Promise<string> {
         App.spinner.setSpinnerTitle(SPINNER.GETTING_DOWNLOAD_URL);
         App.spinner.start(logmode);
 
@@ -76,14 +113,12 @@ export default abstract class Downloader {
         let errTolarance: number = CONFIG.ERR_TOLERANCE;
         let errCounter: number = 0;
         
-        let mirrorURL: string;
         let mirrorDocument: HTMLDocument | void;
         let downloadEndpoint: string = '';
 
         while (errCounter < errTolarance && !connectionSucceed) {
             App.state.runtimeError = false;
 
-            mirrorURL = CONSTANTS.MD5_DOWNLOAD_PAGE_PATTERN.replace('{MD5}', entryMD5);
             mirrorDocument = await App.getDocument(mirrorURL);
 
             if (App.state.runtimeError || !mirrorDocument) {
@@ -183,18 +218,8 @@ export default abstract class Downloader {
         });
     }
 
-    public static async download(entryID: string, onData: Function): Promise<void | string> {
-        let entryMD5Arr: { md5: string }[] | void = await this.findEntriesMD5([entryID]);
-
-        let URL: string = '';
-
-        if (App.state.runtimeError) {
-            return;
-        }
-
-        if (entryMD5Arr) {
-            URL = await this.findDownloadURL(entryMD5Arr[0].md5);
-        }
+    public static async download(mirrorURL: string, onData: Function): Promise<void | string> {
+        let URL: string = await this.findDownloadURL(mirrorURL);
 
         if  (App.state.runtimeError) {
             return;

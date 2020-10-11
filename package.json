@@ -9,11 +9,10 @@
   },
   "scripts": {
     "standalone": "pkg . --out-path ./standalone-executables",
-    "run": "node ./bin/index.js",
-    "inspect": "node --inspect ./bin/index.js",
+    "run": "ts-node ./src/index.ts",
+    "inspect": "node --inspect -r ts-node/register ./src/index.ts",
     "build": "tsc -b",
-    "watch": "tsc -b --watch",
-    "link": "npm link --force"
+    "watch": "tsc -b --watch"
   },
   "keywords": [
     "libgen",
@@ -42,6 +41,7 @@
     "@types/node-fetch": "^2.5.4",
     "@types/uuid": "^8.0.0",
     "pkg": "^4.4.4",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.5"
   },
   "dependencies": {

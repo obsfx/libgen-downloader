@@ -92,7 +92,7 @@ export default abstract class DownloadScene extends Scene {
     }
 
     public static async waitForDownloading(): Promise<string> {
-        let filename: void | string = await Downloader.download(this.selectedEntry.ID, (chunkLen: number, total: number, dir: string, filename: string) => {
+        let filename: void | string = await Downloader.download(this.selectedEntry.Mirror, (chunkLen: number, total: number, dir: string, filename: string) => {
             if (this.progressBar.total == null) {
                 this.dirhead.setText(DOWNLOADING.DIR_HEAD);
                 this.dirhead.onResize();

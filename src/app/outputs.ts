@@ -62,6 +62,9 @@ export const SPINNER = {
     GETTING_ENTRY_DATA: c.get('cyan', '%s Finding MD5(s) of Book(s)'),
     GETTING_ENTRY_DATA_ERR: ` ${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Finding MD5(s) of Book(s)')}`,
 
+    GETTING_MIRROR: c.get('cyan', '%s Finding The Mirror Page'),
+    GETTING_MIRROR_ERR: `${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Finding The Mirror Page')}`,
+
     GETTING_DOWNLOAD_URL: c.get('cyan', '%s Finding The Download URL'),
     GETTING_DOWNLOAD_URL_ERR: `${c.get('red', '%s CONNECTION ERROR {errCounter}/{errTolarance}')} ${c.get('cyan', 'Finding The Download URL')}`,
 
