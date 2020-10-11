@@ -2,14 +2,11 @@ import App from '../app';
 import Downloader from '../app/modules/Downloader';
 import BulkDownloader from '../bulk-downloader';
 
-import CONFIG from '../app/config';
-
 import {
     HELP,
     BULK,
     CONNECTION_ERROR,
     DOWNLOADING,
-    INPUT_MINLEN_WARNING,
     BAR
 } from '../app/outputs';
 
@@ -60,7 +57,14 @@ const bulk = async (filename: string): Promise<void> => {
 const geturl = async (md5: string): Promise<void> => {
     App.createNewAppState();
 
-    let URL: string = await Downloader.findDownloadURL(md5, true);
+    let mirrorURL: string = await Downloader.findMirror(md5);
+
+    if (App.state.runtimeError) {
+        console.log(CONNECTION_ERROR);
+        App.exit();
+    }
+
+    let URL: string = await Downloader.findDownloadURL(mirrorURL, true);
 
     if (App.state.runtimeError) {
         console.log(CONNECTION_ERROR);
@@ -74,7 +78,14 @@ const geturl = async (md5: string): Promise<void> => {
 const download = async (md5: string): Promise<void> => {
     App.createNewAppState();
 
-    let URL: string = await Downloader.findDownloadURL(md5, true);
+    let mirrorURL: string = await Downloader.findMirror(md5);
+
+    if (App.state.runtimeError) {
+        console.log(CONNECTION_ERROR);
+        App.exit();
+    }
+
+    let URL: string = await Downloader.findDownloadURL(mirrorURL, true);
 
     if (App.state.runtimeError) {
         console.log(CONNECTION_ERROR);
