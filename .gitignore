@@ -1,5 +1,6 @@
 /node_modules
 /build
 /standalone-executables
+/legacy
 
 ws.session
