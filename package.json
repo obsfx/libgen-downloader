@@ -8,11 +8,12 @@
     "obsfx@libgen-downloader": "./bin/index.js"
   },
   "scripts": {
-    "standalone": "pkg . --out-path ./standalone-executables",
-    "run": "ts-node ./src/index.ts",
-    "inspect": "node --inspect -r ts-node/register ./src/index.ts",
+    "run": "DEV=true ts-node ./src/index.tsx",
+    "run-dt": "npx react-devtools",
+    "inspect": "node --inspect -r ts-node/register ./src/index.tsx",
     "build": "tsc -b",
-    "watch": "tsc -b --watch"
+    "watch": "tsc -b --watch",
+    "standalone": "pkg . --out-path ./standalone-executables"
   },
   "keywords": [
     "libgen",
@@ -36,19 +37,28 @@
   "devDependencies": {
     "@types/content-disposition": "^0.5.3",
     "@types/jsdom": "^12.2.4",
-    "@types/minimist": "^1.2.0",
-    "@types/node": "^12.12.38",
-    "@types/node-fetch": "^2.5.4",
-    "@types/uuid": "^8.0.0",
-    "pkg": "^4.4.4",
+    "@types/minimist": "^1.2.1",
+    "@types/node": "^12.19.4",
+    "@types/node-fetch": "^2.5.7",
+    "@types/react": "^16.9.56",
+    "@types/uuid": "^8.3.0",
+    "pkg": "^4.4.9",
+    "react-devtools": "^4.10.0",
     "ts-node": "^9.0.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "content-disposition": "^0.5.3",
-    "jsdom": "^16.2.0",
+    "ink": "^3.0.8",
+    "ink-progress-bar": "^3.0.0",
+    "ink-select-input": "^4.2.0",
+    "ink-spinner": "^4.0.1",
+    "ink-text-input": "^4.0.1",
+    "jsdom": "^16.4.0",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
-    "uuid": "^8.2.0"
+    "react": "^17.0.1",
+    "uuid": "^8.3.1",
+    "zustand": "^3.1.4"
   }
 }
