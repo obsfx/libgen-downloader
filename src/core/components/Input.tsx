@@ -36,7 +36,7 @@ const Input = (props: inputProps) => {
             value={inputVal} 
             placeholder={placeholder}
             onChange={setInputVal} 
-            onSubmit={onSubmit}/>
+            onSubmit={() => onSubmit(inputVal)}/>
         }
       </Text>
     </Box>

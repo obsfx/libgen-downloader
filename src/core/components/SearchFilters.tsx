@@ -4,19 +4,15 @@ import Expand from './Expand';
 import Input from './Input';
 
 const SearchFilters = () => {
-  const author: string = useStore(state => state.author);
-  const publisher: string = useStore(state => state.publisher);
-  const year: string = useStore(state => state.year);
-  const pages: string = useStore(state => state.pages);
-  const language: string = useStore(state => state.language);
-  const extension: string = useStore(state => state.extension);
-
-  const setAuthor: (author: string) => void = useStore(state => state.setAuthor);
-  const setPublisher: (publisher: string) => void = useStore(state => state.setPublisher);
-  const setYear: (year: string) => void = useStore(state => state.setYear);
-  const setPages: (pages: string) => void = useStore(state => state.setPages);
-  const setLanguage: (language: string) => void = useStore(state => state.setLanguage);
-  const setExtension: (extension: string) => void = useStore(state => state.setExtension);
+  const {
+    author,
+    publisher,
+    year,
+    pages,
+    language,
+    extension
+  } = useStore(state => state.searchFilters);
+  const setSearchFilters = useStore(state => state.setSearchFilters);
 
   return (
     <Expand>
@@ -25,42 +21,42 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={author}
-        onSubmit={setAuthor}
+        onSubmit={(author: string) => setSearchFilters(state => ({ ...state.searchFilters, author }))}
       />
       <Input 
         labelText='Publisher'
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={publisher}
-        onSubmit={setPublisher}
+        onSubmit={(publisher: string) => setSearchFilters(state => ({ ...state.searchFilters, publisher }))}
       />
       <Input 
         labelText='Year'
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={year}
-        onSubmit={setYear}
+        onSubmit={(year: string) => setSearchFilters(state => ({ ...state.searchFilters, year }))}
       />
       <Input 
         labelText='Pages'
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={pages}
-        onSubmit={setPages}
+        onSubmit={(pages: string) => setSearchFilters(state => ({ ...state.searchFilters, pages }))}
       />
       <Input 
         labelText='Language'
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={language}
-        onSubmit={setLanguage}
+        onSubmit={(language: string) => setSearchFilters(state => ({ ...state.searchFilters, language }))}
       />
       <Input 
         labelText='Extension'
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={extension}
-        onSubmit={setExtension}
+        onSubmit={(extension: string) => setSearchFilters(state => ({ ...state.searchFilters, extension }))}
       />
     </Expand>
   )
