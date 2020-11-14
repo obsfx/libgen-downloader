@@ -54,6 +54,7 @@
     "ink-select-input": "^4.2.0",
     "ink-spinner": "^4.0.1",
     "ink-text-input": "^4.0.1",
+    "ink-use-stdout-dimensions": "^1.0.5",
     "jsdom": "^16.4.0",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
