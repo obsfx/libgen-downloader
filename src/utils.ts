@@ -8,7 +8,3 @@ export const clearTerminal = (): void => {
   // reset screen pos
   process.stdout.write('\u001b[1;1H');
 }
-
-export const sleep = (ms: number): Promise<void> => (
-  new Promise((resolve: Function) => setTimeout(() => resolve(), ms))
-);
