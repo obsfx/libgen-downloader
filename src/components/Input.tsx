@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Text, useFocus } from 'ink';
-import useStore from '../../store-provider';
+import { useStore } from '../store-provider';
 import TextInput from 'ink-text-input';
 
 type inputProps = {

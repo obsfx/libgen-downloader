@@ -1,5 +1,5 @@
 import React from 'react';
-import useStore from '../../store-provider';
+import { useStore } from '../store-provider';
 import Expand from './Expand';
 import Input from './Input';
 

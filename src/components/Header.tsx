@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import useStore from '../../store-provider';
+import { useStore } from '../store-provider';
 
 const Header = () => {
   const version: string = useStore(state => state.version);

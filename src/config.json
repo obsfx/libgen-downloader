@@ -1,0 +1,25 @@
+{
+  "MIRRORS": [
+    "http://gen.lib.rus.ec/",
+    "http://libgen.rs/",
+    "https://libgen.lc/",
+    "http://libgen.li/",
+    "http://libgen.gs/"
+  ],
+  "RESULTS_PAGE_SIZE": 25,
+  "UI_PAGE_SIZE": 10,
+  "TITLE_MAX_STRLEN": 70,
+  "MIN_INPUTLEN": 3,
+  "ERR_TOLERANCE": 5,
+  "ERR_RECONNECT_DELAYMS": 3000,
+  "SEARCH_REQ": "{mirror}search.php?&req={query}&page={pageNumber}&res={pageSize}&sort_mode=ASC",
+  "MD5_REQ": "{mirror}json.php?ids={id}&fields=md5",
+  "MD5_SEARCH_PATTERN": "{mirror}search.php?req={md5}&column=md5",
+  "SELECTORS": {
+    "TABLE_CONTAINER": ".c tbody",
+    "ROW": ".c tbody tr",
+    "DOWNLOAD_URL": "#info h2 a",
+    "SEARCH_INPUT": "#searchform",
+    "CELL_SELECTOR": "{tableContainerSelector} tr:nth-child({row}) td:nth-child({col})"
+  }
+}

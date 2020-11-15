@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Text } from 'ink';
-import useStore from '../../store-provider';
+import { useStore } from '../store-provider';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
 import { clearTerminal } from '../utils';
 import Header from './Header';
@@ -14,8 +14,8 @@ const App = () => {
   const setAppWidth: (appWidth: number) => void = useStore(state => state.setAppWidth);
 
   const adjustSize = () => {
-    clearTerminal();
-    setAppWidth(Math.min(maxWidth, cols));
+    //clearTerminal();
+    //setAppWidth(Math.min(maxWidth, cols));
   }
 
   useEffect(() => {
