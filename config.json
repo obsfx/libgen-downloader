@@ -1,0 +1,19 @@
+{
+  "latest_version": "1.2.5",
+  "mirrors": [
+    "http://gen.lib.rus.ec/",
+    "http://libgen.rs/",
+    "https://libgen.lc/",
+    "http://libgen.li/",
+    "http://libgen.gs/"
+  ],
+  "searchReqPattern": "{mirror}search.php?&req={query}&page={pageNumber}&res={pageSize}&sort_mode=ASC",
+  "searchByMD5Pattern": "{mirror}search.php?req={md5}&column=md5",
+  "MD5ReqPattern": "{mirror}json.php?ids={id}&fields=md5",
+  "cssSelectors": {
+    "tableContainer": ".c tbody",
+    "row": ".c tbody tr",
+    "downloadURL": "#info h2 a",
+    "cellSelector": "{tableContainerSelector} tr:nth-child({row}) td:nth-child({col})"
+  }
+}
