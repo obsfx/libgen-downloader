@@ -19,7 +19,7 @@ const Input = (props: inputProps) => {
     onSubmit
   } = props;
 
-  const appWidth: number = useStore(state => state.appWidth);
+  const appWidth: number = useStore(state => state.globals.appWidth);
   const [ inputVal, setInputVal ] = useState(value || '');
   const { isFocused } = useFocus({ autoFocus: true });
 

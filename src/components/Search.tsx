@@ -5,8 +5,8 @@ import Input from './Input';
 import SearchFilters from './SearchFilters';
 
 const Search = () => {
-  const query: string = useStore(state => state.query);
-  const setQuery: (query: string) => void = useStore(state => state.setQuery);
+  const query: string = useStore(state => state.globals.query);
+  const setQuery: (query: string) => void = useStore(state => state.set.query);
 
   return (
     <Box flexDirection='column' marginTop={1}>

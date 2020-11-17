@@ -28,6 +28,9 @@ const Columns: { [key: string]: number } = {
   mirror: 10
 }
 
+/**
+* internal helpers
+*/
 const sleep = (ms: number): Promise<void> => (
   new Promise((resolve: Function) => setTimeout(() => resolve(), ms))
 );
@@ -37,6 +40,7 @@ const constructURL = (mirror: string, query: string, pageNumber: number): string
     .replace('{mirror}', mirror)
     .replace('{query}', query)
     .replace('{pageNumber}', pageNumber.toString())
+    .replace('{pageSize}', config.RESULTS_PAGE_SIZE.toString())
 );
 
 const getResponse = async (URL: string): Promise<Response | null> => {
@@ -60,32 +64,6 @@ const getDocument = async (URL: string): Promise<HTMLDocument | null> => {
     const plainText: string = await response.text();
     return new JSDOM(plainText).window.document;
 }
-
-export const doRequest = (
-  reqURL: string, 
-  onErr: (attempt: number, tolarance: number) => void, 
-  errTolarance: number, 
-  delay: number): Promise<Response | null> => (
-  new Promise(async (resolve: Function) => {
-    let errCount: number = 0;
-    let response: Response | null = null;
-
-    while (errCount < errTolarance) {
-      response = await getResponse(reqURL);
-
-      if (response == null) {
-        errCount++;
-        onErr(errCount + 1, errTolarance);
-        await sleep(delay);
-      } else {
-        resolve(response);
-        break;
-      }
-    }
-
-    resolve(null);
-  })
-);
 
 const getText = (document: HTMLDocument, selector: string): string => (
   document.querySelector(selector)?.textContent || ' '
@@ -124,23 +102,6 @@ const getEntryData = (document: HTMLDocument, selector: Entry): Entry => ({
   mirror: document.querySelector(selector.mirror)?.getAttribute('href') || ' '
 });
 
-const isPageExist = async (mirror: string, query: string, pageNumber: number): Promise<boolean> => {
-  const searchURL: string = constructURL(mirror, query, pageNumber);
-  const document: HTMLDocument | null = await getDocument(searchURL);
-
-  return (document && document.querySelectorAll(config.SELECTORS.ROW).length > 1) ? true : false;
-}
-
-export const findMirror = async (mirrorList: string[]): Promise<string> => {
-  for (let i: number = 0; i < mirrorList.length; i++) {
-    const response: Response | null = await getResponse(mirrorList[i]);
-
-    if (response != null) return mirrorList[i];
-  }
-
-  return '';
-}
-
 const getEntries = (document: HTMLDocument): Entry[] => {
   const entries: Entry[] = [];
   const entryLength: number = document.querySelectorAll(config.SELECTORS.ROW).length;
@@ -153,12 +114,59 @@ const getEntries = (document: HTMLDocument): Entry[] => {
   return entries;
 }
 
-export const search = async (mirror: string, query: string, pageNumber: number): Promise<{ entries: Entry[], nextPage: boolean }> => {
+/**
+* exported api
+*/
+export const doRequest = (
+  reqURL: string, 
+  onErr: (attempt: number, tolarance: number) => void, 
+  errTolarance: number, 
+  delay: number): Promise<Response | null> => (
+  new Promise(async (resolve: Function) => {
+    let errCount: number = 0;
+    let response: Response | null = null;
+
+    while (errCount < errTolarance) {
+      response = await getResponse(reqURL);
+
+      if (response == null) {
+        errCount++;
+        onErr(errCount + 1, errTolarance);
+        await sleep(delay);
+      } else {
+        resolve(response);
+        break;
+      }
+    }
+
+    resolve(null);
+  })
+);
+
+export const findMirror = async (mirrorList: string[]): Promise<string> => {
+  for (let i: number = 0; i < mirrorList.length; i++) {
+    const response: Response | null = await getResponse(mirrorList[i]);
+
+    if (response != null) return mirrorList[i];
+  }
+
+  return '';
+}
+
+export const isPageExist = async (mirror: string, query: string, pageNumber: number): Promise<boolean> => {
   const searchURL: string = constructURL(mirror, query, pageNumber);
   const document: HTMLDocument | null = await getDocument(searchURL);
 
-  const entries: Entry[] = [];
-  let nextPage: boolean = false;
+  return (document && document.querySelectorAll(config.SELECTORS.ROW).length > 1) ? true : false;
+}
 
-  if (document == null) return { entries, nextPage };
+export const search = async (mirror: string, query: string, pageNumber: number): Promise<Entry[] | null> => {
+  const searchURL: string = constructURL(mirror, query, pageNumber);
+  const document: HTMLDocument | null = await getDocument(searchURL);
+
+  if (document == null) return null;
+
+  let entries: Entry[] = getEntries(document);
+
+  return entries;
 }
