@@ -16,7 +16,9 @@ const SearchFilters = () => {
   const setSearchFilters = useStore(state => state.set.searchFilters);
 
   return (
-    <Expand>
+    <Expand 
+      showText='Show Filters'
+      hideText='Hide Filters'>
       <Input 
         labelText='Author(s)'
         placeholder='Serach query must be min. 3 characters.'

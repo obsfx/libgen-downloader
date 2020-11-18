@@ -2,10 +2,18 @@ import React, { useState, ReactNode } from 'react';
 import { Box, Text, useInput, Key, useFocus } from 'ink';
 
 type expandProps = {
+  showText: string,
+  hideText: string,
   children?: ReactNode
 }
 
 const Expand = (props: expandProps) => {
+  let {
+    showText,
+    hideText,
+    children
+  } = props;
+
   const [ expanded, setExpanded ] = useState(false);
   const { isFocused } = useFocus();
 
@@ -17,13 +25,24 @@ const Expand = (props: expandProps) => {
 
   return (
     <Box flexDirection='column'>
-      {
-        !expanded ?
-        <Text color='greenBright' inverse={isFocused}>+ Show Filters</Text> :
-        <Text color='greenBright' inverse={isFocused}>- Hide Filters</Text>
-      }
+      <Text>
+        {
+          !expanded ?
+          <Text>
+            <Text>+ </Text>
+            <Text color='yellowBright' inverse={isFocused}>{showText}</Text>
+          </Text> :
+          <Text>
+            <Text>- </Text>
+            <Text color='yellowBright' inverse={isFocused}>{hideText}</Text>
+          </Text>
+        }
+        {
+          isFocused && <Text color='gray'> Press [ENTER] to toogle the dropwdown</Text>
+        }
+      </Text> 
       <Box paddingLeft={2} flexDirection='column'>
-        { expanded && props.children }
+        { expanded && children }
       </Box>
     </Box>
   )

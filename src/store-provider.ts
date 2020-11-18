@@ -1,5 +1,4 @@
 import create, { SetState } from 'zustand';
-import { version } from '../package.json';
 import { Entry } from './search-api';
 
 //type SearchFilters = {
@@ -11,17 +10,7 @@ import { Entry } from './search-api';
 //  extension: string;
 //}
 
-type Constants = {
-  version: string;
-  baseAppWidth: number;
-  uiPageSize: number;
-  entryTitleLength: number;
-  minSearchQueryLength: number;
-  errorTolarance: number;
-  errorReconnectDelayMS: number;
-}
-
-type Config = {
+export type Config = {
   mirrors: string[];
   pageSize: number;
   searchReqPattern: string;
@@ -35,7 +24,14 @@ type Config = {
   }
 }
 
+export type AppStatus = 'fetchConfig' |
+  'findMirror' |
+  'search' |
+  'results' |
+  'details';
+
 export type Globals = {
+  status: AppStatus;
   appWidth: number;
   errorStatus: boolean;
   currentPage: number;
@@ -54,6 +50,8 @@ export type Globals = {
 
 type Setters = {
   reset: () => void;
+  config: (config: Config) => void;
+  status: (status: AppStatus) => void;
   appWidth: (appWidth: number) => void;
   errorStatus: (errorStatus: boolean) => void;
   currentPage: (callback: Function) => void;
@@ -65,12 +63,12 @@ type Setters = {
 
 type State = {
   config: Config | null;
-  constants: Constants,
-  globals: Globals,
-  set: Setters
+  globals: Globals;
+  set: Setters;
 }
 
 const initialGlobals: Globals = {
+  status: 'fetchConfig',
   appWidth: 0,
   errorStatus: false,
   currentPage: 1,
@@ -89,18 +87,11 @@ const initialGlobals: Globals = {
 
 export const useStore = create<State>((set: SetState<State>): State => ({
   config: null,
-  constants: {
-    version,
-    baseAppWidth: 75,
-    uiPageSize: 10,
-    entryTitleLength: 70,
-    minSearchQueryLength: 3,
-    errorTolarance: 5,
-    errorReconnectDelayMS: 300
-  },
   globals: { ...initialGlobals },
   set: {
     reset: () => set({ globals: { ...initialGlobals  } }),
+    config: (config: Config) => set({ config: { ...config } }),
+    status: (status: AppStatus) => set(state => ({ globals: { ...state.globals, status } })),
     appWidth: (appWidth: number) => set(state => ({ globals: { ...state.globals, appWidth } })),
     errorStatus: (errorStatus: boolean) => set(state => ({ globals: { ...state.globals, errorStatus } })),
     currentPage: (callback: Function) => set(state => ({ globals: { ...state.globals, currentPage: callback(state.globals) } })),

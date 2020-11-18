@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box, Text } from 'ink';
+import { version } from '../../package.json';
 import { useStore } from '../store-provider';
 
 const Header = () => {
-  const version: string = useStore(state => state.constants.version);
   const appWidth: number | null = useStore(state => state.globals.appWidth);
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' marginBottom={1}>
       <Box paddingRight={4} width={appWidth}>
         <Text wrap='truncate'>
           ┌ 

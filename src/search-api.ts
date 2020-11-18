@@ -1,6 +1,5 @@
 import fetch, { Response } from 'node-fetch';
 import { JSDOM } from 'jsdom';
-import config from './config.json';
 
 export type Entry = {
   id: string;
@@ -28,6 +27,13 @@ const Columns: { [key: string]: number } = {
   mirror: 10
 }
 
+const CssSelectors: { [key: string]: string } = {
+  tableContainer: '.c tbody',
+  row: '.c tbody tr',
+  downloadURL: '#info h2 a',
+  cellSelector: '{tableContainerSelector} tr:nth-child({row}) td:nth-child({col})'
+}
+
 /**
 * internal helpers
 */
@@ -35,12 +41,13 @@ const sleep = (ms: number): Promise<void> => (
   new Promise((resolve: Function) => setTimeout(() => resolve(), ms))
 );
 
-const constructURL = (mirror: string, query: string, pageNumber: number): string => (
-    config.SEARCH_REQ
+// mirror will be replaced with store 
+const constructURL = (searchReqPattern: string, mirror: string, query: string, pageNumber: number, pageSize: number): string => (
+    searchReqPattern
     .replace('{mirror}', mirror)
     .replace('{query}', query)
     .replace('{pageNumber}', pageNumber.toString())
-    .replace('{pageSize}', config.RESULTS_PAGE_SIZE.toString())
+    .replace('{pageSize}', pageSize.toString())
 );
 
 const getResponse = async (URL: string): Promise<Response | null> => {
@@ -70,8 +77,8 @@ const getText = (document: HTMLDocument, selector: string): string => (
 );
 
 const getCellSelector = (row: number, col: number): string => (
-  config.SELECTORS.CELL_SELECTOR
-  .replace('{tableContainerSelector}', config.SELECTORS.TABLE_CONTAINER)
+  CssSelectors.cellSelector
+  .replace('{tableContainerSelector}', CssSelectors.tableContainer)
   .replace('{row}', row.toString())
   .replace('{col}', col.toString())
 );
@@ -104,7 +111,7 @@ const getEntryData = (document: HTMLDocument, selector: Entry): Entry => ({
 
 const getEntries = (document: HTMLDocument): Entry[] => {
   const entries: Entry[] = [];
-  const entryLength: number = document.querySelectorAll(config.SELECTORS.ROW).length;
+  const entryLength: number = document.querySelectorAll(CssSelectors.row).length;
 
   for (let i: number = 1; i < entryLength; i++) {
     const selectors: Entry = getEntrySelectors(i + 1);
@@ -143,25 +150,25 @@ export const doRequest = (
   })
 );
 
-export const findMirror = async (mirrorList: string[]): Promise<string> => {
+export const findMirror = async (mirrorList: string[]): Promise<string | null> => {
   for (let i: number = 0; i < mirrorList.length; i++) {
     const response: Response | null = await getResponse(mirrorList[i]);
 
     if (response != null) return mirrorList[i];
   }
 
-  return '';
+  return null;
 }
 
-export const isPageExist = async (mirror: string, query: string, pageNumber: number): Promise<boolean> => {
-  const searchURL: string = constructURL(mirror, query, pageNumber);
+export const isPageExist = async (searchReqPattern: string, mirror: string, query: string, pageNumber: number, pageSize: number): Promise<boolean> => {
+  const searchURL: string = constructURL(searchReqPattern, mirror, query, pageNumber, pageSize);
   const document: HTMLDocument | null = await getDocument(searchURL);
 
-  return (document && document.querySelectorAll(config.SELECTORS.ROW).length > 1) ? true : false;
+  return (document && document.querySelectorAll(CssSelectors.row).length > 1) ? true : false;
 }
 
-export const search = async (mirror: string, query: string, pageNumber: number): Promise<Entry[] | null> => {
-  const searchURL: string = constructURL(mirror, query, pageNumber);
+export const search = async (searchReqPattern: string, mirror: string, query: string, pageNumber: number, pageSize: number): Promise<Entry[] | null> => {
+  const searchURL: string = constructURL(searchReqPattern, mirror, query, pageNumber, pageSize);
   const document: HTMLDocument | null = await getDocument(searchURL);
 
   if (document == null) return null;
