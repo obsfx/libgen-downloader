@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, useInput, Key } from 'ink';
+import { Box, useInput, Key } from 'ink';
 import { useStore } from '../store-provider';
 import { Entry } from '../search-api';
 import { ui_page_size } from '../app-config.json';
@@ -12,6 +12,7 @@ const List = () => {
   }
 
   const [ titles, setTitles ] = useState<listTitle[]>([]);
+  const [ expanded, setExpanded ] = useState<boolean>(false);
 
   const currentPage: number = useStore(state => state.globals.currentPage);
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
@@ -28,42 +29,62 @@ const List = () => {
       return { id: entry.id, text };
     });
 
+    const renderListLength: number = ui_page_size > titles.length ? titles.length : ui_page_size;
+
     setTitles([ 
-      ...titles.slice(titles.length - Math.floor(ui_page_size / 2), titles.length), 
-      ...titles.slice(0, titles.length - Math.floor(ui_page_size / 2))
+      ...titles.slice(titles.length - Math.floor(renderListLength / 2), titles.length), 
+      ...titles.slice(0, titles.length - Math.floor(renderListLength / 2))
     ]);
   }, [entries]);
 
   useInput((_, key: Key) => {
-    if (key.upArrow) {
-      const lastEntry: listTitle | undefined = titles.pop();
-      if (lastEntry) {
-        titles.unshift(lastEntry);
-        setTitles([...titles]);
+    if (!expanded) {
+      if (key.upArrow) {
+        const lastEntry: listTitle | undefined = titles.pop();
+        if (lastEntry) {
+          titles.unshift(lastEntry);
+          setTitles([...titles]);
+        }
       }
-    }
 
-    if (key.downArrow) {
-      const firstEntry: listTitle | undefined = titles.shift();
-      if (firstEntry) {
-        titles.push(firstEntry);
-        setTitles([...titles]);
+      if (key.downArrow) {
+        const firstEntry: listTitle | undefined = titles.shift();
+        if (firstEntry) {
+          titles.push(firstEntry);
+          setTitles([...titles]);
+        }
+      }
+
+      if (key.return) {
+        setExpanded(!expanded);
       }
     }
   });
 
+  const renderList: listTitle[] = titles.slice(0, ui_page_size);
+
   return (
-    <Box flexDirection='column' borderStyle='single' paddingLeft={1} paddingRight={1}>
-      {
-        titles.slice(0, ui_page_size).map((title: listTitle, i: number) => (
-          <ListItem 
-            key={title.id} 
-            hovered={i == Math.floor(ui_page_size / 2)}
-            checked={i == Math.floor(ui_page_size / 2)}>
-            {title.text}
-          </ListItem>
-        ))
-      }
+    <Box 
+      flexDirection='column'
+      borderStyle='single' 
+      borderColor='grey'
+      paddingLeft={1} 
+      paddingRight={1}>
+      <Box flexDirection='column'>
+        {
+          renderList.slice(0, ui_page_size).map((title: listTitle, i: number) => (
+            <ListItem 
+              key={title.id} 
+              hovered={i == Math.floor(renderList.length / 2)}
+              expanded={expanded && i == Math.floor(renderList.length / 2)}
+              fadedOut={expanded && i != Math.floor(renderList.length / 2)}
+              checked={i == Math.floor(renderList.length / 2)}
+              onSelect={(returned: string) => setExpanded(!expanded)}>
+              {title.text}
+            </ListItem>
+          ))
+        }
+      </Box>
     </Box>
   );
 }
