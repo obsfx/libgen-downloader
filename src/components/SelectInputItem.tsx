@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
 import { Box, Text } from 'ink';
 
-type selectInputItemProps = {
+type Props = {
   children?: ReactNode;
   hovered: boolean;
 }
 
-const SelectInputItem = (props: selectInputItemProps) => {
+const SelectInputItem = (props: Props) => {
   let {
     children,
     hovered,

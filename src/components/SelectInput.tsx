@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { Box, useInput, Key } from 'ink';
 import SelectInputItem from './SelectInputItem';
 
-export type option = {
+export type option<T> = {
   label: string;
-  value: string;
+  value: T;
 }
 
-type selectInputProps = {
-  options: option[];
-  onSelect: (returned: string) => void;
+type Props<T> = {
+  options: option<T>[];
+  onSelect: (returned: T) => void;
 }
 
-const SelectInput = (props: selectInputProps) => {
+const SelectInput = <T extends {}>(props: Props<T>) => {
   let {
     options,
     onSelect
@@ -37,7 +37,7 @@ const SelectInput = (props: selectInputProps) => {
   return (
     <Box flexDirection='column'>
     {
-      options.map((option: option, i: number) => (
+      options.map((option: option<T>, i: number) => (
         <SelectInputItem
           key={i}
           hovered={cursorPos == i}>

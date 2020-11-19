@@ -1,13 +1,13 @@
 import React, { useState, ReactNode } from 'react';
 import { Box, Text, useInput, Key, useFocus } from 'ink';
 
-type expandProps = {
+type Props = {
   children?: ReactNode;
   showText: string;
   hideText: string;
 }
 
-const Expand = (props: expandProps) => {
+const Expand = (props: Props) => {
   let {
     showText,
     hideText,

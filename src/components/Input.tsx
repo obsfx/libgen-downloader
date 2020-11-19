@@ -3,7 +3,7 @@ import { Box, Text, useFocus } from 'ink';
 import { useStore } from '../store-provider';
 import TextInput from 'ink-text-input';
 
-type inputProps = {
+type Props = {
   labelText: string,
   placeholder: string,
   value: string,
@@ -11,7 +11,7 @@ type inputProps = {
   onChange: (value: string) => void,
   onSubmit: (value: string) => void
 }
-const Input = (props: inputProps) => {
+const Input = (props: Props) => {
   const {
     labelText,
     placeholder,

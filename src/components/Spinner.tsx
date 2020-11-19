@@ -2,11 +2,11 @@ import React from 'react';
 import { Text } from 'ink';
 import InkSpinner from 'ink-spinner';
 
-type spinnerProps = {
+type Props = {
   text: string
 }
 
-const Spinner = (props: spinnerProps) => (
+const Spinner = (props: Props) => (
   <Text> 
     <Text color='cyanBright'>
       <InkSpinner type='dots' />
