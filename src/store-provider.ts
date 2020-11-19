@@ -24,11 +24,12 @@ export type Config = {
   }
 }
 
-export type AppStatus = 'fetchConfig' |
-  'findMirror' |
+export type AppStatus = 'fetchingConfig' |
+  'findingMirror' |
   'search' |
+  'gettingResults' |
   'results' |
-  'details';
+  'entryDetails';
 
 export type Globals = {
   status: AppStatus;
@@ -68,7 +69,7 @@ type State = {
 }
 
 const initialGlobals: Globals = {
-  status: 'fetchConfig',
+  status: 'fetchingConfig',
   appWidth: 0,
   errorStatus: false,
   currentPage: 1,

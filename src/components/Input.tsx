@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Text, useFocus } from 'ink';
 import { useStore } from '../store-provider';
 import TextInput from 'ink-text-input';
@@ -6,9 +6,10 @@ import TextInput from 'ink-text-input';
 type inputProps = {
   labelText: string,
   placeholder: string,
-  value: string | undefined,
+  value: string,
   minChar: number | false,
-  onSubmit: (query: string) => void
+  onChange: (value: string) => void,
+  onSubmit: (value: string) => void
 }
 const Input = (props: inputProps) => {
   const {
@@ -16,12 +17,12 @@ const Input = (props: inputProps) => {
     placeholder,
     value,
     minChar,
+    onChange,
     onSubmit
   } = props;
 
-  const appWidth: number = useStore(state => state.globals.appWidth);
-  const [ inputVal, setInputVal ] = useState(value || '');
   const { isFocused } = useFocus({ autoFocus: true });
+  const appWidth: number = useStore(state => state.globals.appWidth);
 
   return (
     <Box width={appWidth} paddingRight={4}>
@@ -31,12 +32,12 @@ const Input = (props: inputProps) => {
         <Text> </Text>
         {
           !isFocused ?
-          <Text>{inputVal}</Text> :
+          <Text>{value}</Text> :
           <TextInput 
-            value={inputVal} 
+            value={value} 
             placeholder={placeholder}
-            onChange={setInputVal} 
-            onSubmit={() => onSubmit(inputVal)}/>
+            onChange={onChange} 
+            onSubmit={onSubmit}/>
         }
       </Text>
     </Box>

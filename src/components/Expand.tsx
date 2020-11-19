@@ -2,9 +2,9 @@ import React, { useState, ReactNode } from 'react';
 import { Box, Text, useInput, Key, useFocus } from 'ink';
 
 type expandProps = {
-  showText: string,
-  hideText: string,
-  children?: ReactNode
+  children?: ReactNode;
+  showText: string;
+  hideText: string;
 }
 
 const Expand = (props: expandProps) => {
@@ -25,7 +25,7 @@ const Expand = (props: expandProps) => {
 
   return (
     <Box flexDirection='column'>
-      <Text>
+      <Text wrap='truncate'>
         {
           !expanded ?
           <Text>
@@ -38,7 +38,7 @@ const Expand = (props: expandProps) => {
           </Text>
         }
         {
-          isFocused && <Text color='gray'> Press [ENTER] to toogle the dropwdown</Text>
+          isFocused && <Text> Press [ENTER] to toogle the dropwdown</Text>
         }
       </Text> 
       <Box paddingLeft={2} flexDirection='column'>

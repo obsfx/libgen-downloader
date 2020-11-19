@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
-import { Box, Text } from 'ink';
+import { Box, useStdin } from 'ink';
 import { Response } from 'node-fetch';
 import { config_endpoint, base_app_width, error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
 import { useStore, Config, AppStatus } from '../store-provider';
 import { clearTerminal } from '../utils';
 import { doRequest, findMirror } from '../search-api';
-import Spinner from './Spinner';
+import Loader from './Loader';
 import Header from './Header';
 import Search from './Search';
+import List from './List';
 
 const App = () => {
   const [ cols ] = useStdoutDimensions();
+
+  const { setRawMode } = useStdin();
 
   const maxWidth: number = base_app_width;
   const appWidth: number | null = useStore(state => state.globals.appWidth);
@@ -19,7 +22,6 @@ const App = () => {
 
   const setConfig: (config: Config) => void = useStore(state => state.set.config);
 
-  const mirror: string | null = useStore(state => state.globals.mirror);
   const setMirror: (mirror: string) => void = useStore(state => state.set.mirror);
 
   const status: AppStatus = useStore(state => state.globals.status);
@@ -28,7 +30,7 @@ const App = () => {
   useEffect(() => {
     const setupTheApp = async () => {
       // fetching latest configuration
-      setStatus('fetchConfig');
+      setStatus('fetchingConfig');
       const configResponse: Response | null = await doRequest(config_endpoint, () => {}, error_tolarance, error_reconnect_delay_ms);
       if (configResponse == null) {
         // throw error here
@@ -39,7 +41,7 @@ const App = () => {
       setConfig(configJSON);
 
       // finding available mirror
-      setStatus('findMirror');
+      setStatus('findingMirror');
       const mirrorList: string[] = configJSON.mirrors || [];
       const mirror: string | null = await findMirror(mirrorList);
 
@@ -52,7 +54,10 @@ const App = () => {
       setStatus('search');
     }
 
+    setRawMode(true);
     setupTheApp();
+
+    () => setRawMode(false);
   }, []);
 
   useEffect(() => {
@@ -62,17 +67,16 @@ const App = () => {
     }
   }, [cols]);
 
+  //<Text>{useStore(state => state.globals.query)}</Text>
+  //{ /*this part will be deleted*/ mirror && <Text color='grey'>current mirror: {mirror}</Text> }
   return (
     <Box 
       width={appWidth} 
-      flexDirection='column' 
-      borderStyle='single'>
+      flexDirection='column'>
       <Header />
-      { status == 'fetchConfig' && <Spinner text='Fetching Latest Libgen Mirrors' /> }
-      { status == 'findMirror' && <Spinner text='Finding Available Mirror' /> }
+      <Loader />
       { status == 'search' && <Search /> }
-      <Text>{useStore(state => state.globals.query)}</Text>
-      { mirror && <Text color='grey'>current mirror: {mirror}</Text> }
+      { status == 'results' && <List /> }
     </Box>
   );
 }

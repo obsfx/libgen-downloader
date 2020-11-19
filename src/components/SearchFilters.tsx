@@ -24,6 +24,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={author}
+        onChange={(author: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, author }))}
         onSubmit={(author: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, author }))}
       />
       <Input 
@@ -31,6 +32,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={publisher}
+        onChange={(publisher: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, publisher }))}
         onSubmit={(publisher: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, publisher }))}
       />
       <Input 
@@ -38,6 +40,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={year}
+        onChange={(year: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, year }))}
         onSubmit={(year: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, year }))}
       />
       <Input 
@@ -45,6 +48,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={pages}
+        onChange={(pages: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, pages }))}
         onSubmit={(pages: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, pages }))}
       />
       <Input 
@@ -52,6 +56,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={language}
+        onChange={(language: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, language }))}
         onSubmit={(language: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, language }))}
       />
       <Input 
@@ -59,6 +64,7 @@ const SearchFilters = () => {
         placeholder='Serach query must be min. 3 characters.'
         minChar={3}
         value={extension}
+        onChange={(extension: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, extension }))}
         onSubmit={(extension: string) => setSearchFilters((state: Globals) => ({ ...state.searchFilters, extension }))}
       />
     </Expand>
