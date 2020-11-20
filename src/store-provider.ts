@@ -38,6 +38,7 @@ export type Globals = {
   currentPage: number;
   mirror: string | null;
   entries: Entry[];
+  bulkQueue: string[];
   query: string;
   searchFilters: {
     author: string;
@@ -58,6 +59,7 @@ type Setters = {
   currentPage: (callback: Function) => void;
   mirror: (mirror: string) => void;
   entries: (entries: Entry[]) => void;
+  bulkQueue: (bulkQueue: string[]) => void;
   query: (query: string) => void;
   searchFilters: (callback: Function) => void;
 }
@@ -75,6 +77,7 @@ const initialGlobals: Globals = {
   currentPage: 1,
   mirror: null,
   entries: [],
+  bulkQueue: [],
   query: '',
   searchFilters: {
     author: '',
@@ -98,6 +101,7 @@ export const useStore = create<State>((set: SetState<State>): State => ({
     currentPage: (callback: Function) => set(state => ({ globals: { ...state.globals, currentPage: callback(state.globals) } })),
     mirror: (mirror: string) => set(state => ({ globals: { ...state.globals, mirror } })),
     entries: (entries: Entry[]) => set(state => ({ globals: { ...state.globals, entries } })),
+    bulkQueue: (bulkQueue: string[]) => set(state => ({ globals: { ...state.globals, bulkQueue } })),
     query: (query: string) => set(state => ({ globals: { ...state.globals, query } })),
     searchFilters: (callback: Function) => set(state => ({ globals: { ...state.globals, searchFilters: callback(state.globals) } }))
   }

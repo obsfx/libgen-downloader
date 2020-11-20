@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Text, useFocus } from 'ink';
-import { useStore } from '../store-provider';
 import TextInput from 'ink-text-input';
 
 type Props = {
@@ -11,6 +10,7 @@ type Props = {
   onChange: (value: string) => void,
   onSubmit: (value: string) => void
 }
+
 const Input = (props: Props) => {
   const {
     labelText,
@@ -22,10 +22,9 @@ const Input = (props: Props) => {
   } = props;
 
   const { isFocused } = useFocus({ autoFocus: true });
-  const appWidth: number = useStore(state => state.globals.appWidth);
 
   return (
-    <Box width={appWidth} paddingRight={4}>
+    <Box width='100%' paddingRight={4}>
       <Text wrap='truncate'>
         <Text>? </Text>
         <Text color='yellowBright' inverse={isFocused}>{labelText}:</Text>

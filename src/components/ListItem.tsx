@@ -1,10 +1,12 @@
 import React, { ReactNode } from 'react';
 import { Box, Text } from 'ink';
-import SelectInput, { option } from './SelectInput';
+import SelectInput, { SelectInputItem } from './SelectInput';
+import figures from 'figures';
 
 type Props<T> = {
   children?: ReactNode;
-  options: option<T>[];
+  selectInputItems: SelectInputItem<T>[];
+  focused: boolean;
   hovered: boolean;
   expanded: boolean;
   fadedOut: boolean;
@@ -12,10 +14,11 @@ type Props<T> = {
   onSelect: (returned: T) => void;
 }
 
-const ListItem = <T extends {}>(props: Props<T>) => {
-  let {
+const ListItem = <T extends unknown>(props: Props<T>) => {
+  const {
     children,
-    options,
+    selectInputItems,
+    focused,
     hovered,
     expanded,
     fadedOut,
@@ -24,15 +27,18 @@ const ListItem = <T extends {}>(props: Props<T>) => {
   } = props;
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' width='100%' paddingLeft={expanded ? 2 : 0}>
       <Text wrap='truncate'>
-        { !fadedOut && hovered && <Text bold={true}>&gt;&nbsp;</Text> } 
-        <Text color='greenBright'>{!fadedOut && checked ? 'X' : ' '}</Text>&nbsp;
-        <Text bold={hovered} color={!fadedOut && hovered ? 'yellow' : fadedOut ? 'grey' : ''}>{children}</Text> 
+        { !expanded && !fadedOut && hovered && <Text bold={true}>{figures.pointer}&nbsp;</Text> } 
+        <Text color='greenBright'>{checked ? figures.tick : ' '}</Text>&nbsp;
+        <Text bold={hovered || checked} color={
+          !fadedOut && hovered ? 
+            'yellowBright' : (checked ? 'greenBright' : (fadedOut ? 'grey' : '')) 
+        }>{children}</Text> 
       </Text>
       { expanded && 
-        <Box paddingLeft={4}>
-          <SelectInput<T> options={options} onSelect={onSelect} />
+        <Box paddingLeft={2} width='100%'>
+          <SelectInput<T> selectInputItems={selectInputItems} focused={focused} onSelect={onSelect} />
         </Box>
       }
     </Box>

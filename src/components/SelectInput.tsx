@@ -2,44 +2,49 @@ import React, { useState } from 'react';
 import { Box, useInput, Key } from 'ink';
 import SelectInputItem from './SelectInputItem';
 
-export type option<T> = {
+export type SelectInputItem<T> = {
   label: string;
   value: T;
 }
 
 type Props<T> = {
-  options: option<T>[];
+  selectInputItems: SelectInputItem<T>[];
+  focused: boolean;
   onSelect: (returned: T) => void;
 }
 
-const SelectInput = <T extends {}>(props: Props<T>) => {
-  let {
-    options,
+const SelectInput = <T extends unknown>(props: Props<T>) => {
+  const {
+    selectInputItems,
+    focused,
     onSelect
   } = props;
 
   const [ cursorPos, setCursorPos ] = useState(0);
 
   useInput((_, key: Key) => {
-    if (key.upArrow) {
-      setCursorPos(cursorPos - 1 < 0 ? options.length - 1 : cursorPos - 1);
-    }
+    if (focused) {
+      if (key.upArrow) {
+        setCursorPos(cursorPos - 1 < 0 ? selectInputItems.length - 1 : cursorPos - 1);
+      }
 
-    if (key.downArrow) {
-      setCursorPos((cursorPos + 1) % options.length);
-    }
+      if (key.downArrow) {
+        setCursorPos((cursorPos + 1) % selectInputItems.length);
+      }
 
-    if (key.return) {
-      onSelect(options[cursorPos].value);
+      if (key.return) {
+        onSelect(selectInputItems[cursorPos].value);
+      }
     }
   });
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' width='100%'>
     {
-      options.map((option: option<T>, i: number) => (
+      selectInputItems.map((option: SelectInputItem<T>, i: number) => (
         <SelectInputItem
           key={i}
+          fadedOut={!focused}
           hovered={cursorPos == i}>
           {option.label}
         </SelectInputItem>

@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "content-disposition": "^0.5.3",
+    "figures": "^3.2.0",
     "ink": "^3.0.8",
     "ink-progress-bar": "^3.0.0",
     "ink-spinner": "^4.0.1",

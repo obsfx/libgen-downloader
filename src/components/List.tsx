@@ -1,32 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Box, useInput, Key } from 'ink';
-import { useStore } from '../store-provider';
+import { Box, useInput, Key, useFocus } from 'ink';
 import { Entry } from '../search-api';
 import { ui_page_size } from '../app-config.json';
 import ListItem from './ListItem';
-import { option } from './SelectInput';
+import { SelectInputItem } from './SelectInput';
 
-const List = () => {
-  type item = {
-    entryData: Entry;
-    text: string;
-  }
+type Props<T>= {
+  entries: Entry[];
+  currentPage: number;
+  pageSize: number;
+  bulkQueue: string[];
+  generateSelectInputItems: (checked: boolean) => SelectInputItem<T>[];
+  handleOnSelect: (expanded: boolean, setExpanded: Function, entryData: Entry, returnedValue: T) => void;
+}
 
-  type returnedValue = 'seeDetails' |
-    'downloadDirectly' |
-    'addToBulkDownloadingQueue' |
-    'removeFromBulkDownloadingQueue' |
-    'turnBackToTheList';
+type Item = {
+  entryData: Entry;
+  text: string;
+}
 
-  const [ items, setItems ] = useState<item[]>([]);
+const List = <T extends unknown>(props: Props<T>) => {
+  const {
+    entries,
+    currentPage,
+    pageSize,
+    bulkQueue,
+    generateSelectInputItems,
+    handleOnSelect
+  } = props;
+
+  const [ items, setItems ] = useState<Item[]>([]);
   const [ expanded, setExpanded ] = useState<boolean>(false);
 
-  const currentPage: number = useStore(state => state.globals.currentPage);
-  const pageSize: number = useStore(state => state.config?.pageSize) || 25;
-  const entries: Entry[] = useStore(state => state.globals.entries);
+  const { isFocused } = useFocus({ autoFocus: true });
 
   useEffect(() => {
-    const items: item[] = entries.map((entry: Entry, i: number) => {
+    const items: Item[] = entries.map((entry: Entry, i: number) => {
       const idx: number = i + 1 + (currentPage - 1) * pageSize;
       const extension: string = entry.extension;
       const title: string = entry.title;
@@ -45,9 +54,10 @@ const List = () => {
   }, [entries]);
 
   useInput((_, key: Key) => {
-    if (!expanded) {
+    if (isFocused && !expanded) {
       if (key.upArrow) {
-        const lastEntry: item | undefined = items.pop();
+        const lastEntry: Item | undefined = items.pop();
+
         if (lastEntry) {
           items.unshift(lastEntry);
           setItems([...items]);
@@ -55,7 +65,8 @@ const List = () => {
       }
 
       if (key.downArrow) {
-        const firstEntry: item | undefined = items.shift();
+        const firstEntry: Item | undefined = items.shift();
+
         if (firstEntry) {
           items.push(firstEntry);
           setItems([...items]);
@@ -68,59 +79,35 @@ const List = () => {
     }
   });
 
-  const renderList: item[] = items.slice(0, ui_page_size);
-
-  const getExpendOptions = (checked: boolean): option<returnedValue>[] => ([
-    {
-      label: 'See Details',
-      value: 'seeDetails'
-    },
-    {
-      label: 'Dowload Directly',
-      value: 'downloadDirectly'
-    },
-    {
-      label: !checked ? 'Add To Bulk Downloading Queue' : 'Remove From Bulk Downloading Queue',
-      value: !checked ? 'addToBulkDownloadingQueue' : 'removeFromBulkDownloadingQueue'
-    },
-    {
-      label: 'Turn Back To The List',
-      value: 'turnBackToTheList'
-    }
-  ]);
-
-  const handleOnSelect = (entryData: Entry, returned: returnedValue) => {
-    if (returned == 'turnBackToTheList') {
-      setExpanded(!expanded);
-    }
-
-    if (returned == 'addToBulkDownloadingQueue' || returned == 'removeFromBulkDownloadingQueue') {
-    }
-  }
+  const renderList: Item[] = items.slice(0, ui_page_size);
 
   return (
     <Box 
       flexDirection='column'
-      borderStyle='single' 
+      borderStyle='round' 
       borderColor='grey'
+      width='100%'
       paddingLeft={1} 
       paddingRight={1}>
-      <Box flexDirection='column'>
+      <Box width='100%' flexDirection='column'>
         {
-          renderList.slice(0, ui_page_size).map((item: item, i: number) => {
+          renderList.map((item: Item, i: number) => {
             const itemHovered: boolean = i == Math.floor(renderList.length / 2);
             const itemExpanded: boolean = expanded && itemHovered;
-            const itemFadedOut: boolean = expanded && !itemHovered;
-            const itemChecked: boolean = true;
+            const itemFadedOut: boolean = !isFocused || (expanded && !itemHovered);
+            const itemChecked: boolean = bulkQueue.includes(item.entryData.id);
 
-            return <ListItem<returnedValue>
+            const selectInputItems: SelectInputItem<T>[] = generateSelectInputItems(itemChecked);
+
+            return (!expanded || i + selectInputItems.length < ui_page_size) && <ListItem<T>
               key={item.entryData.id} 
-              options={getExpendOptions(itemChecked)}
+              selectInputItems={selectInputItems}
               hovered={itemHovered}
+              focused={isFocused}
               expanded={itemExpanded}
               fadedOut={itemFadedOut}
               checked={itemChecked}
-              onSelect={(returned: returnedValue) => handleOnSelect(item.entryData, returned)}>
+              onSelect={(returned: T) => handleOnSelect(expanded, setExpanded, item.entryData, returned)}>
               {item.text}
             </ListItem>
           })

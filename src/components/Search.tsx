@@ -34,7 +34,7 @@ const Search = () => {
   }
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' width='100%'>
       <Text wrap='truncate'>Press [TAB] to switch between 'Search Input' and 'Show Filters'</Text>
       <Input 
         labelText='Search'

@@ -1,22 +1,28 @@
 import React, { ReactNode } from 'react';
 import { Box, Text } from 'ink';
+import figures from 'figures';
 
 type Props = {
   children?: ReactNode;
+  fadedOut: boolean;
   hovered: boolean;
 }
 
 const SelectInputItem = (props: Props) => {
-  let {
+  const {
     children,
+    fadedOut,
     hovered,
   } = props;
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' width='100%'>
       <Text wrap='truncate'>
-        { hovered && <Text bold={true}>&gt;&nbsp;</Text> } 
-        <Text bold={hovered} color={hovered ? 'cyanBright' : ''}>{ children }</Text> 
+        { !fadedOut && hovered && <Text bold={true}>{figures.pointer}&nbsp;</Text> } 
+        <Text bold={hovered} color={
+          fadedOut ? 'grey' :
+          (hovered ? 'yellowBright' : '') 
+        }>{ children }</Text> 
       </Text>
     </Box>
   )

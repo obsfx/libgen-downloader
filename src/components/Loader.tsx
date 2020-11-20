@@ -5,8 +5,8 @@ import Spinner from './Spinner';
 const Loader = () => {
   const LoaderMessages: Map<AppStatus, string> = new Map([
     [ 'fetchingConfig', 'Fetching Configuration File' ],
-    [ 'findingMirror', 'Finding Available Mirror' ],
-    [ 'gettingResults', 'Getting Results' ],
+    [ 'findingMirror', 'Finding An Available Mirror' ],
+    [ 'gettingResults', 'Getting Results' ]
   ]);
   const status: AppStatus = useStore(state => state.globals.status);
 

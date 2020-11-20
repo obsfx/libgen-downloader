@@ -8,7 +8,7 @@ type Props = {
 }
 
 const Expand = (props: Props) => {
-  let {
+  const {
     showText,
     hideText,
     children
@@ -24,16 +24,16 @@ const Expand = (props: Props) => {
   });
 
   return (
-    <Box flexDirection='column'>
+    <Box flexDirection='column' width='100%'>
       <Text wrap='truncate'>
         {
           !expanded ?
           <Text>
-            <Text>+ </Text>
+            <Text bold={true}>+ </Text>
             <Text color='yellowBright' inverse={isFocused}>{showText}</Text>
           </Text> :
           <Text>
-            <Text>- </Text>
+            <Text bold={true}>- </Text>
             <Text color='yellowBright' inverse={isFocused}>{hideText}</Text>
           </Text>
         }
@@ -41,7 +41,7 @@ const Expand = (props: Props) => {
           isFocused && <Text> Press [ENTER] to toogle the dropwdown</Text>
         }
       </Text> 
-      <Box paddingLeft={2} flexDirection='column'>
+      <Box paddingLeft={2} flexDirection='column' width='100%'>
         { expanded && children }
       </Box>
     </Box>

@@ -9,7 +9,7 @@ import { doRequest, findMirror } from '../search-api';
 import Loader from './Loader';
 import Header from './Header';
 import Search from './Search';
-import List from './List';
+import Results from './Results';
 
 const App = () => {
   const [ cols ] = useStdoutDimensions();
@@ -76,7 +76,7 @@ const App = () => {
       <Header />
       <Loader />
       { status == 'search' && <Search /> }
-      { status == 'results' && <List /> }
+      { status == 'results' && <Results /> }
     </Box>
   );
 }
