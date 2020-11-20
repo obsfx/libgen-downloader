@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, useInput, Key, useFocus } from 'ink';
-import { Entry } from '../search-api';
+import { Entry } from '../../search-api';
 import { ui_page_size } from '../app-config.json';
 import ListItem from './ListItem';
 import { SelectInputItem } from './SelectInput';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { useStore } from '../store-provider';
-import { Entry } from '../search-api';
+import { useStore, AppStatus } from '../../store-provider';
+import { Entry } from '../../search-api';
 import List from './List';
 import Options from './Options';
 import { SelectInputItem } from './SelectInput';
@@ -21,6 +21,10 @@ const Results = () => {
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
+
+  const setEntryBuffer: (entryBuffer: Entry) => void = useStore(state => state.set.entryBuffer);
+
+  const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   const generateSelectInputItems = (checked: boolean): SelectInputItem<returnedValue>[] => ([
     {
@@ -43,8 +47,9 @@ const Results = () => {
 
   const handleOnSelect = (expanded: boolean, setExpanded: Function, entryData: Entry, returned: returnedValue) => {
     switch (returned) {
-      case returnedValue.turnBackToTheList:
-        setExpanded(!expanded);
+      case returnedValue.seeDetails:
+        setEntryBuffer(entryData);
+        setStatus('entryDetails');
       break;
 
       case returnedValue.addToBulkDownloadingQueue:
@@ -53,6 +58,10 @@ const Results = () => {
 
       case returnedValue.removeFromBulkDownloadingQueue:
         setBulkQueue(bulkQueue.filter((id: string) => id != entryData.id));
+      break;
+
+      case returnedValue.turnBackToTheList:
+        setExpanded(!expanded);
       break;
     }
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { useStore, AppStatus } from '../store-provider';
-import { search, Entry } from '../search-api';
+import { useStore, AppStatus } from '../../store-provider';
+import { search, Entry } from '../../search-api';
 import Input from './Input';
 import SearchFilters from './SearchFilters';
 

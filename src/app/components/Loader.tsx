@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStore, AppStatus } from '../store-provider';
+import { useStore, AppStatus } from '../../store-provider';
 import Spinner from './Spinner';
 
 const Loader = () => {

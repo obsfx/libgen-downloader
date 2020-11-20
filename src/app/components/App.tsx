@@ -1,30 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Box, useStdin } from 'ink';
 import { Response } from 'node-fetch';
 import { config_endpoint, base_app_width, error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
-import { useStore, Config, AppStatus } from '../store-provider';
-import { clearTerminal } from '../utils';
-import { doRequest, findMirror } from '../search-api';
+import { clearTerminal } from '../../utils';
+import { useStore, Config, AppStatus } from '../../store-provider';
+import { doRequest, findMirror } from '../../search-api';
 import Loader from './Loader';
 import Header from './Header';
-import Search from './Search';
-import Results from './Results';
+import Stage from './Stage';
 
 const App = () => {
   const [ cols ] = useStdoutDimensions();
+  const [ refresh, setRefresh ] = useState(false);
 
   const { setRawMode } = useStdin();
 
   const maxWidth: number = base_app_width;
   const appWidth: number | null = useStore(state => state.globals.appWidth);
   const setAppWidth: (appWidth: number) => void = useStore(state => state.set.appWidth);
-
   const setConfig: (config: Config) => void = useStore(state => state.set.config);
-
   const setMirror: (mirror: string) => void = useStore(state => state.set.mirror);
-
-  const status: AppStatus = useStore(state => state.globals.status);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   useEffect(() => {
@@ -60,23 +56,30 @@ const App = () => {
     () => setRawMode(false);
   }, []);
 
-  useEffect(() => {
-    if (appWidth == 0 || cols < maxWidth || appWidth < maxWidth) {
-      clearTerminal();
-      setAppWidth(Math.min(maxWidth, cols));
+  useLayoutEffect(() => {
+    if (refresh) {
+      setRefresh(false);
     }
+  }, []);
+
+  useLayoutEffect(() => {
+      clearTerminal();
+      setAppWidth(cols);
+      setRefresh(true);
   }, [cols]);
 
-  //<Text>{useStore(state => state.globals.query)}</Text>
-  //{ /*this part will be deleted*/ mirror && <Text color='grey'>current mirror: {mirror}</Text> }
   return (
-    <Box 
-      width={appWidth} 
-      flexDirection='column'>
-      <Header />
-      <Loader />
-      { status == 'search' && <Search /> }
-      { status == 'results' && <Results /> }
+    <Box>
+    {
+      refresh && 
+      <Box 
+        width={appWidth} 
+        flexDirection='column'>
+        <Header appWidth={appWidth}/>
+        <Loader />
+        <Stage />
+      </Box>
+    }
     </Box>
   );
 }

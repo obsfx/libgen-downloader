@@ -1,6 +1,7 @@
-import React from 'react';
-import { render } from 'ink';
-import App from './components/App';
+import { init } from './app';
+
+init();
+
 
 //const k = async () => {
 //  let p = await search(config.searchReqPattern, config.mirrors[1], 'javascript the good parts', 2, 25);
@@ -28,6 +29,3 @@ import App from './components/App';
 //}
 //
 //a();
-
-
-render(<App />);

@@ -93,7 +93,7 @@ const getEntrySelectors = (row: number): Entry => ({
   language: getCellSelector(row, Columns.language),
   size: getCellSelector(row, Columns.size),
   extension: getCellSelector(row, Columns.extension),
-  mirror: getCellSelector(row, Columns.mirror)
+  mirror: `${getCellSelector(row, Columns.mirror)} a` 
 });
 
 const getEntryData = (document: HTMLDocument, selector: Entry): Entry => ({

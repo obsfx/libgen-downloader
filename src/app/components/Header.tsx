@@ -1,10 +1,13 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { version } from '../../package.json';
-import { useStore } from '../store-provider';
+import { version } from '../../../package.json';
 
-const Header = () => {
-  const appWidth: number = useStore(state => state.globals.appWidth);
+type Props = {
+  appWidth: number;
+}
+
+const Header = (props: Props) => {
+  const { appWidth } = props;
 
   return (
     <Box flexDirection='column' marginBottom={1}>
