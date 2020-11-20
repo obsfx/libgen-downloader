@@ -5,5 +5,10 @@ import { clearTerminal } from '../utils';
 
 export const init = () => {
   clearTerminal();
-  render(<App />);
+  let clear = render(<App appWidth={process.stdout.columns}/>).unmount;
+  process.stdout.on('resize', () => {
+    clear();
+    clearTerminal();
+    clear = render(<App appWidth={process.stdout.columns}/>).unmount;
+  });
 }
