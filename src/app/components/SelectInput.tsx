@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Box, useInput, Key } from 'ink';
+import { returnedValue } from '../../store-provider';
 import SelectInputItem from './SelectInputItem';
 
-export type SelectInputItem<T> = {
+export type SelectInputItem = {
   label: string;
-  value: T;
+  value: returnedValue;
+  disabled?: boolean;
 }
 
-type Props<T> = {
-  selectInputItems: SelectInputItem<T>[];
+type Props = {
+  selectInputItems: SelectInputItem[];
   focused: boolean;
-  onSelect: (returned: T) => void;
+  onSelect: (returned: returnedValue) => void;
 }
 
-const SelectInput = <T extends unknown>(props: Props<T>) => {
+const SelectInput = (props: Props) => {
   const {
     selectInputItems,
     focused,
@@ -41,7 +43,7 @@ const SelectInput = <T extends unknown>(props: Props<T>) => {
   return (
     <Box flexDirection='column' width='100%'>
     {
-      selectInputItems.map((option: SelectInputItem<T>, i: number) => (
+      selectInputItems.map((option: SelectInputItem, i: number) => (
         <SelectInputItem
           key={i}
           fadedOut={!focused}

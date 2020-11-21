@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, useStdin } from 'ink';
 import { Response } from 'node-fetch';
-import { config_endpoint, base_app_width, error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
+import { config_endpoint, error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
 import { useStore, Config, AppStatus } from '../../store-provider';
 import { doRequest, findMirror } from '../../search-api';
 import Loader from './Loader';
@@ -13,25 +13,28 @@ type Props = {
 }
 
 const App = (props: Props) => {
-  const { setRawMode } = useStdin();
+  const { appWidth } = props;
 
-  const appWidth: number = props.appWidth > base_app_width ? 
-    base_app_width : 
-    props.appWidth;
+  const { setRawMode } = useStdin();
 
   const config: Config | null = useStore(state => state.config);
   const setConfig: (config: Config) => void = useStore(state => state.set.config);
+  const configFetched: boolean = useStore(state => state.globals.configFetched);
+  const setConfigFetched: (configFetched: boolean) => void = useStore(state => state.set.configFetched);
   const setMirror: (mirror: string) => void = useStore(state => state.set.mirror);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   useEffect(() => {
-    if (config == null) {
+    if (config == null && !configFetched) {
       const setupTheApp = async () => {
         // fetching latest configuration
+        setConfigFetched(true);
         setStatus('fetchingConfig');
         const configResponse: Response | null = await doRequest(config_endpoint, () => {}, error_tolarance, error_reconnect_delay_ms);
+
         if (configResponse == null) {
           // throw error here
+          setConfigFetched(false);
           return;
         }
 
@@ -45,6 +48,7 @@ const App = (props: Props) => {
 
         if (mirror == null) {
           // throw error here
+          setConfigFetched(false);
           return;
         }
 
@@ -52,11 +56,11 @@ const App = (props: Props) => {
         setStatus('search');
       }
 
-      setRawMode(true);
       setupTheApp();
-
-      () => setRawMode(false);
     }
+
+    setRawMode(true);
+    () => setRawMode(false);
   }, []);
 
   return (

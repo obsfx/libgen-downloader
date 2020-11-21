@@ -29,8 +29,8 @@ const Search = () => {
       return;
     }
 
-    setStatus('results');
     setEntries(results);
+    setStatus('results');
   }
 
   return (

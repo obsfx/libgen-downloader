@@ -10,6 +10,34 @@ import { Entry } from './search-api';
 //  extension: string;
 //}
 
+export enum returnedValue {
+  seeDetails,
+  downloadDirectly,
+  addToBulkDownloadingQueue,
+  removeFromBulkDownloadingQueue,
+  turnBackToTheList,
+  nextPage,
+  prevPage,
+  startBulkDownloading,
+  search,
+  exit
+}
+
+export type Item = {
+  key: string;
+  data: Entry | null;
+  value: returnedValue | null;
+  text: string;
+  expandable: boolean;
+}
+
+export type AppStatus = 'fetchingConfig' |
+  'findingMirror' |
+  'search' |
+  'gettingResults' |
+  'results' |
+  'entryDetails';
+
 export type Config = {
   mirrors: string[];
   pageSize: number;
@@ -24,21 +52,15 @@ export type Config = {
   }
 }
 
-export type AppStatus = 'fetchingConfig' |
-  'findingMirror' |
-  'search' |
-  'gettingResults' |
-  'results' |
-  'entryDetails';
-
 export type Globals = {
   status: AppStatus;
-  appWidth: number;
+  configFetched: boolean;
   errorStatus: boolean;
   currentPage: number;
   mirror: string | null;
   entries: Entry[];
   entryBuffer: Entry | null;
+  listBuffer: Item[];
   bulkQueue: string[];
   query: string;
   searchFilters: {
@@ -55,12 +77,13 @@ type Setters = {
   reset: () => void;
   config: (config: Config) => void;
   status: (status: AppStatus) => void;
-  appWidth: (appWidth: number) => void;
+  configFetched: (configFetched: boolean) => void;
   errorStatus: (errorStatus: boolean) => void;
   currentPage: (callback: Function) => void;
   mirror: (mirror: string) => void;
-  entryBuffer: (entryBuffer: Entry) => void;
   entries: (entries: Entry[]) => void;
+  entryBuffer: (entryBuffer: Entry) => void;
+  listBuffer: (listBuffer: Item[]) => void;
   bulkQueue: (bulkQueue: string[]) => void;
   query: (query: string) => void;
   searchFilters: (callback: Function) => void;
@@ -74,12 +97,13 @@ type State = {
 
 const initialGlobals: Globals = {
   status: 'fetchingConfig',
-  appWidth: 0,
+  configFetched: false,
   errorStatus: false,
   currentPage: 1,
   mirror: null,
   entries: [],
   entryBuffer: null,
+  listBuffer: [],
   bulkQueue: [],
   query: '',
   searchFilters: {
@@ -99,12 +123,13 @@ export const useStore = create<State>((set: SetState<State>): State => ({
     reset: () => set({ globals: { ...initialGlobals  } }),
     config: (config: Config) => set({ config: { ...config } }),
     status: (status: AppStatus) => set(state => ({ globals: { ...state.globals, status } })),
-    appWidth: (appWidth: number) => set(state => ({ globals: { ...state.globals, appWidth } })),
+    configFetched: (configFetched: boolean) => set(state => ({ globals: {...state.globals, configFetched } })),
     errorStatus: (errorStatus: boolean) => set(state => ({ globals: { ...state.globals, errorStatus } })),
     currentPage: (callback: Function) => set(state => ({ globals: { ...state.globals, currentPage: callback(state.globals) } })),
     mirror: (mirror: string) => set(state => ({ globals: { ...state.globals, mirror } })),
     entries: (entries: Entry[]) => set(state => ({ globals: { ...state.globals, entries } })),
     entryBuffer: (entryBuffer: Entry) => set(state => ({ globals: { ...state.globals, entryBuffer } })),
+    listBuffer: (listBuffer: Item[]) => set(state => ({ globals: { ...state.globals, listBuffer } })),
     bulkQueue: (bulkQueue: string[]) => set(state => ({ globals: { ...state.globals, bulkQueue } })),
     query: (query: string) => set(state => ({ globals: { ...state.globals, query } })),
     searchFilters: (callback: Function) => set(state => ({ globals: { ...state.globals, searchFilters: callback(state.globals) } }))
