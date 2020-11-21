@@ -1,18 +1,19 @@
-import React from 'react';
-import { Text } from 'ink';
+import React, { ReactNode }from 'react';
+import { Box, Text } from 'ink';
 import InkSpinner from 'ink-spinner';
 
 type Props = {
-  text: string
+  children?: ReactNode,
 }
 
 const Spinner = (props: Props) => (
-  <Text> 
+  <Box> 
     <Text color='cyanBright'>
       <InkSpinner type='dots' />
+      &nbsp;
     </Text>
-    &nbsp; { props.text }
-  </Text>
+    { props.children }
+  </Box>
 )
 
 export default Spinner;

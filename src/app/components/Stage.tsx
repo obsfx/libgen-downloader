@@ -4,6 +4,7 @@ import { useStore, AppStatus } from '../../store-provider';
 import Search from './Search';
 import Results from './Results';
 import EntryDetails from './EntryDetails';
+import ErrorBox from './ErrorBox';
 
 const Stage = () => {
   const status: AppStatus = useStore(state => state.globals.status);
@@ -13,6 +14,7 @@ const Stage = () => {
       { status == 'search' && <Search /> }
       { status == 'results' && <Results /> }
       { status == 'entryDetails' && <EntryDetails /> }
+      { status == 'failed' && <ErrorBox /> }
     </Box>
   )
 };

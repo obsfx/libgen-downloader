@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, useInput, Key } from 'ink';
+import { Box, useInput, Key, Text } from 'ink';
 import { returnedValue } from '../../store-provider';
 import SelectInputItem from './SelectInputItem';
 
@@ -11,47 +11,57 @@ export type SelectInputItem = {
 
 type Props = {
   selectInputItems: SelectInputItem[];
-  focused: boolean;
   onSelect: (returned: returnedValue) => void;
+  hideInfo?: boolean;
 }
 
 const SelectInput = (props: Props) => {
   const {
     selectInputItems,
-    focused,
-    onSelect
+    onSelect,
+    hideInfo
   } = props;
 
   const [ cursorPos, setCursorPos ] = useState(0);
 
+  const items: SelectInputItem[] = selectInputItems
+  .filter((option: SelectInputItem) => !option.disabled);
+
   useInput((_, key: Key) => {
-    if (focused) {
-      if (key.upArrow) {
-        setCursorPos(cursorPos - 1 < 0 ? selectInputItems.length - 1 : cursorPos - 1);
-      }
+    if (key.upArrow) {
+      setCursorPos(cursorPos - 1 < 0 ? items.length - 1 : cursorPos - 1);
+    }
 
-      if (key.downArrow) {
-        setCursorPos((cursorPos + 1) % selectInputItems.length);
-      }
+    if (key.downArrow) {
+      setCursorPos((cursorPos + 1) % items.length);
+    }
 
-      if (key.return) {
-        onSelect(selectInputItems[cursorPos].value);
-      }
+    if (key.return) {
+      onSelect(items[cursorPos].value);
     }
   });
 
   return (
     <Box flexDirection='column' width='100%'>
-    {
-      selectInputItems.map((option: SelectInputItem, i: number) => (
-        <SelectInputItem
-          key={i}
-          fadedOut={!focused}
-          hovered={cursorPos == i}>
-          {option.label}
-        </SelectInputItem>
-      ))
-    }
+      <Box flexDirection='column' paddingLeft={2} width='100%'>
+        {
+          items.map((option: SelectInputItem, i: number) => (
+            <SelectInputItem
+              key={i}
+              hovered={cursorPos == i}>
+              {option.label}
+            </SelectInputItem>
+          ))
+        }
+      </Box>
+      {
+        !hideInfo && 
+        <Box>
+          <Text wrap='truncate'>
+            [UP] and [DOWN] arrow keys to reveal listings, [ENTER] key to interact
+          </Text>
+        </Box>
+      }
     </Box>
   )
 }

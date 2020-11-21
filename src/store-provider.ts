@@ -20,7 +20,9 @@ export enum returnedValue {
   prevPage,
   startBulkDownloading,
   search,
-  exit
+  exit,
+  tryAgain,
+  searchAnother
 }
 
 export type Item = {
@@ -36,26 +38,29 @@ export type AppStatus = 'fetchingConfig' |
   'search' |
   'gettingResults' |
   'results' |
-  'entryDetails';
+  'entryDetails' |
+  'failed';
 
-export type Config = {
-  mirrors: string[];
-  pageSize: number;
-  searchReqPattern: string;
-  searchByMD5Pattern: string;
-  MD5ReqPattern: string;
-  cssSelectors: {
-    tableContainer: string;
-    row: string;
-    downloadURL: string;
-    cellSelector: string;
-  }
-}
+//export type Config = {
+//  mirrors: string[];
+//  pageSize: number;
+//  searchReqPattern: string;
+//  searchByMD5Pattern: string;
+//  MD5ReqPattern: string;
+//  cssSelectors: {
+//    tableContainer: string;
+//    row: string;
+//    downloadURL: string;
+//    cellSelector: string;
+//  }
+//}
 
 export type Globals = {
   status: AppStatus;
+  lastFailedAction: Function;
+  errorCounter: number;
+  executed: boolean;
   configFetched: boolean;
-  errorStatus: boolean;
   currentPage: number;
   mirror: string | null;
   entries: Entry[];
@@ -75,10 +80,12 @@ export type Globals = {
 
 type Setters = {
   reset: () => void;
-  config: (config: Config) => void;
+  config: (config: any) => void;
   status: (status: AppStatus) => void;
+  lastFailedAction: (lastFailedAction: Function) => void;
+  errorCounter: (errorCounter: number) => void;
+  executed: (configFetched: boolean) => void;
   configFetched: (configFetched: boolean) => void;
-  errorStatus: (errorStatus: boolean) => void;
   currentPage: (callback: Function) => void;
   mirror: (mirror: string) => void;
   entries: (entries: Entry[]) => void;
@@ -90,15 +97,17 @@ type Setters = {
 }
 
 type State = {
-  config: Config | null;
+  config: any | null;
   globals: Globals;
   set: Setters;
 }
 
 const initialGlobals: Globals = {
   status: 'fetchingConfig',
+  lastFailedAction: () => null,
+  errorCounter: 0,
+  executed: false,
   configFetched: false,
-  errorStatus: false,
   currentPage: 1,
   mirror: null,
   entries: [],
@@ -121,10 +130,12 @@ export const useStore = create<State>((set: SetState<State>): State => ({
   globals: { ...initialGlobals },
   set: {
     reset: () => set({ globals: { ...initialGlobals  } }),
-    config: (config: Config) => set({ config: { ...config } }),
+    config: (config: any) => set({ config: { ...config } }),
     status: (status: AppStatus) => set(state => ({ globals: { ...state.globals, status } })),
-    configFetched: (configFetched: boolean) => set(state => ({ globals: {...state.globals, configFetched } })),
-    errorStatus: (errorStatus: boolean) => set(state => ({ globals: { ...state.globals, errorStatus } })),
+    lastFailedAction: (lastFailedAction: Function) => set(state => ({ globals: { ...state.globals, lastFailedAction } })),
+    errorCounter: (errorCounter: number) => set(state => ({ globals: { ...state.globals, errorCounter } })),
+    executed: (executed: boolean) => set(state => ({ globals: { ...state.globals, executed } })),
+    configFetched: (configFetched: boolean) => set(state => ({ globals: { ...state.globals, configFetched } })),
     currentPage: (callback: Function) => set(state => ({ globals: { ...state.globals, currentPage: callback(state.globals) } })),
     mirror: (mirror: string) => set(state => ({ globals: { ...state.globals, mirror } })),
     entries: (entries: Entry[]) => set(state => ({ globals: { ...state.globals, entries } })),

@@ -18,9 +18,8 @@ const Search = () => {
   const searchReqPattern: string = useStore(state => state.config?.searchReqPattern) || '';
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
 
-  const handleOnSubmit = async (query: string) => {
+  const doSearchRequest = async () => {
     setStatus('gettingResults');
-    setQuery(query);
 
     const results: Entry[] | null = await search(searchReqPattern, mirror, query, currentPage, pageSize);
 
@@ -31,6 +30,10 @@ const Search = () => {
 
     setEntries(results);
     setStatus('results');
+  }
+
+  const handleOnSubmit = () => {
+    doSearchRequest();
   }
 
   return (

@@ -138,7 +138,7 @@ export const doRequest = (
 
       if (response == null) {
         errCount++;
-        onErr(errCount + 1, errTolarance);
+        onErr(errCount, errTolarance);
         await sleep(delay);
       } else {
         resolve(response);

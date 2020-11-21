@@ -7,7 +7,6 @@ import figures from 'figures';
 type Props = {
   children?: ReactNode;
   selectInputItems: SelectInputItem[];
-  focused: boolean;
   hovered: boolean;
   expanded: boolean;
   fadedOut: boolean;
@@ -19,7 +18,6 @@ const ListItem = (props: Props) => {
   const {
     children,
     selectInputItems,
-    focused,
     hovered,
     expanded,
     fadedOut,
@@ -39,7 +37,7 @@ const ListItem = (props: Props) => {
       </Text>
       { expanded && 
         <Box paddingLeft={2} width='100%'>
-          <SelectInput selectInputItems={selectInputItems} focused={focused} onSelect={onSelect} />
+          <SelectInput selectInputItems={selectInputItems} hideInfo={true} onSelect={onSelect} />
         </Box>
       }
     </Box>

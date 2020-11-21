@@ -95,9 +95,6 @@ const Results = () => {
 
   return (
     <Box flexDirection='column'>
-      <Text wrap='truncate'>
-        Press [TAB] to switch between 'list' and 'buttons'
-      </Text>
       <List 
         entries={entries}
         options={options}
@@ -106,6 +103,9 @@ const Results = () => {
         bulkQueue={bulkQueue}
         generateSelectInputItems={generateSelectInputItems}
         handleOnSelect={handleOnSelect}/>
+      <Text wrap='truncate'>
+        [UP] and [DOWN] arrow keys to reveal listings, [ENTER] key to interact
+      </Text>
     </Box>
   )
 };

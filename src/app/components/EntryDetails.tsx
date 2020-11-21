@@ -61,7 +61,6 @@ const EntryDetails = () => {
         setBulkQueue(bulkQueue.filter((id: string) => id != entryBuffer.id));
       break;
     }
-
   }
 
   return (
@@ -69,6 +68,7 @@ const EntryDetails = () => {
       paddingLeft={1}
       borderStyle='single' 
       flexDirection='column'
+      width='100%'
       borderColor='grey'>
       <Box flexDirection='column'>
         {
@@ -82,8 +82,8 @@ const EntryDetails = () => {
       </Box>
 
       <Text color='greenBright'>{ inBulkQueue ? `${figures.tick} Added To Bulk Downloading Queue` : ' ' }</Text>
-      <Box paddingLeft={2} width='100%'>
-        <SelectInput selectInputItems={selectInputItems} focused={true} onSelect={handleOnSelect} />
+      <Box width='100%'>
+        <SelectInput selectInputItems={selectInputItems} onSelect={handleOnSelect} />
       </Box>
     </Box>
   )

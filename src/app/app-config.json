@@ -1,5 +1,5 @@
 {
-  "config_endpoint": "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.json",
+  "config_endpoint": "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/configon",
   "base_app_width": 75,
   "ui_page_size": 11,
   "min_search_query_length": 3,

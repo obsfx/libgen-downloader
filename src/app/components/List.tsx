@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, useInput, Key, useFocus } from 'ink';
+import { Box, Text, useInput, Key } from 'ink';
 import { Entry } from '../../search-api';
 import { useStore, Item, returnedValue } from '../../store-provider';
 import { ui_page_size } from '../app-config.json';
@@ -33,8 +33,6 @@ const List = (props: Props) => {
   const listBuffer: Item[] = useStore(state => state.globals.listBuffer);
   const setListBuffer: (listBuffer: Item[]) => void = useStore(state => state.set.listBuffer);
 
-  const { isFocused } = useFocus({ autoFocus: true });
-
   useEffect(() => {
     if (listBuffer.length == 0) {
       const entryItems: Item[] = entries.map((entry: Entry, i: number) => {
@@ -53,21 +51,15 @@ const List = (props: Props) => {
         };
       });
 
-      const optionItems: Item[] = [];
-
-      for (let i = 0; i < options.length; i++) {
-        const option: SelectInputItem = options[i];
-
-        if (option.disabled) continue;
-
-        optionItems.push({
-          key: `option${i}`,
-          text: option.label,
-          value: option.value,
-          expandable: false,
-          data: null
-        });
-      }
+      const optionItems: Item[] = options
+      .filter((option: SelectInputItem) => !option.disabled)
+      .map((option: SelectInputItem, i: number) => ({
+        key: `option${i}`,
+        text: option.label,
+        value: option.value,
+        expandable: false,
+        data: null
+      }));
 
       const pool: Item[] = [ ...optionItems, ...entryItems ];
 
@@ -83,7 +75,7 @@ const List = (props: Props) => {
   const renderList: Item[] = listBuffer.slice(0, ui_page_size);
 
   useInput((_, key: Key) => {
-    if (isFocused && !expanded) {
+    if (!expanded) {
       if (key.upArrow) {
         const lastEntry: Item | undefined = listBuffer.pop();
 
@@ -117,12 +109,11 @@ const List = (props: Props) => {
       paddingLeft={1} 
       paddingRight={1}>
       <Box width='100%' flexDirection='column'>
-      
         {
           renderList.map((item: Item, i: number) => {
             const itemHovered: boolean = i == Math.floor(renderList.length / 2);
             const itemExpanded: boolean = expanded && itemHovered;
-            const itemFadedOut: boolean = !isFocused || (expanded && !itemHovered);
+            const itemFadedOut: boolean = expanded && !itemHovered;
             const itemChecked: boolean = bulkQueue.includes(item.data?.id || '');
             const selectInputItems: SelectInputItem[] = generateSelectInputItems(itemChecked);
 
@@ -132,7 +123,6 @@ const List = (props: Props) => {
                   key={item.key} 
                   selectInputItems={selectInputItems}
                   hovered={itemHovered}
-                  focused={isFocused}
                   expanded={itemExpanded}
                   fadedOut={itemFadedOut}
                   checked={itemChecked}
