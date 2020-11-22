@@ -33,7 +33,7 @@ const ListItem = (props: Props) => {
         &nbsp;&nbsp;
         <Text bold={hovered} color={
           !fadedOut && hovered ? 
-            'yellowBright' : (fadedOut ? 'grey' : '') 
+            'cyanBright' : (fadedOut ? 'grey' : 'yellow') 
         }>{children}</Text> 
       </Text>
     </Box>

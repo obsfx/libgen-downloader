@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Box, useInput, Key, Text } from 'ink';
 import { returnedValue } from '../../store-provider';
 import SelectInputItem from './SelectInputItem';
 
 export type SelectInputItem = {
-  label: string;
+  label: ReactNode;
   value: returnedValue;
   disabled?: boolean;
 }

@@ -96,10 +96,14 @@ const getEntrySelectors = (row: number): Entry => ({
   mirror: `${getCellSelector(row, Columns.mirror)} a` 
 });
 
+const clearChineseChars = (str: string): string => (
+  str.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')
+);
+
 const getEntryData = (document: HTMLDocument, selector: Entry): Entry => ({
   id: getText(document, selector.id),
   author: getText(document, selector.author),
-  title: getText(document, selector.title),
+  title: clearChineseChars(getText(document, selector.title)),
   publisher: getText(document, selector.publisher),
   year: getText(document, selector.year),
   pages: getText(document, selector.pages),

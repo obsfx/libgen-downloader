@@ -1,13 +1,16 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import figures from 'figures';
+import InkSpinner from 'ink-spinner';
 import { useStore, AppStatus, returnedValue } from '../../store-provider';
 import { Entry } from '../../search-api';
-import List from './List';
+import List, { ListEntry } from './List';
 import { SelectInputItem } from './SelectInput';
+import BulkQueueIndicator from './BulkQueueIndicator';
 
 const Results = () => {
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
+  const query: string = useStore(state => state.globals.query);
 
   const nextPage: boolean = useStore(state => state.globals.nextPage);
 
@@ -17,11 +20,16 @@ const Results = () => {
   const filters: [ string, string ][] = Object.entries(useStore(state => state.globals.searchFilters))
   .filter(([ _, value ]) => (value.trim() != ''));
 
-  let entries: Entry[] = useStore(state => state.globals.entries);
+  let entries: ListEntry[] = useStore(state => state.globals.entries).map((entry: Entry, i: number) => ({
+    idx: i,
+    data: entry
+  }));
+
+  const totalEntries: number = entries.length;
 
   if (filters.length > 0) {
-    entries = entries.filter((entry: Entry) => {
-      const pairs: [string, string][] = Object.entries(entry);
+    entries = entries.filter((entry: ListEntry) => {
+      const pairs: [string, string][] = Object.entries(entry.data);
 
       const matchedPairs: number = pairs.filter(([ key, value ]) => {
         const filter = filters.filter(([ fkey, _ ]) => key == fkey);
@@ -40,50 +48,58 @@ const Results = () => {
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
 
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
+  const setDownloadQueue: (callback: Function) => void = useStore(state => state.set.downloadQueue);
   const setEntryBuffer: (entryBuffer: Entry) => void = useStore(state => state.set.entryBuffer);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   const options: SelectInputItem[] = [
     {
-      label: `?  Search`,
+      label: <Text>?  Search</Text>,
       value: returnedValue.search
     },
     {
-      label: `${figures.arrowRight}  Next Page`,
+      label: <Text>{figures.arrowRight}  Next Page</Text>,
       value: returnedValue.nextPage,
       disabled: !nextPage
     },
     {
-      label: `${figures.arrowLeft}  Previous Page`,
+      label: <Text>{figures.arrowLeft}  Previous Page</Text>,
       value: returnedValue.prevPage,
       disabled: currentPage == 1
     },
     {
-      label: `@  Start Bulk Downloading`,
+      label: <Text>@  Start Bulk Downloading</Text>,
       value: returnedValue.startBulkDownloading,
-      disabled: true
+      disabled: bulkQueue.length == 0
     },
     {
-      label: `${figures.cross}  Exit`,
+      label: <Text>{figures.cross}  Exit</Text>,
       value: returnedValue.exit
     }
   ]
 
-  const generateSelectInputItems = (checked: boolean): SelectInputItem[] => ([
+  const generateSelectInputItems = (inBulkQueue: boolean, inDownloadQueue: boolean): SelectInputItem[] => ([
     {
-      label: 'See Details',
+      label: <Text>See Details</Text>,
       value: returnedValue.seeDetails
     },
     {
-      label: 'Dowload Directly',
-      value: returnedValue.downloadDirectly
+      label: !inDownloadQueue ? <Text>Dowload Directly</Text> : 
+      <Text>
+        <Text color='greenBright'>
+          <InkSpinner type='dots' />
+          &nbsp;
+        </Text>
+        <Text>This File Will Be Downloaded</Text>
+      </Text>,
+      value: !inDownloadQueue ? returnedValue.downloadDirectly : returnedValue.empty
     },
     {
-      label: !checked ? 'Add To Bulk Downloading Queue' : 'Remove From Bulk Downloading Queue',
-      value: !checked ? returnedValue.addToBulkDownloadingQueue : returnedValue.removeFromBulkDownloadingQueue
+      label: !inBulkQueue ? <Text>Add To Bulk Downloading Queue</Text> : <Text>Remove From Bulk Downloading Queue</Text>,
+      value: !inBulkQueue ? returnedValue.addToBulkDownloadingQueue : returnedValue.removeFromBulkDownloadingQueue
     },
     {
-      label: 'Turn Back To The List',
+      label: <Text>Turn Back To The List</Text>,
       value: returnedValue.turnBackToTheList
     }
   ]);
@@ -94,6 +110,12 @@ const Results = () => {
         if (entryData) {
           setEntryBuffer(entryData);
           setStatus('entryDetails');
+        }
+      break;
+
+      case returnedValue.downloadDirectly:
+        if (entryData) {
+          setDownloadQueue((queue: string[]) => [entryData.id, ...queue]);
         }
       break;
 
@@ -131,12 +153,31 @@ const Results = () => {
 
   return (
     <Box flexDirection='column'>
+      <Box>
+        <Text wrap='truncate'>
+          <Text>Results for </Text>
+          <Text color='greenBright'>'{decodeURIComponent(query)}' </Text>
+          <Text>Page </Text>
+          <Text color='yellowBright'>{currentPage}</Text>
+        </Text>
+      </Box>
+      {
+        filters.length > 0 && 
+        <Box>
+          <Text wrap='truncate'>
+            <Text>Filters applied </Text>
+            <Text>Showing </Text>
+            <Text color='bold'>{entries.length} </Text>
+            <Text>of </Text>
+            <Text color='bold'>{totalEntries} </Text>
+          </Text>
+        </Box>
+      }
+      <BulkQueueIndicator />
       <List 
         entries={entries}
         options={options}
-        currentPage={currentPage}
         pageSize={pageSize}
-        bulkQueue={bulkQueue}
         generateSelectInputItems={generateSelectInputItems}
         handleOnSelect={handleOnSelect}/>
       <Text wrap='truncate'>

@@ -1,5 +1,6 @@
 import create, { SetState } from 'zustand';
 import { Entry } from './search-api';
+import { ReactNode } from 'react';
 
 //type SearchFilters = {
 //  author: string;
@@ -22,14 +23,15 @@ export enum returnedValue {
   search,
   exit,
   tryAgain,
-  searchAnother
+  searchAnother,
+  empty
 }
 
 export type Item = {
   key: string;
   data: Entry | null;
   value: returnedValue | null;
-  text: string;
+  text: ReactNode;
   expandable: boolean;
 }
 
@@ -68,6 +70,7 @@ export type Globals = {
   entryBuffer: Entry | null;
   listBuffer: Item[];
   bulkQueue: string[];
+  downloadQueue: string[];
   query: string;
   searchFilters: {
     author: string;
@@ -94,6 +97,7 @@ type Setters = {
   entryBuffer: (entryBuffer: Entry) => void;
   listBuffer: (listBuffer: Item[]) => void;
   bulkQueue: (bulkQueue: string[]) => void;
+  downloadQueue: (callback: Function) => void;
   query: (query: string) => void;
   searchFilters: (callback: Function) => void;
 }
@@ -117,6 +121,7 @@ const initialGlobals: Globals = {
   entryBuffer: null,
   listBuffer: [],
   bulkQueue: [],
+  downloadQueue: [],
   query: '',
   searchFilters: {
     author: '',
@@ -165,6 +170,7 @@ export const useStore = create<State>((set: SetState<State>): State => ({
     entryBuffer: (entryBuffer: Entry) => set(state => ({ globals: { ...state.globals, entryBuffer } })),
     listBuffer: (listBuffer: Item[]) => set(state => ({ globals: { ...state.globals, listBuffer } })),
     bulkQueue: (bulkQueue: string[]) => set(state => ({ globals: { ...state.globals, bulkQueue } })),
+    downloadQueue: (callback: Function) => set(state => ({ globals: { ...state.globals, downloadQueue: callback(state.globals.downloadQueue) } })),
     query: (query: string) => set(state => ({ globals: { ...state.globals, query } })),
     searchFilters: (callback: Function) => set(state => ({ globals: { ...state.globals, searchFilters: callback(state.globals) } }))
   }

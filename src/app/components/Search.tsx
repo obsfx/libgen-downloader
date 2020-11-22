@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import { useStore, AppStatus } from '../../store-provider';
 import Input from './Input';
 import SearchFilters from './SearchFilters';
+import BulkQueueIndicator from './BulkQueueIndicator';
 
 const Search = () => {
   const query: string = useStore(state => state.globals.query);
@@ -20,10 +21,11 @@ const Search = () => {
 
   return (
     <Box flexDirection='column' width='100%'>
+      <BulkQueueIndicator />
       <Text wrap='truncate'>Press [TAB] to switch between 'Search Input' and 'Show Filters'</Text>
       <Input 
         labelText='Search'
-        placeholder='Search query must be min. 3 characters.'
+        placeholder='Search string must contain minimum 3 characters.'
         value={query}
         minChar={3}
         onChange={setQuery}

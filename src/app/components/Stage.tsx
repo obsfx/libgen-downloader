@@ -11,7 +11,7 @@ const Stage = () => {
   const status: AppStatus = useStore(state => state.globals.status);
 
   return (
-    <Box>
+    <Box flexDirection='column'>
       { status == 'search' && <Search /> }
       { status == 'gettingResults' && <GettingResults /> }
       { status == 'results' && <Results /> }

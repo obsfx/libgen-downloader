@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, useInput, Key } from 'ink';
+import { Box, useInput, Key } from 'ink';
 import { Entry } from '../../search-api';
 import { useStore, Item, returnedValue } from '../../store-provider';
 import { ui_page_size } from '../app-config.json';
@@ -7,13 +7,16 @@ import { SelectInputItem } from './SelectInput';
 import ListItem from './ListItem';
 import ExpandableListItem from './ExpandableListItem';
 
+export type ListEntry = {
+  idx: number,
+  data: Entry
+}
+
 type Props = {
-  entries: Entry[];
+  entries: ListEntry[];
   options: SelectInputItem[];
-  currentPage: number;
   pageSize: number;
-  bulkQueue: string[];
-  generateSelectInputItems: (checked: boolean) => SelectInputItem[];
+  generateSelectInputItems: (inBulkQueue: boolean, inDownloadQueue: boolean) => SelectInputItem[];
   handleOnSelect: (expanded: boolean, setExpanded: Function, entryData: Entry | null, returnedValue: returnedValue) => void;
 }
 
@@ -21,30 +24,32 @@ const List = (props: Props) => {
   const {
     entries,
     options,
-    currentPage,
     pageSize,
-    bulkQueue,
     generateSelectInputItems,
     handleOnSelect
   } = props;
 
   const [ expanded, setExpanded ] = useState<boolean>(false);
 
+  const currentPage: number = useStore(state => state.globals.currentPage);
+  const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
+  const downloadQueue: string[] = useStore(state => state.globals.downloadQueue);
+
   const listBuffer: Item[] = useStore(state => state.globals.listBuffer);
   const setListBuffer: (listBuffer: Item[]) => void = useStore(state => state.set.listBuffer);
 
   useEffect(() => {
     if (listBuffer.length == 0) {
-      const entryItems: Item[] = entries.map((entry: Entry, i: number) => {
-        const idx: number = i + 1 + (currentPage - 1) * pageSize;
-        const extension: string = entry.extension;
-        const title: string = entry.title;
+      const entryItems: Item[] = entries.map((entry: ListEntry) => {
+        const idx: number = entry.idx + 1 + (currentPage - 1) * pageSize;
+        const extension: string = entry.data.extension;
+        const title: string = entry.data.title;
 
         let text: string = `[${idx}] [${extension}] ${title}`;
 
         return { 
-          key: entry.id, 
-          data: entry, 
+          key: entry.data.id, 
+          data: entry.data, 
           text, 
           expandable: true,
           value: null
@@ -114,8 +119,9 @@ const List = (props: Props) => {
             const itemHovered: boolean = i == Math.floor(renderList.length / 2);
             const itemExpanded: boolean = expanded && itemHovered;
             const itemFadedOut: boolean = expanded && !itemHovered;
-            const itemChecked: boolean = bulkQueue.includes(item.data?.id || '');
-            const selectInputItems: SelectInputItem[] = generateSelectInputItems(itemChecked);
+            const itemChecked: boolean = bulkQueue.indexOf(item.data?.id || '') > -1;
+            const itemInDownloadQueue: boolean = downloadQueue.indexOf(item.data?.id || '') > -1;
+            const selectInputItems: SelectInputItem[] = generateSelectInputItems(itemChecked, itemInDownloadQueue);
 
             if (!expanded || i + selectInputItems.length < ui_page_size) {
               if (item.expandable && item.data) {

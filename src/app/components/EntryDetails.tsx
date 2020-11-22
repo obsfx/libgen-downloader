@@ -1,9 +1,11 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import figures from 'figures';
+import InkSpinner from 'ink-spinner';
 import { useStore, AppStatus, returnedValue } from '../../store-provider';
 import { Entry } from '../../search-api';
 import SelectInput, { SelectInputItem } from './SelectInput';
+import BulkQueueIndicator from './BulkQueueIndicator';
 
 const EntryDetails = () => {
   const entryBuffer: Entry | null = useStore(state => state.globals.entryBuffer);
@@ -11,10 +13,13 @@ const EntryDetails = () => {
   if (!entryBuffer) return null;
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
+  const downloadQueue: string[] = useStore(state => state.globals.downloadQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
+  const setDownloadQueue: (callback: Function) => void = useStore(state => state.set.downloadQueue);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
-  const inBulkQueue: boolean = bulkQueue.includes(entryBuffer.id);
+  const inBulkQueue: boolean = bulkQueue.indexOf(entryBuffer.id) > -1;
+  const inDownloadQueue: boolean = downloadQueue.indexOf(entryBuffer.id) > -1;
 
   const labels: string[] = [
     'ID',
@@ -31,15 +36,22 @@ const EntryDetails = () => {
 
   const selectInputItems: SelectInputItem[] = [
     {
-      label: 'Turn Back To The List',
+      label: <Text>Turn Back To The List</Text>,
       value: returnedValue.turnBackToTheList
     },
     {
-      label: 'Download Directly',
-      value: returnedValue.turnBackToTheList
+      label: !inDownloadQueue ? <Text>Dowload Directly</Text> : 
+      <Text>
+        <Text color='greenBright'>
+          <InkSpinner type='dots' />
+          &nbsp;
+        </Text>
+        <Text>This File Will Be Downloaded</Text>
+      </Text>,
+      value: !inDownloadQueue ? returnedValue.downloadDirectly : returnedValue.empty
     },
     {
-      label: !inBulkQueue ? 'Add To Bulk Downloading Queue' : 'Remove From Bulk Downloading Queue',
+      label: !inBulkQueue ? <Text>Add To Bulk Downloading Queue</Text> : <Text>Remove From Bulk Downloading Queue</Text>,
       value: !inBulkQueue ? returnedValue.addToBulkDownloadingQueue : returnedValue.removeFromBulkDownloadingQueue
     }
   ];
@@ -51,6 +63,7 @@ const EntryDetails = () => {
       break;
 
       case returnedValue.downloadDirectly:
+        setDownloadQueue((queue: string[]) => [ ...queue, entryBuffer.id ]);
       break;
 
       case returnedValue.addToBulkDownloadingQueue:
@@ -80,8 +93,8 @@ const EntryDetails = () => {
           ))
         }
       </Box>
-
       <Text color='greenBright'>{ inBulkQueue ? `${figures.tick} Added To Bulk Downloading Queue` : ' ' }</Text>
+      <BulkQueueIndicator />
       <Box width='100%'>
         <SelectInput selectInputItems={selectInputItems} onSelect={handleOnSelect} />
       </Box>

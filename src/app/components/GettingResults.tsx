@@ -3,7 +3,7 @@ import { search, isPageExist, Entry } from '../../search-api';
 import { useStore, AppStatus, Item } from '../../store-provider';
 
 const GettingResults = () => {
-  const query: string = useStore(state => state.globals.query);
+  const query: string = encodeURIComponent(useStore(state => state.globals.query));
   const mirror: string = useStore(state => state.globals.mirror) || '';
   const currentPage: number = useStore(state => state.globals.currentPage);
   const searchReqPattern: string = useStore(state => state.config?.searchReqPattern) || '';

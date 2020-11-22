@@ -7,6 +7,7 @@ import { doRequest, findMirror } from '../../search-api';
 import Loader from './Loader';
 import Header from './Header';
 import Stage from './Stage';
+import Downloader from './Downloader';
 
 type Props = {
   appWidth: number;
@@ -17,7 +18,6 @@ const App = (props: Props) => {
 
   const { setRawMode } = useStdin();
 
-  const config = useStore(state => state.config);
   const setConfig: (config: any) => void = useStore(state => state.set.config);
   const executed: boolean = useStore(state => state.globals.executed);
   const setExecuted: (executed: boolean) => void = useStore(state => state.set.executed);
@@ -76,11 +76,12 @@ const App = (props: Props) => {
   }, []);
 
   return (
-    <Box>
+    <Box marginLeft={1}>
       <Box 
         width={appWidth} 
         flexDirection='column'>
         <Header appWidth={appWidth}/>
+        <Downloader />
         <Loader />
         <Stage />
       </Box>

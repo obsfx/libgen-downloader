@@ -32,7 +32,7 @@ const ListItem = (props: Props) => {
         <Text color='greenBright'>{checked ? figures.tick : ' '}</Text>&nbsp;
         <Text bold={hovered || checked} color={
           !fadedOut && hovered ? 
-            'yellowBright' : (checked ? 'greenBright' : (fadedOut ? 'grey' : '')) 
+            'cyanBright' : (checked ? 'greenBright' : (fadedOut ? 'grey' : '')) 
         }>{children}</Text> 
       </Text>
       { expanded && 
