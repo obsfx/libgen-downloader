@@ -1,39 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Text } from 'ink';
 import { useStore, AppStatus } from '../../store-provider';
-import { search, Entry } from '../../search-api';
 import Input from './Input';
 import SearchFilters from './SearchFilters';
 
 const Search = () => {
   const query: string = useStore(state => state.globals.query);
   const setQuery: (query: string) => void = useStore(state => state.set.query);
-
-  const setEntries: (entries: Entry[]) => void = useStore(state => state.set.entries);
-
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
+  const reset: () => void = useStore(state => state.set.reset);
 
-  const mirror: string = useStore(state => state.globals.mirror) || '';
-  const currentPage: number = useStore(state => state.globals.currentPage);
-  const searchReqPattern: string = useStore(state => state.config?.searchReqPattern) || '';
-  const pageSize: number = useStore(state => state.config?.pageSize) || 25;
-
-  const doSearchRequest = async () => {
-    setStatus('gettingResults');
-
-    const results: Entry[] | null = await search(searchReqPattern, mirror, query, currentPage, pageSize);
-
-    if (results == null) {
-      // throw pop up
-      return;
-    }
-
-    setEntries(results);
-    setStatus('results');
-  }
+  useEffect(() => {
+    reset();
+  }, []);
 
   const handleOnSubmit = () => {
-    doSearchRequest();
+    setStatus('gettingResults');
   }
 
   return (

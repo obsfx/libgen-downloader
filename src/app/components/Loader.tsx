@@ -30,6 +30,7 @@ const Loader = () => {
             }
 
             <Text>
+              &nbsp;
               { LoaderMessages.get(status) || '' }
             </Text>
           </Box>

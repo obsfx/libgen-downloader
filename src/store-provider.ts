@@ -57,6 +57,7 @@ export type AppStatus = 'fetchingConfig' |
 
 export type Globals = {
   status: AppStatus;
+  nextPage: boolean;
   lastFailedAction: Function;
   errorCounter: number;
   executed: boolean;
@@ -82,11 +83,12 @@ type Setters = {
   reset: () => void;
   config: (config: any) => void;
   status: (status: AppStatus) => void;
+  nextPage: (nextPage: boolean) => void;
   lastFailedAction: (lastFailedAction: Function) => void;
   errorCounter: (errorCounter: number) => void;
   executed: (configFetched: boolean) => void;
   configFetched: (configFetched: boolean) => void;
-  currentPage: (callback: Function) => void;
+  currentPage: (currentPage: number) => void;
   mirror: (mirror: string) => void;
   entries: (entries: Entry[]) => void;
   entryBuffer: (entryBuffer: Entry) => void;
@@ -104,6 +106,7 @@ type State = {
 
 const initialGlobals: Globals = {
   status: 'fetchingConfig',
+  nextPage: false,
   lastFailedAction: () => null,
   errorCounter: 0,
   executed: false,
@@ -121,7 +124,7 @@ const initialGlobals: Globals = {
     year: '',
     pages: '',
     language: '',
-    extension: '',
+    extension: ''
   }
 }
 
@@ -129,14 +132,34 @@ export const useStore = create<State>((set: SetState<State>): State => ({
   config: null,
   globals: { ...initialGlobals },
   set: {
-    reset: () => set({ globals: { ...initialGlobals  } }),
+    reset: () => set(state => ({ 
+      globals: { 
+        ...state.globals,
+        nextPage: false,
+        lastFailedAction: () => null,
+        errorCounter: 0,
+        currentPage: 1,
+        entries: [],
+        entryBuffer: null,
+        listBuffer: [],
+        query: '',
+        searchFilters: {
+          author: '',
+          publisher: '',
+          year: '',
+          pages: '',
+          language: '',
+          extension: ''
+        }
+    } })),
     config: (config: any) => set({ config: { ...config } }),
     status: (status: AppStatus) => set(state => ({ globals: { ...state.globals, status } })),
+    nextPage: (nextPage: boolean) => set(state => ({ globals: { ...state.globals, nextPage } })),
     lastFailedAction: (lastFailedAction: Function) => set(state => ({ globals: { ...state.globals, lastFailedAction } })),
     errorCounter: (errorCounter: number) => set(state => ({ globals: { ...state.globals, errorCounter } })),
     executed: (executed: boolean) => set(state => ({ globals: { ...state.globals, executed } })),
     configFetched: (configFetched: boolean) => set(state => ({ globals: { ...state.globals, configFetched } })),
-    currentPage: (callback: Function) => set(state => ({ globals: { ...state.globals, currentPage: callback(state.globals) } })),
+    currentPage: (currentPage: number) => set(state => ({ globals: { ...state.globals, currentPage } })),
     mirror: (mirror: string) => set(state => ({ globals: { ...state.globals, mirror } })),
     entries: (entries: Entry[]) => set(state => ({ globals: { ...state.globals, entries } })),
     entryBuffer: (entryBuffer: Entry) => set(state => ({ globals: { ...state.globals, entryBuffer } })),

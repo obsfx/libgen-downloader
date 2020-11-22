@@ -7,8 +7,12 @@ import List from './List';
 import { SelectInputItem } from './SelectInput';
 
 const Results = () => {
-  const currentPage: number = useStore(state => state.globals.currentPage);
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
+
+  const nextPage: boolean = useStore(state => state.globals.nextPage);
+
+  const currentPage: number = useStore(state => state.globals.currentPage);
+  const setCurrentPage: (currentPage: number) => void = useStore(state => state.set.currentPage);
 
   const filters: [ string, string ][] = Object.entries(useStore(state => state.globals.searchFilters))
   .filter(([ _, value ]) => (value.trim() != ''));
@@ -34,10 +38,9 @@ const Results = () => {
   }
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
+
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
-
   const setEntryBuffer: (entryBuffer: Entry) => void = useStore(state => state.set.entryBuffer);
-
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   const options: SelectInputItem[] = [
@@ -47,11 +50,13 @@ const Results = () => {
     },
     {
       label: `${figures.arrowRight}  Next Page`,
-      value: returnedValue.nextPage
+      value: returnedValue.nextPage,
+      disabled: !nextPage
     },
     {
       label: `${figures.arrowLeft}  Previous Page`,
-      value: returnedValue.prevPage
+      value: returnedValue.prevPage,
+      disabled: currentPage == 1
     },
     {
       label: `@  Start Bulk Downloading`,
@@ -109,7 +114,17 @@ const Results = () => {
       break;
 
       case returnedValue.nextPage:
-        //setStatus('entryDetails');
+        setCurrentPage(currentPage + 1);
+        setStatus('gettingResults');
+      break;
+
+      case returnedValue.prevPage:
+        setCurrentPage(currentPage - 1);
+        setStatus('gettingResults');
+      break;
+
+      case returnedValue.search:
+        setStatus('search');
       break;
     }
   }
