@@ -10,7 +10,28 @@ const Results = () => {
   const currentPage: number = useStore(state => state.globals.currentPage);
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
 
-  const entries: Entry[] = useStore(state => state.globals.entries);
+  const filters: [ string, string ][] = Object.entries(useStore(state => state.globals.searchFilters))
+  .filter(([ _, value ]) => (value.trim() != ''));
+
+  let entries: Entry[] = useStore(state => state.globals.entries);
+
+  if (filters.length > 0) {
+    entries = entries.filter((entry: Entry) => {
+      const pairs: [string, string][] = Object.entries(entry);
+
+      const matchedPairs: number = pairs.filter(([ key, value ]) => {
+        const filter = filters.filter(([ fkey, _ ]) => key == fkey);
+
+        if (filter.length == 0) return false;
+
+        const fvalue: string = filter[0][1];
+
+        return value.trim().toLowerCase().includes(fvalue.trim().toLowerCase());
+      }).length;
+
+      return matchedPairs == filters.length;
+    });
+  }
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);

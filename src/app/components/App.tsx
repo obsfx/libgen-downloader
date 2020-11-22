@@ -53,7 +53,7 @@ const App = (props: Props) => {
         // finding available mirror
         setStatus('findingMirror');
 
-        const mirrorList: string[] = config?.mirror || [];
+        const mirrorList: string[] = configJSON.mirrors || [];
         const mirror: string | null = await findMirror(mirrorList);
 
         if (mirror == null) {
