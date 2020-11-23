@@ -62,8 +62,6 @@ export type Globals = {
   nextPage: boolean;
   lastFailedAction: Function;
   errorCounter: number;
-  executed: boolean;
-  configFetched: boolean;
   currentPage: number;
   mirror: string | null;
   entries: Entry[];
@@ -89,8 +87,6 @@ type Setters = {
   nextPage: (nextPage: boolean) => void;
   lastFailedAction: (lastFailedAction: Function) => void;
   errorCounter: (errorCounter: number) => void;
-  executed: (configFetched: boolean) => void;
-  configFetched: (configFetched: boolean) => void;
   currentPage: (currentPage: number) => void;
   mirror: (mirror: string) => void;
   entries: (entries: Entry[]) => void;
@@ -113,8 +109,6 @@ const initialGlobals: Globals = {
   nextPage: false,
   lastFailedAction: () => null,
   errorCounter: 0,
-  executed: false,
-  configFetched: false,
   currentPage: 1,
   mirror: null,
   entries: [],
@@ -162,8 +156,6 @@ export const useStore = create<State>((set: SetState<State>): State => ({
     nextPage: (nextPage: boolean) => set(state => ({ globals: { ...state.globals, nextPage } })),
     lastFailedAction: (lastFailedAction: Function) => set(state => ({ globals: { ...state.globals, lastFailedAction } })),
     errorCounter: (errorCounter: number) => set(state => ({ globals: { ...state.globals, errorCounter } })),
-    executed: (executed: boolean) => set(state => ({ globals: { ...state.globals, executed } })),
-    configFetched: (configFetched: boolean) => set(state => ({ globals: { ...state.globals, configFetched } })),
     currentPage: (currentPage: number) => set(state => ({ globals: { ...state.globals, currentPage } })),
     mirror: (mirror: string) => set(state => ({ globals: { ...state.globals, mirror } })),
     entries: (entries: Entry[]) => set(state => ({ globals: { ...state.globals, entries } })),

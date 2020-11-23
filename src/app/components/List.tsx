@@ -132,6 +132,7 @@ const List = (props: Props) => {
                   expanded={itemExpanded}
                   fadedOut={itemFadedOut}
                   checked={itemChecked}
+                  downloading={itemInDownloadQueue}
                   onSelect={(returned: returnedValue) => handleOnSelect(expanded, setExpanded, item.data, returned)}>
                   {item.text}
                 </ExpandableListItem>

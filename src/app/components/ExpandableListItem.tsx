@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import { returnedValue } from '../../store-provider';
 import SelectInput, { SelectInputItem } from './SelectInput';
 import figures from 'figures';
+import InkSpinner from 'ink-spinner';
 
 type Props = {
   children?: ReactNode;
@@ -11,6 +12,7 @@ type Props = {
   expanded: boolean;
   fadedOut: boolean;
   checked: boolean;
+  downloading: boolean;
   onSelect: (returned: returnedValue) => void;
 }
 
@@ -22,6 +24,7 @@ const ListItem = (props: Props) => {
     expanded,
     fadedOut,
     checked,
+    downloading,
     onSelect
   } = props;
 
@@ -29,6 +32,11 @@ const ListItem = (props: Props) => {
     <Box flexDirection='column' width='100%' paddingLeft={expanded ? 2 : 0}>
       <Text wrap='truncate'>
         { !expanded && !fadedOut && hovered && <Text bold={true}>{figures.pointer}&nbsp;</Text> } 
+        { downloading && 
+          <Text color='greenBright'>
+            <InkSpinner type='dots' />
+          </Text>
+        } 
         <Text color='greenBright'>{checked ? figures.tick : ' '}</Text>&nbsp;
         <Text bold={hovered || checked} color={
           !fadedOut && hovered ? 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from 'ink';
-import { base_app_width } from './app-config.json';
 import App from './components/App';
 
 const clearTerminal = (): void => {
@@ -14,15 +13,8 @@ const clearTerminal = (): void => {
   process.stdout.write(clearANSI);
 }
 
-const adjustWidth = (width: number) => width > base_app_width ? base_app_width : width;
-
 export const init = () => {
   clearTerminal();
-  let unmount = render(<App appWidth={adjustWidth(process.stdout.columns)}/>).unmount;
-
-  process.stdout.on('resize', () => {
-    unmount();
-    clearTerminal();
-    unmount = render(<App appWidth={adjustWidth(process.stdout.columns)}/>).unmount;
-  });
+  render(<App />)
 }
+

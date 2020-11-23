@@ -24,8 +24,8 @@ export const startDownloading = (
   errorTolarance: number,
   delay: number,
   onErr: (attempt: number, tolarance: number) => void,
-  onData: (chunkLen: number, total: number, dir: string, filename: string) => void, 
-  onEnd: Function): Promise<true | null> => (
+  onData: (chunkLen: number, total: number, filename: string) => void, 
+  onEnd: (filename: string) => void): Promise<true | null> => (
   new Promise(async (resolve: Function) => {
     const downloadResponse: Response | null = await doRequest(endpoint, onErr, errorTolarance, delay);
 
@@ -52,11 +52,10 @@ export const startDownloading = (
     const file: fs.WriteStream = fs.createWriteStream(path);
 
     const total: number = Number(downloadResponse?.headers.get('content-length') || 0);
-    const dir: string = process.cwd();
     const filename: string = parsedContentDisposition.parameters.filename;
 
     downloadResponse?.body.on('data', chunk => {
-      onData(chunk.length, total, dir, filename);
+      onData(chunk.length, total, filename);
     });
 
     downloadResponse?.body.on('finish', () => {

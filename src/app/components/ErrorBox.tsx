@@ -5,7 +5,6 @@ import SelectInput, { SelectInputItem } from './SelectInput';
 
 const ErrorBox = () => {
   const lastFailedAction: Function = useStore(state => state.globals.lastFailedAction);
-  const configFetched: boolean = useStore(state => state.globals.configFetched);
   const setErrorCounter: (errorCounter: number) => void = useStore(state => state.set.errorCounter);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
@@ -13,11 +12,6 @@ const ErrorBox = () => {
     {
       label: 'Try Again',
       value: returnedValue.tryAgain
-    },
-    {
-      label: 'Search Another',
-      value: returnedValue.searchAnother,
-      disabled: !configFetched
     },
     {
       label: 'Exit',

@@ -3,15 +3,15 @@ import { Box, Text } from 'ink';
 import { version } from '../../../package.json';
 
 type Props = {
-  appWidth: number;
+  width: number | string;
 }
 
 const Header = (props: Props) => {
-  const { appWidth } = props;
+  const { width } = props;
 
   return (
-    <Box flexDirection='column' marginBottom={1}>
-      <Box borderColor='gray' borderStyle='round' width={Math.min(30, appWidth)} justifyContent='center'>
+    <Box flexDirection='column' marginBottom={1} width='90%'>
+      <Box borderColor='gray' borderStyle='round' justifyContent='center' width={width}>
         <Text wrap='truncate'>
           <Text color='yellowBright' bold>libgen-downloader </Text>
           <Text>@{version}</Text>
