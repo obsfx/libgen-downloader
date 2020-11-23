@@ -10,7 +10,7 @@ import { findDownloadURL, startDownloading } from '../../download-api';
 const Downloader = () => {
   const [ running, setRunning ] = useState(false);
   const [ completedFiles, setCompletedFiles ] = useState(1);
-  const [ chunkLen, setChunkLen ] = useState(0);
+  const [ progress, setProgress ] = useState(0);
   const [ total, setTotal ] = useState(0);
   const [ filename, setFilename ] = useState('');
   const [ errorStatus, setErrorStatus ] = useState(false);
@@ -20,7 +20,7 @@ const Downloader = () => {
 
   useEffect(() => {
     if (downloadQueue.length > 0 && !running) {
-      setCompletedFiles(1);
+      setCompletedFiles(0);
       setRunning(true);
 
       const operateQueue = async () => {
@@ -29,14 +29,14 @@ const Downloader = () => {
         }
 
         const onData = (chunklen: number, total: number, filename: string) => {
-          setChunkLen((prev => prev + chunklen));
+          setProgress((prev => prev + chunklen));
           setTotal(total);
           setFilename(filename);
         }
 
         const onEnd = (_: string) => {
           setCompletedFiles(prev => prev + 1);
-          setChunkLen(0);
+          setProgress(0);
           setTotal(0);
           setFilename('');
           setDownloadQueue((arr: Entry[]) => arr.slice(1));
@@ -94,12 +94,12 @@ const Downloader = () => {
         </Text>
       }
       {
-        running && chunkLen != 0 && total != 0 && filename != '' && 
+        running && progress != 0 && total != 0 && filename != '' && 
         <Box flexDirection='column'>
           <Text wrap='truncate'>
-            <Text color='greenBright'>{(100 / total * chunkLen).toFixed(2)}%</Text>
+            <Text color='greenBright'>{(100 / total * progress).toFixed(2)}%</Text>
             &nbsp;
-            <Text color='magentaBright'>{pretty(chunkLen)} / {pretty(total)}</Text>
+            <Text color='magentaBright'>{pretty(progress)}/{pretty(total)}</Text>
             &nbsp;
             <Text color='yellow'>{filename}</Text>
           </Text>

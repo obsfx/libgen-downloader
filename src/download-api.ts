@@ -71,7 +71,7 @@ export const startDownloading = (
   })
 );
 
-const findDownloadMirror = async (
+export const findDownloadMirror = async (
   mirror: string, 
   searchByMD5Pattern: string, 
   md5: string,
@@ -94,7 +94,7 @@ const findDownloadMirror = async (
   return entries[0].mirror;
 }
 
-const findMD5s = async (
+export const findMD5s = async (
   mirror: string,
   ids: string[],
   MD5ReqPattern: string,

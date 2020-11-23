@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useApp } from 'ink';
 import figures from 'figures';
 import InkSpinner from 'ink-spinner';
 import { useStore, AppStatus, returnedValue } from '../../store-provider';
@@ -9,6 +9,8 @@ import { SelectInputItem } from './SelectInput';
 import BulkQueueIndicator from './BulkQueueIndicator';
 
 const Results = () => {
+  const { exit } = useApp();
+
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
   const query: string = useStore(state => state.globals.query);
 
@@ -70,13 +72,12 @@ const Results = () => {
     {
       label: <Text>@  Start Bulk Downloading</Text>,
       value: returnedValue.startBulkDownloading,
-      disabled: bulkQueue.length == 0
     },
     {
       label: <Text>{figures.cross}  Exit</Text>,
       value: returnedValue.exit
     }
-  ]
+  ];
 
   const generateSelectInputItems = (inBulkQueue: boolean, inDownloadQueue: boolean): SelectInputItem[] => ([
     {
@@ -121,7 +122,7 @@ const Results = () => {
 
       case returnedValue.addToBulkDownloadingQueue:
         if (entryData) {
-          setBulkQueue([ ...bulkQueue,  entryData.id ]);
+          setBulkQueue([ ...bulkQueue, entryData.id ]);
         }
       break;
 
@@ -145,9 +146,19 @@ const Results = () => {
         setStatus('gettingResults');
       break;
 
+      case returnedValue.startBulkDownloading:
+        if (bulkQueue.length > 0) {
+          setStatus('bulkDownloadingID');
+        }
+      break;
+
       case returnedValue.search:
         setStatus('search');
       break;
+
+      case returnedValue.exit: 
+        exit();
+        process.exit(0);
     }
   }
 

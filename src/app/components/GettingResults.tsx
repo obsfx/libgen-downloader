@@ -13,6 +13,7 @@ const GettingResults = () => {
   const setListBuffer: (listBuffer: Item[]) => void = useStore(state => state.set.listBuffer);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
   const setNextPage: (nextPage: boolean) => void = useStore(state => state.set.nextPage);
+  const seetLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);
 
   useEffect(() => {
     const doSearchRequest = async () => {
@@ -20,6 +21,8 @@ const GettingResults = () => {
 
       if (results == null) {
         // throw pop up
+        seetLastFailedAction(doSearchRequest);
+        setStatus('failed');
         return;
       }
 

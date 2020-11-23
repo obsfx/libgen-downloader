@@ -119,7 +119,7 @@ const List = (props: Props) => {
             const itemHovered: boolean = i == Math.floor(renderList.length / 2);
             const itemExpanded: boolean = expanded && itemHovered;
             const itemFadedOut: boolean = expanded && !itemHovered;
-            const itemChecked: boolean = item.data?.id ? bulkQueue.indexOf(item.data?.id || '') > -1 : false;
+            const itemChecked: boolean = item.data?.id ? bulkQueue.indexOf(item.data?.id) > -1 : false;
             const itemInDownloadQueue: boolean = item.data ? downloadQueue.indexOf(item.data) > -1 : false;
             const selectInputItems: SelectInputItem[] = generateSelectInputItems(itemChecked, itemInDownloadQueue);
 

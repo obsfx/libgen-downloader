@@ -15,6 +15,6 @@ const clearTerminal = (): void => {
 
 export const init = () => {
   clearTerminal();
-  render(<App />)
+  render(<App />);
 }
 

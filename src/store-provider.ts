@@ -41,6 +41,8 @@ export type AppStatus = 'fetchingConfig' |
   'gettingResults' |
   'results' |
   'entryDetails' |
+  'bulkDownloadingID' |
+  'bulkDownloadingMD5' |
   'failed';
 
 //export type Config = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Box, useStdin } from 'ink';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
 import { Response } from 'node-fetch';
