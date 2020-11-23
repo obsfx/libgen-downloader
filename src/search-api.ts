@@ -27,7 +27,7 @@ const Columns: { [key: string]: number } = {
   mirror: 10
 }
 
-const CssSelectors: { [key: string]: string } = {
+export const CssSelectors: { [key: string]: string } = {
   tableContainer: '.c tbody',
   row: '.c tbody tr',
   downloadURL: '#info h2 a',
@@ -113,7 +113,7 @@ const getEntryData = (document: HTMLDocument, selector: Entry): Entry => ({
   mirror: document.querySelector(selector.mirror)?.getAttribute('href') || ' '
 });
 
-const getEntries = (document: HTMLDocument): Entry[] => {
+export const getEntries = (document: HTMLDocument): Entry[] => {
   const entries: Entry[] = [];
   const entryLength: number = document.querySelectorAll(CssSelectors.row).length;
 

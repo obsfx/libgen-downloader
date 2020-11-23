@@ -33,7 +33,7 @@ const List = (props: Props) => {
 
   const currentPage: number = useStore(state => state.globals.currentPage);
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
-  const downloadQueue: string[] = useStore(state => state.globals.downloadQueue);
+  const downloadQueue: Entry[] = useStore(state => state.globals.downloadQueue);
 
   const listBuffer: Item[] = useStore(state => state.globals.listBuffer);
   const setListBuffer: (listBuffer: Item[]) => void = useStore(state => state.set.listBuffer);
@@ -119,8 +119,8 @@ const List = (props: Props) => {
             const itemHovered: boolean = i == Math.floor(renderList.length / 2);
             const itemExpanded: boolean = expanded && itemHovered;
             const itemFadedOut: boolean = expanded && !itemHovered;
-            const itemChecked: boolean = bulkQueue.indexOf(item.data?.id || '') > -1;
-            const itemInDownloadQueue: boolean = downloadQueue.indexOf(item.data?.id || '') > -1;
+            const itemChecked: boolean = item.data?.id ? bulkQueue.indexOf(item.data?.id || '') > -1 : false;
+            const itemInDownloadQueue: boolean = item.data ? downloadQueue.indexOf(item.data) > -1 : false;
             const selectInputItems: SelectInputItem[] = generateSelectInputItems(itemChecked, itemInDownloadQueue);
 
             if (!expanded || i + selectInputItems.length < ui_page_size) {

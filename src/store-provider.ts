@@ -70,7 +70,7 @@ export type Globals = {
   entryBuffer: Entry | null;
   listBuffer: Item[];
   bulkQueue: string[];
-  downloadQueue: string[];
+  downloadQueue: Entry[];
   query: string;
   searchFilters: {
     author: string;

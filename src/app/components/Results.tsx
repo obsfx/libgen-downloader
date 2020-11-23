@@ -115,7 +115,7 @@ const Results = () => {
 
       case returnedValue.downloadDirectly:
         if (entryData) {
-          setDownloadQueue((queue: string[]) => [entryData.id, ...queue]);
+          setDownloadQueue((queue: string[]) => [ ...queue, entryData ]);
         }
       break;
 

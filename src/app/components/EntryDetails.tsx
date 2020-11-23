@@ -13,13 +13,13 @@ const EntryDetails = () => {
   if (!entryBuffer) return null;
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
-  const downloadQueue: string[] = useStore(state => state.globals.downloadQueue);
+  const downloadQueue: Entry[] = useStore(state => state.globals.downloadQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
   const setDownloadQueue: (callback: Function) => void = useStore(state => state.set.downloadQueue);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   const inBulkQueue: boolean = bulkQueue.indexOf(entryBuffer.id) > -1;
-  const inDownloadQueue: boolean = downloadQueue.indexOf(entryBuffer.id) > -1;
+  const inDownloadQueue: boolean = downloadQueue.indexOf(entryBuffer) > -1;
 
   const labels: string[] = [
     'ID',
@@ -63,7 +63,7 @@ const EntryDetails = () => {
       break;
 
       case returnedValue.downloadDirectly:
-        setDownloadQueue((queue: string[]) => [ ...queue, entryBuffer.id ]);
+        setDownloadQueue((queue: Entry[]) => [ ...queue, entryBuffer ]);
       break;
 
       case returnedValue.addToBulkDownloadingQueue:
