@@ -30,6 +30,7 @@ const List = (props: Props) => {
   } = props;
 
   const [ expanded, setExpanded ] = useState<boolean>(false);
+  const [ input, setInput ] = useState(false);
 
   const currentPage: number = useStore(state => state.globals.currentPage);
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
@@ -37,6 +38,11 @@ const List = (props: Props) => {
 
   const listBuffer: Item[] = useStore(state => state.globals.listBuffer);
   const setListBuffer: (listBuffer: Item[]) => void = useStore(state => state.set.listBuffer);
+
+  useEffect(() => {
+    setInput(true);
+    () => setInput(false);
+  }, []);
 
   useEffect(() => {
     if (listBuffer.length == 0) {
@@ -103,7 +109,7 @@ const List = (props: Props) => {
         setExpanded(!expanded);
       }
     }
-  });
+  }, { isActive: input });
 
   return (
     <Box 

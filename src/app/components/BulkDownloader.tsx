@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text, useApp } from 'ink';
 import figures from 'figures';
 import InkSpinner from 'ink-spinner';
+import fs from 'fs';
 // @ts-ignore
 import pretty from 'prettysize';
 import { error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
@@ -29,6 +30,7 @@ const BulkDownloader = (props: Props) => {
 
   const [ queue, setQueue ] = useState<QueueItem[]>([])
   const [ downloaderState, setDownloaderState ] = useState<DownloaderStates>(null)
+  const [ listExported, setListExported ] = useState('');
   const [ completedMD5s, setCompletedMD5s ] = useState<string[]>([]);
   const [ errorCounter, setErrorCounter ] = useState(0);
 
@@ -100,6 +102,8 @@ const BulkDownloader = (props: Props) => {
     const operateQueue = async () => {
       setDownloaderState('onGoing');
 
+      const md5s: string[] = [];
+
       for (let i: number = 0; i < queue.length; i++) {
         queue[i].status = 'processing';
         setQueue([...queue]);
@@ -136,6 +140,7 @@ const BulkDownloader = (props: Props) => {
         const onEnd = (filename: string) => {
           queue[i].status = 'completed';
           queue[i].filename = filename;
+          md5s.push(queue[i].md5);
           setCompletedMD5s(prev => [ ...prev, queue[i].md5 ])
           setQueue([...queue]);
         }
@@ -151,7 +156,19 @@ const BulkDownloader = (props: Props) => {
         setErrorCounter(0);
       }
 
+      if (md5s.length > 0 && mode == 'id') {
+        try {
+          const listfile: string = `MD5_LIST_${Date.now().toString()}.txt`;
+          await fs.promises.writeFile(`./${listfile}`, md5s.join('\n'));
+          setListExported(listfile);
+        } catch(e) {  }
+      }
+
       setDownloaderState('completed');
+
+      if (mode == 'md5') {
+        exit();
+      }
     }
 
     operateQueue();
@@ -201,13 +218,6 @@ const BulkDownloader = (props: Props) => {
         </Text>
         }
 
-        { errorCounter > 0 &&
-        <Text>
-          <Text color='red'>{errorCounter} / {error_tolarance} </Text>
-          <Text color='yellow'>Some connection problems occured. Trying again.</Text>
-        </Text>
-        }
-
         { downloaderState == 'onGoing'  &&
           <Text>
             <Text>Downloaded: </Text>
@@ -219,7 +229,7 @@ const BulkDownloader = (props: Props) => {
 
         { downloaderState == 'failed'  &&
           <Text>
-            <Text color='red'>Downloading process failed.</Text>
+            <Text color='red'>Downloading process failed</Text>
           </Text>
         }
 
@@ -227,6 +237,20 @@ const BulkDownloader = (props: Props) => {
           <Text>
             <Text color='greenBright'>{completedMD5s.length} of {queue.length}</Text>
             <Text> files downloaded successfully</Text>
+          </Text>
+        }
+      </Box>
+      <Box>
+        { errorCounter > 0 &&
+        <Text>
+          <Text color='red'>{errorCounter} / {error_tolarance} </Text>
+          <Text color='yellow'>Some connection problems occured. Trying again.</Text>
+        </Text>
+        }
+        { downloaderState == 'completed' && listExported != '' &&
+          <Text>
+            <Text color='greenBright'>MD5(s) list exported successfully</Text>
+            <Text> {listExported}</Text>
           </Text>
         }
       </Box>
@@ -263,8 +287,7 @@ const BulkDownloader = (props: Props) => {
           ))
         }
 
-        {
-          downloaderState == 'completed' &&
+        { downloaderState == 'completed' && mode == 'id' &&
           <Box width='100%'>
             <SelectInput selectInputItems={selectInputItems} onSelect={handleOnSelect} />
           </Box>

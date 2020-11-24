@@ -7,5 +7,6 @@
 *.pdf
 *.djvu
 *.epub
+*.txt
 
 ws.session

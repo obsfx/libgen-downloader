@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Box, useInput, Key, Text } from 'ink';
 import { returnedValue } from '../../store-provider';
 import SelectInputItem from './SelectInputItem';
@@ -23,9 +23,15 @@ const SelectInput = (props: Props) => {
   } = props;
 
   const [ cursorPos, setCursorPos ] = useState(0);
+  const [ input, setInput ] = useState(false);
 
   const items: SelectInputItem[] = selectInputItems
   .filter((option: SelectInputItem) => !option.disabled);
+
+  useEffect(() => {
+    setInput(true);
+    () => setInput(false);
+  }, []);
 
   useInput((_, key: Key) => {
     if (key.upArrow) {
@@ -39,7 +45,7 @@ const SelectInput = (props: Props) => {
     if (key.return) {
       onSelect(items[cursorPos].value);
     }
-  });
+  }, { isActive: input });
 
   return (
     <Box flexDirection='column' width='100%'>

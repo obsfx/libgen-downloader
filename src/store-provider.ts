@@ -61,6 +61,7 @@ export type AppStatus = 'fetchingConfig' |
 
 export type Globals = {
   status: AppStatus;
+  initialStatus: AppStatus;
   nextPage: boolean;
   lastFailedAction: Function;
   errorCounter: number;
@@ -86,6 +87,7 @@ type Setters = {
   reset: () => void;
   config: (config: any) => void;
   status: (status: AppStatus) => void;
+  initialStatus: (initialStatus: AppStatus) => void;
   nextPage: (nextPage: boolean) => void;
   lastFailedAction: (lastFailedAction: Function) => void;
   errorCounter: (errorCounter: number) => void;
@@ -108,6 +110,7 @@ type State = {
 
 const initialGlobals: Globals = {
   status: 'fetchingConfig',
+  initialStatus: 'search',
   nextPage: false,
   lastFailedAction: () => null,
   errorCounter: 0,
@@ -155,6 +158,7 @@ export const useStore = create<State>((set: SetState<State>): State => ({
     } })),
     config: (config: any) => set({ config: { ...config } }),
     status: (status: AppStatus) => set(state => ({ globals: { ...state.globals, status } })),
+    initialStatus: (initialStatus: AppStatus) => set(state => ({ globals: { ...state.globals, initialStatus } })),
     nextPage: (nextPage: boolean) => set(state => ({ globals: { ...state.globals, nextPage } })),
     lastFailedAction: (lastFailedAction: Function) => set(state => ({ globals: { ...state.globals, lastFailedAction } })),
     errorCounter: (errorCounter: number) => set(state => ({ globals: { ...state.globals, errorCounter } })),

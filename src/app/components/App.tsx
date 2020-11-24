@@ -17,6 +17,7 @@ const App = () => {
   const { setRawMode } = useStdin();
 
   const status: AppStatus = useStore(state => state.globals.status);
+  const initialStatus: AppStatus = useStore(state => state.globals.initialStatus);
   const setConfig: (config: any) => void = useStore(state => state.set.config);
   const setErrorCounter: (errorCounter: number) => void = useStore(state => state.set.errorCounter);
   const seetLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);
@@ -57,7 +58,7 @@ const App = () => {
       }
 
       setMirror(mirror);
-      setStatus('search');
+      setStatus(initialStatus);
     }
 
     setupTheApp();
@@ -71,7 +72,7 @@ const App = () => {
       <Box 
       width={ cols - 5 > base_app_width ? base_app_width : '95%' } 
         flexDirection='column'>
-        <Header width={ cols - 5 > 30 ? 30 : '95%' }/>
+        <Header width={ cols - 5 > 40 ? 40 : '95%' }/>
         <Downloader />
         <Loader />
         <Stage />
