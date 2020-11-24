@@ -21,12 +21,19 @@ const GettingResults = () => {
 
       if (results == null) {
         // throw pop up
-        seetLastFailedAction(doSearchRequest);
+        seetLastFailedAction(() => setStatus('gettingResults'));
         setStatus('failed');
         return;
       }
 
       const nextPage: boolean = await isPageExist(searchReqPattern, mirror, query, currentPage + 1, pageSize);
+
+      if (nextPage == null) {
+        // throw pop up
+        seetLastFailedAction(() => setStatus('gettingResults'));
+        setStatus('failed');
+        return;
+      }
 
       setNextPage(nextPage);
       setListBuffer([]);

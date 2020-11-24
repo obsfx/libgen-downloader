@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useApp } from 'ink';
+import figures from 'figures';
 import InkSpinner from 'ink-spinner';
 // @ts-ignore
 import pretty from 'prettysize';
 import { error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
-import { useStore } from '../../store-provider';
+import { useStore, returnedValue, AppStatus } from '../../store-provider';
 import { findMD5s, findDownloadMirror, findDownloadURL, startDownloading } from '../../download-api';
+import SelectInput, { SelectInputItem } from './SelectInput';
 
 type QueueItem = {
   md5: string;
@@ -23,6 +25,7 @@ type Props = {
 
 const BulkDownloader = (props: Props) => {
   const { mode } = props;
+  const { exit } = useApp();
 
   const [ queue, setQueue ] = useState<QueueItem[]>([])
   const [ downloaderState, setDownloaderState ] = useState<DownloaderStates>(null)
@@ -35,6 +38,7 @@ const BulkDownloader = (props: Props) => {
 
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
+  const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
 
   useEffect(() => {
     if (mirror == null) {
@@ -153,6 +157,37 @@ const BulkDownloader = (props: Props) => {
     operateQueue();
   }, [bulkQueue]);
 
+  const selectInputItems: SelectInputItem[] = [
+    {
+      label: <Text>Turn Back To The List</Text>,
+      value: returnedValue.turnBackToTheList
+    },
+    {
+      label: <Text>?  Search</Text>,
+      value: returnedValue.search
+    },
+    {
+      label: <Text>{figures.cross}  Exit</Text>,
+      value: returnedValue.exit
+    }
+  ];
+
+  const handleOnSelect = (returned: returnedValue) => {
+    switch (returned) {
+      case returnedValue.turnBackToTheList:
+        setStatus('results');
+      break;
+
+      case returnedValue.search:
+        setStatus('search');
+      break;
+
+      case returnedValue.exit: 
+        exit();
+        process.exit(0);
+    }
+  }
+
   return (
     <Box flexDirection='column'>
       <Box>
@@ -177,6 +212,8 @@ const BulkDownloader = (props: Props) => {
           <Text>
             <Text>Downloaded: </Text>
             <Text color='greenBright'>{completedMD5s.length} / {queue.length}</Text>
+            &nbsp;to&nbsp;
+            <Text color='blueBright'>{process.cwd()}</Text>
           </Text>
         }
 
@@ -224,6 +261,13 @@ const BulkDownloader = (props: Props) => {
               </Text>
             </Box>
           ))
+        }
+
+        {
+          downloaderState == 'completed' &&
+          <Box width='100%'>
+            <SelectInput selectInputItems={selectInputItems} onSelect={handleOnSelect} />
+          </Box>
         }
       </Box>
     </Box>

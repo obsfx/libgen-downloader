@@ -59,7 +59,6 @@
     "node-fetch": "^2.6.0",
     "prettysize": "^2.0.0",
     "react": "^17.0.1",
-    "uuid": "^8.3.1",
     "zustand": "^3.1.4"
   }
 }

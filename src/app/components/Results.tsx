@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Text, useApp } from 'ink';
 import figures from 'figures';
 import InkSpinner from 'ink-spinner';
@@ -10,6 +10,8 @@ import BulkQueueIndicator from './BulkQueueIndicator';
 
 const Results = () => {
   const { exit } = useApp();
+
+  const [ bulkWarning, setBulkWarning ] = useState(false);
 
   const pageSize: number = useStore(state => state.config?.pageSize) || 25;
   const query: string = useStore(state => state.globals.query);
@@ -149,7 +151,12 @@ const Results = () => {
       case returnedValue.startBulkDownloading:
         if (bulkQueue.length > 0) {
           setStatus('bulkDownloadingID');
-        }
+      } else if (!bulkWarning) {
+        setBulkWarning(true);
+        setTimeout(() => {
+          setBulkWarning(false);
+        }, 2000);
+      }
       break;
 
       case returnedValue.search:
@@ -183,6 +190,9 @@ const Results = () => {
             <Text color='bold'>{totalEntries} </Text>
           </Text>
         </Box>
+      }
+      {
+        bulkWarning && <Text color='yellow' bold={true}>Bulk Downloading Queue is Empty</Text>
       }
       <BulkQueueIndicator />
       <List 

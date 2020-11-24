@@ -48,6 +48,11 @@ export const startDownloading = (
       resolve(null);
     }
 
+    if (Buffer.byteLength(parsedContentDisposition.parameters.filename, 'utf8') > 255) {
+      const contLen = parsedContentDisposition.parameters.filename.length;
+      parsedContentDisposition.parameters.filename = parsedContentDisposition.parameters.filename.substring(contLen - 100, contLen);
+    }
+
     const path: string = `./${parsedContentDisposition.parameters.filename}`;
     const file: fs.WriteStream = fs.createWriteStream(path);
 

@@ -9,12 +9,14 @@ import Loader from './Loader';
 import Header from './Header';
 import Stage from './Stage';
 import Downloader from './Downloader';
+import BulkDownloader from './BulkDownloader';
 
 const App = () => {
   const [ cols ] = useStdoutDimensions();
 
   const { setRawMode } = useStdin();
 
+  const status: AppStatus = useStore(state => state.globals.status);
   const setConfig: (config: any) => void = useStore(state => state.set.config);
   const setErrorCounter: (errorCounter: number) => void = useStore(state => state.set.errorCounter);
   const seetLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);
@@ -65,7 +67,7 @@ const App = () => {
   }, []);
 
   return (
-    <Box marginLeft={1}>
+    <Box marginLeft={1} flexDirection='column'>
       <Box 
       width={ cols - 5 > base_app_width ? base_app_width : '95%' } 
         flexDirection='column'>
@@ -74,6 +76,8 @@ const App = () => {
         <Loader />
         <Stage />
       </Box>
+      { status == 'bulkDownloadingID' && <BulkDownloader mode='id'/> }
+      { status == 'bulkDownloadingMD5' && <BulkDownloader mode='md5'/> }
     </Box>
   );
 }

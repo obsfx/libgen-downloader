@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 // @ts-ignore
 import pretty from 'prettysize';
-import {  error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
+import { error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
 import { useStore } from '../../store-provider';
 import { Entry } from '../../search-api';
 import { findDownloadURL, startDownloading } from '../../download-api';
@@ -13,6 +13,7 @@ const Downloader = () => {
   const [ progress, setProgress ] = useState(0);
   const [ total, setTotal ] = useState(0);
   const [ filename, setFilename ] = useState('');
+  const [ downloaderStatus, setDownloaderStatus ] = useState<'processing' | 'downloading'>('processing');
   const [ errorStatus, setErrorStatus ] = useState(false);
 
   const downloadQueue: Entry[] = useStore(state => state.globals.downloadQueue);
@@ -24,11 +25,8 @@ const Downloader = () => {
       setRunning(true);
 
       const operateQueue = async () => {
-        const onErr = (attempt: number, tolarance: number) => {
-          // not now
-        }
-
         const onData = (chunklen: number, total: number, filename: string) => {
+          setDownloaderStatus('downloading');
           setProgress((prev => prev + chunklen));
           setTotal(total);
           setFilename(filename);
@@ -43,6 +41,8 @@ const Downloader = () => {
         }
 
         while (useStore.getState().globals.downloadQueue.length > 0) {
+          setDownloaderStatus('processing');
+
           const entryBuffer: Entry = useStore.getState().globals.downloadQueue[0];
 
           if (!entryBuffer) break;
@@ -58,7 +58,7 @@ const Downloader = () => {
             continue;
           }
 
-          const status: true | null = await startDownloading(endpoint, error_tolarance, error_reconnect_delay_ms, onErr, onData, onEnd);
+          const status: true | null = await startDownloading(endpoint, error_tolarance, error_reconnect_delay_ms, () => {}, onData, onEnd);
 
           if (!status) {
             setDownloadQueue((arr: Entry[]) => arr.slice(1));
@@ -88,8 +88,9 @@ const Downloader = () => {
       {
         downloadQueue.length > 0 &&
         <Text wrap='truncate'>
-          Downloaded:&nbsp;<Text color='greenBright'>{completedFiles}</Text>&nbsp;
-          Remaining:&nbsp;<Text color='yellow'>{downloadQueue.length}</Text>&nbsp;to&nbsp;
+          { downloaderStatus == 'processing' && <Text color='yellowBright' inverse={true}> PROCESSING </Text> } 
+          { downloaderStatus == 'downloading' && <Text color='blueBright' inverse={true}> DOWNLOADING </Text> } 
+          &nbsp;DONE:&nbsp;<Text color='greenBright'>{completedFiles}</Text> IN QUEUE:&nbsp;<Text color='yellow'>{downloadQueue.length}</Text>&nbsp;to&nbsp;
           <Text color='blueBright'>{process.cwd()}</Text>
         </Text>
       }

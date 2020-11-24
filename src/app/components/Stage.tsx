@@ -6,7 +6,6 @@ import GettingResults from './GettingResults';
 import Results from './Results';
 import EntryDetails from './EntryDetails';
 import ErrorBox from './ErrorBox';
-import BulkDownloader from './BulkDownloader';
 
 const Stage = () => {
   const status: AppStatus = useStore(state => state.globals.status);
@@ -18,8 +17,6 @@ const Stage = () => {
       { status == 'results' && <Results /> }
       { status == 'entryDetails' && <EntryDetails /> }
       { status == 'failed' && <ErrorBox /> }
-      { status == 'bulkDownloadingID' && <BulkDownloader mode='id'/> }
-      { status == 'bulkDownloadingMD5' && <BulkDownloader mode='md5'/> }
     </Box>
   )
 };

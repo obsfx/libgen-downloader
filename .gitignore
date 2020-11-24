@@ -3,4 +3,9 @@
 /standalone-executables
 /legacy
 
+*.chm
+*.pdf
+*.djvu
+*.epub
+
 ws.session
