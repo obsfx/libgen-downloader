@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-b.png)
+![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-w.png)
 
 
 

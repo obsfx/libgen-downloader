@@ -7,13 +7,14 @@
     "libgen-downloader": "./bin/index.js",
     "obsfx@libgen-downloader": "./bin/index.js"
   },
+  "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
     "run": "DEV=true ts-node ./src/index.tsx",
     "run-dt": "npx react-devtools",
     "inspect": "node --inspect -r ts-node/register ./src/index.tsx",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
-    "standalone": "pkg . --out-path ./standalone-executables"
+    "standalone": "pkg -t node14-linux-x64,node14-macos-x64,node14-win-x64 . --out-path ./standalone-executables"
   },
   "keywords": [
     "libgen",
