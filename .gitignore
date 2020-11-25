@@ -1,5 +1,12 @@
 /node_modules
 /build
 /standalone-executables
+/legacy
+
+*.chm
+*.pdf
+*.djvu
+*.epub
+*.txt
 
 ws.session
