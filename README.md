@@ -1,10 +1,10 @@
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-w.png)
 
+[![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
+[Source Code](https://github.com/obsfx/libgen-downloader)
 
-#  [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
-
-`libgen-downloader` is a simple command line tool to search and download ebooks from libgen that was developed using NodeJS, TypeScript, React, [Ink](https://github.com/vadimdemedes/ink) and [Zustand](https://github.com/pmndrs/zustand). It is not using a searching API. It basically accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.
+[`libgen-downloader`](https://github.com/obsfx/libgen-downloader) is a simple command line tool to search and download ebooks from libgen that was developed using NodeJS, TypeScript, React, [Ink](https://github.com/vadimdemedes/ink) and [Zustand](https://github.com/pmndrs/zustand). It is not using a searching API. It basically accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.
 
 ![](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/a.gif)
 

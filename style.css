@@ -1,0 +1,17 @@
+body {
+  background-color: #23271f;
+}
+
+.ld-wrapper {
+  max-width: 600px;
+  color: #d6d6d6;
+}
+
+.ld-h1, .ld-h2 {
+  border: none;
+}
+
+.ld-img {
+  margin: auto;
+  display: block;
+}
