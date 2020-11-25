@@ -11,7 +11,7 @@ const argv: minimist.ParsedArgs = minimist(process.argv.slice(2));
 
 const help = () => {
   console.log('libgen downloader start the map app witouth passing argument');
-  console.log('           --help see available arguments');
+  console.log('           --help see available parameters');
   console.log('           --bulk={md5listfile.txt} start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.');
   console.log('           --geturl={md5} get the download url of file by passing the md5');
   console.log('           --download={md5} directly download the file by passing the md5.');

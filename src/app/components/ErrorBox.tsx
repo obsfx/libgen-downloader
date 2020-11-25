@@ -1,9 +1,11 @@
 import React from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useApp } from 'ink';
 import { useStore, returnedValue, AppStatus } from '../../store-provider';
 import SelectInput, { SelectInputItem } from './SelectInput';
 
 const ErrorBox = () => {
+  const { exit } = useApp();
+
   const lastFailedAction: Function = useStore(state => state.globals.lastFailedAction);
   const setErrorCounter: (errorCounter: number) => void = useStore(state => state.set.errorCounter);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
@@ -26,8 +28,9 @@ const ErrorBox = () => {
         lastFailedAction();
       break;
 
-      case returnedValue.searchAnother:
-      break;
+      case returnedValue.exit:
+        exit();
+        process.exit(0);
     }
   }
 

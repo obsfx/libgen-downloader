@@ -41,6 +41,7 @@ const BulkDownloader = (props: Props) => {
   const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
   const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
+  const setLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);
 
   useEffect(() => {
     if (mirror == null) {
@@ -74,10 +75,12 @@ const BulkDownloader = (props: Props) => {
         if (mode == 'id') {
           setDownloaderState('findingMD5s');
 
-          const md5list: string[] | null = await findMD5s(mirror, bulkQueue, MD5ReqPattern, onErr, error_tolarance, error_reconnect_delay_ms)
+          const md5list: string[] | null = await findMD5s(mirror, bulkQueue, MD5ReqPattern, onErr, error_tolarance, error_reconnect_delay_ms);
 
           if (!md5list) {
             setDownloaderState('failed');
+            setLastFailedAction(() => setStatus('bulkDownloadingID'));
+            setStatus('failed');
             return;
           }
 
