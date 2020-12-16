@@ -15,229 +15,166 @@
 
         <title>libgen-downloader</title>
         <link rel="icon" type="undefined" href="" >
-        <style>@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+        <style>@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;900&display=swap');
 
-:root {
-    --gray: #d2d2d2;
-    --gray2: #f3f3f3;
-    --oil: #041414;
-    --dark: #212121;
-    --dark2: #060606;
-    --dark3: #0c0c0c;
-    --blue: #2196F3;
-    --black: #000000;
-    --white: #FFFFFF;
+* {
+  box-sizing: border-box;
 }
 
-body {
-    background-color: var(--dark2);
+.ld-wrapper { 
+  max-width: 605px;
+  margin: auto;
+  padding: 20px;
+  font-family: 'Heebo', sans-serif;
+  color: rgba(0, 0, 0, 0.8);
 }
 
-* { 
-    box-sizing: border-box;
-}
-
-.ld-wrapper {  
-    font-family: 'Source Sans Pro', sans-serif;
-    color: var(--gray2);
-    max-width: 900px;
-    margin: auto;
-    font-size: 16px;
-    padding: 10px;
-}
-
-.ld-div {  
-    margin-top: 15px;
-}
-
-.ld-blockquote { 
-    border-left: 3px solid var(--gray);
-    padding-left: 15px;
-}
-
-.ld-pre {  
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
-}
-
-.ld-pre code {
-    font-family: 'Inconsolata', monospace;
-}
-
-.ld-code {  
-    background-color: var(--dark);
-    border-radius: 3px;
-}
-
-.ld-em, .ld-strong, .ld-del {
-    color: var(--gray);
-}
-
-.ld-h1, .ld-h2 {  
-    border-bottom: 1px solid var(--gray);
-}
-
-.ld-h1, .ld-h2, .ld-h3, .ld-h4, .ld-h5, .ld-h6 {
-    color: var(--gray);
-}
-
-.ld-img {  
-    max-width: 100%;
-}
-
-.ld-a {  
-    color: var(--blue);
-    text-decoration: none;
+.ld-a {
+  color: #4183c4;
 }
 
 .ld-a:hover {
-    text-decoration: underline;
+  color: rgba(0, 0, 0, 0.8);
 }
 
-.ld-ol {  }
-.ld-ul {  }
-
-.ld-li {  }
-
-.ld-checkbox { }
-
-.ld-table {  
-    display: block;
-    border-spacing: 0;
-    border-collapse: collapse;
-    width: 100%;
-    width: -webkit-max-content;
-    width: -moz-max-content;
-    width: max-content;
-    max-width: 100%;
-}
-.ld-thead {  }
-.ld-tbody {  }
-
-.ld-tr {  
-    border-top: 1px solid var(--gray);
+.ld-div { 
+  font-size: 18px;
 }
 
-.ld-tr:nth-child(2n) {  
-    background-color: var(--gray2);
+.ld-h1 { 
+  font-size: 32px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
-.ld-th, .ld-td {  
-    padding: 5px 11px;
-    border: 1px solid var(--gray);
+.ld-h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 18px;
 }
 
-.hljs {
-    background: var(--dark3);
+.ld-h1 img {
+  border-radius: 5px;
 }
+
+.ld-img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+.ld-li { 
+  padding-bottom: 5px;
+}
+
+.ld-pre {
+  border-radius: 5px;
+}
+
+.ld-code {
+  background-color: #e6e6e6;
+  padding: 1px 4px;
+  border-radius: 5px;
+}
+
 /*
+  xt256.css
 
-Monokai Sublime style. Derived from Monokai by noformnocontent http://nn.mit-license.org/
-
+  Contact: initbar [at] protonmail [dot] ch
+         : github.com/initbar
 */
 
 .hljs {
   display: block;
   overflow-x: auto;
+  color: #eaeaea;
+  background: #000;
   padding: 0.5em;
-  background: #23241f;
 }
 
-.hljs,
-.hljs-tag,
 .hljs-subst {
-  color: #f8f8f2;
-}
-
-.hljs-strong,
-.hljs-emphasis {
-  color: #a8a8a2;
-}
-
-.hljs-bullet,
-.hljs-quote,
-.hljs-number,
-.hljs-regexp,
-.hljs-literal,
-.hljs-link {
-  color: #ae81ff;
-}
-
-.hljs-code,
-.hljs-title,
-.hljs-section,
-.hljs-selector-class {
-  color: #a6e22e;
-}
-
-.hljs-strong {
-  font-weight: bold;
+  color: #eaeaea;
 }
 
 .hljs-emphasis {
   font-style: italic;
 }
 
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-builtin-name,
+.hljs-type {
+  color: #eaeaea;
+}
+
+.hljs-params {
+  color: #da0000;
+}
+
+.hljs-literal,
+.hljs-number,
+.hljs-name {
+  color: #ff0000;
+  font-weight: bolder;
+}
+
+.hljs-comment {
+  color: #969896;
+}
+
+.hljs-selector-id,
+.hljs-quote {
+  color: #00ffff;
+}
+
+.hljs-template-variable,
+.hljs-variable,
+.hljs-title {
+  color: #00ffff;
+  font-weight: bold;
+}
+
+.hljs-selector-class,
 .hljs-keyword,
-.hljs-selector-tag,
-.hljs-name,
-.hljs-attr {
-  color: #f92672;
-}
-
-.hljs-symbol,
-.hljs-attribute {
-  color: #66d9ef;
-}
-
-.hljs-params,
-.hljs-class .hljs-title {
-  color: #f8f8f2;
+.hljs-symbol {
+  color: #fff000;
 }
 
 .hljs-string,
-.hljs-type,
+.hljs-bullet {
+  color: #00ff00;
+}
+
+.hljs-tag,
+.hljs-section {
+  color: #000fff;
+}
+
+.hljs-selector-tag {
+  color: #000fff;
+  font-weight: bold;
+}
+
+.hljs-attribute,
 .hljs-built_in,
-.hljs-builtin-name,
-.hljs-selector-id,
-.hljs-selector-attr,
-.hljs-selector-pseudo,
-.hljs-addition,
-.hljs-variable,
-.hljs-template-variable {
-  color: #e6db74;
+.hljs-regexp,
+.hljs-link {
+  color: #ff00ff;
 }
 
-.hljs-comment,
-.hljs-deletion,
 .hljs-meta {
-  color: #75715e;
-}
-body {
-  background-color: #23271f;
-}
-
-.ld-wrapper {
-  max-width: 600px;
-  color: #d6d6d6;
-}
-
-.ld-h1, .ld-h2 {
-  border: none;
-}
-
-.ld-img {
-  margin: auto;
-  display: block;
+  color: #fff;
+  font-weight: bolder;
 }
 </style>
     </head>
     <body>
-        <div class='ld-wrapper'><div class='ld-div'><img class='ld-img' src='https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-w.png' alt=''></div><div class='ld-div'><a class='ld-a' href='https://badge.fury.io/js/libgen-downloader'><img class='ld-img' src='https://badge.fury.io/js/libgen-downloader.svg' alt='npm version'></a></div><div class='ld-div'><a class='ld-a' href='https://github.com/obsfx/libgen-downloader'>Source Code</a></div><div class='ld-div'><a class='ld-a' href='https://github.com/obsfx/libgen-downloader'><code class='ld-code'>libgen-downloader</code></a> is a simple command line tool to search and download ebooks from libgen that was developed using NodeJS, TypeScript, React, <a class='ld-a' href='https://github.com/vadimdemedes/ink'>Ink</a> and <a class='ld-a' href='https://github.com/pmndrs/zustand'>Zustand</a>. It is not using a searching API. It basically accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.</div><div class='ld-div'><img class='ld-img' src='https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/a.gif' alt=''></div><div class='ld-div'><h1 class='ld-h1'>installation</h1></div><div class='ld-div'>if you have already installed <code class='ld-code'>nodejs</code> and <code class='ld-code'>npm</code>, you can directly install with <code class='ld-code'>npm</code></div><div class='ld-div'><pre class='ld-pre hljs'><code><span class="hljs-built_in">npm</span> i -g libgen-downloader
+        <div class='ld-wrapper'><div class='ld-div'><h3 class='ld-h3'><img class='ld-img' src='https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-b.png' alt=''></h3><h3 class='ld-h3'><a class='ld-a' href='https://badge.fury.io/js/libgen-downloader'><img class='ld-img' src='https://badge.fury.io/js/libgen-downloader.svg' alt='npm version'></a></h3><h3 class='ld-h3'><a class='ld-a' href='https://github.com/obsfx/libgen-downloader'>Source Code</a></h3></div><br><div class='ld-div'><a class='ld-a' href='https://github.com/obsfx/libgen-downloader'><code class='ld-code'>libgen-downloader</code></a> is a simple command line tool to search and download ebooks from libgen that was developed using NodeJS, TypeScript, React, <a class='ld-a' href='https://github.com/vadimdemedes/ink'>Ink</a> and <a class='ld-a' href='https://github.com/pmndrs/zustand'>Zustand</a>. It is not using a searching API. It basically accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.</div><div class='ld-div'><br><img class='ld-img' src='https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/a.gif' alt=''></div><div class='ld-div'><h1 class='ld-h1'>installation</h1></div><div class='ld-div'>if you have already installed <code class='ld-code'>nodejs</code> and <code class='ld-code'>npm</code>, you can directly install with <code class='ld-code'>npm</code></div><div class='ld-div'><pre class='ld-pre hljs'><code><span class="hljs-built_in">npm</span> i -g libgen-downloader
 </code></pre></div><div class='ld-div'>or you can download one of the <code class='ld-code'>standalone executable</code> versions. <em class='ld-em'>(You can directly click and execute windows executable but in macOS / Linux you have to run in your terminal)</em></div><div class='ld-div'><h4 class='ld-h4'><a class='ld-a' href='https://github.com/obsfx/libgen-cli-downloader/releases'>Standalone Executables</a></h4></div><div class='ld-div'><img class='ld-img' src='https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/b.gif' alt=''></div><div class='ld-div'><h1 class='ld-h1'>parameters</h1></div><div class='ld-div'>You can directly download a file by passing the <code class='ld-code'>MD5</code> with <code class='ld-code'>--download</code> command line parameter.</div><div class='ld-div'><pre class='ld-pre hljs'><code>libgen-downloader <span class="hljs-attribute">--download</span>=MD5
 </code></pre></div><div class='ld-div'>In addition to single file download option, you can download more than one file sequentially by using <code class='ld-code'>bulk downloading</code> feature.</div><div class='ld-div'><pre class='ld-pre hljs'><code>libgen-downloader --bulk=<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">MD5_list</span>.</span></span>txt
 </code></pre></div><div class='ld-div'><code class='ld-code'>libgen-downloader</code> does not download files at the same time to avoid breaking the libgen servers or blocking by the libgen servers because of too many requests. So, you have to be patient.</div><div class='ld-div'>At the end of the bulk downloading, <code class='ld-code'>libgen-downloader</code> will export a <code class='ld-code'>.txt</code> that contains <code class='ld-code'>MD5</code> codes of downloaded files line by line. When you want to download all files again, you can use this file with command line parameter that calls as <code class='ld-code'>--bulk</code>.</div><div class='ld-div'>if you start <code class='ld-code'>libgen-downloader</code> with <code class='ld-code'>--bulk</code> parameter, <code class='ld-code'>libgen-downloader</code> tries to read target file line by line to get <code class='ld-code'>MD5</code> codes and directly starts in bulk downloading mode. You can also use your own list file that contains <code class='ld-code'>MD5</code> codes but you must be sure about that all <code class='ld-code'>MD5</code> codes listed line by line.</div><div class='ld-div'>If you have the <code class='ld-code'>MD5</code> code of file and want to get download URL of file directly, you can use <code class='ld-code'>--geturl</code> parameter.</div><div class='ld-div'><pre class='ld-pre hljs'><code>libgen-downloader <span class="hljs-attribute">--geturl</span>=MD5
