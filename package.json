@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
+    "commander": "^6.2.1",
     "content-disposition": "^0.5.3",
     "figures": "^3.2.0",
     "ink": "^3.0.8",
@@ -57,7 +58,6 @@
     "ink-text-input": "^4.0.1",
     "ink-use-stdout-dimensions": "^1.0.5",
     "jsdom": "^16.4.0",
-    "minimist": "^1.2.5",
     "node-fetch": "^2.6.0",
     "prettysize": "^2.0.0",
     "react": "^17.0.1",

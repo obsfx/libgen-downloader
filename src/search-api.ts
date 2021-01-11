@@ -34,14 +34,10 @@ export const CssSelectors: { [key: string]: string } = {
   cellSelector: '{tableContainerSelector} tr:nth-child({row}) td:nth-child({col})'
 }
 
-/**
-* internal helpers
-*/
 const sleep = (ms: number): Promise<void> => (
   new Promise((resolve: Function) => setTimeout(() => resolve(), ms))
 );
 
-// mirror will be replaced with store 
 const constructURL = (searchReqPattern: string, mirror: string, query: string, pageNumber: number, pageSize: number): string => (
     searchReqPattern
     .replace('{mirror}', mirror)
@@ -125,9 +121,6 @@ export const getEntries = (document: HTMLDocument): Entry[] => {
   return entries;
 }
 
-/**
-* exported api
-*/
 export const doRequest = (
   reqURL: string, 
   onErr: (attempt: number, tolarance: number) => void, 

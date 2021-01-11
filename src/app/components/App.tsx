@@ -70,7 +70,7 @@ const App = () => {
   return (
     <Box marginLeft={1} flexDirection='column'>
       <Box 
-      width={ cols - 5 > base_app_width ? base_app_width : '95%' } 
+        width={ cols - 5 > base_app_width ? base_app_width : '95%' } 
         flexDirection='column'>
         <Header width={ cols - 5 > 40 ? 40 : '95%' }/>
         <Downloader />
