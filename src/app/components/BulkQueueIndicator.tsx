@@ -8,9 +8,8 @@ const BulkQueueIndicator = () => {
   return (
     <Box>
       <Text wrap='truncate'>
-        <Text>Bulk Downloading Queue </Text>
+        <Text>Bulk Queue: </Text>
         <Text bold={true} color='greenBright'>{bulkQueue.length} </Text>
-        <Text>Items</Text>
       </Text>
     </Box>
   )

@@ -9,9 +9,9 @@
   },
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
-    "run": "DEV=true ts-node ./src/index.tsx",
+    "run": "DEV=true ts-node ./src/index.ts",
     "run-dt": "npx react-devtools",
-    "inspect": "node --inspect -r ts-node/register ./src/index.tsx",
+    "inspect": "node --inspect -r ts-node/register ./src/index.ts",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "standalone": "pkg -t node14-linux-x64,node14-macos-x64,node14-win-x64 . --out-path ./standalone-executables"

@@ -77,8 +77,8 @@ const List = (props: Props) => {
       const renderListLength: number = pool.length > ui_page_size ? ui_page_size : pool.length;
 
       setListBuffer([ 
-        ...pool.slice(pool.length - Math.floor(renderListLength / 2), pool.length), 
-        ...pool.slice(0, pool.length - Math.floor(renderListLength / 2))
+        ...pool.slice(pool.length - Math.floor(renderListLength / 3), pool.length), 
+        ...pool.slice(0, pool.length - Math.floor(renderListLength / 3))
       ]);
     }
   }, [entries]);
@@ -105,7 +105,7 @@ const List = (props: Props) => {
         }
       }
 
-      if (renderList[Math.floor(renderList.length / 2)].expandable && key.return) {
+      if (renderList[Math.floor(renderList.length / 3)].expandable && key.return) {
         setExpanded(!expanded);
       }
     }
@@ -122,7 +122,7 @@ const List = (props: Props) => {
       <Box width='100%' flexDirection='column'>
         {
           renderList.map((item: Item, i: number) => {
-            const itemHovered: boolean = i == Math.floor(renderList.length / 2);
+            const itemHovered: boolean = i == Math.floor(renderList.length / 3);
             const itemExpanded: boolean = expanded && itemHovered;
             const itemFadedOut: boolean = expanded && !itemHovered;
             const itemChecked: boolean = item.data?.id ? bulkQueue.indexOf(item.data?.id) > -1 : false;

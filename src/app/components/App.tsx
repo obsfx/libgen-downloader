@@ -4,7 +4,7 @@ import useStdoutDimensions from 'ink-use-stdout-dimensions';
 import { Response } from 'node-fetch';
 import { base_app_width, config_endpoint, error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
 import { useStore, AppStatus } from '../../store-provider';
-import { doRequest, findMirror } from '../../search-api';
+import { Entry, doRequest, findMirror } from '../../search-api';
 import Loader from './Loader';
 import Header from './Header';
 import Stage from './Stage';
@@ -18,6 +18,7 @@ const App = () => {
 
   const status: AppStatus = useStore(state => state.globals.status);
   const initialStatus: AppStatus = useStore(state => state.globals.initialStatus);
+  const downloadQueue: Entry[] = useStore(state => state.globals.downloadQueue);
   const setConfig: (config: any) => void = useStore(state => state.set.config);
   const setErrorCounter: (errorCounter: number) => void = useStore(state => state.set.errorCounter);
   const seetLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);

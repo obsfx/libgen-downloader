@@ -183,11 +183,11 @@ const Results = () => {
         filters.length > 0 && 
         <Box>
           <Text wrap='truncate'>
-            <Text>Filters applied </Text>
+            <Text color='cyan'>Filters applied </Text>
             <Text>Showing </Text>
-            <Text color='bold'>{entries.length} </Text>
+            <Text bold={true}>{entries.length} </Text>
             <Text>of </Text>
-            <Text color='bold'>{totalEntries} </Text>
+            <Text bold={true}>{totalEntries} </Text>
           </Text>
         </Box>
       }

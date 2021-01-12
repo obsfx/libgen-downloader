@@ -33,9 +33,7 @@ const ListItem = (props: Props) => {
       <Text wrap='truncate'>
         { !expanded && !fadedOut && hovered && <Text bold={true}>{figures.pointer}&nbsp;</Text> } 
         { downloading && 
-          <Text color='greenBright'>
-            <InkSpinner type='dots' />
-          </Text>
+          <Text color='greenBright'><InkSpinner type='dots' /> </Text>
         } 
         <Text color='greenBright'>{checked ? figures.tick : ' '}</Text>&nbsp;
         <Text bold={hovered || checked} color={
