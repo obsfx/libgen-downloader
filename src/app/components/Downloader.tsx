@@ -1,110 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 // @ts-ignore
 import pretty from 'prettysize';
-import { error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
-import { useStore } from '../../store-provider';
+import useDirectDownload from '../hooks/useDirectDownload';
 import { Entry } from '../../search-api';
-import { findDownloadURL, startDownloading } from '../../download-api';
+import { useStore } from '../../store-provider';
 
 const Downloader = () => {
-  const [ running, setRunning ] = useState(false);
-  const [ completedFiles, setCompletedFiles ] = useState(1);
-  const [ progress, setProgress ] = useState(0);
-  const [ total, setTotal ] = useState(0);
-  const [ filename, setFilename ] = useState('');
-  const [ downloaderStatus, setDownloaderStatus ] = useState<'processing' | 'downloading'>('processing');
-  const [ errorStatus, setErrorStatus ] = useState(false);
+  const [ state, setState ] = useState({
+    completed: 0,
+    totalFiles: 0,
+    progress: 0,
+    total: 0,
+    filename: '',
+    lastdownloadedfilename: '',
+    status: 'processing',
+    error: false,
+    showlastdownloaded: false,
+  });
 
   const downloadQueue: Entry[] = useStore(state => state.globals.downloadQueue);
-  const setDownloadQueue: (callback: Function) => void = useStore(state => state.set.downloadQueue);
 
-  useEffect(() => {
-    if (downloadQueue.length > 0 && !running) {
-      setCompletedFiles(0);
-      setRunning(true);
+  const onPrepare = (): void => {
+    setState(prev => ({
+      ...prev,
+      totalFiles: prev.totalFiles + 1,
+      status: 'processing'
+    }));
+  }
 
-      const operateQueue = async () => {
-        const onData = (chunklen: number, total: number, filename: string) => {
-          setDownloaderStatus('downloading');
-          setProgress((prev => prev + chunklen));
-          setTotal(total);
-          setFilename(filename);
-        }
+  const onData = (chunklen: number, total: number, filename: string): void => {
+    if (state.filename == '') {
+      setState(prev => ({
+        ...prev,
+        progress: prev.progress + chunklen,
+        total: total,
+        filename:  filename,
+        status: 'downloading'
+      }));
 
-        const onEnd = (_: string) => {
-          setCompletedFiles(prev => prev + 1);
-          setProgress(0);
-          setTotal(0);
-          setFilename('');
-          setDownloadQueue((arr: Entry[]) => arr.slice(1));
-        }
-
-        while (useStore.getState().globals.downloadQueue.length > 0) {
-          setDownloaderStatus('processing');
-
-          const entryBuffer: Entry = useStore.getState().globals.downloadQueue[0];
-
-          if (!entryBuffer) break;
-
-          const endpoint: string | null = await findDownloadURL(entryBuffer.mirror, () => {}, error_tolarance, error_reconnect_delay_ms);
-
-          if (!endpoint) {
-            setDownloadQueue((arr: Entry[]) => arr.slice(1));
-            setErrorStatus(true);
-            setTimeout(() => {
-              setErrorStatus(false);
-            }, 2000);
-            continue;
-          }
-
-          const status: true | null = await startDownloading(endpoint, error_tolarance, error_reconnect_delay_ms, () => {}, onData, onEnd);
-
-          if (!status) {
-            setDownloadQueue((arr: Entry[]) => arr.slice(1));
-            setErrorStatus(true);
-            setTimeout(() => {
-              setErrorStatus(false);
-            }, 2000);
-            continue;
-          }
-        }
-
-        setRunning(false);
-      }
-
-      operateQueue();
+      return;
     }
-  }, [downloadQueue]);
+
+    setState(prev => ({
+      ...prev,
+      progress: prev.progress + chunklen
+    }));
+  }
+
+  const onErr = (): void => {
+    setState(prev => ({
+      ...prev,
+      error: true
+    }));
+
+    setTimeout(() => {
+      setState(prev => ({
+        ...prev,
+        error: false
+      }));
+    }, 2000);
+  }
+
+  const onEnd = (): void => {
+    setState(prev => ({
+      ...prev,
+      completed: prev.completed + 1,
+      total: 0,
+      progress: 0,
+      filename: '',
+      lastdownloadedfilename: prev.filename
+    }));
+  }
+
+  useDirectDownload({
+    onPrepare,
+    onData,
+    onErr,
+    onEnd
+  });
 
   return (
     <Box flexDirection='column'>
       {
-        errorStatus &&
+        state.error &&
         <Text wrap='truncate'>
-          <Text color='red'>Last Download Progress Couldn't Completed</Text>
+          <Text color='red'>Last Downloading Process Couldn't Completed</Text>
         </Text>
       }
       {
-        downloadQueue.length > 0 &&
+        state.totalFiles > 0 &&
         <Text wrap='truncate'>
-          { downloaderStatus == 'processing' && <Text color='yellowBright' inverse={true}> PROCESSING </Text> } 
-          { downloaderStatus == 'downloading' && <Text color='blueBright' inverse={true}> DOWNLOADING </Text> } 
-          &nbsp;DONE:&nbsp;<Text color='greenBright'>{completedFiles}</Text> IN QUEUE:&nbsp;<Text color='yellow'>{downloadQueue.length}</Text>&nbsp;to&nbsp;
+          <Text>DONE: </Text>
+          <Text color='greenBright'>{state.completed}</Text> 
+          <Text> IN QUEUE: </Text>
+          <Text color='yellow'>{downloadQueue.length}</Text>
+          <Text> to </Text>
           <Text color='blueBright'>{process.cwd()}</Text>
         </Text>
       }
       {
-        running && progress != 0 && total != 0 && filename != '' && 
-        <Box flexDirection='column'>
-          <Text wrap='truncate'>
-            <Text color='greenBright'>{(100 / total * progress).toFixed(2)}%</Text>
-            &nbsp;
-            <Text color='magentaBright'>{pretty(progress)}/{pretty(total)}</Text>
-            &nbsp;
-            <Text color='yellow'>{filename}</Text>
+        state.lastdownloadedfilename != '' && 
+        <Text wrap='truncate'>
+          <Text color='greenBright' inverse={true}> LAST DOWNLOADED </Text>
+          <Text color='yellow'> {state.lastdownloadedfilename}</Text>
+        </Text>
+      }
+      {
+        downloadQueue.length > 0 && 
+        <Text wrap='truncate'>
+          { state.status == 'processing' && <Text color='yellowBright' inverse={true}> CONNECTING TO LIBGEN </Text> } 
+          { state.status == 'downloading' && 
+          <Text>
+            <Text color='blueBright' inverse={true}> DOWNLOADING </Text>
+            <Text color='greenBright'> {(100 / state.total * state.progress).toFixed(2)}% </Text>
+            <Text color='magentaBright'>{pretty(state.progress)}/{pretty(state.total)} </Text>
+            <Text color='yellow'>{state.filename}</Text>
           </Text>
-        </Box>
+          } 
+        </Text>
       }
     </Box>
   )
