@@ -95,7 +95,7 @@ export const findDownloadMirror = async (
   const document: HTMLDocument = new JSDOM(plainText).window.document;
 
   const entries: Entry[] = getEntries(document);
-  
+
   return entries[0].mirror;
 }
 

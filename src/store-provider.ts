@@ -2,15 +2,6 @@ import create, { SetState } from 'zustand';
 import { Entry } from './search-api';
 import { ReactNode } from 'react';
 
-//type SearchFilters = {
-//  author: string;
-//  publisher: string;
-//  year: string;
-//  pages: string;
-//  language: string;
-//  extension: string;
-//}
-
 export enum returnedValue {
   seeDetails,
   downloadDirectly,
@@ -44,20 +35,6 @@ export type AppStatus = 'fetchingConfig' |
   'bulkDownloadingID' |
   'bulkDownloadingMD5' |
   'failed';
-
-//export type Config = {
-//  mirrors: string[];
-//  pageSize: number;
-//  searchReqPattern: string;
-//  searchByMD5Pattern: string;
-//  MD5ReqPattern: string;
-//  cssSelectors: {
-//    tableContainer: string;
-//    row: string;
-//    downloadURL: string;
-//    cellSelector: string;
-//  }
-//}
 
 export type Globals = {
   status: AppStatus;

@@ -175,7 +175,7 @@ const Results = () => {
         <Text wrap='truncate'>
           <Text>Results for </Text>
           <Text color='greenBright'>'{decodeURIComponent(query)}' </Text>
-          <Text>Page </Text>
+          <Text>page </Text>
           <Text color='yellowBright'>{currentPage}</Text>
         </Text>
       </Box>
@@ -183,11 +183,11 @@ const Results = () => {
         filters.length > 0 && 
         <Box>
           <Text wrap='truncate'>
-            <Text>Filters applied </Text>
+            <Text color='cyan'>Filters applied </Text>
             <Text>Showing </Text>
-            <Text color='bold'>{entries.length} </Text>
+            <Text bold={true}>{entries.length} </Text>
             <Text>of </Text>
-            <Text color='bold'>{totalEntries} </Text>
+            <Text bold={true}>{totalEntries} </Text>
           </Text>
         </Box>
       }
@@ -195,15 +195,20 @@ const Results = () => {
         bulkWarning && <Text color='yellow' bold={true}>Bulk Downloading Queue is Empty</Text>
       }
       <BulkQueueIndicator />
+      <Text wrap='truncate'>
+        <Text color="yellowBright">[UP] </Text> 
+        <Text>and </Text> 
+        <Text color='yellowBright'>[DOWN] </Text> 
+        <Text>arrow keys to reveal listings, </Text>
+        <Text color='yellowBright'>[ENTER] </Text> 
+        <Text>key to interact</Text> 
+      </Text>
       <List 
         entries={entries}
         options={options}
         pageSize={pageSize}
         generateSelectInputItems={generateSelectInputItems}
         handleOnSelect={handleOnSelect}/>
-      <Text wrap='truncate'>
-        [UP] and [DOWN] arrow keys to reveal listings, [ENTER] key to interact
-      </Text>
     </Box>
   )
 };

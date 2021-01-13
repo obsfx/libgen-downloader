@@ -1,4 +1,4 @@
-import minimist from 'minimist';
+import commander, { Command } from 'commander'
 import fs from 'fs';
 import { Response } from 'node-fetch';
 import { useStore, AppStatus } from './store-provider';
@@ -7,14 +7,38 @@ import { findDownloadMirror, findDownloadURL } from './download-api';
 import { init } from './app';
 import { config_endpoint, error_tolarance, error_reconnect_delay_ms } from './app/app-config.json';
 
-const argv: minimist.ParsedArgs = minimist(process.argv.slice(2));
+const cl: commander.Command = new Command();
 
-const help = () => {
-  console.log('libgen downloader start the map app witouth passing argument');
-  console.log('           --help see available parameters');
-  console.log('           --bulk={md5listfile.txt} start bulk downloading with an already exist .txt file which holds MD5(s) of books line by line.');
-  console.log('           --geturl={md5} get the download url of file by passing the md5');
-  console.log('           --download={md5} directly download the file by passing the md5.');
+cl
+  .option('-b, --bulk <MD5LIST.txt>', 'start the app in bulk downloading mode')
+  .option('-u, --url <MD5>', 'get the download URL')
+  .option('-d, --download <MD5>', 'download the file')
+
+const cli = (argv: string[]): boolean => {
+  cl.parse(argv);
+
+  const parameters: { [key: string]: (string | null) } = {
+    bulk: cl.bulk || null,
+    url: cl.url || null,
+    download: cl.download || null
+  }
+
+  if (parameters.bulk) {
+    bulk(parameters.bulk);
+    return true;
+  }
+
+  if (parameters.url) {
+    url(parameters.url);
+    return true;
+  }
+
+  if (parameters.download) {
+    download(parameters.download);
+    return true;
+  }
+
+  return false;
 }
 
 const bulk = async (filename: string) => {
@@ -33,7 +57,7 @@ const bulk = async (filename: string) => {
   }
 }
 
-const geturl = async (md5: string) => {
+const url = async (md5: string) => {
   const onErr = (attempt: number, _: number) => {
     console.log(`${attempt} / ${error_tolarance} Connection error occured. Trying again`)
   }
@@ -54,7 +78,6 @@ const geturl = async (md5: string) => {
   const mirror: string | null = await findMirror(mirrorList);
 
   if (mirror == null) {
-    // throw error here
     console.log('Failed. Connection Error.');
     return;
   }
@@ -82,14 +105,4 @@ const download = async (md5: string) => {
   init();
 }
 
-if (typeof argv.help == 'boolean') {
-    help();
-} else if (typeof argv.bulk == 'string') {
-    bulk(argv.bulk);
-} else if (typeof argv.geturl == 'string') {
-    geturl(argv.geturl);
-} else if (typeof argv.download == 'string') {
-    download(argv.download);
-} else {
-    init();
-}
+export default cli;

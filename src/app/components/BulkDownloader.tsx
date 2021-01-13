@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Text, useApp } from 'ink';
 import figures from 'figures';
 import InkSpinner from 'ink-spinner';
 import fs from 'fs';
 // @ts-ignore
 import pretty from 'prettysize';
-import { error_tolarance, error_reconnect_delay_ms } from '../app-config.json';
+import useBulkDownload, { QueueItem } from '../hooks/useBulkDownload';
+import { error_tolarance } from '../app-config.json';
 import { useStore, returnedValue, AppStatus } from '../../store-provider';
-import { findMD5s, findDownloadMirror, findDownloadURL, startDownloading } from '../../download-api';
 import SelectInput, { SelectInputItem } from './SelectInput';
 
-type QueueItem = {
-  md5: string;
-  status: 'waiting' | 'downloading' | 'completed' | 'failed' | 'processing';
-  progress: number;
-  total: number;
-  filename: string;
+type State = {
+  queue: QueueItem[];
+  status: null | 'findingMD5s' | 'onGoing' | 'failed' | 'completed';
+  listExported: string;
 }
-
-type DownloaderStates = null | 'findingMD5s' | 'onGoing' | 'failed' | 'completed';
 
 type Props = {
   mode: 'md5' | 'id';
@@ -28,154 +24,67 @@ const BulkDownloader = (props: Props) => {
   const { mode } = props;
   const { exit } = useApp();
 
-  const [ queue, setQueue ] = useState<QueueItem[]>([])
-  const [ downloaderState, setDownloaderState ] = useState<DownloaderStates>(null)
-  const [ listExported, setListExported ] = useState('');
-  const [ completedMD5s, setCompletedMD5s ] = useState<string[]>([]);
-  const [ errorCounter, setErrorCounter ] = useState(0);
+  const [ state, setState ] = useState<State>({
+    queue: [],
+    status: mode == 'id' ? 'findingMD5s' : 'onGoing',
+    listExported: ''
+  });
 
-  const mirror: string | null = useStore(state => state.globals.mirror);
-  const MD5ReqPattern: string = useStore(state => state.config.MD5ReqPattern);
-  const searchByMD5Pattern: string = useStore(state => state.config.searchByMD5Pattern);
-
-  const bulkQueue: string[] = useStore(state => state.globals.bulkQueue);
-  const setBulkQueue: (bulkQueue: string[]) => void = useStore(state => state.set.bulkQueue);
   const setStatus: (status: AppStatus) => void = useStore(state => state.set.status);
   const setLastFailedAction: (lastFailedAction: Function) => void = useStore(state => state.set.lastFailedAction);
 
-  useEffect(() => {
-    if (mirror == null) {
-      throw new Error('Mirror is null');
+  const onPrepare = (): void => {
+    setState(prev => ({
+      ...prev,
+      status: 'onGoing'
+    }));
+  }
+
+  const onFailed = (): void => {
+    setState(prev => ({
+      ...prev,
+      status: 'failed'
+    }));
+
+    setLastFailedAction(() => setStatus('bulkDownloadingID'));
+    setStatus('failed');
+  }
+
+  const onQueueUpdated = (queue: QueueItem[]): void => {
+    setState(prev => ({
+      ...prev,
+      queue
+    }));
+  }
+
+  const onCompleted = async (completedMD5s: string[]): Promise<void> => {
+    let listfile: string = '';
+
+    if (completedMD5s.length > 0 && mode == 'id') {
+      try {
+        listfile = `MD5_LIST_${Date.now().toString()}.txt`;
+        await fs.promises.writeFile(`./${listfile}`, completedMD5s.join('\n'));
+      } catch(e) {  }
     }
 
-    if (!MD5ReqPattern) {
-      throw new Error('MD5ReqPattern couldn\'t find in the configuration');
+    setState(prev => ({
+      ...prev,
+      status: 'completed',
+      listExported: listfile
+    }));
+
+    if (mode == 'md5') {
+      exit();
     }
+  }
 
-    if (!searchByMD5Pattern) {
-      throw new Error('searchByMD5Pattern couldn\'t find in the configuration');
-    }
-
-    const onErr = (attempt: number, _: number) => {
-      setErrorCounter(attempt);
-    }
-
-    if (bulkQueue.length > 0) {
-      const setQueueItems = async () => {
-        if (mode == 'md5') {
-          setQueue(bulkQueue.map((md5: string) => ({
-            md5: md5,
-            status: 'waiting',
-            progress: 0,
-            total: 0,
-            filename: ''
-          })));
-        }
-
-        if (mode == 'id') {
-          setDownloaderState('findingMD5s');
-
-          const md5list: string[] | null = await findMD5s(mirror, bulkQueue, MD5ReqPattern, onErr, error_tolarance, error_reconnect_delay_ms);
-
-          if (!md5list) {
-            setDownloaderState('failed');
-            setLastFailedAction(() => setStatus('bulkDownloadingID'));
-            setStatus('failed');
-            return;
-          }
-
-          setErrorCounter(0);
-
-          setQueue(md5list.map((md5: string) => ({
-            md5,
-            status: 'waiting',
-            progress: 0,
-            total: 0,
-            filename: ''
-          })));
-        }
-
-        setBulkQueue([]);
-      }
-
-      setQueueItems();
-      return;
-    }
-
-    const operateQueue = async () => {
-      setDownloaderState('onGoing');
-
-      const md5s: string[] = [];
-
-      for (let i: number = 0; i < queue.length; i++) {
-        queue[i].status = 'processing';
-        setQueue([...queue]);
-
-        const md5: string = queue[i].md5;
-        const downloadMirrorURL: string | null = await findDownloadMirror(mirror, searchByMD5Pattern, md5, onErr, error_tolarance, error_reconnect_delay_ms);
-
-        setErrorCounter(0);
-
-        if (!downloadMirrorURL) {
-          queue[i].status = 'failed';
-          setQueue([...queue]);
-          continue;
-        }
-
-        const endpoint: string | null = await findDownloadURL(downloadMirrorURL, onErr, error_tolarance, error_reconnect_delay_ms);
-
-        setErrorCounter(0);
-
-        if (!endpoint) {
-          queue[i].status = 'failed';
-          setQueue([...queue]);
-          continue;
-        }
-
-        const onData = (chunkLen: number, total: number, filename: string) => {
-          queue[i].status = 'downloading';
-          queue[i].progress += chunkLen;
-          queue[i].total = total;
-          queue[i].filename = filename;
-          setQueue([...queue]);
-        }
-
-        const onEnd = (filename: string) => {
-          queue[i].status = 'completed';
-          queue[i].filename = filename;
-          md5s.push(queue[i].md5);
-          setCompletedMD5s(prev => [ ...prev, queue[i].md5 ])
-          setQueue([...queue]);
-        }
-
-        const status: true | null = await startDownloading(endpoint, error_tolarance, error_reconnect_delay_ms, onErr, onData, onEnd);
-
-        if (!status) {
-          queue[i].status = 'failed';
-          setQueue([...queue]);
-          continue;
-        }
-
-        setErrorCounter(0);
-      }
-
-      if (md5s.length > 0 && mode == 'id') {
-        try {
-          const listfile: string = `MD5_LIST_${Date.now().toString()}.txt`;
-          await fs.promises.writeFile(`./${listfile}`, md5s.join('\n'));
-          setListExported(listfile);
-        } catch(e) {  }
-      }
-
-      setDownloaderState('completed');
-
-      if (mode == 'md5') {
-        exit();
-      }
-    }
-
-    operateQueue();
-  }, [bulkQueue]);
+  useBulkDownload({
+    mode,
+    onPrepare,
+    onFailed,
+    onQueueUpdated,
+    onCompleted
+  });
 
   const selectInputItems: SelectInputItem[] = [
     {
@@ -211,56 +120,61 @@ const BulkDownloader = (props: Props) => {
   return (
     <Box flexDirection='column'>
       <Box>
-        { downloaderState == 'findingMD5s' &&
-        <Text>
-          <Text color='cyanBright'>
-            <InkSpinner type='dots' />
-            &nbsp;
+        { 
+          state.status == 'findingMD5s' &&
+          <Text>
+            <Text color='cyanBright'>
+              <InkSpinner type='dots' />
+              &nbsp;
+            </Text>
+            Finding MD5(s) of Book(s)
           </Text>
-          Finding MD5(s) of Book(s)
-        </Text>
         }
 
-        { downloaderState == 'onGoing'  &&
+        { 
+          state.status == 'onGoing'  &&
           <Text>
             <Text>Downloaded: </Text>
-            <Text color='greenBright'>{completedMD5s.length} / {queue.length}</Text>
-            &nbsp;to&nbsp;
+            <Text color='greenBright'>{state.queue.filter((item: QueueItem) => item.status == 'completed').length} / {state.queue.length}</Text>
+            <Text> to </Text>
             <Text color='blueBright'>{process.cwd()}</Text>
           </Text>
         }
 
-        { downloaderState == 'failed'  &&
+        { 
+          state.status == 'failed'  &&
           <Text>
             <Text color='red'>Downloading process failed</Text>
           </Text>
         }
 
-        { downloaderState == 'completed'  &&
+        { 
+          state.status == 'completed'  &&
           <Text>
-            <Text color='greenBright'>{completedMD5s.length} of {queue.length}</Text>
+            <Text color='greenBright'>{state.queue.filter((item: QueueItem) => item.status == 'completed').length} of {state.queue.length}</Text>
             <Text> files downloaded successfully</Text>
           </Text>
         }
       </Box>
       <Box>
-        { errorCounter > 0 &&
-        <Text>
-          <Text color='red'>{errorCounter} / {error_tolarance} </Text>
-          <Text color='yellow'>Some connection problems occured. Trying again.</Text>
-        </Text>
-        }
-        { downloaderState == 'completed' && listExported != '' &&
+        { state.status == 'completed' && state.listExported != '' &&
           <Text>
             <Text color='greenBright'>MD5(s) list exported successfully</Text>
-            <Text> {listExported}</Text>
+            <Text> {state.listExported}</Text>
           </Text>
         }
       </Box>
       <Box flexDirection='column'>
         {
-          (downloaderState == 'onGoing' || downloaderState == 'completed') && queue.map((item: QueueItem, i: number) => (
-            <Box key={i}>
+          (state.status == 'onGoing' || state.status == 'completed') && state.queue.map((item: QueueItem, i: number) => (
+            <Box key={i} flexDirection='column'>
+              {
+                (item.errorCounter > 0 && (item.status == 'processing' || item.status == 'downloading')) &&
+                <Text>
+                  <Text color='red'>{item.errorCounter} / {error_tolarance} </Text>
+                  <Text color='yellow'>Some connection problems occured. Trying again.</Text>
+                </Text>
+              }
               <Text wrap='truncate'>
                 { item.status == 'waiting' && <Text color='grey' inverse={true}> IN QUEUE </Text> } 
                 { item.status == 'processing' && <Text color='yellowBright' inverse={true}> PROCESSING </Text> } 
@@ -290,7 +204,7 @@ const BulkDownloader = (props: Props) => {
           ))
         }
 
-        { downloaderState == 'completed' && mode == 'id' &&
+        { state.status == 'completed' && mode == 'id' &&
           <Box width='100%'>
             <SelectInput selectInputItems={selectInputItems} onSelect={handleOnSelect} />
           </Box>
