@@ -1,5 +1,5 @@
 lurkdown --files=README.md \
-  --styles='font.css,new.min.css,night.css,xt256.css' \
+  --styles='font.css,new.min.css,night.css' \
   --titles='libgen-downloader'
 
 mv README.html index.html
