@@ -1,4 +1,4 @@
-![libgen-downloader](https://raw.githubusercontent.com/obsfx/libgen-cli-downloader/gh-pages/media/logo-w.png)
+# libgen-downloader
 
 [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
