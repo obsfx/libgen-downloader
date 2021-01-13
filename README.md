@@ -30,9 +30,22 @@ or you can download one of the `standalone executable` versions. *(You can direc
 #### [Standalone Executables](https://github.com/obsfx/libgen-cli-downloader/releases)
 
 
+# Features
 
+- Interactive user Interface.
+- Non app blocking direct downloading.
+- Bulk downloading.
+- Command line parameters;  
 
-
+  ```
+  Usage: libgen-downloader [options]
+  
+  Options:
+    -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
+    -u, --url <MD5>           get the download URL
+    -d, --download <MD5>      download the file
+    -h, --help                display help for command
+  ```
 
 
 # Changelogs
