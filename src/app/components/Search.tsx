@@ -16,13 +16,17 @@ const Search = () => {
   }, []);
 
   const handleOnSubmit = () => {
+    if (query.length < 3) return;
     setStatus('gettingResults');
   }
 
   return (
     <Box flexDirection='column' width='100%'>
       <BulkQueueIndicator />
-      <Text wrap='truncate'>Press [TAB] to switch between 'Search Input' and 'Show Filters'</Text>
+      <Text wrap='truncate'>
+        <Text color='yellowBright'>[TAB]</Text> to switch between 'Search Input' and 'Show Filters',
+        <Text color='yellowBright'> [ENTER]</Text> to Search
+      </Text>
       <Input 
         labelText='Search'
         placeholder='Search string must contain minimum 3 characters.'
@@ -31,7 +35,7 @@ const Search = () => {
         onChange={setQuery}
         onSubmit={handleOnSubmit}
       />
-      <SearchFilters />
+      <SearchFilters onSubmit={handleOnSubmit} />
     </Box>
   )
 }

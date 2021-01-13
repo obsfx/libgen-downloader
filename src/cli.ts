@@ -10,9 +10,9 @@ import { config_endpoint, error_tolarance, error_reconnect_delay_ms } from './ap
 const cl: commander.Command = new Command();
 
 cl
-  .option('-b, --bulk MD5LIST.txt', 'start the app in bulk downloading mode')
-  .option('-u, --url MD5', 'get the download URL')
-  .option('-d, --download MD5', 'download the file')
+  .option('-b, --bulk <MD5LIST.txt>', 'start the app in bulk downloading mode')
+  .option('-u, --url <MD5>', 'get the download URL')
+  .option('-d, --download <MD5>', 'download the file')
 
 const cli = (argv: string[]): boolean => {
   cl.parse(argv);

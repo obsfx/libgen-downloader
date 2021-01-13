@@ -102,8 +102,8 @@ const Downloader = () => {
       {
         state.lastdownloadedfilename != '' && 
         <Text wrap='truncate'>
-          <Text color='greenBright' inverse={true}> LAST DOWNLOADED </Text>
-          <Text color='yellow'> {state.lastdownloadedfilename}</Text>
+          <Text>LAST DOWNLOADED: </Text>
+          <Text color='yellowBright'>{state.lastdownloadedfilename}</Text>
         </Text>
       }
       {

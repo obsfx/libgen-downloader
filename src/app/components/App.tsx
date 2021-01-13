@@ -74,9 +74,9 @@ const App = () => {
         width={ cols - 5 > base_app_width ? base_app_width : '95%' } 
         flexDirection='column'>
         <Header width={ cols - 5 > 40 ? 40 : '95%' }/>
-        <Downloader />
         <Loader />
         <Stage />
+        <Downloader />
       </Box>
       { status == 'bulkDownloadingID' && <BulkDownloader mode='id'/> }
       { status == 'bulkDownloadingMD5' && <BulkDownloader mode='md5'/> }
