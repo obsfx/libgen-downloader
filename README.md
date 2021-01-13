@@ -34,16 +34,10 @@ or you can download one of the `standalone executable` versions. *(You can direc
 # Features
 
 - Interactive user Interface.
-
 - Non app blocking direct downloading.
-
 - Bulk downloading.
+- Command line parameters;  
 
-- Command line parameters;
-
-  
-
-  
 
   ```
   Usage: libgen-downloader [options]
