@@ -38,7 +38,6 @@ or you can download one of the `standalone executable` versions. *(You can direc
 - Bulk downloading.
 - Command line parameters;  
 
-
   ```
   Usage: libgen-downloader [options]
   
