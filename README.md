@@ -35,7 +35,6 @@ or you can download one of the `standalone executable` versions. *(You can direc
 - Non app blocking direct downloading.
 - Bulk downloading.
 - Command line parameters;
-
   ```
   Usage: libgen-downloader [options]
   
