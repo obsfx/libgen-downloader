@@ -58,7 +58,7 @@
     "ink-text-input": "^4.0.1",
     "ink-use-stdout-dimensions": "^1.0.5",
     "jsdom": "^16.4.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "prettysize": "^2.0.0",
     "react": "^17.0.1",
     "zustand": "^3.1.4"
