@@ -1,1 +1,3 @@
-import {} from "ink";
+import renderTUI from './core';
+
+renderTUI();
