@@ -1,16 +1,15 @@
-import React, { useContext } from 'react';
-import { Box, Text, useFocus } from 'ink';
+import React from 'react';
+import { Box, Text } from 'ink';
 import InkTextInput from 'ink-text-input';
 
-import { IAppContext, AppContext } from '../AppContext';
+import { SEARCH_MIN_CHAR } from '../../constants/options';
 
 const SearchInput: React.FC<{
-  isFocused?: boolean;
-}> = ({}) => {
-  const { searchValue, setSearchValue } = useContext(AppContext) as IAppContext;
-
-  const { isFocused } = useFocus({ autoFocus: true });
-
+  isFocused: boolean;
+  searchValue: string;
+  onSearchValueChange: (value: string) => void;
+  onSubmit: () => void;
+}> = ({ isFocused, searchValue, onSearchValueChange, onSubmit }) => {
   return (
     <Box>
       <Box marginRight={1}>
@@ -23,7 +22,13 @@ const SearchInput: React.FC<{
       </Box>
 
       <Text wrap="truncate">
-        <InkTextInput value={searchValue} onChange={setSearchValue} showCursor={isFocused} />
+        <InkTextInput
+          value={searchValue}
+          onChange={onSearchValueChange}
+          showCursor={isFocused}
+          placeholder={`Search string must contain minimum ${SEARCH_MIN_CHAR} characters.`}
+          onSubmit={onSubmit}
+        />
       </Text>
     </Box>
   );
