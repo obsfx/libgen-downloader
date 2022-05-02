@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { Text } from 'ink';
 
-import { IAppContext, AppContext } from '../../AppContext';
-import { SEARCH_MIN_CHAR } from '../../../constants/options';
+import { IAppContext, AppContext } from '../../../AppContext';
+import { SEARCH_MIN_CHAR } from '../../../../constants/options';
 
 const SearchWarning: React.FC = () => {
   const { showSearchMinCharWarning } = useContext(AppContext) as IAppContext;

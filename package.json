@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
-    "run": "DEV=true ts-node ./src/index.ts",
+    "run": "DEV=true ts-node --project tsconfig.json ./src/index.ts",
     "run-dt": "npx react-devtools",
     "inspect": "node --inspect -r ts-node/register ./src/index.ts",
     "build": "tsc -b",
@@ -51,5 +51,11 @@
     "ink-text-input": "4.0.3",
     "jsdom": "19.0.0",
     "react": "17.0.2"
+  },
+  "_moduleAliases": {
+    "@api": "build/api",
+    "@cli": "build/cli",
+    "@constants": "build/constants",
+    "@core": "build/core"
   }
 }

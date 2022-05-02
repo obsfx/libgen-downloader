@@ -3,7 +3,7 @@ import { Text } from 'ink';
 
 const SearchInfo: React.FC = () => {
   return (
-    <Text>
+    <Text wrap="truncate">
       <Text color="yellowBright">[TAB]</Text> to switch between 'Search Input' and 'Show Filters',
       <Text color="yellowBright"> [ENTER]</Text> to Search
     </Text>
