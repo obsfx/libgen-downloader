@@ -28,10 +28,12 @@ const Input: React.FC<{
   return (
     <Box>
       <Box marginRight={1}>
-        <Text>? </Text>
-        <Text color="yellowBright" inverse={isFocused}>
-          {label}:
-        </Text>
+        <Text>?</Text>
+        <Box marginLeft={1}>
+          <Text color="yellowBright" inverse={isFocused} wrap="truncate">
+            {label}:
+          </Text>
+        </Box>
       </Box>
 
       <Text wrap="truncate">
