@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Text } from 'ink';
 
-import { SEARCH_LAYOUT } from '../constants/layouts';
-import { LayoutWrapper, Layout } from './layouts/Layout';
 import SpinnerText from './components/SpinnerText';
-import Search from './layouts/search';
+import Layouts from './layouts';
 import { Config, fetchConfig, findMirror } from '../api/config';
 import { AppContextProvider } from './AppContext';
 import { FETCHING_CONFIG, FINDING_MIRROR } from '../constants/messages';
@@ -71,11 +69,7 @@ const App: React.FC = () => {
 
   return (
     <AppContextProvider config={config} mirror={mirror}>
-      <LayoutWrapper initialLayout={SEARCH_LAYOUT}>
-        <Layout layoutName={SEARCH_LAYOUT}>
-          <Search />
-        </Layout>
-      </LayoutWrapper>
+      <Layouts />
     </AppContextProvider>
   );
 };
