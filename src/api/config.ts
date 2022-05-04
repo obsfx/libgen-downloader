@@ -32,4 +32,14 @@ export async function fetchConfig(onFail: (failCount: number) => void): Promise<
   };
 }
 
-export async function findMirror() {}
+export async function findMirror(mirrors: string[]): Promise<string | null> {
+  const getText = bent('string');
+  for (let i = 0; i < mirrors.length; i++) {
+    const mirror = mirrors[i];
+    try {
+      await getText(mirror);
+      return mirror;
+    } catch (error) {}
+  }
+  return null;
+}
