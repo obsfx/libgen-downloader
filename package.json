@@ -9,9 +9,9 @@
   },
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
-    "run": "DEV=true ts-node --project tsconfig.json ./src/index.ts",
+    "run": "DEV=true ts-node ./src/index.ts",
     "run-dt": "npx react-devtools",
-    "inspect": "node --inspect -r ts-node/register ./src/index.ts",
+    "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "prepare": "husky install"
@@ -36,6 +36,7 @@
     "url": "https://github.com/obsfx/libgen-downloader.git"
   },
   "devDependencies": {
+    "@types/bent": "7.3.2",
     "@types/jsdom": "16.2.14",
     "@types/node": "17.0.21",
     "@types/react": "17.0.40",
@@ -46,16 +47,11 @@
     "typescript": "4.6.2"
   },
   "dependencies": {
+    "bent": "7.3.12",
     "figures": "4.0.0",
     "ink": "3.2.0",
     "ink-text-input": "4.0.3",
     "jsdom": "19.0.0",
     "react": "17.0.2"
-  },
-  "_moduleAliases": {
-    "@api": "build/api",
-    "@cli": "build/cli",
-    "@constants": "build/constants",
-    "@core": "build/core"
   }
 }
