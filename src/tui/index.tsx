@@ -2,6 +2,7 @@ import React from "react";
 import { render, Box } from "ink";
 
 import { ErrorContextProvider } from "./contexts/ErrorContext";
+import { LogContextProvider } from "./contexts/LogContext";
 import { LoaderContextProvider } from "./contexts/LoaderContext";
 import { ConfigContextProvider } from "./contexts/ConfigContext";
 import { AppContextProvider } from "./contexts/AppContext";
@@ -15,16 +16,18 @@ export default function renderTUI() {
   process.stdout.write(clearANSI);
 
   render(
-    <ErrorContextProvider>
+    <LogContextProvider>
       <LoaderContextProvider>
-        <ConfigContextProvider>
-          <AppContextProvider>
-            <Box width="100%" marginLeft={1} paddingRight={4}>
-              <App />
-            </Box>
-          </AppContextProvider>
-        </ConfigContextProvider>
+        <ErrorContextProvider>
+          <ConfigContextProvider>
+            <AppContextProvider>
+              <Box width="100%" marginLeft={1} paddingRight={4}>
+                <App />
+              </Box>
+            </AppContextProvider>
+          </ConfigContextProvider>
+        </ErrorContextProvider>
       </LoaderContextProvider>
-    </ErrorContextProvider>
+    </LogContextProvider>
   );
 }

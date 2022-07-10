@@ -1,9 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 
 import { Config, fetchConfig, findMirror } from "../../api/config";
 import { useLoaderContext } from "./LoaderContext";
-import { COULDNT_REACH_TO_MIRROR, FETCHING_CONFIG, FINDING_MIRROR } from "../../constants/messages";
+import {
+  COULDNT_REACH_TO_CONF,
+  COULDNT_REACH_TO_MIRROR,
+  FETCHING_CONFIG,
+  FINDING_MIRROR,
+} from "../../constants/messages";
 import { useErrorContext } from "./ErrorContext";
+import { attempt } from "../../utils";
+import { useLogContext } from "./LogContext";
 
 export interface IConfigContext {
   config: Config;
@@ -12,8 +19,13 @@ export interface IConfigContext {
 
 export const ConfigContext = React.createContext<IConfigContext | undefined>(undefined);
 
+export const useConfigContext = () => {
+  return useContext(ConfigContext) as IConfigContext;
+};
+
 export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { throwError } = useErrorContext();
+  const { pushLog } = useLogContext();
   const { setIsLoading, setLoaderMessage } = useLoaderContext();
 
   const [config, setConfig] = useState<Config>({
@@ -31,10 +43,7 @@ export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoaderMessage(FETCHING_CONFIG);
       setIsLoading(true);
 
-      const config = await fetchConfig(() => {
-        setIsLoading(false);
-        throwError("Error occured while fetching configuration.");
-      });
+      const config = await attempt(fetchConfig, pushLog, throwError);
 
       if (!config) {
         return;

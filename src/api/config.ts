@@ -1,7 +1,6 @@
 import bent from "bent";
 
 import { CONFIGURATION_URL } from "../settings";
-import { attempt } from "./utils";
 
 export interface Config {
   latestVersion: string;
@@ -11,11 +10,13 @@ export interface Config {
   MD5ReqPattern: string;
 }
 
-export async function fetchConfig(onFail: () => void) {
+export async function fetchConfig() {
   const getJSON = bent("json");
 
   try {
-    const conf: Record<string, string | string[]> = await getJSON(CONFIGURATION_URL);
+    const conf: Record<string, string | string[]> = await getJSON(
+      CONFIGURATION_URL + "asfjsakfjsaf"
+    );
 
     return {
       latestVersion: (conf["latest_version"] as string) || "",
@@ -25,8 +26,7 @@ export async function fetchConfig(onFail: () => void) {
       MD5ReqPattern: (conf["MD5ReqPattern"] as string) || "",
     };
   } catch (e) {
-    onFail();
-    return null;
+    throw Error("Error occured while fetching configuration.");
   }
 }
 

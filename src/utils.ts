@@ -1,4 +1,4 @@
-import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "../settings";
+import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -10,18 +10,20 @@ export function delay(ms: number): Promise<void> {
 
 export async function attempt<T>(
   cb: () => Promise<T>,
-  onFail: (failCount: number) => void
+  onFail: (message: string) => void,
+  onError: (message: string) => void
 ): Promise<T | null> {
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
     try {
       const result = await cb();
       return result;
-    } catch (error) {
-      onFail(i + 1);
-      // TODO: GA Fetch Failed
+    } catch (e: unknown) {
+      onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
       await delay(FAIL_REQ_ATTEMPT_DELAY_MS);
+      if (i + 1 === FAIL_REQ_ATTEMPT_COUNT) {
+        onError((e as Error)?.message);
+      }
     }
   }
-
   return null;
 }
