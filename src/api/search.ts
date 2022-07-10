@@ -1,3 +1,3 @@
-import { JSDOM } from 'jsdom';
+import { JSDOM } from "jsdom";
 
 const getHTMLResponse = () => {};

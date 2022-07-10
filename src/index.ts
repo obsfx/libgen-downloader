@@ -1,3 +1,3 @@
-import renderTUI from './core';
+import renderTUI from "./tui";
 
 renderTUI();

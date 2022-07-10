@@ -1,4 +1,4 @@
-import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from '../settings';
+import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "../settings";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {

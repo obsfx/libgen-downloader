@@ -1,35 +1,35 @@
 export enum FilterKey {
-  Author = 'author',
-  Publisher = 'publisher',
-  Year = 'year',
-  Pages = 'pages',
-  Language = 'language',
-  Extension = 'extension',
+  Author = "author",
+  Publisher = "publisher",
+  Year = "year",
+  Pages = "pages",
+  Language = "language",
+  Extension = "extension",
 }
 
 export const FilterInputs = [
   {
-    label: 'Author(s)',
+    label: "Author(s)",
     key: FilterKey.Author,
   },
   {
-    label: 'Publisher',
+    label: "Publisher",
     key: FilterKey.Publisher,
   },
   {
-    label: 'Year',
+    label: "Year",
     key: FilterKey.Year,
   },
   {
-    label: 'Pages',
+    label: "Pages",
     key: FilterKey.Pages,
   },
   {
-    label: 'Language',
+    label: "Language",
     key: FilterKey.Language,
   },
   {
-    label: 'Extension',
+    label: "Extension",
     key: FilterKey.Extension,
   },
 ];

@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Box, Text, useInput, Key, useFocus } from 'ink';
+import React, { useMemo, useState } from "react";
+import { Box, Text, useInput, Key, useFocus } from "ink";
 
 const ExpandableSection: React.FC<{
   children: React.ReactNode;

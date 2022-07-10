@@ -1,1 +1,1 @@
-export const SEARCH_LAYOUT = 'search';
+export const SEARCH_LAYOUT = "search";

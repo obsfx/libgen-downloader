@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from "react";
 
-import { ILayoutContext, LayoutContext, LayoutContextProvider } from '../../core/LayoutContext';
+import { ILayoutContext, LayoutContext, LayoutContextProvider } from "../contexts/LayoutContext";
 
 export const LayoutInner: React.FC<{
   children: React.ReactNode;

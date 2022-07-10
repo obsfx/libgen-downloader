@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect } from 'react';
-import { useFocus } from 'ink';
+import React, { useCallback, useContext, useEffect } from "react";
+import { useFocus } from "ink";
 
-import Input from '../../../components/Input';
-import { IAppContext, AppContext } from '../../../AppContext';
-import { SEARCH_MIN_CHAR } from '../../../../constants/options';
+import Input from "../../../components/Input";
+import { IAppContext, AppContext } from "../../../contexts/AppContext";
+import { SEARCH_MIN_CHAR } from "../../../../constants/options";
 
 const SearchInput: React.FC<{}> = ({}) => {
   const { searchValue, setSearchValue, showSearchMinCharWarning, setShowSearchMinCharWarning } =

@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { Box, Text } from 'ink';
-import InkTextInput from 'ink-text-input';
+import React, { useCallback } from "react";
+import { Box, Text } from "ink";
+import InkTextInput from "ink-text-input";
 
 const Input: React.FC<{
   label: string;

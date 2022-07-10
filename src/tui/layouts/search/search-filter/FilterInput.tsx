@@ -1,9 +1,9 @@
-import React, { useCallback, useContext } from 'react';
-import { useFocus } from 'ink';
+import React, { useCallback, useContext } from "react";
+import { useFocus } from "ink";
 
-import Input from '../../../components/Input';
-import { IAppContext, AppContext } from '../../../AppContext';
-import { FilterKey } from './Filter.data';
+import Input from "../../../components/Input";
+import { IAppContext, AppContext } from "../../../contexts/AppContext";
+import { FilterKey } from "./Filter.data";
 
 const FilterInput: React.FC<{
   label: string;
@@ -28,7 +28,7 @@ const FilterInput: React.FC<{
       label={label}
       placeholder=""
       isFocused={isFocused}
-      searchValue={filters[filterKey] || ''}
+      searchValue={filters[filterKey] || ""}
       onSearchValueChange={handleInputChange}
     />
   );
