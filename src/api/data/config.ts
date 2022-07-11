@@ -1,6 +1,6 @@
 import bent from "bent";
 
-import { CONFIGURATION_URL } from "../settings";
+import { CONFIGURATION_URL } from "../../settings";
 
 export interface Config {
   latestVersion: string;
@@ -14,9 +14,7 @@ export async function fetchConfig() {
   const getJSON = bent("json");
 
   try {
-    const conf: Record<string, string | string[]> = await getJSON(
-      CONFIGURATION_URL + "asfjsakfjsaf"
-    );
+    const conf: Record<string, string | string[]> = await getJSON(CONFIGURATION_URL);
 
     return {
       latestVersion: (conf["latest_version"] as string) || "",

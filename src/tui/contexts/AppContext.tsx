@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, useContext, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useContext, useMemo, useState } from "react";
 
+import { useSearch } from "../hooks/useSearch";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
 
 export interface IAppContext {
@@ -9,6 +10,7 @@ export interface IAppContext {
   setShowSearchMinCharWarning: Dispatch<SetStateAction<boolean>>;
   filters: FilterRecord;
   setFilters: Dispatch<SetStateAction<FilterRecord>>;
+  handleSearch: (query: string) => void;
 }
 
 export const AppContext = React.createContext<IAppContext | undefined>(undefined);
@@ -20,9 +22,20 @@ export const useAppContext = () => {
 export const AppContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const { search } = useSearch();
+
   const [searchValue, setSearchValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [showSearchMinCharWarning, setShowSearchMinCharWarning] = useState(false);
   const [filters, setFilters] = useState<FilterRecord>({} as FilterRecord);
+
+  const handleSearch = useCallback(
+    async (query: string) => {
+      const entries = await search(query, currentPage);
+      console.log(entries);
+    },
+    [search, currentPage]
+  );
 
   const state = useMemo<IAppContext>(
     () => ({
@@ -32,8 +45,9 @@ export const AppContextProvider: React.FC<{
       setShowSearchMinCharWarning,
       filters,
       setFilters,
+      handleSearch,
     }),
-    [searchValue, showSearchMinCharWarning, filters]
+    [searchValue, showSearchMinCharWarning, filters, handleSearch]
   );
 
   return <AppContext.Provider value={state}>{children}</AppContext.Provider>;

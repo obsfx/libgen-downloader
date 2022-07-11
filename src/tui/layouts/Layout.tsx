@@ -1,16 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 
-import { ILayoutContext, LayoutContext, LayoutContextProvider } from "../contexts/LayoutContext";
+import { LayoutContextProvider, useLayoutContext } from "../contexts/LayoutContext";
 
 export const LayoutInner: React.FC<{
   children: React.ReactNode;
   initialLayout: string;
 }> = ({ children, initialLayout }) => {
-  const { setActiveLayout } = useContext(LayoutContext) as ILayoutContext;
+  const { setActiveLayout } = useLayoutContext();
 
   useEffect(() => {
     setActiveLayout(initialLayout);
-  }, []);
+  }, [setActiveLayout, initialLayout]);
 
   return <>{children}</>;
 };
@@ -30,6 +30,6 @@ export const Layout: React.FC<{
   children: React.ReactNode;
   layoutName: string;
 }> = ({ children, layoutName }) => {
-  const { activeLayout } = useContext(LayoutContext) as ILayoutContext;
+  const { activeLayout } = useLayoutContext();
   return <>{activeLayout === layoutName && children}</>;
 };

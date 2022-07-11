@@ -1,15 +1,15 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { useFocus } from "ink";
 
 import Input from "../../../components/Input";
-import { IAppContext, AppContext } from "../../../contexts/AppContext";
+import { useAppContext } from "../../../contexts/AppContext";
 import { FilterKey } from "./Filter.data";
 
 const FilterInput: React.FC<{
   label: string;
   filterKey: FilterKey;
 }> = ({ label, filterKey }) => {
-  const { filters, setFilters } = useContext(AppContext) as IAppContext;
+  const { filters, setFilters } = useAppContext();
 
   const { isFocused } = useFocus({ autoFocus: true });
 
@@ -20,7 +20,7 @@ const FilterInput: React.FC<{
         [filterKey]: val,
       });
     },
-    [filters, setFilters]
+    [filters, filterKey, setFilters]
   );
 
   return (

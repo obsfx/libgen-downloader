@@ -1,16 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 
-import { Config, fetchConfig, findMirror } from "../../api/config";
-import { useLoaderContext } from "./LoaderContext";
-import {
-  COULDNT_REACH_TO_CONF,
-  COULDNT_REACH_TO_MIRROR,
-  FETCHING_CONFIG,
-  FINDING_MIRROR,
-} from "../../constants/messages";
-import { useErrorContext } from "./ErrorContext";
-import { attempt } from "../../utils";
-import { useLogContext } from "./LogContext";
+import { Config } from "../../api/data/config";
+import { useConfig } from "../hooks/useConfig";
 
 export interface IConfigContext {
   config: Config;
@@ -24,9 +15,7 @@ export const useConfigContext = () => {
 };
 
 export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { throwError } = useErrorContext();
-  const { pushLog } = useLogContext();
-  const { setIsLoading, setLoaderMessage } = useLoaderContext();
+  const { getConfig } = useConfig();
 
   const [config, setConfig] = useState<Config>({
     latestVersion: "",
@@ -39,36 +28,16 @@ export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const initializeConfig = async () => {
-      // Fetch configuration from the github
-      setLoaderMessage(FETCHING_CONFIG);
-      setIsLoading(true);
+      const { config, mirror } = await getConfig();
 
-      const config = await attempt(fetchConfig, pushLog, throwError);
-
-      if (!config) {
-        return;
+      if (config && mirror) {
+        setConfig(config);
+        setMirror(mirror);
       }
-
-      setConfig(config);
-
-      // Find an available mirror
-      setLoaderMessage(FINDING_MIRROR);
-      const mirror = await findMirror(config.mirrors, (failedMirror: string) => {
-        setLoaderMessage(`${COULDNT_REACH_TO_MIRROR}, ${failedMirror}. ${FINDING_MIRROR}`);
-      });
-
-      if (!mirror) {
-        setIsLoading(false);
-        throwError("Couldn't find an available libgen mirror.");
-        return;
-      }
-
-      setMirror(mirror);
-      setIsLoading(false);
     };
 
     initializeConfig();
-  }, [setIsLoading, setLoaderMessage, throwError]);
+  }, [getConfig]);
 
   const state = useMemo<IConfigContext>(
     () => ({
