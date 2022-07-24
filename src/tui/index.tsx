@@ -21,7 +21,7 @@ export default function renderTUI() {
         <ErrorContextProvider>
           <ConfigContextProvider>
             <AppContextProvider>
-              <Box width="100%" marginLeft={1} paddingRight={4}>
+              <Box width={80} marginLeft={1} paddingRight={4}>
                 <App />
               </Box>
             </AppContextProvider>
