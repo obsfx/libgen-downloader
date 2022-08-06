@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Box, useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
@@ -10,6 +10,8 @@ const ResultList: React.FC = () => {
   const { listItems, setListItems, renderedItems } = useListItems();
 
   const { isFocused } = useFocus({ autoFocus: true });
+
+  const [isEntryExpanded, setIsEntryExpanded] = useState(false);
 
   useInput(
     (input: string, key: Key) => {
@@ -27,9 +29,13 @@ const ResultList: React.FC = () => {
       }
     },
     {
-      isActive: isFocused,
+      isActive: isFocused && !isEntryExpanded,
     }
   );
+
+  const handleEntryExpand = useCallback((state: boolean) => {
+    setIsEntryExpanded(state);
+  }, []);
 
   return (
     <Box
@@ -46,13 +52,16 @@ const ResultList: React.FC = () => {
             key={item.data.id}
             item={item}
             isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
+            isFadedOut={isEntryExpanded}
           />
         ) : (
           <ResultListItemEntry
             key={item.data.id}
             item={item}
             isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
-            isExpanded={false}
+            isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && isEntryExpanded}
+            isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && isEntryExpanded}
+            setExpand={handleEntryExpand}
           />
         )
       )}

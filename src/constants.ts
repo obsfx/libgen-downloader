@@ -14,8 +14,8 @@ export const OPTION_SEE_DETAILS_ID = "see_details_option";
 export const OPTION_SEE_DETAILS_LABEL = "See Details";
 export const OPTION_DOWNLOAD_DIRECTLY_ID = "download_directly_option";
 export const OPTION_DOWNLOAD_DIRECTLY_LABEL = "Download Directly";
-export const OPTION_ADD_TO_BULK_DOWNLOAD_ID = "add_to_bulk_download_queue_option";
-export const OPTION_ADD_TO_BULK_DOWNLOAD_LABEL = "Add To Bulk Download Queue";
+export const OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_ID = "add_to_bulk_download_queue_option";
+export const OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL = "Add To Bulk Download Queue";
 export const OPTION_TURN_BACK_TO_THE_LIST_ID = "turn_back_to_the_list_option";
 export const OPTION_TURN_BACK_TO_THE_LIST_LABEL = "Turn Back To The List";
 

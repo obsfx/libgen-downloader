@@ -7,7 +7,8 @@ import { ResultListItemOption } from "../../../api/models/ListItem";
 const ResultListItemOption: React.FC<{
   item: ResultListItemOption;
   isActive: boolean;
-}> = ({ item, isActive }) => {
+  isFadedOut: boolean;
+}> = ({ item, isActive, isFadedOut }) => {
   useInput(
     (_, key: Key) => {
       if (key.return) {
@@ -18,7 +19,11 @@ const ResultListItemOption: React.FC<{
   );
 
   return (
-    <Text wrap="truncate" color={isActive ? "green" : "yellow"} bold={isActive}>
+    <Text
+      wrap="truncate"
+      color={isFadedOut ? "gray" : isActive ? "green" : "yellow"}
+      bold={isActive}
+    >
       {isActive && figures.pointer} {item.data.label}
     </Text>
   );
