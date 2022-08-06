@@ -3,6 +3,7 @@ import { Box, Text, useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
+import ResultListItemEntry from "./ResultListItemEntry";
 import { ResultListItemType } from "../../../api/models/ListItem";
 
 const ResultList: React.FC = () => {
@@ -47,14 +48,12 @@ const ResultList: React.FC = () => {
             isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
           />
         ) : (
-          <Text
-            key={item.data.id + item.data.title}
-            wrap="truncate"
-            color={index === RESULT_LIST_ACTIVE_LIST_INDEX ? "green" : "gray"}
-            bold={index === RESULT_LIST_ACTIVE_LIST_INDEX}
-          >
-            {item.data.title}
-          </Text>
+          <ResultListItemEntry
+            key={item.data.id}
+            item={item}
+            isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
+            isExpanded={false}
+          />
         )
       )}
     </Box>

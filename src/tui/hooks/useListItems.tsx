@@ -15,24 +15,11 @@ import {
 } from "../../constants";
 import { useLayoutContext } from "../contexts/LayoutContext";
 import { ListItem, ResultListItemType } from "../../api/models/ListItem";
+import { createOptionItem } from "../../utils";
 
 export const useListItems = () => {
   const { entries, resetAppState, listItems, setListItems } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
-
-  const createOptionItem = useCallback<
-    (id: string, label: string, onSelect: () => void) => ListItem
-      >(
-      (id: string, label: string, onSelect: () => void) => ({
-        type: ResultListItemType.Option,
-        data: {
-          id,
-          label,
-          onSelect,
-        },
-      }),
-      []
-      );
 
   const handleSearchOption = useCallback(() => {
     resetAppState();
@@ -50,9 +37,11 @@ export const useListItems = () => {
   }, []);
 
   useEffect(() => {
-    const entryListItems: ListItem[] = entries.map<ListItem>((entry) => ({
+    const entryListItems: ListItem[] = entries.map<ListItem>((entry, idx) => ({
       type: ResultListItemType.Entry,
       data: entry,
+      order:
+        ((idx + 1 + (entries.length - (RESULT_LIST_ACTIVE_LIST_INDEX + 1))) % entries.length) + 1,
     }));
 
     setListItems([
@@ -72,7 +61,6 @@ export const useListItems = () => {
     setListItems,
     resetAppState,
     setActiveLayout,
-    createOptionItem,
     handleSearchOption,
     handleNextPageOption,
     handleStartBulkDownloadOption,

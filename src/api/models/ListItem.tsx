@@ -17,6 +17,7 @@ export interface ResultListItemOption {
 export interface ResultListItemEntry {
   type: ResultListItemType.Entry;
   data: Entry;
+  order: number;
 }
 
 export type ListItem = ResultListItemOption | ResultListItemEntry;

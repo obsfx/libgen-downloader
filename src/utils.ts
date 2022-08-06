@@ -1,3 +1,4 @@
+import { ListItem, ResultListItemType } from "./api/models/ListItem";
 import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings";
 
 export function delay(ms: number): Promise<void> {
@@ -27,3 +28,12 @@ export async function attempt<T>(
   }
   return null;
 }
+
+export const createOptionItem = (id: string, label: string, onSelect: () => void): ListItem => ({
+  type: ResultListItemType.Option,
+  data: {
+    id,
+    label,
+    onSelect,
+  },
+});
