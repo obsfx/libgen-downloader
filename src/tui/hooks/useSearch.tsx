@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
-import { constructSearchURL, getDocument, parseEntries } from "../../api/data/search";
+import { constructSearchURL, parseEntries } from "../../api/data/search";
+import { getDocument } from "../../api/data/document";
 import { GETTING_RESULTS } from "../../constants";
 import { SEARCH_PAGE_SIZE } from "../../settings";
 import { attempt } from "../../utils";
@@ -34,7 +35,7 @@ export const useSearch = () => {
         return;
       }
 
-      const entries = parseEntries(pageDocument);
+      const entries = parseEntries(pageDocument, throwError);
       setIsLoading(false);
 
       return entries;

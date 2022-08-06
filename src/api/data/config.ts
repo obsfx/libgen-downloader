@@ -24,7 +24,7 @@ export async function fetchConfig() {
       MD5ReqPattern: (conf["MD5ReqPattern"] as string) || "",
     };
   } catch (e) {
-    throw Error("Error occured while fetching configuration.");
+    throw new Error("Error occured while fetching configuration.");
   }
 }
 

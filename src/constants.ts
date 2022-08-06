@@ -40,9 +40,10 @@ export const FINDING_MIRROR = "Finding an available mirror...";
 export const COULDNT_REACH_TO_CONF = "Couldn't reach to configuration";
 export const COULDNT_REACH_TO_MIRROR = "Couldn't reach to mirror";
 export const GETTING_RESULTS = "Getting results...";
+export const ERR_OCCURED_WHILE_PARSING_DOC = "Error occured while parsing the document";
 
 export const SEARCH_MIN_CHAR = 3;
-export const RESULT_LIST_LENGTH = 9;
+export const RESULT_LIST_LENGTH = 10;
 export const RESULT_LIST_ACTIVE_LIST_INDEX = 3;
 
 export const TABLE_CONTAINER_SELECTOR = ".c tbody";

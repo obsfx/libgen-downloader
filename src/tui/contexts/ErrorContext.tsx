@@ -3,8 +3,10 @@ import { Text } from "ink";
 import { useLoaderContext } from "./LoaderContext";
 import { useLogContext } from "./LogContext";
 
+export type ThrowError = (err: string | null) => void;
+
 export interface IErrorContext {
-  throwError: (err: string | null) => void;
+  throwError: ThrowError;
   clearError: () => void;
 }
 
