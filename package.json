@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "bent": "7.3.12",
-    "figures": "4.0.0",
+    "figures": "3.2.0",
     "ink": "3.2.0",
     "ink-spinner": "4.0.3",
     "ink-text-input": "4.0.3",

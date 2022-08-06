@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Text, useInput, Key, useFocus } from "ink";
+import { Box, useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
