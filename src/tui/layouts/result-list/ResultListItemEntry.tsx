@@ -3,16 +3,7 @@ import { Box, Text, useInput, Key } from "ink";
 import figures from "figures";
 import { ResultListItemEntry, ResultListItemOption } from "../../../api/models/ListItem";
 import { createOptionItem } from "../../../utils";
-import {
-  OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_ID,
-  OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL,
-  OPTION_DOWNLOAD_DIRECTLY_ID,
-  OPTION_DOWNLOAD_DIRECTLY_LABEL,
-  OPTION_SEE_DETAILS_ID,
-  OPTION_SEE_DETAILS_LABEL,
-  OPTION_TURN_BACK_TO_THE_LIST_ID,
-  OPTION_TURN_BACK_TO_THE_LIST_LABEL,
-} from "../../../constants";
+import { ListEntryOptions } from "../../../constants";
 
 const ResultListItemEntry: React.FC<{
   item: ResultListItemEntry;
@@ -48,20 +39,24 @@ const ResultListItemEntry: React.FC<{
 
   const entryOptions = useMemo<ResultListItemOption[]>(() => {
     return [
-      createOptionItem(OPTION_SEE_DETAILS_ID, OPTION_SEE_DETAILS_LABEL, handleSeeDetailsOptions),
       createOptionItem(
-        OPTION_DOWNLOAD_DIRECTLY_ID,
-        OPTION_DOWNLOAD_DIRECTLY_LABEL,
+        ListEntryOptions.SEE_DETAILS.id,
+        ListEntryOptions.SEE_DETAILS.label,
+        handleSeeDetailsOptions
+      ),
+      createOptionItem(
+        ListEntryOptions.DOWNLOAD_DIRECTLY.id,
+        ListEntryOptions.DOWNLOAD_DIRECTLY.label,
         handleDownloadDirectlyOption
       ),
       createOptionItem(
-        OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_ID,
-        OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL,
+        ListEntryOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.id,
+        ListEntryOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.label,
         handleAddToBulkDownloadQueueOption
       ),
       createOptionItem(
-        OPTION_TURN_BACK_TO_THE_LIST_ID,
-        OPTION_TURN_BACK_TO_THE_LIST_LABEL,
+        ListEntryOptions.TURN_BACK_TO_THE_LIST.id,
+        ListEntryOptions.TURN_BACK_TO_THE_LIST.label,
         handleTurnBackToTheListOption
       ),
     ] as ResultListItemOption[];
@@ -98,13 +93,14 @@ const ResultListItemEntry: React.FC<{
   );
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection="column" paddingLeft={isExpanded ? 1 : 0}>
       <Text
         wrap="truncate"
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "yellow" : ""}
         bold={isActive}
       >
-        {isActive && figures.pointer} [{item.order}] [{item.data.extension}] {item.data.title}
+        {isActive && !isExpanded && figures.pointer} [{item.order}] [{item.data.extension}]{" "}
+        {item.data.title}
       </Text>
 
       {isExpanded && (

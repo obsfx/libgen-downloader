@@ -7,11 +7,11 @@ import ResultListItemEntry from "./ResultListItemEntry";
 import { ResultListItemType } from "../../../api/models/ListItem";
 
 const ResultList: React.FC = () => {
-  const { listItems, setListItems, renderedItems } = useListItems();
+  const [isEntryExpanded, setIsEntryExpanded] = useState(false);
+
+  const { listItems, setListItems, renderedItems } = useListItems(isEntryExpanded);
 
   const { isFocused } = useFocus({ autoFocus: true });
-
-  const [isEntryExpanded, setIsEntryExpanded] = useState(false);
 
   useInput(
     (input: string, key: Key) => {

@@ -19,6 +19,22 @@ export const OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL = "Add To Bulk Download Que
 export const OPTION_TURN_BACK_TO_THE_LIST_ID = "turn_back_to_the_list_option";
 export const OPTION_TURN_BACK_TO_THE_LIST_LABEL = "Turn Back To The List";
 
+export const ListEntryOptions = {
+  SEE_DETAILS: { id: OPTION_SEE_DETAILS_ID, label: OPTION_SEE_DETAILS_LABEL },
+  DOWNLOAD_DIRECTLY: {
+    id: OPTION_DOWNLOAD_DIRECTLY_ID,
+    label: OPTION_DOWNLOAD_DIRECTLY_LABEL,
+  },
+  ADD_TO_BULK_DOWNLOAD_QUEUE: {
+    id: OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_ID,
+    label: OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL,
+  },
+  TURN_BACK_TO_THE_LIST: {
+    id: OPTION_TURN_BACK_TO_THE_LIST_ID,
+    label: OPTION_TURN_BACK_TO_THE_LIST_LABEL,
+  },
+};
+
 export const FETCHING_CONFIG = "Fetching configuration file...";
 export const FINDING_MIRROR = "Finding an available mirror...";
 export const COULDNT_REACH_TO_CONF = "Couldn't reach to configuration";

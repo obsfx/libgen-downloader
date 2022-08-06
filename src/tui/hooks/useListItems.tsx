@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import {
+  ListEntryOptions,
   OPTION_EXIT_ID,
   OPTION_EXIT_LABEL,
   OPTION_NEXT_PAGE_ID,
@@ -17,7 +18,7 @@ import { useLayoutContext } from "../contexts/LayoutContext";
 import { ListItem, ResultListItemType } from "../../api/models/ListItem";
 import { createOptionItem } from "../../utils";
 
-export const useListItems = () => {
+export const useListItems = (expandedView: boolean) => {
   const { entries, resetAppState, listItems, setListItems } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
 
@@ -68,8 +69,11 @@ export const useListItems = () => {
   ]);
 
   const renderedItems = useMemo(() => {
-    return listItems.slice(0, RESULT_LIST_LENGTH);
-  }, [listItems]);
+    const limit = expandedView
+      ? RESULT_LIST_LENGTH - Object.keys(ListEntryOptions).length
+      : RESULT_LIST_LENGTH;
+    return listItems.slice(0, limit);
+  }, [listItems, expandedView]);
 
   return {
     listItems,
