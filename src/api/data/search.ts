@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import bent from "bent";
 import { Entry } from "../models/Entry";
-import { TABLE_CONTAINER_SELECTOR } from "../../constants/selectors";
+import { TABLE_CONTAINER_SELECTOR } from "../../constants";
 
 export interface constructSearchURLParams {
   query: string;

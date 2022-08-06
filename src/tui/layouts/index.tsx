@@ -1,6 +1,6 @@
 import React from "react";
 
-import { RESULT_LIST_LAYOUT, SEARCH_LAYOUT } from "../../constants/layouts";
+import { RESULT_LIST_LAYOUT, SEARCH_LAYOUT } from "../../constants";
 import { LayoutWrapper, Layout } from "./Layout";
 import Search from "./search";
 import ResultList from "./result-list";
@@ -12,7 +12,7 @@ const Layouts: React.FC = () => {
         <Search />
       </Layout>
 
-      <Layout layoutName={RESULT_LIST_LAYOUT} dontUnMountOnHide>
+      <Layout layoutName={RESULT_LIST_LAYOUT}>
         <ResultList />
       </Layout>
     </LayoutWrapper>

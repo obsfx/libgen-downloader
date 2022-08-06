@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Box } from "ink";
 
 import { LayoutContextProvider, useLayoutContext } from "../contexts/LayoutContext";
 
@@ -30,17 +29,7 @@ export const LayoutWrapper: React.FC<{
 export const Layout: React.FC<{
   children: React.ReactNode;
   layoutName: string;
-  dontUnMountOnHide?: boolean;
-}> = ({ children, layoutName, dontUnMountOnHide }) => {
+}> = ({ children, layoutName }) => {
   const { activeLayout } = useLayoutContext();
-
-  if (!dontUnMountOnHide) {
-    return <>{activeLayout === layoutName && children}</>;
-  }
-
-  return (
-    <Box flexDirection="column" display={activeLayout === layoutName ? "flex" : "none"}>
-      {children}
-    </Box>
-  );
+  return <>{activeLayout === layoutName && children}</>;
 };

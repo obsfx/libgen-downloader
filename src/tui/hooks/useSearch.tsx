@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { constructSearchURL, getDocument, parseEntries } from "../../api/data/search";
-import { GETTING_RESULTS } from "../../constants/messages";
+import { GETTING_RESULTS } from "../../constants";
 import { SEARCH_PAGE_SIZE } from "../../settings";
 import { attempt } from "../../utils";
 import { useConfigContext } from "../contexts/ConfigContext";

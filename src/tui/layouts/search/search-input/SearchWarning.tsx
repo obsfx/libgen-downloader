@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "ink";
 
 import { useAppContext } from "../../../contexts/AppContext";
-import { SEARCH_MIN_CHAR } from "../../../../constants/options";
+import { SEARCH_MIN_CHAR } from "../../../../constants";
 
 const SearchWarning: React.FC = () => {
   const { showSearchMinCharWarning } = useAppContext();

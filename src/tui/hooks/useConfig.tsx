@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useLoaderContext } from "../contexts/LoaderContext";
 import { useLogContext } from "../contexts/LogContext";
-import { COULDNT_REACH_TO_MIRROR, FETCHING_CONFIG, FINDING_MIRROR } from "../../constants/messages";
+import { COULDNT_REACH_TO_MIRROR, FETCHING_CONFIG, FINDING_MIRROR } from "../../constants";
 import { attempt } from "../../utils";
 import { fetchConfig, findMirror } from "../../api/data/config";
 
