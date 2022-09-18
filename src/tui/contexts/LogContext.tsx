@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Box, Text } from "ink";
 
 export interface ILogContext {
@@ -23,16 +23,13 @@ export const LogContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setLogs([]);
   }, []);
 
-  const state = useMemo<ILogContext>(
-    () => ({
-      pushLog,
-      clearLog,
-    }),
-    [pushLog, clearLog]
-  );
-
   return (
-    <LogContext.Provider value={state}>
+    <LogContext.Provider
+      value={{
+        pushLog,
+        clearLog,
+      }}
+    >
       {children}
       <Box flexDirection="column">
         {logs.map((log, idx) => (

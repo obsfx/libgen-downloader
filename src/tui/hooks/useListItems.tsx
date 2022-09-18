@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import {
   ListEntryOptions,
@@ -68,12 +68,10 @@ export const useListItems = (expandedView: boolean) => {
     handleExitOption,
   ]);
 
-  const renderedItems = useMemo(() => {
-    const limit = expandedView
-      ? RESULT_LIST_LENGTH - Object.keys(ListEntryOptions).length
-      : RESULT_LIST_LENGTH;
-    return listItems.slice(0, limit);
-  }, [listItems, expandedView]);
+  const renderedItemsLimit = expandedView
+    ? RESULT_LIST_LENGTH - Object.keys(ListEntryOptions).length
+    : RESULT_LIST_LENGTH;
+  const renderedItems = listItems.slice(0, renderedItemsLimit);
 
   return {
     listItems,

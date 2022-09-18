@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useMemo, useState, useContext } from "react";
+import React, { Dispatch, SetStateAction, useState, useContext } from "react";
 import { Box, Text } from "ink";
 
 import SpinnerText from "../components/SpinnerText";
@@ -20,18 +20,15 @@ export const LoaderContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState("");
 
-  const state = useMemo<ILoaderContext>(
-    () => ({
-      isLoading,
-      setIsLoading,
-      loaderMessage,
-      setLoaderMessage,
-    }),
-    [isLoading, loaderMessage]
-  );
-
   return (
-    <LoaderContext.Provider value={state}>
+    <LoaderContext.Provider
+      value={{
+        isLoading,
+        setIsLoading,
+        loaderMessage,
+        setLoaderMessage,
+      }}
+    >
       {isLoading && (
         <SpinnerText>
           <Text>{loaderMessage}</Text>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Config } from "../../api/data/config";
 import { useConfig } from "../hooks/useConfig";
@@ -39,13 +39,14 @@ export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({
     initializeConfig();
   }, [getConfig]);
 
-  const state = useMemo<IConfigContext>(
-    () => ({
-      config,
-      mirror,
-    }),
-    [config, mirror]
+  return (
+    <ConfigContext.Provider
+      value={{
+        config,
+        mirror,
+      }}
+    >
+      {children}
+    </ConfigContext.Provider>
   );
-
-  return <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>;
 };

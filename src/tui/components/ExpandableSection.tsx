@@ -1,5 +1,32 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Box, Text, useInput, Key, useFocus } from "ink";
+
+const ExpandableSectionInfoText: React.FC<{
+  expanded: boolean;
+  isFocused: boolean;
+  showText: string;
+  hideText: string;
+}> = ({ expanded, isFocused, showText, hideText }) => {
+  const icon = !expanded ? "+" : "=";
+  const label = !expanded ? showText : hideText;
+
+  return (
+    <Text>
+      <Text bold={true}>{icon} </Text>
+      <Text color="yellowBright" inverse={isFocused}>
+        {label}
+      </Text>
+    </Text>
+  );
+};
+
+const ExpandableSectionFocusText: React.FC<{ isFocused: boolean }> = ({ isFocused }) => {
+  if (!isFocused) {
+    return null;
+  }
+
+  return <Text> Press [ENTER] to toogle the dropwdown</Text>;
+};
 
 const ExpandableSection: React.FC<{
   children: React.ReactNode;
@@ -15,53 +42,20 @@ const ExpandableSection: React.FC<{
     }
   });
 
-  const renderInfoText = useMemo(() => {
-    if (!expanded) {
-      return (
-        <Text>
-          <Text bold={true}>+ </Text>
-          <Text color="yellowBright" inverse={isFocused}>
-            {showText}
-          </Text>
-        </Text>
-      );
-    }
-
-    return (
-      <Text>
-        <Text bold={true}>- </Text>
-        <Text color="yellowBright" inverse={isFocused}>
-          {hideText}
-        </Text>
-      </Text>
-    );
-  }, [expanded, showText, hideText, isFocused]);
-
-  const renderFocusText = useMemo(() => {
-    if (!isFocused) {
-      return null;
-    }
-
-    return <Text> Press [ENTER] to toogle the dropwdown</Text>;
-  }, [isFocused]);
-
-  const renderContent = useMemo(() => {
-    if (!expanded) {
-      return null;
-    }
-
-    return children;
-  }, [expanded, children]);
-
   return (
     <Box flexDirection="column">
       <Text wrap="truncate">
-        {renderInfoText}
-        {renderFocusText}
+        <ExpandableSectionInfoText
+          expanded={expanded}
+          isFocused={isFocused}
+          showText={showText}
+          hideText={hideText}
+        />
+        <ExpandableSectionFocusText isFocused={isFocused} />
       </Text>
 
       <Box paddingLeft={2} flexDirection="column" width="100%">
-        {renderContent}
+        {expanded ? children : null}
       </Box>
     </Box>
   );

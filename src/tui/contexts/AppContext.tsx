@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useContext, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
 import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
 
@@ -56,31 +56,23 @@ export const AppContextProvider: React.FC<{
     setFilters({} as FilterRecord);
   }, []);
 
-  const state = useMemo<IAppContext>(
-    () => ({
-      searchValue,
-      setSearchValue,
-      showSearchMinCharWarning,
-      setShowSearchMinCharWarning,
-      listItems,
-      setListItems,
-      filters,
-      setFilters,
-      handleSearch,
-      resetAppState,
-      entries,
-    }),
-    [
-      searchValue,
-      showSearchMinCharWarning,
-      listItems,
-      setListItems,
-      filters,
-      handleSearch,
-      resetAppState,
-      entries,
-    ]
+  return (
+    <AppContext.Provider
+      value={{
+        searchValue,
+        setSearchValue,
+        showSearchMinCharWarning,
+        setShowSearchMinCharWarning,
+        listItems,
+        setListItems,
+        filters,
+        setFilters,
+        handleSearch,
+        resetAppState,
+        entries,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
   );
-
-  return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
 };

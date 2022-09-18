@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { Box, useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
 import ResultListItemEntry from "./ResultListItemEntry";
 import { ResultListItemType } from "../../../api/models/ListItem";
+import { useResultListContext } from "../../contexts/ResultListContext";
 
 const ResultList: React.FC = () => {
-  const [isEntryExpanded, setIsEntryExpanded] = useState(false);
-
-  const { listItems, setListItems, renderedItems } = useListItems(isEntryExpanded);
+  const { anyEntryExpanded } = useResultListContext();
+  const { listItems, setListItems, renderedItems } = useListItems(anyEntryExpanded);
 
   const { isFocused } = useFocus({ autoFocus: true });
 
@@ -29,13 +29,9 @@ const ResultList: React.FC = () => {
       }
     },
     {
-      isActive: isFocused && !isEntryExpanded,
+      isActive: isFocused && !anyEntryExpanded,
     }
   );
-
-  const handleEntryExpand = useCallback((state: boolean) => {
-    setIsEntryExpanded(state);
-  }, []);
 
   return (
     <Box
@@ -52,16 +48,14 @@ const ResultList: React.FC = () => {
             key={item.data.id}
             item={item}
             isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
-            isFadedOut={isEntryExpanded}
           />
         ) : (
           <ResultListItemEntry
             key={item.data.id}
             item={item}
             isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
-            isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && isEntryExpanded}
-            isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && isEntryExpanded}
-            setExpand={handleEntryExpand}
+            isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
+            isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
           />
         )
       )}

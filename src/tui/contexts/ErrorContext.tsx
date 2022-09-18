@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Text } from "ink";
 import { useLoaderContext } from "./LoaderContext";
 import { useLogContext } from "./LogContext";
@@ -42,16 +42,13 @@ export const ErrorContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const clearError = useCallback(() => throwError(""), [throwError]);
 
-  const state = useMemo<IErrorContext>(
-    () => ({
-      throwError,
-      clearError,
-    }),
-    [clearError, throwError]
-  );
-
   return (
-    <ErrorContext.Provider value={state}>
+    <ErrorContext.Provider
+      value={{
+        throwError,
+        clearError,
+      }}
+    >
       {err !== null && err.length > 0 ? <ErrorFallback error={err} /> : children}
     </ErrorContext.Provider>
   );
