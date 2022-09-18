@@ -1,12 +1,15 @@
 import React, { useState, useContext, Dispatch, SetStateAction } from "react";
+import { Entry } from "../../api/models/Entry";
 
 export interface IResultListContext {
-  handleSeeDetailsOptions: () => void;
+  handleSeeDetailsOptions: (entry: Entry) => void;
   handleDownloadDirectlyOption: () => void;
   handleAddToBulkDownloadQueueOption: () => void;
   handleTurnBackToTheListOption: () => void;
   anyEntryExpanded: boolean;
   setAnyEntryExpanded: Dispatch<SetStateAction<boolean>>;
+  activeExpandedListLength: number;
+  setActiveExpandedListLength: Dispatch<SetStateAction<number>>;
 }
 
 export const ResultListContext = React.createContext<IResultListContext | undefined>(undefined);
@@ -19,8 +22,9 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
   children,
 }) => {
   const [anyEntryExpanded, setAnyEntryExpanded] = useState(false);
+  const [activeExpandedListLength, setActiveExpandedListLength] = useState(0);
 
-  const handleSeeDetailsOptions = () => {
+  const handleSeeDetailsOptions = (entry: Entry) => {
     return undefined;
   };
 
@@ -45,6 +49,8 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
         handleTurnBackToTheListOption,
         anyEntryExpanded,
         setAnyEntryExpanded,
+        activeExpandedListLength,
+        setActiveExpandedListLength,
       }}
     >
       {children}

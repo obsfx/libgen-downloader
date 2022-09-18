@@ -8,8 +8,11 @@ import { ResultListItemType } from "../../../api/models/ListItem";
 import { useResultListContext } from "../../contexts/ResultListContext";
 
 const ResultList: React.FC = () => {
-  const { anyEntryExpanded } = useResultListContext();
-  const { listItems, setListItems, renderedItems } = useListItems(anyEntryExpanded);
+  const { anyEntryExpanded, activeExpandedListLength } = useResultListContext();
+  const { listItems, setListItems, renderedItems } = useListItems(
+    anyEntryExpanded,
+    activeExpandedListLength
+  );
 
   const { isFocused } = useFocus({ autoFocus: true });
 

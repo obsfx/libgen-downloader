@@ -18,7 +18,7 @@ import { useLayoutContext } from "../contexts/LayoutContext";
 import { ListItem, ResultListItemType } from "../../api/models/ListItem";
 import { createOptionItem } from "../../utils";
 
-export const useListItems = (expandedView: boolean) => {
+export const useListItems = (expandedView: boolean, activeExpandedListLength: number) => {
   const { entries, resetAppState, listItems, setListItems } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
 
@@ -68,9 +68,10 @@ export const useListItems = (expandedView: boolean) => {
     handleExitOption,
   ]);
 
-  const renderedItemsLimit = expandedView
-    ? RESULT_LIST_LENGTH - Object.keys(ListEntryOptions).length
-    : RESULT_LIST_LENGTH;
+  const renderedItemsLimit = Math.max(
+    5,
+    expandedView ? RESULT_LIST_LENGTH - activeExpandedListLength : RESULT_LIST_LENGTH
+  );
   const renderedItems = listItems.slice(0, renderedItemsLimit);
 
   return {

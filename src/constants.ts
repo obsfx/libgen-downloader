@@ -12,15 +12,23 @@ export const OPTION_EXIT_LABEL = "Exit";
 
 export const OPTION_SEE_DETAILS_ID = "see_details_option";
 export const OPTION_SEE_DETAILS_LABEL = "See Details";
+export const OPTION_ALTERNATIVE_DOWNLOADS_ID = "alternative_downloads";
+export const OPTION_ALTERNATIVE_DOWNLOADS_LABEL = "Alternative Downloads";
 export const OPTION_DOWNLOAD_DIRECTLY_ID = "download_directly_option";
 export const OPTION_DOWNLOAD_DIRECTLY_LABEL = "Download Directly";
 export const OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_ID = "add_to_bulk_download_queue_option";
 export const OPTION_ADD_TO_BULK_DOWNLOAD_QUEUE_LABEL = "Add To Bulk Download Queue";
 export const OPTION_TURN_BACK_TO_THE_LIST_ID = "turn_back_to_the_list_option";
 export const OPTION_TURN_BACK_TO_THE_LIST_LABEL = "Turn Back To The List";
+export const OPTION_BACK_TO_ENTRY_OPTIONS_ID = "back_to_entry_options";
+export const OPTION_BACK_TO_ENTRY_OPTIONS_LABEL = "Back";
 
 export const ListEntryOptions = {
   SEE_DETAILS: { id: OPTION_SEE_DETAILS_ID, label: OPTION_SEE_DETAILS_LABEL },
+  ALTERNATIVE_DOWNLOADS: {
+    id: OPTION_ALTERNATIVE_DOWNLOADS_ID,
+    label: OPTION_ALTERNATIVE_DOWNLOADS_LABEL,
+  },
   DOWNLOAD_DIRECTLY: {
     id: OPTION_DOWNLOAD_DIRECTLY_ID,
     label: OPTION_DOWNLOAD_DIRECTLY_LABEL,
@@ -33,6 +41,10 @@ export const ListEntryOptions = {
     id: OPTION_TURN_BACK_TO_THE_LIST_ID,
     label: OPTION_TURN_BACK_TO_THE_LIST_LABEL,
   },
+  BACK_TO_ENTRY_OPTIONS: {
+    id: OPTION_BACK_TO_ENTRY_OPTIONS_ID,
+    label: OPTION_BACK_TO_ENTRY_OPTIONS_LABEL,
+  },
 };
 
 export const FETCHING_CONFIG = "Fetching configuration file...";
@@ -43,7 +55,7 @@ export const GETTING_RESULTS = "Getting results...";
 export const ERR_OCCURED_WHILE_PARSING_DOC = "Error occured while parsing the document";
 
 export const SEARCH_MIN_CHAR = 3;
-export const RESULT_LIST_LENGTH = 10;
+export const RESULT_LIST_LENGTH = 12;
 export const RESULT_LIST_ACTIVE_LIST_INDEX = 3;
 
 export const TABLE_CONTAINER_SELECTOR = ".c tbody";
