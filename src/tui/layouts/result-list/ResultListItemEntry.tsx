@@ -100,8 +100,6 @@ const ResultListItemEntry: React.FC<{
           label: `${ListEntryOptions.ALTERNATIVE_DOWNLOADS.label} (${parsedDownloadUrls.length})`,
           loading: false,
           onSelect: () => {
-            // TODO
-            //debugger;
             setActiveExpandedListLength(parsedDownloadUrls.length + 1);
             setShowAlternativeDownloads(true);
           },
@@ -143,7 +141,7 @@ const ResultListItemEntry: React.FC<{
     <Box flexDirection="column" paddingLeft={isExpanded ? 1 : 0}>
       <Text
         wrap="truncate"
-        color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "yellow" : ""}
+        color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
         bold={isActive}
       >
         {isActive && !isExpanded && figures.pointer} [{item.order}] [{item.data.extension}]{" "}

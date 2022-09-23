@@ -2,13 +2,15 @@ export const SEARCH_LAYOUT = "search";
 export const RESULT_LIST_LAYOUT = "result_list_layout";
 
 export const OPTION_SEARCH_ID = "search_option";
-export const OPTION_SEARCH_LABEL = "Search";
+export const OPTION_SEARCH_LABEL = "? Search";
 export const OPTION_NEXT_PAGE_ID = "next_page_option";
-export const OPTION_NEXT_PAGE_LABEL = "Next Page";
+export const OPTION_NEXT_PAGE_LABEL = "→ Next Page";
+export const OPTION_PREV_PAGE_ID = "prev_page_option";
+export const OPTION_PREV_PAGE_LABEL = "← Prev Page";
 export const OPTION_START_BULK_DOWNLOAD_ID = "start_bulk_download_option";
-export const OPTION_START_BULK_DOWNLOAD_LABEL = "Start Bulk Download";
+export const OPTION_START_BULK_DOWNLOAD_LABEL = "@ Start Bulk Download";
 export const OPTION_EXIT_ID = "exit_option";
-export const OPTION_EXIT_LABEL = "Exit";
+export const OPTION_EXIT_LABEL = "✖ Exit";
 
 export const OPTION_SEE_DETAILS_ID = "see_details_option";
 export const OPTION_SEE_DETAILS_LABEL = "See Details";

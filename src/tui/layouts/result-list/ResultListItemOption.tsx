@@ -23,7 +23,7 @@ const ResultListItemOption: React.FC<{
   return (
     <Text
       wrap="truncate"
-      color={anyEntryExpanded ? "gray" : isActive ? "green" : "yellow"}
+      color={anyEntryExpanded ? "gray" : isActive ? "cyanBright" : "yellow"}
       bold={isActive}
     >
       {isActive && figures.pointer} {item.data.label}

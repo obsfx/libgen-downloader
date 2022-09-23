@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, useInput, Key, useFocus } from "ink";
+import { Box, Text, useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
@@ -8,11 +8,8 @@ import { ResultListItemType } from "../../../api/models/ListItem";
 import { useResultListContext } from "../../contexts/ResultListContext";
 
 const ResultList: React.FC = () => {
-  const { anyEntryExpanded, activeExpandedListLength } = useResultListContext();
-  const { listItems, setListItems, renderedItems } = useListItems(
-    anyEntryExpanded,
-    activeExpandedListLength
-  );
+  const { anyEntryExpanded } = useResultListContext();
+  const { listItems, setListItems, renderedItems } = useListItems();
 
   const { isFocused } = useFocus({ autoFocus: true });
 

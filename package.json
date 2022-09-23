@@ -9,9 +9,9 @@
   },
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
-    "run": "DEV=true ts-node ./src/index.ts",
-    "run-dt": "npx react-devtools",
-    "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
+    "react-dt": "react-devtools",
+    "inspect": "node --inspect-brk -r DEV=true ts-node/register ./src/index.ts",
+    "ts-node": "npx -c 'DEV=true ts-node ./src/index.ts'",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "prepare": "husky install",

@@ -25,7 +25,7 @@ const SearchInput: React.FC = () => {
       return;
     }
 
-    await handleSearch(searchValue);
+    await handleSearch();
     setActiveLayout(RESULT_LIST_LAYOUT);
   }, [searchValue, setShowSearchMinCharWarning, handleSearch, setActiveLayout]);
 
