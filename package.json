@@ -10,7 +10,7 @@
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
     "react-dt": "react-devtools",
-    "inspect": "node --inspect-brk -r DEV=true ts-node/register ./src/index.ts",
+    "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
     "ts-node": "npx -c 'DEV=true ts-node ./src/index.ts'",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
