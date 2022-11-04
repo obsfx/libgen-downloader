@@ -1,5 +1,6 @@
 export const SEARCH_LAYOUT = "search";
 export const RESULT_LIST_LAYOUT = "result_list_layout";
+export const DETAIL_LAYOUT = "detail_layout";
 
 export const OPTION_SEARCH_ID = "search_option";
 export const OPTION_SEARCH_LABEL = "? Search";

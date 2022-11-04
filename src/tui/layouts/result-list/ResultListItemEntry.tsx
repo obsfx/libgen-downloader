@@ -76,6 +76,8 @@ const ResultListItemEntry: React.FC<{
   );
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!isExpanded || Object.keys(alternativeDownloadOptions).length > 0) {
       return;
     }
@@ -83,7 +85,7 @@ const ResultListItemEntry: React.FC<{
     const fetchDownloadUrls = async () => {
       const pageDocument = await attempt(() => getDocument(item.data.mirror), pushLog, throwError);
 
-      if (!pageDocument) {
+      if (!pageDocument || !isMounted) {
         return;
       }
 
@@ -127,6 +129,10 @@ const ResultListItemEntry: React.FC<{
     };
 
     fetchDownloadUrls();
+
+    return () => {
+      isMounted = false;
+    };
   }, [
     isExpanded,
     item.data.mirror,
@@ -144,7 +150,10 @@ const ResultListItemEntry: React.FC<{
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
         bold={isActive}
       >
-        {isActive && !isExpanded && figures.pointer} [{item.order}] [{item.data.extension}]{" "}
+        {isActive && !isExpanded && figures.pointer} [{item.order}]{" "}
+        <Text color="green" bold={true}>
+          {item.data.extension}
+        </Text>{" "}
         {item.data.title}
       </Text>
 

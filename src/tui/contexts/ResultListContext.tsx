@@ -2,7 +2,7 @@ import React, { useCallback, useState, useContext, Dispatch, SetStateAction } fr
 import { Entry } from "../../api/models/Entry";
 import { useAppContext } from "./AppContext";
 import { useLayoutContext } from "./LayoutContext";
-import { SEARCH_LAYOUT } from "../../constants";
+import { DETAIL_LAYOUT, SEARCH_LAYOUT } from "../../constants";
 
 export interface IResultListContext {
   handleSearchOption: () => void;
@@ -29,7 +29,7 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { resetAppState, handleNextPage, handlePrevPage } = useAppContext();
+  const { resetAppState, handleNextPage, handlePrevPage, setDetailedEntry } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
 
   const [anyEntryExpanded, setAnyEntryExpanded] = useState(false);
@@ -56,9 +56,13 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     return undefined;
   }, []);
 
-  const handleSeeDetailsOptions = useCallback((entry: Entry) => {
-    return undefined;
-  }, []);
+  const handleSeeDetailsOptions = useCallback(
+    (entry: Entry) => {
+      setDetailedEntry(entry);
+      setActiveLayout(DETAIL_LAYOUT);
+    },
+    [setDetailedEntry, setActiveLayout]
+  );
 
   const handleDownloadDirectlyOption = useCallback(() => {
     return undefined;

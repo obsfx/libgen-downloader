@@ -1,10 +1,10 @@
 import React from "react";
-
-import { RESULT_LIST_LAYOUT, SEARCH_LAYOUT } from "../../constants";
+import { RESULT_LIST_LAYOUT, SEARCH_LAYOUT, DETAIL_LAYOUT } from "../../constants";
 import { LayoutWrapper, Layout } from "./Layout";
 import Search from "./search";
 import ResultList from "./result-list";
 import { ResultListContextProvider } from "../contexts/ResultListContext";
+import Detail from "./detail";
 
 const Layouts: React.FC = () => {
   return (
@@ -17,6 +17,10 @@ const Layouts: React.FC = () => {
         <ResultListContextProvider>
           <ResultList />
         </ResultListContextProvider>
+      </Layout>
+
+      <Layout layoutName={DETAIL_LAYOUT}>
+        <Detail />
       </Layout>
     </LayoutWrapper>
   );

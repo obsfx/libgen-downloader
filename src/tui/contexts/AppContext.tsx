@@ -15,6 +15,8 @@ export interface IAppContext {
   setListItems: Dispatch<SetStateAction<ListItem[]>>;
   filters: FilterRecord;
   setFilters: Dispatch<SetStateAction<FilterRecord>>;
+  detailedEntry: Entry | null;
+  setDetailedEntry: Dispatch<SetStateAction<Entry | null>>;
   handleSearch: () => Promise<void>;
   handleNextPage: () => Promise<void>;
   handlePrevPage: () => Promise<void>;
@@ -44,6 +46,8 @@ export const AppContextProvider: React.FC<{
 
   const [showSearchMinCharWarning, setShowSearchMinCharWarning] = useState(false);
   const [filters, setFilters] = useState<FilterRecord>({} as FilterRecord);
+
+  const [detailedEntry, setDetailedEntry] = useState<Entry | null>(null);
 
   const handleSearch = useCallback(async () => {
     setIsLoading(true);
@@ -106,6 +110,8 @@ export const AppContextProvider: React.FC<{
         setShowSearchMinCharWarning,
         listItems,
         setListItems,
+        detailedEntry,
+        setDetailedEntry,
         filters,
         setFilters,
         handleSearch,

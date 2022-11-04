@@ -1,11 +1,12 @@
 import React from "react";
-import { Box, useInput, Key, useFocus } from "ink";
+import { useInput, Key, useFocus } from "ink";
 import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
 import ResultListItemEntry from "./ResultListItemEntry";
 import { ResultListItemType } from "../../../api/models/ListItem";
 import { useResultListContext } from "../../contexts/ResultListContext";
+import ContentContainer from "../../components/ContentContainer";
 
 const ResultList: React.FC = () => {
   const { anyEntryExpanded } = useResultListContext();
@@ -34,14 +35,7 @@ const ResultList: React.FC = () => {
   );
 
   return (
-    <Box
-      flexDirection="column"
-      borderStyle="round"
-      borderColor="grey"
-      width="100%"
-      paddingLeft={1}
-      paddingRight={1}
-    >
+    <ContentContainer>
       {renderedItems.map((item, index) =>
         item.type === ResultListItemType.Option ? (
           <ResultListItemOption
@@ -59,7 +53,7 @@ const ResultList: React.FC = () => {
           />
         )
       )}
-    </Box>
+    </ContentContainer>
   );
 };
 
