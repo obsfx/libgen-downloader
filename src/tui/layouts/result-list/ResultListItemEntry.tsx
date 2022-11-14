@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, useInput, Key } from "ink";
 import figures from "figures";
+import { IOption } from "../../components/Option";
+import OptionList from "../../components/OptionList";
 import { useErrorContext } from "../../contexts/ErrorContext";
 import { useLogContext } from "../../contexts/LogContext";
 import { ListEntryOptions } from "../../../constants";
@@ -8,14 +10,7 @@ import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { ResultListItemEntry } from "../../../api/models/ListItem";
 import { useResultListContext } from "../../contexts/ResultListContext";
-import ResultListItemEntryOptions from "./ResultListItemEntryOptions";
 import { attempt } from "../../../utils";
-
-export interface EntryOption {
-  label: string;
-  onSelect: () => void;
-  loading?: boolean;
-}
 
 const ResultListItemEntry: React.FC<{
   item: ResultListItemEntry;
@@ -37,7 +32,7 @@ const ResultListItemEntry: React.FC<{
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
 
-  const [entryOptions, setEntryOptions] = useState<Record<string, EntryOption>>({
+  const [entryOptions, setEntryOptions] = useState<Record<string, IOption>>({
     [ListEntryOptions.SEE_DETAILS.id]: {
       label: ListEntryOptions.SEE_DETAILS.label,
       onSelect: () => handleSeeDetailsOptions(item.data),
@@ -62,7 +57,7 @@ const ResultListItemEntry: React.FC<{
   });
 
   const [alternativeDownloadOptions, setAlternativeDownloadOptions] = useState<
-    Record<string, EntryOption>
+    Record<string, IOption>
   >({});
 
   useInput(
@@ -109,7 +104,7 @@ const ResultListItemEntry: React.FC<{
       }));
 
       setAlternativeDownloadOptions({
-        ...parsedDownloadUrls.reduce<Record<string, EntryOption>>((prev, current, idx) => {
+        ...parsedDownloadUrls.reduce<Record<string, IOption>>((prev, current, idx) => {
           return {
             ...prev,
             [idx]: {
@@ -159,12 +154,9 @@ const ResultListItemEntry: React.FC<{
 
       {isExpanded &&
         (showAlternativeDownloads ? (
-          <ResultListItemEntryOptions
-            key={"alternativeDownloads"}
-            entryOptions={alternativeDownloadOptions}
-          />
+          <OptionList key={"alternativeDownloads"} options={alternativeDownloadOptions} />
         ) : (
-          <ResultListItemEntryOptions key={"entryOptions"} entryOptions={entryOptions} />
+          <OptionList key={"entryOptions"} options={entryOptions} />
         ))}
     </Box>
   );
