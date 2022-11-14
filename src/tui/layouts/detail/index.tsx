@@ -2,6 +2,7 @@ import React from "react";
 import ContentContainer from "../../components/ContentContainer";
 import { useAppContext } from "../../contexts/AppContext";
 import DetailRow from "./DetailRow";
+import DetailEntryOptions from "./DetailEntryOptions";
 
 const Detail: React.FC = () => {
   const { detailedEntry } = useAppContext();
@@ -21,6 +22,7 @@ const Detail: React.FC = () => {
             description={value}
           />
         ))}
+      <DetailEntryOptions />
     </ContentContainer>
   );
 };

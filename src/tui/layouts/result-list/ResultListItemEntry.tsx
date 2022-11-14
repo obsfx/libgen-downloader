@@ -5,11 +5,11 @@ import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
 import { useErrorContext } from "../../contexts/ErrorContext";
 import { useLogContext } from "../../contexts/LogContext";
+import { useResultListContext } from "../../contexts/ResultListContext";
 import { ListEntryOptions } from "../../../constants";
 import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { ResultListItemEntry } from "../../../api/models/ListItem";
-import { useResultListContext } from "../../contexts/ResultListContext";
 import { attempt } from "../../../utils";
 
 const ResultListItemEntry: React.FC<{
@@ -92,6 +92,18 @@ const ResultListItemEntry: React.FC<{
 
       setEntryOptions((prev) => ({
         ...prev,
+        [ListEntryOptions.SEE_DETAILS.id]: {
+          label: ListEntryOptions.SEE_DETAILS.label,
+          onSelect: () =>
+            handleSeeDetailsOptions({
+              ...item.data,
+              downloadUrls: parsedDownloadUrls,
+            }),
+        },
+      }));
+
+      setEntryOptions((prev) => ({
+        ...prev,
         [ListEntryOptions.ALTERNATIVE_DOWNLOADS.id]: {
           ...prev[ListEntryOptions.ALTERNATIVE_DOWNLOADS.id],
           label: `${ListEntryOptions.ALTERNATIVE_DOWNLOADS.label} (${parsedDownloadUrls.length})`,
@@ -130,12 +142,14 @@ const ResultListItemEntry: React.FC<{
     };
   }, [
     isExpanded,
+    item.data,
     item.data.mirror,
     pushLog,
     throwError,
     setActiveExpandedListLength,
     entryOptions,
     alternativeDownloadOptions,
+    handleSeeDetailsOptions,
   ]);
 
   return (
