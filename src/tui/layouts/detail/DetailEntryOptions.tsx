@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Box, Text, useInput, Key } from "ink";
 import { useAppContext } from "../../contexts/AppContext";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";

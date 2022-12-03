@@ -15,10 +15,6 @@ export interface IResultListContext {
   handleAddToBulkDownloadQueueOption: () => void;
   handleTurnBackToTheListOption: () => void;
   handleDetailTurnBackToTheList: () => void;
-  anyEntryExpanded: boolean;
-  setAnyEntryExpanded: Dispatch<SetStateAction<boolean>>;
-  activeExpandedListLength: number;
-  setActiveExpandedListLength: Dispatch<SetStateAction<number>>;
 }
 
 export const ResultListContext = React.createContext<IResultListContext | undefined>(undefined);
@@ -30,11 +26,9 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { resetAppState, handleNextPage, handlePrevPage, setDetailedEntry } = useAppContext();
+  const { resetAppState, handleNextPage, handlePrevPage, setDetailedEntry, setAnyEntryExpanded } =
+    useAppContext();
   const { setActiveLayout } = useLayoutContext();
-
-  const [anyEntryExpanded, setAnyEntryExpanded] = useState(false);
-  const [activeExpandedListLength, setActiveExpandedListLength] = useState(0);
 
   const handleSearchOption = useCallback(() => {
     resetAppState();
@@ -75,7 +69,7 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
 
   const handleTurnBackToTheListOption = useCallback(() => {
     setAnyEntryExpanded(false);
-  }, []);
+  }, [setAnyEntryExpanded]);
 
   const handleDetailTurnBackToTheList = useCallback(() => {
     setActiveLayout(RESULT_LIST_LAYOUT);
@@ -95,10 +89,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
         handleAddToBulkDownloadQueueOption,
         handleTurnBackToTheListOption,
         handleDetailTurnBackToTheList,
-        anyEntryExpanded,
-        setAnyEntryExpanded,
-        activeExpandedListLength,
-        setActiveExpandedListLength,
       }}
     >
       {children}

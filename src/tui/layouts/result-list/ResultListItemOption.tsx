@@ -3,13 +3,13 @@ import { Text, useInput, Key } from "ink";
 import figures from "figures";
 
 import { ResultListItemOption } from "../../../api/models/ListItem";
-import { useResultListContext } from "../../contexts/ResultListContext";
+import { useAppContext } from "../../contexts/AppContext";
 
 const ResultListItemOption: React.FC<{
   item: ResultListItemOption;
   isActive: boolean;
 }> = ({ item, isActive }) => {
-  const { anyEntryExpanded } = useResultListContext();
+  const { anyEntryExpanded } = useAppContext();
 
   useInput(
     (_, key: Key) => {

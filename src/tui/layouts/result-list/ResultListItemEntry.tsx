@@ -11,6 +11,7 @@ import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { ResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
+import { useAppContext } from "../../contexts/AppContext";
 
 const ResultListItemEntry: React.FC<{
   item: ResultListItemEntry;
@@ -18,6 +19,8 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
+  const { setAnyEntryExpanded, setActiveExpandedListLength } = useAppContext();
+
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
 
@@ -26,8 +29,6 @@ const ResultListItemEntry: React.FC<{
     handleDownloadDirectlyOption,
     handleAddToBulkDownloadQueueOption,
     handleTurnBackToTheListOption,
-    setAnyEntryExpanded,
-    setActiveExpandedListLength,
   } = useResultListContext();
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);

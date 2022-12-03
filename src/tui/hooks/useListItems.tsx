@@ -21,19 +21,33 @@ import { useResultListContext } from "../contexts/ResultListContext";
 
 export const useListItems = () => {
   const {
+    entries,
+    resetAppState,
+    listItems,
+    setListItems,
+    listItemsInitialized,
+    setListItemsInitialized,
     anyEntryExpanded,
     activeExpandedListLength,
+    currentPage,
+    cachedNextPageEntries,
+  } = useAppContext();
+
+  const {
     handleSearchOption,
     handleNextPageOption,
     handlePrevPageOption,
     handleStartBulkDownloadOption,
     handleExitOption,
   } = useResultListContext();
-  const { entries, resetAppState, listItems, setListItems, currentPage, cachedNextPageEntries } =
-    useAppContext();
+
   const { setActiveLayout } = useLayoutContext();
 
   useEffect(() => {
+    if (listItemsInitialized) {
+      return;
+    }
+
     const entryListItems: ListItem[] = entries.map<ListItem>((entry, idx) => ({
       type: ResultListItemType.Entry,
       data: entry,
@@ -60,9 +74,13 @@ export const useListItems = () => {
       createOptionItem(OPTION_EXIT_ID, OPTION_EXIT_LABEL, handleExitOption),
       ...entryListItems.slice(0, entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX),
     ]);
+
+    setListItemsInitialized(true);
   }, [
     entries,
     setListItems,
+    listItemsInitialized,
+    setListItemsInitialized,
     resetAppState,
     setActiveLayout,
     handleSearchOption,

@@ -13,6 +13,12 @@ export interface IAppContext {
   setShowSearchMinCharWarning: Dispatch<SetStateAction<boolean>>;
   listItems: ListItem[];
   setListItems: Dispatch<SetStateAction<ListItem[]>>;
+  listItemsInitialized: boolean;
+  setListItemsInitialized: Dispatch<SetStateAction<boolean>>;
+  anyEntryExpanded: boolean;
+  setAnyEntryExpanded: Dispatch<SetStateAction<boolean>>;
+  activeExpandedListLength: number;
+  setActiveExpandedListLength: Dispatch<SetStateAction<number>>;
   filters: FilterRecord;
   setFilters: Dispatch<SetStateAction<FilterRecord>>;
   detailedEntry: Entry | null;
@@ -44,6 +50,11 @@ export const AppContextProvider: React.FC<{
   const [cachedNextPageEntries, setCachedNextPageEntries] = useState<Entry[]>([]);
   const [listItems, setListItems] = useState<ListItem[]>([]);
 
+  const [listItemsInitialized, setListItemsInitialized] = useState(false);
+
+  const [anyEntryExpanded, setAnyEntryExpanded] = useState(false);
+  const [activeExpandedListLength, setActiveExpandedListLength] = useState(0);
+
   const [showSearchMinCharWarning, setShowSearchMinCharWarning] = useState(false);
   const [filters, setFilters] = useState<FilterRecord>({} as FilterRecord);
 
@@ -62,6 +73,7 @@ export const AppContextProvider: React.FC<{
   }, [search, searchValue, currentPage, setIsLoading, setLoaderMessage]);
 
   const handleNextPage = useCallback(async () => {
+    setListItemsInitialized(false);
     setIsLoading(true);
     setLoaderMessage(GETTING_RESULTS);
 
@@ -110,6 +122,12 @@ export const AppContextProvider: React.FC<{
         setShowSearchMinCharWarning,
         listItems,
         setListItems,
+        listItemsInitialized,
+        anyEntryExpanded,
+        setAnyEntryExpanded,
+        activeExpandedListLength,
+        setActiveExpandedListLength,
+        setListItemsInitialized,
         detailedEntry,
         setDetailedEntry,
         filters,
