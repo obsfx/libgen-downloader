@@ -7,32 +7,14 @@ import ResultListItemEntry from "./ResultListItemEntry";
 import { ResultListItemType } from "../../../api/models/ListItem";
 import { useResultListContext } from "../../contexts/ResultListContext";
 import ContentContainer from "../../components/ContentContainer";
+import { useScrollableListControls } from "../../hooks/useScrollableListControls";
 
 const ResultList: React.FC = () => {
   const { anyEntryExpanded } = useResultListContext();
   const { listItems, setListItems, renderedItems } = useListItems();
 
   const { isFocused } = useFocus({ autoFocus: true });
-
-  useInput(
-    (input: string, key: Key) => {
-      if (input.toLowerCase() === "j" || key.downArrow) {
-        setListItems([...listItems.slice(1, listItems.length), listItems[0]]);
-        return;
-      }
-
-      if (input.toLowerCase() === "k" || key.upArrow) {
-        setListItems([
-          listItems[listItems.length - 1],
-          ...listItems.slice(0, listItems.length - 1),
-        ]);
-        return;
-      }
-    },
-    {
-      isActive: isFocused && !anyEntryExpanded,
-    }
-  );
+  useScrollableListControls(listItems, setListItems, isFocused && !anyEntryExpanded);
 
   return (
     <ContentContainer>

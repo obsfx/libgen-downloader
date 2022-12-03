@@ -1,32 +1,13 @@
-import React, { useState } from "react";
-import { Box, useInput, Key } from "ink";
+import React from "react";
+import { Box } from "ink";
 import Option, { IOption } from "./Option";
+import { useListControls } from "../hooks/useListControls";
 
 const OptionList: React.FC<{
   options: Record<string, IOption>;
 }> = ({ options }) => {
-  const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
-
-  useInput((input: string, key: Key) => {
-    const optionValues = Object.values(options);
-
-    if (input.toLowerCase() === "j" || key.downArrow) {
-      const nextIndex =
-        selectedOptionIndex === optionValues.length - 1 ? 0 : selectedOptionIndex + 1;
-      setSelectedOptionIndex(nextIndex);
-      return;
-    }
-
-    if (input.toLowerCase() === "k" || key.upArrow) {
-      const nextIndex =
-        selectedOptionIndex === 0 ? optionValues.length - 1 : selectedOptionIndex - 1;
-      setSelectedOptionIndex(nextIndex);
-      return;
-    }
-
-    if (key.return) {
-      optionValues[selectedOptionIndex].onSelect();
-    }
+  const { selectedOptionIndex } = useListControls(Object.values(options), (item) => {
+    item.onSelect();
   });
 
   return (
