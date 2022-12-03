@@ -12,11 +12,17 @@ export function delay(ms: number): Promise<void> {
 export async function attempt<T>(
   cb: () => Promise<T>,
   onFail: (message: string) => void,
-  onError: (message: string) => void
+  onError: (message: string) => void,
+  onComplete?: () => void
 ): Promise<T | null> {
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
     try {
       const result = await cb();
+
+      if (onComplete) {
+        onComplete();
+      }
+
       return result;
     } catch (e: unknown) {
       onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
