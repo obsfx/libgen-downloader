@@ -169,7 +169,7 @@ const ResultListItemEntry: React.FC<{
       >
         {isActive && !isExpanded && figures.pointer} [
         {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
-        <Text color="green" bold={true}>
+        <Text color={isFadedOut ? "gray" : "green"} bold={true}>
           {item.data.extension}
         </Text>{" "}
         {item.data.title}
