@@ -9,7 +9,7 @@ import { fetchConfig, findMirror } from "../../api/data/config";
 
 export const useConfig = () => {
   const { throwError } = useErrorContext();
-  const { pushLog } = useLogContext();
+  const { pushLog, clearLog } = useLogContext();
   const { setIsLoading, setLoaderMessage } = useLoaderContext();
 
   const getConfig = useCallback(async () => {
@@ -17,7 +17,16 @@ export const useConfig = () => {
     setLoaderMessage(FETCHING_CONFIG);
     setIsLoading(true);
 
-    const config = await attempt(fetchConfig, pushLog, throwError);
+    const config = await attempt(
+      async () => {
+        const config = await fetchConfig();
+        clearLog();
+        return config;
+      },
+      pushLog,
+      throwError,
+      clearLog
+    );
 
     if (!config) {
       return {};
@@ -38,7 +47,7 @@ export const useConfig = () => {
     setIsLoading(false);
 
     return { config, mirror };
-  }, [pushLog, setIsLoading, setLoaderMessage, throwError]);
+  }, [pushLog, clearLog, setIsLoading, setLoaderMessage, throwError]);
 
   return { getConfig };
 };

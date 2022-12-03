@@ -10,7 +10,7 @@ import { useLogContext } from "../contexts/LogContext";
 export const useSearch = () => {
   const { config, mirror } = useConfigContext();
   const { throwError } = useErrorContext();
-  const { pushLog } = useLogContext();
+  const { pushLog, clearLog } = useLogContext();
 
   const fetchEntries = useCallback(
     async (query: string, pageNumber: number) => {
@@ -21,14 +21,19 @@ export const useSearch = () => {
         pageSize: SEARCH_PAGE_SIZE,
         searchReqPattern: config.searchReqPattern,
       });
-      const pageDocument = await attempt(() => getDocument(searchURL), pushLog, throwError);
+      const pageDocument = await attempt(
+        () => getDocument(searchURL),
+        pushLog,
+        throwError,
+        clearLog
+      );
       if (!pageDocument) {
         return [];
       }
       const entries = parseEntries(pageDocument, throwError) || [];
       return entries;
     },
-    [config.searchReqPattern, mirror, pushLog, throwError]
+    [config.searchReqPattern, mirror, pushLog, clearLog, throwError]
   );
 
   const search = useCallback(

@@ -19,7 +19,7 @@ const ResultListItemEntry: React.FC<{
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
   const { throwError } = useErrorContext();
-  const { pushLog } = useLogContext();
+  const { pushLog, clearLog } = useLogContext();
 
   const {
     handleSeeDetailsOptions,
@@ -78,7 +78,12 @@ const ResultListItemEntry: React.FC<{
     }
 
     const fetchDownloadUrls = async () => {
-      const pageDocument = await attempt(() => getDocument(item.data.mirror), pushLog, throwError);
+      const pageDocument = await attempt(
+        () => getDocument(item.data.mirror),
+        pushLog,
+        throwError,
+        clearLog
+      );
 
       if (!pageDocument || !isMounted) {
         return;
@@ -145,6 +150,7 @@ const ResultListItemEntry: React.FC<{
     item.data,
     item.data.mirror,
     pushLog,
+    clearLog,
     throwError,
     setActiveExpandedListLength,
     entryOptions,
