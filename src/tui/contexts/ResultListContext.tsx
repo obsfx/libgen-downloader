@@ -1,15 +1,10 @@
-import React, { useCallback, useState, useContext, Dispatch, SetStateAction } from "react";
+import React, { useCallback, useContext } from "react";
 import { Entry } from "../../api/models/Entry";
 import { useAppContext } from "./AppContext";
 import { useLayoutContext } from "./LayoutContext";
-import { DETAIL_LAYOUT, RESULT_LIST_LAYOUT, SEARCH_LAYOUT } from "../../constants";
+import { DETAIL_LAYOUT, RESULT_LIST_LAYOUT } from "../../constants";
 
 export interface IResultListContext {
-  handleSearchOption: () => void;
-  handleNextPageOption: () => void;
-  handlePrevPageOption: () => void;
-  handleStartBulkDownloadOption: () => void;
-  handleExitOption: () => void;
   handleSeeDetailsOptions: (entry: Entry) => void;
   handleDownloadDirectlyOption: () => void;
   handleAddToBulkDownloadQueueOption: () => void;
@@ -26,30 +21,8 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { resetAppState, handleNextPage, handlePrevPage, setDetailedEntry, setAnyEntryExpanded } =
-    useAppContext();
+  const { setDetailedEntry, setAnyEntryExpanded } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
-
-  const handleSearchOption = useCallback(() => {
-    resetAppState();
-    setActiveLayout(SEARCH_LAYOUT);
-  }, [resetAppState, setActiveLayout]);
-
-  const handleNextPageOption = useCallback(() => {
-    handleNextPage();
-  }, [handleNextPage]);
-
-  const handlePrevPageOption = useCallback(() => {
-    handlePrevPage();
-  }, [handlePrevPage]);
-
-  const handleStartBulkDownloadOption = useCallback(() => {
-    return undefined;
-  }, []);
-
-  const handleExitOption = useCallback(() => {
-    return undefined;
-  }, []);
 
   const handleSeeDetailsOptions = useCallback(
     (entry: Entry) => {
@@ -79,11 +52,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
   return (
     <ResultListContext.Provider
       value={{
-        handleSearchOption,
-        handleNextPageOption,
-        handlePrevPageOption,
-        handleStartBulkDownloadOption,
-        handleExitOption,
         handleSeeDetailsOptions,
         handleDownloadDirectlyOption,
         handleAddToBulkDownloadQueueOption,

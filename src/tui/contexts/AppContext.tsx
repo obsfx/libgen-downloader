@@ -1,9 +1,18 @@
-import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
-import { GETTING_RESULTS } from "../../constants";
+import { GETTING_RESULTS, SEARCH_LAYOUT } from "../../constants";
+import { constructListItems } from "../../utils";
 import { useSearch } from "../hooks/useSearch";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
+import { useLayoutContext } from "./LayoutContext";
 import { useLoaderContext } from "./LoaderContext";
 
 export interface IAppContext {
@@ -11,22 +20,17 @@ export interface IAppContext {
   setSearchValue: Dispatch<SetStateAction<string>>;
   showSearchMinCharWarning: boolean;
   setShowSearchMinCharWarning: Dispatch<SetStateAction<boolean>>;
-  listItems: ListItem[];
-  setListItems: Dispatch<SetStateAction<ListItem[]>>;
-  listItemsInitialized: boolean;
-  setListItemsInitialized: Dispatch<SetStateAction<boolean>>;
   anyEntryExpanded: boolean;
   setAnyEntryExpanded: Dispatch<SetStateAction<boolean>>;
   activeExpandedListLength: number;
   setActiveExpandedListLength: Dispatch<SetStateAction<number>>;
+  listItems: ListItem[];
+  setListItems: Dispatch<SetStateAction<ListItem[]>>;
   filters: FilterRecord;
   setFilters: Dispatch<SetStateAction<FilterRecord>>;
   detailedEntry: Entry | null;
   setDetailedEntry: Dispatch<SetStateAction<Entry | null>>;
   handleSearch: () => Promise<void>;
-  handleNextPage: () => Promise<void>;
-  handlePrevPage: () => Promise<void>;
-  resetAppState: () => void;
   entries: Entry[];
   cachedNextPageEntries: Entry[];
   currentPage: number;
@@ -43,14 +47,14 @@ export const AppContextProvider: React.FC<{
 }> = ({ children }) => {
   const { search } = useSearch();
   const { setIsLoading, setLoaderMessage } = useLoaderContext();
+  const { setActiveLayout } = useLayoutContext();
 
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [cachedNextPageEntries, setCachedNextPageEntries] = useState<Entry[]>([]);
-  const [listItems, setListItems] = useState<ListItem[]>([]);
 
-  const [listItemsInitialized, setListItemsInitialized] = useState(false);
+  const [listItems, setListItems] = useState<ListItem[]>([]);
 
   const [anyEntryExpanded, setAnyEntryExpanded] = useState(false);
   const [activeExpandedListLength, setActiveExpandedListLength] = useState(0);
@@ -68,16 +72,17 @@ export const AppContextProvider: React.FC<{
     setEntries(entries);
 
     const nextPageEntries = await search(searchValue, currentPage + 1);
+
     setCachedNextPageEntries(nextPageEntries);
     setIsLoading(false);
-  }, [search, searchValue, currentPage, setIsLoading, setLoaderMessage]);
+  }, [currentPage, search, searchValue, setIsLoading, setLoaderMessage]);
 
   const handleNextPage = useCallback(async () => {
-    setListItemsInitialized(false);
     setIsLoading(true);
     setLoaderMessage(GETTING_RESULTS);
 
     if (cachedNextPageEntries.length === 0) {
+      setIsLoading(false);
       return;
     }
 
@@ -87,13 +92,14 @@ export const AppContextProvider: React.FC<{
     setCachedNextPageEntries(nextPageEntries);
     setCurrentPage((prev) => prev + 1);
     setIsLoading(false);
-  }, [searchValue, currentPage, cachedNextPageEntries, search, setIsLoading, setLoaderMessage]);
+  }, [cachedNextPageEntries, currentPage, search, searchValue, setIsLoading, setLoaderMessage]);
 
   const handlePrevPage = useCallback(async () => {
     setIsLoading(true);
     setLoaderMessage(GETTING_RESULTS);
 
     if (currentPage < 2) {
+      setIsLoading(false);
       return;
     }
 
@@ -109,9 +115,38 @@ export const AppContextProvider: React.FC<{
     setSearchValue("");
     setCurrentPage(1);
     setEntries([]);
-    setListItems([]);
     setFilters({} as FilterRecord);
   }, []);
+
+  useEffect(() => {
+    setListItems(
+      constructListItems({
+        entries,
+        currentPage,
+        nextPageEntries: cachedNextPageEntries,
+        handleSearchOption: () => {
+          resetAppState();
+          setActiveLayout(SEARCH_LAYOUT);
+        },
+        handleNextPageOption: handleNextPage,
+        handlePrevPageOption: handlePrevPage,
+        handleStartBulkDownloadOption: () => {
+          console.log("buld download");
+        },
+        handleExitOption: () => {
+          console.log("exit");
+        },
+      })
+    );
+  }, [
+    entries,
+    cachedNextPageEntries,
+    currentPage,
+    handleNextPage,
+    handlePrevPage,
+    resetAppState,
+    setActiveLayout,
+  ]);
 
   return (
     <AppContext.Provider
@@ -120,22 +155,17 @@ export const AppContextProvider: React.FC<{
         setSearchValue,
         showSearchMinCharWarning,
         setShowSearchMinCharWarning,
-        listItems,
-        setListItems,
-        listItemsInitialized,
         anyEntryExpanded,
         setAnyEntryExpanded,
         activeExpandedListLength,
         setActiveExpandedListLength,
-        setListItemsInitialized,
         detailedEntry,
         setDetailedEntry,
+        listItems,
+        setListItems,
         filters,
         setFilters,
         handleSearch,
-        handleNextPage,
-        handlePrevPage,
-        resetAppState,
         entries,
         cachedNextPageEntries,
         currentPage,

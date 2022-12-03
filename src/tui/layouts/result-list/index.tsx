@@ -1,6 +1,5 @@
 import React from "react";
 import { useFocus } from "ink";
-import { useListItems } from "../../hooks/useListItems";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
 import ResultListItemEntry from "./ResultListItemEntry";
@@ -8,13 +7,13 @@ import { ResultListItemType } from "../../../api/models/ListItem";
 import ContentContainer from "../../components/ContentContainer";
 import { useScrollableListControls } from "../../hooks/useScrollableListControls";
 import { useAppContext } from "../../contexts/AppContext";
+import { getRenderedListItems } from "../../../utils";
 
 const ResultList: React.FC = () => {
-  const { anyEntryExpanded } = useAppContext();
-  const { listItems, setListItems, renderedItems } = useListItems();
-
+  const { anyEntryExpanded, activeExpandedListLength, listItems, setListItems } = useAppContext();
   const { isFocused } = useFocus({ autoFocus: true });
   useScrollableListControls(listItems, setListItems, isFocused && !anyEntryExpanded);
+  const renderedItems = getRenderedListItems(listItems, anyEntryExpanded, activeExpandedListLength);
 
   return (
     <ContentContainer>

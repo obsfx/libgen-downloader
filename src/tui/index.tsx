@@ -6,6 +6,8 @@ import { LogContextProvider } from "./contexts/LogContext";
 import { LoaderContextProvider } from "./contexts/LoaderContext";
 import { ConfigContextProvider } from "./contexts/ConfigContext";
 import { AppContextProvider } from "./contexts/AppContext";
+import { LayoutWrapper } from "./layouts/Layout";
+import { SEARCH_LAYOUT } from "../constants";
 import App from "./App";
 
 export default function renderTUI() {
@@ -20,11 +22,13 @@ export default function renderTUI() {
       <LoaderContextProvider>
         <ErrorContextProvider>
           <ConfigContextProvider>
-            <AppContextProvider>
-              <Box width={80} marginLeft={1} paddingRight={4}>
-                <App />
-              </Box>
-            </AppContextProvider>
+            <LayoutWrapper initialLayout={SEARCH_LAYOUT}>
+              <AppContextProvider>
+                <Box width={80} marginLeft={1} paddingRight={4}>
+                  <App />
+                </Box>
+              </AppContextProvider>
+            </LayoutWrapper>
           </ConfigContextProvider>
         </ErrorContextProvider>
       </LoaderContextProvider>

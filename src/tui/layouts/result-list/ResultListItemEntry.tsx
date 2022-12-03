@@ -12,6 +12,7 @@ import { getDocument } from "../../../api/data/document";
 import { ResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
 import { useAppContext } from "../../contexts/AppContext";
+import { SEARCH_PAGE_SIZE } from "../../../settings";
 
 const ResultListItemEntry: React.FC<{
   item: ResultListItemEntry;
@@ -19,7 +20,7 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const { setAnyEntryExpanded, setActiveExpandedListLength } = useAppContext();
+  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppContext();
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
@@ -166,7 +167,8 @@ const ResultListItemEntry: React.FC<{
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
         bold={isActive}
       >
-        {isActive && !isExpanded && figures.pointer} [{item.order}]{" "}
+        {isActive && !isExpanded && figures.pointer} [
+        {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
         <Text color="green" bold={true}>
           {item.data.extension}
         </Text>{" "}

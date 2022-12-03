@@ -77,6 +77,7 @@ export const GETTING_RESULTS = "Getting results...";
 export const ERR_OCCURED_WHILE_PARSING_DOC = "Error occured while parsing the document";
 
 export const SEARCH_MIN_CHAR = 3;
+export const MIN_RESULT_LIST_LENGTH = 5;
 export const RESULT_LIST_LENGTH = 12;
 export const RESULT_LIST_ACTIVE_LIST_INDEX = 3;
 
