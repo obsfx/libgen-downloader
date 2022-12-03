@@ -2,7 +2,7 @@ import React, { useCallback, useState, useContext, Dispatch, SetStateAction } fr
 import { Entry } from "../../api/models/Entry";
 import { useAppContext } from "./AppContext";
 import { useLayoutContext } from "./LayoutContext";
-import { DETAIL_LAYOUT, SEARCH_LAYOUT } from "../../constants";
+import { DETAIL_LAYOUT, RESULT_LIST_LAYOUT, SEARCH_LAYOUT } from "../../constants";
 
 export interface IResultListContext {
   handleSearchOption: () => void;
@@ -14,6 +14,7 @@ export interface IResultListContext {
   handleDownloadDirectlyOption: () => void;
   handleAddToBulkDownloadQueueOption: () => void;
   handleTurnBackToTheListOption: () => void;
+  handleDetailTurnBackToTheList: () => void;
   anyEntryExpanded: boolean;
   setAnyEntryExpanded: Dispatch<SetStateAction<boolean>>;
   activeExpandedListLength: number;
@@ -76,6 +77,11 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     setAnyEntryExpanded(false);
   }, []);
 
+  const handleDetailTurnBackToTheList = useCallback(() => {
+    setActiveLayout(RESULT_LIST_LAYOUT);
+    setDetailedEntry(null);
+  }, [setDetailedEntry, setActiveLayout]);
+
   return (
     <ResultListContext.Provider
       value={{
@@ -88,6 +94,7 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
         handleDownloadDirectlyOption,
         handleAddToBulkDownloadQueueOption,
         handleTurnBackToTheListOption,
+        handleDetailTurnBackToTheList,
         anyEntryExpanded,
         setAnyEntryExpanded,
         activeExpandedListLength,
