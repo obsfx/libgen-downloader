@@ -9,6 +9,7 @@ import { useScrollableListControls } from "../../hooks/useScrollableListControls
 import { useAppContext } from "../../contexts/AppContext";
 import { getRenderedListItems } from "../../../utils";
 import UsageInfo from "../../components/UsageInfo";
+import ResultListInfo from "../../components/ResultListInfo";
 
 const ResultList: React.FC = () => {
   const { anyEntryExpanded, activeExpandedListLength, listItems, setListItems } = useAppContext();
@@ -18,6 +19,7 @@ const ResultList: React.FC = () => {
 
   return (
     <Box flexDirection="column">
+      <ResultListInfo />
       <ContentContainer>
         {renderedItems.map((item, index) =>
           item.type === ResultListItemType.Option ? (
