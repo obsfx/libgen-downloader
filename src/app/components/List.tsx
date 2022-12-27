@@ -105,7 +105,23 @@ const List = (props: Props) => {
         }
       }
 
-      if (renderList[Math.floor(renderList.length / 3)].expandable && key.return) {
+      const selectedItem: Item | undefined = renderList[Math.floor(renderList.length / 3)];
+
+      if (key.tab) {
+        if (selectedItem?.data?.id) {
+          const itemChecked: boolean = bulkQueue.indexOf(selectedItem.data.id) > -1;
+          handleOnSelect(
+            expanded,
+            setExpanded,
+            selectedItem.data,
+            itemChecked
+              ? returnedValue.removeFromBulkDownloadingQueue
+              : returnedValue.addToBulkDownloadingQueue
+          );
+        }
+      }
+
+      if (selectedItem.expandable && key.return) {
         setExpanded(!expanded);
       }
     }
