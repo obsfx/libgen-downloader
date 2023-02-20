@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
-import { DetailOptions, ListEntryOptions, RESULT_LIST_LAYOUT } from "../../../constants";
+import { DetailEntryOption } from "../../../options";
+import Label from "../../../labels";
+import { LAYOUT_KEY } from "../keys";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 
 const DetailEntryOptions: React.FC = () => {
@@ -10,23 +12,23 @@ const DetailEntryOptions: React.FC = () => {
   const { setActiveLayout } = useLayoutContext();
 
   const detailOptions: Record<string, IOption> = {
-    [DetailOptions.TURN_BACK_TO_THE_LIST.id]: {
-      label: DetailOptions.TURN_BACK_TO_THE_LIST.label,
+    [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {
+      label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: () => {
-        setActiveLayout(RESULT_LIST_LAYOUT);
+        setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
         setDetailedEntry(null);
       },
     },
-    [DetailOptions.DOWNLOAD_DIRECTLY.id]: {
-      label: DetailOptions.DOWNLOAD_DIRECTLY.label,
+    [DetailEntryOption.DOWNLOAD_DIRECTLY]: {
+      label: Label.DOWNLOAD_DIRECTLY,
       onSelect: () => undefined,
     },
-    [DetailOptions.ALTERNATIVE_DOWNLOADS.id]: {
-      label: DetailOptions.ALTERNATIVE_DOWNLOADS.label,
+    [DetailEntryOption.ALTERNATIVE_DOWNLOADS]: {
+      label: Label.ALTERNATIVE_DOWNLOADS,
       onSelect: () => setShowAlternativeDownloads(true),
     },
-    [DetailOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.id]: {
-      label: DetailOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.label,
+    [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
+      label: Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
       onSelect: () => undefined,
     },
   };
@@ -42,8 +44,8 @@ const DetailEntryOptions: React.FC = () => {
         },
       };
     }, {}),
-    [ListEntryOptions.BACK_TO_ENTRY_OPTIONS.id]: {
-      label: ListEntryOptions.BACK_TO_ENTRY_OPTIONS.label,
+    [DetailEntryOption.BACK_TO_ENTRY_OPTIONS]: {
+      label: Label.BACK_TO_ENTRY_OPTIONS,
       onSelect: () => setShowAlternativeDownloads(false),
     },
   };

@@ -1,5 +1,5 @@
 import { Entry } from "../models/Entry";
-import { TABLE_CONTAINER_SELECTOR } from "../../constants";
+import Selector from "../selectors";
 import { ThrowError } from "../../tui/contexts/ErrorContext";
 
 export interface constructSearchURLParams {
@@ -25,7 +25,9 @@ export function constructSearchURL({
 
 export function parseEntries(document: Document, throwError: ThrowError): Entry[] | undefined {
   const entries: Entry[] = [];
-  const containerTable = document.querySelector<HTMLTableElement>(TABLE_CONTAINER_SELECTOR);
+  const containerTable = document.querySelector<HTMLTableElement>(
+    Selector.TABLE_CONTAINER_SELECTOR
+  );
 
   if (!containerTable) {
     throwError("containerTable is undefined");

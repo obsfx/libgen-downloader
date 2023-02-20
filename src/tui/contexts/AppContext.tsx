@@ -8,12 +8,13 @@ import React, {
 } from "react";
 import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
-import { GETTING_RESULTS, SEARCH_LAYOUT } from "../../constants";
 import { constructListItems } from "../../utils";
 import { useSearch } from "../hooks/useSearch";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
 import { useLayoutContext } from "./LayoutContext";
 import { useLoaderContext } from "./LoaderContext";
+import { LAYOUT_KEY } from "../layouts/keys";
+import Label from "../../labels";
 
 export interface IAppContext {
   searchValue: string;
@@ -30,6 +31,8 @@ export interface IAppContext {
   setFilters: Dispatch<SetStateAction<FilterRecord>>;
   detailedEntry: Entry | null;
   setDetailedEntry: Dispatch<SetStateAction<Entry | null>>;
+  bulkQueue: Record<string, Entry | null>;
+  setBulkQueue: Dispatch<SetStateAction<Record<string, Entry | null>>>;
   handleSearch: () => Promise<void>;
   entries: Entry[];
   cachedNextPageEntries: Entry[];
@@ -63,10 +66,11 @@ export const AppContextProvider: React.FC<{
   const [filters, setFilters] = useState<FilterRecord>({} as FilterRecord);
 
   const [detailedEntry, setDetailedEntry] = useState<Entry | null>(null);
+  const [bulkQueue, setBulkQueue] = useState<Record<string, Entry | null>>({});
 
   const handleSearch = useCallback(async () => {
     setIsLoading(true);
-    setLoaderMessage(GETTING_RESULTS);
+    setLoaderMessage(Label.GETTING_RESULTS);
 
     const entries = await search(searchValue, currentPage);
     setEntries(entries);
@@ -79,7 +83,7 @@ export const AppContextProvider: React.FC<{
 
   const handleNextPage = useCallback(async () => {
     setIsLoading(true);
-    setLoaderMessage(GETTING_RESULTS);
+    setLoaderMessage(Label.GETTING_RESULTS);
 
     if (cachedNextPageEntries.length === 0) {
       setIsLoading(false);
@@ -96,7 +100,7 @@ export const AppContextProvider: React.FC<{
 
   const handlePrevPage = useCallback(async () => {
     setIsLoading(true);
-    setLoaderMessage(GETTING_RESULTS);
+    setLoaderMessage(Label.GETTING_RESULTS);
 
     if (currentPage < 2) {
       setIsLoading(false);
@@ -126,12 +130,12 @@ export const AppContextProvider: React.FC<{
         nextPageEntries: cachedNextPageEntries,
         handleSearchOption: () => {
           resetAppState();
-          setActiveLayout(SEARCH_LAYOUT);
+          setActiveLayout(LAYOUT_KEY.SEARCH_LAYOUT);
         },
         handleNextPageOption: handleNextPage,
         handlePrevPageOption: handlePrevPage,
         handleStartBulkDownloadOption: () => {
-          console.log("buld download");
+          console.log("bulk download");
         },
         handleExitOption: () => {
           console.log("exit");
@@ -169,6 +173,8 @@ export const AppContextProvider: React.FC<{
         entries,
         cachedNextPageEntries,
         currentPage,
+        bulkQueue,
+        setBulkQueue,
       }}
     >
       {children}

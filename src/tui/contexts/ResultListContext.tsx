@@ -2,12 +2,12 @@ import React, { useCallback, useContext } from "react";
 import { Entry } from "../../api/models/Entry";
 import { useAppContext } from "./AppContext";
 import { useLayoutContext } from "./LayoutContext";
-import { DETAIL_LAYOUT, RESULT_LIST_LAYOUT } from "../../constants";
+import { LAYOUT_KEY } from "../layouts/keys";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
   handleDownloadDirectlyOption: () => void;
-  handleAddToBulkDownloadQueueOption: () => void;
+  handleBulkDownloadQueueOption: (entry: Entry) => void;
   handleTurnBackToTheListOption: () => void;
   handleDetailTurnBackToTheList: () => void;
 }
@@ -21,13 +21,13 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { setDetailedEntry, setAnyEntryExpanded } = useAppContext();
+  const { setDetailedEntry, setAnyEntryExpanded, bulkQueue, setBulkQueue } = useAppContext();
   const { setActiveLayout } = useLayoutContext();
 
   const handleSeeDetailsOptions = useCallback(
     (entry: Entry) => {
       setDetailedEntry(entry);
-      setActiveLayout(DETAIL_LAYOUT);
+      setActiveLayout(LAYOUT_KEY.DETAIL_LAYOUT);
     },
     [setDetailedEntry, setActiveLayout]
   );
@@ -36,16 +36,30 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     return undefined;
   }, []);
 
-  const handleAddToBulkDownloadQueueOption = useCallback(() => {
-    return undefined;
-  }, []);
+  const handleBulkDownloadQueueOption = useCallback(
+    (entry: Entry) => {
+      if (bulkQueue[entry.id]) {
+        setBulkQueue((prev) => ({
+          ...prev,
+          [entry.id]: null,
+        }));
+        return;
+      }
+
+      setBulkQueue((prev) => ({
+        ...prev,
+        [entry.id]: entry,
+      }));
+    },
+    [bulkQueue, setBulkQueue]
+  );
 
   const handleTurnBackToTheListOption = useCallback(() => {
     setAnyEntryExpanded(false);
   }, [setAnyEntryExpanded]);
 
   const handleDetailTurnBackToTheList = useCallback(() => {
-    setActiveLayout(RESULT_LIST_LAYOUT);
+    setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
     setDetailedEntry(null);
   }, [setDetailedEntry, setActiveLayout]);
 
@@ -54,7 +68,7 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
       value={{
         handleSeeDetailsOptions,
         handleDownloadDirectlyOption,
-        handleAddToBulkDownloadQueueOption,
+        handleBulkDownloadQueueOption,
         handleTurnBackToTheListOption,
         handleDetailTurnBackToTheList,
       }}

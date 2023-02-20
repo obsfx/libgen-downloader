@@ -7,7 +7,7 @@ import { LoaderContextProvider } from "./contexts/LoaderContext";
 import { ConfigContextProvider } from "./contexts/ConfigContext";
 import { AppContextProvider } from "./contexts/AppContext";
 import { LayoutWrapper } from "./layouts/Layout";
-import { SEARCH_LAYOUT } from "../constants";
+import { LAYOUT_KEY } from "./layouts/keys";
 import App from "./App";
 
 export default function renderTUI() {
@@ -22,7 +22,7 @@ export default function renderTUI() {
       <LoaderContextProvider>
         <ErrorContextProvider>
           <ConfigContextProvider>
-            <LayoutWrapper initialLayout={SEARCH_LAYOUT}>
+            <LayoutWrapper initialLayout={LAYOUT_KEY.SEARCH_LAYOUT}>
               <AppContextProvider>
                 <Box width={80} marginLeft={1} paddingRight={4}>
                   <App />

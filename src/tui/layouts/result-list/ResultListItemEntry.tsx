@@ -6,7 +6,8 @@ import OptionList from "../../components/OptionList";
 import { useErrorContext } from "../../contexts/ErrorContext";
 import { useLogContext } from "../../contexts/LogContext";
 import { useResultListContext } from "../../contexts/ResultListContext";
-import { ListEntryOptions } from "../../../constants";
+import { ResultListEntryOption } from "../../../options";
+import Label from "../../../labels";
 import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { ResultListItemEntry } from "../../../api/models/ListItem";
@@ -20,7 +21,8 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppContext();
+  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength, bulkQueue } =
+    useAppContext();
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
@@ -28,39 +30,86 @@ const ResultListItemEntry: React.FC<{
   const {
     handleSeeDetailsOptions,
     handleDownloadDirectlyOption,
-    handleAddToBulkDownloadQueueOption,
+    handleBulkDownloadQueueOption,
     handleTurnBackToTheListOption,
   } = useResultListContext();
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
 
   const [entryOptions, setEntryOptions] = useState<Record<string, IOption>>({
-    [ListEntryOptions.SEE_DETAILS.id]: {
-      label: ListEntryOptions.SEE_DETAILS.label,
+    [ResultListEntryOption.SEE_DETAILS]: {
+      label: Label.SEE_DETAILS,
       onSelect: () => handleSeeDetailsOptions(item.data),
     },
-    [ListEntryOptions.DOWNLOAD_DIRECTLY.id]: {
-      label: ListEntryOptions.DOWNLOAD_DIRECTLY.label,
+    [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
+      label: Label.DOWNLOAD_DIRECTLY,
       onSelect: handleDownloadDirectlyOption,
     },
-    [ListEntryOptions.ALTERNATIVE_DOWNLOADS.id]: {
-      label: ListEntryOptions.ALTERNATIVE_DOWNLOADS.label,
+    [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
+      label: Label.ALTERNATIVE_DOWNLOADS,
       loading: true,
       onSelect: () => undefined,
     },
-    [ListEntryOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.id]: {
-      label: ListEntryOptions.ADD_TO_BULK_DOWNLOAD_QUEUE.label,
-      onSelect: handleAddToBulkDownloadQueueOption,
+    [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
+      label: bulkQueue[item.data.id]
+        ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
+        : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      onSelect: () => handleBulkDownloadQueueOption(item.data),
     },
-    [ListEntryOptions.TURN_BACK_TO_THE_LIST.id]: {
-      label: ListEntryOptions.TURN_BACK_TO_THE_LIST.label,
+    [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
+      label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: handleTurnBackToTheListOption,
     },
   });
 
+  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
   const [alternativeDownloadOptions, setAlternativeDownloadOptions] = useState<
     Record<string, IOption>
   >({});
+
+  useEffect(() => {
+    setEntryOptions({
+      [ResultListEntryOption.SEE_DETAILS]: {
+        label: Label.SEE_DETAILS,
+        onSelect: () =>
+          handleSeeDetailsOptions({
+            ...item.data,
+            downloadUrls: alternativeDownloadURLs,
+          }),
+      },
+      [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
+        label: Label.DOWNLOAD_DIRECTLY,
+        onSelect: handleDownloadDirectlyOption,
+      },
+      [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
+        label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
+        loading: alternativeDownloadURLs.length === 0,
+        onSelect: () => {
+          setActiveExpandedListLength(alternativeDownloadURLs.length + 1);
+          setShowAlternativeDownloads(true);
+        },
+      },
+      [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
+        label: bulkQueue[item.data.id]
+          ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
+          : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+        onSelect: () => handleBulkDownloadQueueOption(item.data),
+      },
+      [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
+        label: Label.TURN_BACK_TO_THE_LIST,
+        onSelect: handleTurnBackToTheListOption,
+      },
+    });
+  }, [
+    alternativeDownloadURLs,
+    bulkQueue,
+    handleSeeDetailsOptions,
+    handleDownloadDirectlyOption,
+    handleBulkDownloadQueueOption,
+    handleTurnBackToTheListOption,
+    item.data,
+    setActiveExpandedListLength,
+  ]);
 
   useInput(
     (_, key: Key) => {
@@ -97,30 +146,7 @@ const ResultListItemEntry: React.FC<{
         return;
       }
 
-      setEntryOptions((prev) => ({
-        ...prev,
-        [ListEntryOptions.SEE_DETAILS.id]: {
-          label: ListEntryOptions.SEE_DETAILS.label,
-          onSelect: () =>
-            handleSeeDetailsOptions({
-              ...item.data,
-              downloadUrls: parsedDownloadUrls,
-            }),
-        },
-      }));
-
-      setEntryOptions((prev) => ({
-        ...prev,
-        [ListEntryOptions.ALTERNATIVE_DOWNLOADS.id]: {
-          ...prev[ListEntryOptions.ALTERNATIVE_DOWNLOADS.id],
-          label: `${ListEntryOptions.ALTERNATIVE_DOWNLOADS.label} (${parsedDownloadUrls.length})`,
-          loading: false,
-          onSelect: () => {
-            setActiveExpandedListLength(parsedDownloadUrls.length + 1);
-            setShowAlternativeDownloads(true);
-          },
-        },
-      }));
+      setAlternativeDownloadURLs(parsedDownloadUrls);
 
       setAlternativeDownloadOptions({
         ...parsedDownloadUrls.reduce<Record<string, IOption>>((prev, current, idx) => {
@@ -132,8 +158,8 @@ const ResultListItemEntry: React.FC<{
             },
           };
         }, {}),
-        [ListEntryOptions.BACK_TO_ENTRY_OPTIONS.id]: {
-          label: ListEntryOptions.BACK_TO_ENTRY_OPTIONS.label,
+        [ResultListEntryOption.BACK_TO_ENTRY_OPTIONS]: {
+          label: Label.BACK_TO_ENTRY_OPTIONS,
           onSelect: () => {
             setShowAlternativeDownloads(false);
             setActiveExpandedListLength(Object.keys(entryOptions).length);

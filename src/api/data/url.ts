@@ -1,8 +1,5 @@
-import {
-  ERR_OCCURED_WHILE_PARSING_DOC,
-  MAIN_DOWNLOAD_URL_SELECTOR,
-  OTHER_DOWNLOAD_URLS_SELECTOR,
-} from "../../constants";
+import Label from "../../labels";
+import Selector from "../selectors";
 import { ThrowError } from "../../tui/contexts/ErrorContext";
 
 export function parseDownloadUrls(
@@ -12,11 +9,11 @@ export function parseDownloadUrls(
   const urls: string[] = [];
 
   try {
-    const mainDownloadUrlElement = document.querySelector(MAIN_DOWNLOAD_URL_SELECTOR);
+    const mainDownloadUrlElement = document.querySelector(Selector.MAIN_DOWNLOAD_URL_SELECTOR);
 
     if (!mainDownloadUrlElement) {
       throwError(
-        `${ERR_OCCURED_WHILE_PARSING_DOC} mainDownloadUrlElement ${MAIN_DOWNLOAD_URL_SELECTOR}`
+        `${Label.ERR_OCCURED_WHILE_PARSING_DOC} mainDownloadUrlElement ${Selector.MAIN_DOWNLOAD_URL_SELECTOR}`
       );
       return;
     }
@@ -27,11 +24,13 @@ export function parseDownloadUrls(
       urls.push(mainDownloadUrl);
     }
 
-    const otherDownloadUrlsContainerElement = document.querySelector(OTHER_DOWNLOAD_URLS_SELECTOR);
+    const otherDownloadUrlsContainerElement = document.querySelector(
+      Selector.OTHER_DOWNLOAD_URLS_SELECTOR
+    );
 
     if (!otherDownloadUrlsContainerElement) {
       throwError(
-        `${ERR_OCCURED_WHILE_PARSING_DOC} otherDownloadUrlsContainerElement ${OTHER_DOWNLOAD_URLS_SELECTOR}`
+        `${Label.ERR_OCCURED_WHILE_PARSING_DOC} otherDownloadUrlsContainerElement ${Selector.OTHER_DOWNLOAD_URLS_SELECTOR}`
       );
       return;
     }

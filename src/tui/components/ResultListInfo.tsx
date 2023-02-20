@@ -3,13 +3,18 @@ import { Box, Text } from "ink";
 import { useAppContext } from "../contexts/AppContext";
 
 const ResultListInfo: React.FC = () => {
-  const { searchValue, currentPage } = useAppContext();
+  const { searchValue, currentPage, bulkQueue } = useAppContext();
 
   return (
     <Box>
       <Text wrap="truncate">
         Results for <Text color="green">{searchValue}</Text> on page{" "}
         <Text color="yellow">{currentPage}</Text>
+      </Text>
+      <Text color="gray">{" | "}</Text>
+      <Text wrap="truncate">
+        Bulk download queue:{" "}
+        <Text color="green">{Object.entries(bulkQueue).filter(([_, val]) => val).length}</Text>
       </Text>
     </Box>
   );

@@ -4,7 +4,8 @@ import { useFocus } from "ink";
 import Input from "../../../components/Input";
 import { useAppContext } from "../../../contexts/AppContext";
 import { useLayoutContext } from "../../../contexts/LayoutContext";
-import { RESULT_LIST_LAYOUT, SEARCH_MIN_CHAR } from "../../../../constants";
+import { SEARCH_MIN_CHAR } from "../../../../constants";
+import { LAYOUT_KEY } from "../../keys";
 
 const SearchInput: React.FC = () => {
   const {
@@ -26,7 +27,7 @@ const SearchInput: React.FC = () => {
     }
 
     await handleSearch();
-    setActiveLayout(RESULT_LIST_LAYOUT);
+    setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
   }, [searchValue, setShowSearchMinCharWarning, handleSearch, setActiveLayout]);
 
   useEffect(() => {
