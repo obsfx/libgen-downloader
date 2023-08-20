@@ -1,5 +1,5 @@
 import { Entry } from "./api/models/Entry";
-import { ListItem, ResultListItemType } from "./api/models/ListItem";
+import { ListItem, IResultListItemType } from "./api/models/ListItem";
 import {
   MIN_RESULT_LIST_LENGTH,
   RESULT_LIST_ACTIVE_LIST_INDEX,
@@ -44,7 +44,7 @@ export async function attempt<T>(
 }
 
 export const createOptionItem = (id: string, label: string, onSelect: () => void): ListItem => ({
-  type: ResultListItemType.Option,
+  type: IResultListItemType.Option,
   data: {
     id,
     label,
@@ -74,7 +74,7 @@ export const constructListItems = ({
   handleExitOption,
 }: constructInitialListItemsArgs) => {
   const entryListItems: ListItem[] = entries.map<ListItem>((entry, idx) => ({
-    type: ResultListItemType.Entry,
+    type: IResultListItemType.Entry,
     data: entry,
     order: idx + 1,
   }));

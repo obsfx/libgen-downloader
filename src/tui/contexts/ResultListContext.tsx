@@ -6,7 +6,6 @@ import { LAYOUT_KEY } from "../layouts/keys";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
-  handleDownloadDirectlyOption: () => void;
   handleBulkDownloadQueueOption: (entry: Entry) => void;
   handleTurnBackToTheListOption: () => void;
   handleDetailTurnBackToTheList: () => void;
@@ -31,10 +30,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     },
     [setDetailedEntry, setActiveLayout]
   );
-
-  const handleDownloadDirectlyOption = useCallback(() => {
-    return undefined;
-  }, []);
 
   const handleBulkDownloadQueueOption = useCallback(
     (entry: Entry) => {
@@ -67,7 +62,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     <ResultListContext.Provider
       value={{
         handleSeeDetailsOptions,
-        handleDownloadDirectlyOption,
         handleBulkDownloadQueueOption,
         handleTurnBackToTheListOption,
         handleDetailTurnBackToTheList,

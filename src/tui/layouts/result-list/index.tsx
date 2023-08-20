@@ -3,7 +3,7 @@ import { Box, useFocus } from "ink";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
 import ResultListItemEntry from "./ResultListItemEntry";
-import { ResultListItemType } from "../../../api/models/ListItem";
+import { IResultListItemType } from "../../../api/models/ListItem";
 import ContentContainer from "../../components/ContentContainer";
 import { useScrollableListControls } from "../../hooks/useScrollableListControls";
 import { useAppContext } from "../../contexts/AppContext";
@@ -22,7 +22,7 @@ const ResultList: React.FC = () => {
       <ResultListInfo />
       <ContentContainer>
         {renderedItems.map((item, index) =>
-          item.type === ResultListItemType.Option ? (
+          item.type === IResultListItemType.Option ? (
             <ResultListItemOption
               key={item.data.id}
               item={item}

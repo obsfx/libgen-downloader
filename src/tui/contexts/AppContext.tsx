@@ -6,15 +6,22 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import fs from "fs";
+import contentDisposition from "content-disposition";
+import fetch from "node-fetch";
 import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
-import { constructListItems } from "../../utils";
+import { attempt, constructListItems } from "../../utils";
 import { useSearch } from "../hooks/useSearch";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
 import { useLayoutContext } from "./LayoutContext";
 import { useLoaderContext } from "./LoaderContext";
 import { LAYOUT_KEY } from "../layouts/keys";
 import Label from "../../labels";
+import { getDocument } from "../../api/data/document";
+import { useErrorContext } from "./ErrorContext";
+import { useLogContext } from "./LogContext";
+import { findDownloadUrlFromMirror } from "../../api/data/url";
 
 export interface IAppContext {
   searchValue: string;
@@ -33,10 +40,12 @@ export interface IAppContext {
   setDetailedEntry: Dispatch<SetStateAction<Entry | null>>;
   bulkQueue: Record<string, Entry | null>;
   setBulkQueue: Dispatch<SetStateAction<Record<string, Entry | null>>>;
-  handleSearch: () => Promise<void>;
   entries: Entry[];
   cachedNextPageEntries: Entry[];
   currentPage: number;
+
+  handleSearch: () => Promise<void>;
+  handleSingleDownload: (entry: Entry) => void;
 }
 
 export const AppContext = React.createContext<IAppContext | undefined>(undefined);
@@ -51,6 +60,8 @@ export const AppContextProvider: React.FC<{
   const { search } = useSearch();
   const { setIsLoading, setLoaderMessage } = useLoaderContext();
   const { setActiveLayout } = useLayoutContext();
+  const { throwError } = useErrorContext();
+  const { pushLog, clearLog } = useLogContext();
 
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,6 +108,66 @@ export const AppContextProvider: React.FC<{
     setCurrentPage((prev) => prev + 1);
     setIsLoading(false);
   }, [cachedNextPageEntries, currentPage, search, searchValue, setIsLoading, setLoaderMessage]);
+
+  const handleSingleDownload = useCallback(
+    async (entry: Entry) => {
+      // TODO: Move this to a separate function
+      const mirrorPageDocument = await attempt(
+        () => getDocument(entry.mirror),
+        pushLog,
+        throwError,
+        clearLog
+      );
+
+      if (!mirrorPageDocument) {
+        return;
+      }
+
+      const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, throwError);
+      if (!downloadUrl) {
+        console.log("no download url");
+        return;
+      }
+
+      const downloadStream = await attempt(() => fetch(downloadUrl), pushLog, throwError, clearLog);
+      if (!downloadStream) {
+        console.log("no download stream");
+        return;
+      }
+      const downloadContentDisposition = downloadStream?.headers.get("content-disposition") || "";
+      const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
+      const path = `./${parsedContentDisposition.parameters.filename}`;
+
+      const file: fs.WriteStream = fs.createWriteStream(path);
+
+      const total = Number(downloadStream?.headers.get("content-length") || 0);
+      const filename = parsedContentDisposition.parameters.filename;
+
+      console.log("total", total);
+
+      downloadStream?.body?.on("data", (chunk) => {
+        console.log("on data", {
+          total,
+          chunk,
+        });
+      });
+
+      downloadStream?.body?.on("finish", () => {
+        console.log("finsih", {
+          filename,
+        });
+      });
+
+      downloadStream?.body?.on("error", () => {
+        console.log("error", {
+          filename,
+        });
+      });
+
+      downloadStream?.body?.pipe(file);
+    },
+    [clearLog, pushLog, throwError]
+  );
 
   const handlePrevPage = useCallback(async () => {
     setIsLoading(true);
@@ -169,12 +240,14 @@ export const AppContextProvider: React.FC<{
         setListItems,
         filters,
         setFilters,
-        handleSearch,
         entries,
         cachedNextPageEntries,
         currentPage,
         bulkQueue,
         setBulkQueue,
+
+        handleSearch,
+        handleSingleDownload,
       }}
     >
       {children}

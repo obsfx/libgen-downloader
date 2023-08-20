@@ -2,11 +2,11 @@ import React from "react";
 import { Text, useInput, Key } from "ink";
 import figures from "figures";
 
-import { ResultListItemOption } from "../../../api/models/ListItem";
+import { IResultListItemOption } from "../../../api/models/ListItem";
 import { useAppContext } from "../../contexts/AppContext";
 
 const ResultListItemOption: React.FC<{
-  item: ResultListItemOption;
+  item: IResultListItemOption;
   isActive: boolean;
 }> = ({ item, isActive }) => {
   const { anyEntryExpanded } = useAppContext();

@@ -52,3 +52,15 @@ export function parseDownloadUrls(
     return;
   }
 }
+
+export function findDownloadUrlFromMirror(document: Document, throwError: ThrowError) {
+  const downloadLinkElement = document.querySelector(Selector.MAIN_DOWNLOAD_URL_SELECTOR);
+
+  if (!downloadLinkElement) {
+    throwError("downloadLinkElement is undefined");
+    return;
+  }
+
+  const downloadLink = downloadLinkElement.getAttribute("href");
+  return downloadLink;
+}

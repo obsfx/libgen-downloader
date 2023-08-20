@@ -14,7 +14,6 @@
     "ts-node": "npx -c 'DEV=true ts-node ./src/index.ts'",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
-    "prepare": "husky install",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
@@ -39,10 +38,11 @@
     "url": "https://github.com/obsfx/libgen-downloader.git"
   },
   "devDependencies": {
-    "@types/bent": "7.3.2",
+    "@types/content-disposition": "0.5.5",
     "@types/jsdom": "16.2.14",
     "@types/node": "17.0.21",
     "@types/react": "17.0.40",
+    "@types/node-fetch": "2.5.7",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.5",
     "eslint": "8.19.0",
@@ -50,19 +50,19 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.6.0",
-    "husky": "7.0.4",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
     "ts-node": "10.7.0",
     "typescript": "4.6.2"
   },
   "dependencies": {
-    "bent": "7.3.12",
+    "content-disposition": "^0.5.4",
     "figures": "3.2.0",
     "ink": "3.2.0",
     "ink-spinner": "4.0.3",
     "ink-text-input": "4.0.3",
     "jsdom": "19.0.0",
+    "node-fetch": "2.6.0",
     "react": "17.0.2"
   }
 }

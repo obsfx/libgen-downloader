@@ -1,12 +1,12 @@
 import { Entry } from "./Entry";
 
-export enum ResultListItemType {
+export enum IResultListItemType {
   Entry,
   Option,
 }
 
-export interface ResultListItemOption {
-  type: ResultListItemType.Option;
+export interface IResultListItemOption {
+  type: IResultListItemType.Option;
   data: {
     id: string;
     label: string;
@@ -14,10 +14,10 @@ export interface ResultListItemOption {
   };
 }
 
-export interface ResultListItemEntry {
-  type: ResultListItemType.Entry;
+export interface IResultListItemEntry {
+  type: IResultListItemType.Entry;
   data: Entry;
   order: number;
 }
 
-export type ListItem = ResultListItemOption | ResultListItemEntry;
+export type ListItem = IResultListItemOption | IResultListItemEntry;

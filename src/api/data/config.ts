@@ -1,4 +1,4 @@
-import bent from "bent";
+import fetch from "node-fetch";
 
 import { CONFIGURATION_URL } from "../../settings";
 
@@ -11,10 +11,10 @@ export interface Config {
 }
 
 export async function fetchConfig() {
-  const getJSON = bent("json");
-
   try {
-    const conf: Record<string, string | string[]> = await getJSON(CONFIGURATION_URL);
+    const response = await fetch(CONFIGURATION_URL);
+    const json = await response.json();
+    const conf = json as Record<string, string | string[]>;
 
     return {
       latestVersion: (conf["latest_version"] as string) || "",
@@ -32,11 +32,10 @@ export async function findMirror(
   mirrors: string[],
   onMirrorFail: (failedMirror: string) => void
 ): Promise<string | null> {
-  const getText = bent("string");
   for (let i = 0; i < mirrors.length; i++) {
     const mirror = mirrors[i];
     try {
-      await getText(mirror);
+      await fetch(mirror);
       return mirror;
     } catch (e) {
       onMirrorFail(mirror);
