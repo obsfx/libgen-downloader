@@ -2,19 +2,17 @@ import React, { useCallback, useEffect } from "react";
 import { useFocus } from "ink";
 
 import Input from "../../../components/Input";
-import { useAppContext } from "../../../contexts/AppContext";
+import { useAppActionContext } from "../../../contexts/AppActionContext";
 import { useLayoutContext } from "../../../contexts/LayoutContext";
 import { SEARCH_MIN_CHAR } from "../../../../constants";
 import { LAYOUT_KEY } from "../../keys";
+import { useAppStateContext } from "../../../contexts/AppStateContext";
 
 const SearchInput: React.FC = () => {
-  const {
-    searchValue,
-    setSearchValue,
-    showSearchMinCharWarning,
-    setShowSearchMinCharWarning,
-    handleSearch,
-  } = useAppContext();
+  const { searchValue, setSearchValue, showSearchMinCharWarning, setShowSearchMinCharWarning } =
+    useAppStateContext();
+
+  const { handleSearch } = useAppActionContext();
 
   const { setActiveLayout } = useLayoutContext();
 

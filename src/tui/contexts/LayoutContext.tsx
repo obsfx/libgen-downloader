@@ -8,7 +8,11 @@ export interface ILayoutContext {
 export const LayoutContext = React.createContext<ILayoutContext | undefined>(undefined);
 
 export const useLayoutContext = () => {
-  return useContext(LayoutContext) as ILayoutContext;
+  const context = useContext(LayoutContext);
+  if (!context) {
+    throw new Error("useLayoutContext must be used within a LayoutContextProvider");
+  }
+  return context;
 };
 
 export const LayoutContextProvider: React.FC<{

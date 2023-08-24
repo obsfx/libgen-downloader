@@ -6,16 +6,20 @@ import ResultListItemEntry from "./ResultListItemEntry";
 import { IResultListItemType } from "../../../api/models/ListItem";
 import ContentContainer from "../../components/ContentContainer";
 import { useScrollableListControls } from "../../hooks/useScrollableListControls";
-import { useAppContext } from "../../contexts/AppContext";
 import { getRenderedListItems } from "../../../utils";
 import UsageInfo from "../../components/UsageInfo";
 import ResultListInfo from "../../components/ResultListInfo";
+import { useAppStateContext } from "../../contexts/AppStateContext";
 
 const ResultList: React.FC = () => {
-  const { anyEntryExpanded, activeExpandedListLength, listItems, setListItems } = useAppContext();
+  const { anyEntryExpanded, activeExpandedListLength, listItems, setListItems } =
+    useAppStateContext();
   const { isFocused } = useFocus({ autoFocus: true });
   useScrollableListControls(listItems, setListItems, isFocused && !anyEntryExpanded);
   const renderedItems = getRenderedListItems(listItems, anyEntryExpanded, activeExpandedListLength);
+
+  const activeListIndex =
+    renderedItems.length - 1 < RESULT_LIST_ACTIVE_LIST_INDEX ? 1 : RESULT_LIST_ACTIVE_LIST_INDEX;
 
   return (
     <Box flexDirection="column">
@@ -26,13 +30,13 @@ const ResultList: React.FC = () => {
             <ResultListItemOption
               key={item.data.id}
               item={item}
-              isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
+              isActive={index === activeListIndex}
             />
           ) : (
             <ResultListItemEntry
               key={item.data.id}
               item={item}
-              isActive={index === RESULT_LIST_ACTIVE_LIST_INDEX}
+              isActive={index === activeListIndex}
               isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
               isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
             />

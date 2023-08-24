@@ -1,16 +1,16 @@
 import { useCallback } from "react";
 
 import { useErrorContext } from "../contexts/ErrorContext";
-import { useLoaderContext } from "../contexts/LoaderContext";
 import { useLogContext } from "../contexts/LogContext";
 import Label from "../../labels";
 import { attempt } from "../../utils";
 import { fetchConfig, findMirror } from "../../api/data/config";
+import { useAppStateContext } from "../contexts/AppStateContext";
 
 export const useConfig = () => {
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
-  const { setIsLoading, setLoaderMessage } = useLoaderContext();
+  const { setIsLoading, setLoaderMessage } = useAppStateContext();
 
   const getConfig = useCallback(async () => {
     // Fetch configuration from the github

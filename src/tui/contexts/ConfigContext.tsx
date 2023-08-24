@@ -8,10 +8,14 @@ export interface IConfigContext {
   mirror: string;
 }
 
-export const ConfigContext = React.createContext<IConfigContext | undefined>(undefined);
+export const ConfigContext = React.createContext<IConfigContext | null>(null);
 
 export const useConfigContext = () => {
-  return useContext(ConfigContext) as IConfigContext;
+  const context = useContext(ConfigContext);
+  if (!context) {
+    throw new Error("useConfigContext must be used within a ConfigContextProvider");
+  }
+  return context;
 };
 
 export const ConfigContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

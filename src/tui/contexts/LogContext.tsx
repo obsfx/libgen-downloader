@@ -9,7 +9,11 @@ export interface ILogContext {
 export const LogContext = React.createContext<ILogContext | undefined>(undefined);
 
 export const useLogContext = () => {
-  return useContext(LogContext) as ILogContext;
+  const context = useContext(LogContext);
+  if (!context) {
+    throw new Error("useLogContext must be used within a LogContextProvider");
+  }
+  return context;
 };
 
 export const LogContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

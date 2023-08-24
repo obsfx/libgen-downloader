@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { useAppContext } from "../../contexts/AppContext";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
 import { DetailEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { useLayoutContext } from "../../contexts/LayoutContext";
+import { useAppStateContext } from "../../contexts/AppStateContext";
 
 const DetailEntryOptions: React.FC = () => {
-  const { detailedEntry, setDetailedEntry } = useAppContext();
+  const { detailedEntry, setDetailedEntry } = useAppStateContext();
   const { setActiveLayout } = useLayoutContext();
 
   const detailOptions: Record<string, IOption> = {

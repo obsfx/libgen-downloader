@@ -84,18 +84,23 @@ export const constructListItems = ({
       entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX,
       entryListItems.length
     ),
+
     createOptionItem(Option.SEARCH, Label.SEARCH, handleSearchOption),
+
     ...(nextPageEntries.length > 0
       ? [createOptionItem(Option.NEXT_PAGE, Label.NEXT_PAGE, handleNextPageOption)]
       : []),
+
     ...(currentPage > 1
       ? [createOptionItem(Option.PREV_PAGE, Label.PREV_PAGE, handlePrevPageOption)]
       : []),
+
     createOptionItem(
       Option.START_BULK_DOWNLOAD,
       Label.START_BULK_DOWNLOAD,
       handleStartBulkDownloadOption
     ),
+
     createOptionItem(Option.EXIT, Label.EXIT, handleExitOption),
     ...entryListItems.slice(0, entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX),
   ];

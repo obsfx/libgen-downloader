@@ -12,8 +12,10 @@ import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
-import { useAppContext } from "../../contexts/AppContext";
+import { useAppActionContext } from "../../contexts/AppActionContext";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
+import { useDownloadContext } from "../../contexts/DownloadContext";
+import { useAppStateContext } from "../../contexts/AppStateContext";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -21,13 +23,11 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const {
-    currentPage,
-    setAnyEntryExpanded,
-    setActiveExpandedListLength,
-    bulkQueue,
-    handleSingleDownload,
-  } = useAppContext();
+  const { bulkDownloadMap } = useDownloadContext();
+
+  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppStateContext();
+
+  const { handleSingleDownload } = useAppActionContext();
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
@@ -61,7 +61,7 @@ const ResultListItemEntry: React.FC<{
         },
       },
       [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
-        label: bulkQueue[item.data.id]
+        label: bulkDownloadMap[item.data.id]
           ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
           : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
         onSelect: () => handleBulkDownloadQueueOption(item.data),
@@ -73,7 +73,7 @@ const ResultListItemEntry: React.FC<{
     }),
     [
       alternativeDownloadURLs,
-      bulkQueue,
+      bulkDownloadMap,
       handleSeeDetailsOptions,
       handleSingleDownload,
       handleBulkDownloadQueueOption,

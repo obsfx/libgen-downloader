@@ -1,9 +1,11 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useAppContext } from "../contexts/AppContext";
+import { useDownloadContext } from "../contexts/DownloadContext";
+import { useAppStateContext } from "../contexts/AppStateContext";
 
 const ResultListInfo: React.FC = () => {
-  const { searchValue, currentPage, bulkQueue } = useAppContext();
+  const { bulkDownloadMap } = useDownloadContext();
+  const { searchValue, currentPage } = useAppStateContext();
 
   return (
     <Box>
@@ -14,7 +16,9 @@ const ResultListInfo: React.FC = () => {
       <Text color="gray">{" | "}</Text>
       <Text wrap="truncate">
         Bulk download queue:{" "}
-        <Text color="green">{Object.entries(bulkQueue).filter(([_, val]) => val).length}</Text>
+        <Text color="green">
+          {Object.entries(bulkDownloadMap).filter(([_, val]) => val).length}
+        </Text>
       </Text>
     </Box>
   );

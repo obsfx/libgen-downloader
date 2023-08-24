@@ -1,8 +1,9 @@
 import React, { useCallback, useContext } from "react";
 import { Entry } from "../../api/models/Entry";
-import { useAppContext } from "./AppContext";
 import { useLayoutContext } from "./LayoutContext";
 import { LAYOUT_KEY } from "../layouts/keys";
+import { useDownloadContext } from "./DownloadContext";
+import { useAppStateContext } from "./AppStateContext";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
@@ -14,13 +15,18 @@ export interface IResultListContext {
 export const ResultListContext = React.createContext<IResultListContext | undefined>(undefined);
 
 export const useResultListContext = () => {
-  return useContext(ResultListContext) as IResultListContext;
+  const context = useContext(ResultListContext);
+  if (!context) {
+    throw new Error("useResultListContext must be used within a ResultListContextProvider");
+  }
+  return context;
 };
 
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { setDetailedEntry, setAnyEntryExpanded, bulkQueue, setBulkQueue } = useAppContext();
+  const { bulkDownloadMap, setBulkDownloadMap } = useDownloadContext();
+  const { setDetailedEntry, setAnyEntryExpanded } = useAppStateContext();
   const { setActiveLayout } = useLayoutContext();
 
   const handleSeeDetailsOptions = useCallback(
@@ -33,20 +39,20 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
 
   const handleBulkDownloadQueueOption = useCallback(
     (entry: Entry) => {
-      if (bulkQueue[entry.id]) {
-        setBulkQueue((prev) => ({
+      if (bulkDownloadMap[entry.id]) {
+        setBulkDownloadMap((prev) => ({
           ...prev,
           [entry.id]: null,
         }));
         return;
       }
 
-      setBulkQueue((prev) => ({
+      setBulkDownloadMap((prev) => ({
         ...prev,
         [entry.id]: entry,
       }));
     },
-    [bulkQueue, setBulkQueue]
+    [bulkDownloadMap, setBulkDownloadMap]
   );
 
   const handleTurnBackToTheListOption = useCallback(() => {

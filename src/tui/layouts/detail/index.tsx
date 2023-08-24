@@ -1,13 +1,13 @@
 import React from "react";
 import { Box } from "ink";
 import ContentContainer from "../../components/ContentContainer";
-import { useAppContext } from "../../contexts/AppContext";
 import DetailRow from "./DetailRow";
 import DetailEntryOptions from "./DetailEntryOptions";
 import UsageInfo from "../../components/UsageInfo";
+import { useAppStateContext } from "../../contexts/AppStateContext";
 
 const Detail: React.FC = () => {
-  const { detailedEntry } = useAppContext();
+  const { detailedEntry } = useAppStateContext();
 
   if (!detailedEntry) {
     return null;
