@@ -26,9 +26,7 @@ export default function renderTUI() {
             <ConfigContextProvider>
               <DownloadContextProvider>
                 <AppActionContextProvider>
-                  <Box width={80} marginLeft={1} paddingRight={4}>
-                    <App />
-                  </Box>
+                  <App />
                 </AppActionContextProvider>
               </DownloadContextProvider>
             </ConfigContextProvider>
