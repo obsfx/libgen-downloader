@@ -5,14 +5,18 @@ import { useLogContext } from "./LogContext";
 import { StandardDownloadManager } from "../classes/StandardDownloadManager";
 
 export interface IDownloadContext {
+  downloadQueueMap: Record<string, Entry>;
   downloadQueueStatus: DownloadStatus;
-  setDownloadQueueStatus: Dispatch<SetStateAction<DownloadStatus>>;
   totalAddedToDownloadQueue: number;
-  setTotalAddedToDownloadQueue: Dispatch<SetStateAction<number>>;
   totalDownloaded: number;
-  setTotalDownloaded: Dispatch<SetStateAction<number>>;
+  totalFailed: number;
   bulkDownloadMap: Record<string, Entry | null>;
   setBulkDownloadMap: Dispatch<SetStateAction<Record<string, Entry | null>>>;
+  currentDownloadProgress: {
+    filename: string;
+    progress: number;
+    total: number;
+  };
 }
 
 export const DownloadContext = React.createContext<IDownloadContext | null>(null);
@@ -30,9 +34,16 @@ export const DownloadContextProvider: React.FC<{
 }> = ({ children }) => {
   const { pushLog, clearLog } = useLogContext();
 
+  const [downloadQueueMap, setDownloadQueueMap] = useState<Record<string, Entry>>({});
   const [downloadQueueStatus, setDownloadQueueStatus] = useState(DownloadStatus.IDLE);
   const [totalAddedToDownloadQueue, setTotalAddedToDownloadQueue] = useState(0);
   const [totalDownloaded, setTotalDownloaded] = useState(0);
+  const [totalFailed, setTotalFailed] = useState(0);
+  const [currentDownloadProgress, setCurrentDownloadProgress] = useState({
+    filename: "",
+    progress: 0,
+    total: 0,
+  });
 
   const [bulkDownloadMap, setBulkDownloadMap] = useState<Record<string, Entry | null>>({});
 
@@ -48,27 +59,41 @@ export const DownloadContextProvider: React.FC<{
       setTotalAddedToDownloadQueue((prev) => prev + 1);
     },
     onDownloadStart: (filename: string, chunkSize: number, total: number) => {
-      console.log("start", filename, chunkSize, total);
+      setCurrentDownloadProgress({
+        filename,
+        progress: chunkSize,
+        total,
+      });
     },
     onDownloadUpdate: (filename: string, chunkSize: number, total: number) => {
-      console.log("update", filename, chunkSize, total);
+      setCurrentDownloadProgress((prev) => ({
+        filename,
+        progress: prev.progress + chunkSize,
+        total,
+      }));
     },
     onDownloadComplete: () => {
       setTotalDownloaded((prev) => prev + 1);
+    },
+    onDownloadFail: () => {
+      setTotalFailed((prev) => prev + 1);
+    },
+    subscribeToDownloadQueueMap: (map: Record<string, Entry>) => {
+      setDownloadQueueMap(map);
     },
   });
 
   return (
     <DownloadContext.Provider
       value={{
+        downloadQueueMap,
         downloadQueueStatus,
-        setDownloadQueueStatus,
         totalAddedToDownloadQueue,
-        setTotalAddedToDownloadQueue,
         totalDownloaded,
-        setTotalDownloaded,
+        totalFailed,
         bulkDownloadMap,
         setBulkDownloadMap,
+        currentDownloadProgress,
       }}
     >
       {children}

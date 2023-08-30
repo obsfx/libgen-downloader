@@ -6,10 +6,15 @@ import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import { useAppStateContext } from "../../contexts/AppStateContext";
+import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
+import { useDownloadContext } from "../../contexts/DownloadContext";
 
 const DetailEntryOptions: React.FC = () => {
+  const { downloadQueueMap } = useDownloadContext();
   const { detailedEntry, setDetailedEntry } = useAppStateContext();
   const { setActiveLayout } = useLayoutContext();
+
+  const inDownloadQueue = detailedEntry ? !!downloadQueueMap[detailedEntry.id] : false;
 
   const detailOptions: Record<string, IOption> = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {
@@ -20,10 +25,16 @@ const DetailEntryOptions: React.FC = () => {
       },
     },
     [DetailEntryOption.DOWNLOAD_DIRECTLY]: {
-      label: Label.DOWNLOAD_DIRECTLY,
-      onSelect: () => undefined,
+      loading: inDownloadQueue,
+      label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+      onSelect: () => {
+        if (detailedEntry) {
+          StandardDownloadManager.pushToDownloadQueueMap(detailedEntry);
+        }
+      },
     },
     [DetailEntryOption.ALTERNATIVE_DOWNLOADS]: {
+      loading: inDownloadQueue,
       label: Label.ALTERNATIVE_DOWNLOADS,
       onSelect: () => setShowAlternativeDownloads(true),
     },
@@ -39,8 +50,17 @@ const DetailEntryOptions: React.FC = () => {
       return {
         ...prev,
         [idx]: {
-          label: `(Mirror ${idx + 1}) ${current}`,
-          onSelect: () => undefined,
+          label: `(${idx + 1}) ${current}`,
+          onSelect: () => {
+            if (detailedEntry) {
+              StandardDownloadManager.pushToDownloadQueueMap({
+                ...detailedEntry,
+                alternativeDirectDownloadUrl: current,
+              });
+
+              setShowAlternativeDownloads(false);
+            }
+          },
         },
       };
     }, {}),

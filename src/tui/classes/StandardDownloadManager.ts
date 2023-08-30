@@ -15,6 +15,8 @@ export abstract class StandardDownloadManager {
   private static onDownloadStart: (filename: string, chunkSize: number, total: number) => void;
   private static onDownloadUpdate: (filename: string, chunkSize: number, total: number) => void;
   private static onDownloadComplete: (downloadResult: DownloadResult) => void;
+  private static onDownloadFail: () => void;
+  private static subscribeToDownloadQueueMap: (queueMap: Record<string, Entry>) => void;
 
   private static queueMap: Record<string, Entry> = {};
   private static queueStatus: DownloadStatus = DownloadStatus.IDLE;
@@ -27,6 +29,8 @@ export abstract class StandardDownloadManager {
     onDownloadStart,
     onDownloadUpdate,
     onDownloadComplete,
+    onDownloadFail,
+    subscribeToDownloadQueueMap,
   }: {
     onFail: (message: string) => void;
     onStatusChange: (status: DownloadStatus) => void;
@@ -35,6 +39,8 @@ export abstract class StandardDownloadManager {
     onDownloadStart: (filename: string, chunkSize: number, total: number) => void;
     onDownloadUpdate: (filename: string, chunkSize: number, total: number) => void;
     onDownloadComplete: (downloadResult: DownloadResult) => void;
+    onDownloadFail: () => void;
+    subscribeToDownloadQueueMap: (queueMap: Record<string, Entry>) => void;
   }) {
     this.onFail = onFail;
     this.onStatusChange = onStatusChange;
@@ -43,6 +49,8 @@ export abstract class StandardDownloadManager {
     this.onDownloadStart = onDownloadStart;
     this.onDownloadUpdate = onDownloadUpdate;
     this.onDownloadComplete = onDownloadComplete;
+    this.onDownloadFail = onDownloadFail;
+    this.subscribeToDownloadQueueMap = subscribeToDownloadQueueMap;
   }
 
   public static pushToDownloadQueueMap(entry: Entry): void {
@@ -51,11 +59,24 @@ export abstract class StandardDownloadManager {
     }
 
     this.queueMap[entry.id] = entry;
+    this.subscribeToDownloadQueueMap(this.queueMap);
     this.onAddedToQueue(entry);
 
     if (this.queueStatus === DownloadStatus.IDLE || this.queueStatus === DownloadStatus.DONE) {
       this.processDownloadQueue();
     }
+  }
+
+  private static removeEntryFromQueueMap(entry: Entry) {
+    const entries = Object.values(this.queueMap);
+    this.queueMap = entries.reduce<Record<string, Entry>>((acc, currentEntry) => {
+      if (currentEntry.id === entry?.id) {
+        return acc;
+      }
+      acc[currentEntry.id] = currentEntry;
+      return acc;
+    }, {});
+    this.subscribeToDownloadQueueMap(this.queueMap);
   }
 
   private static setQueueStatus(status: DownloadStatus) {
@@ -65,6 +86,11 @@ export abstract class StandardDownloadManager {
 
   private static async processDownloadQueue() {
     let queueCompleted = false;
+
+    const handleDownloadFail = () => {
+      this.setQueueStatus(DownloadStatus.FAILED);
+      this.onDownloadFail();
+    };
 
     const handleOnFail = (err: string | null) => {
       if (err === null) {
@@ -92,37 +118,34 @@ export abstract class StandardDownloadManager {
         continue;
       }
 
-      this.queueMap = entries.reduce<Record<string, Entry>>((acc, currentEntry) => {
-        if (currentEntry.id === entry?.id) {
-          return acc;
-        }
-        acc[currentEntry.id] = currentEntry;
-        return acc;
-      }, {});
-
       this.setQueueStatus(DownloadStatus.CONNECTING_TO_LIBGEN);
 
-      const mirrorPageDocument = await attempt(
-        () => getDocument(entry.mirror),
-        handleOnFail,
-        handleOnFail,
-        handleOnComplete
-      );
+      let downloadUrl: string | null | undefined = "";
+      if (entry.alternativeDirectDownloadUrl !== undefined) {
+        downloadUrl = entry.alternativeDirectDownloadUrl;
+      } else {
+        const mirrorPageDocument = await attempt(
+          () => getDocument(entry.mirror),
+          handleOnFail,
+          handleDownloadFail,
+          handleOnComplete
+        );
 
-      if (!mirrorPageDocument) {
-        continue;
+        if (!mirrorPageDocument) {
+          continue;
+        }
+
+        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, handleDownloadFail);
       }
 
-      const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, handleOnFail);
       if (!downloadUrl) {
-        this.setQueueStatus(DownloadStatus.FAILED);
         continue;
       }
 
       const downloadStream = await attempt(
-        () => fetch(downloadUrl),
+        () => fetch(downloadUrl as string),
         handleOnFail,
-        handleOnFail,
+        handleDownloadFail,
         handleOnComplete
       );
       if (!downloadStream) {
@@ -144,8 +167,10 @@ export abstract class StandardDownloadManager {
 
         this.onDownloadComplete(downloadResult);
       } catch (error) {
-        handleOnFail((error as Error).message);
+        handleDownloadFail();
         continue;
+      } finally {
+        this.removeEntryFromQueueMap(entry);
       }
     }
   }

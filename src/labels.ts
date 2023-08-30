@@ -7,6 +7,7 @@ export default {
   SEE_DETAILS: "See Details",
   ALTERNATIVE_DOWNLOADS: "Alternative Downloads",
   DOWNLOAD_DIRECTLY: "Download Directly",
+  DOWNLOADING: "Downloading...",
   ADD_TO_BULK_DOWNLOAD_QUEUE: "Add To Bulk Download Queue",
   REMOVE_FROM_BULK_DOWNLOAD_QUEUE: "Remove From Bulk Download Queue",
   TURN_BACK_TO_THE_LIST: "Turn Back To The List",

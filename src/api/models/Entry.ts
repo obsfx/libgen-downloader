@@ -10,4 +10,5 @@ export interface Entry {
   extension: string;
   mirror: string;
   downloadUrls: string[];
+  alternativeDirectDownloadUrl?: string;
 }

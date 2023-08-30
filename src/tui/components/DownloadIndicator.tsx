@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
+import { filesize } from "filesize";
 import { useDownloadContext } from "../contexts/DownloadContext";
 import { DownloadStatus } from "../../download-statuses";
 
@@ -44,17 +45,52 @@ const downloadStatusIndicators = {
 };
 
 export const DownloadIndicator: React.FC = () => {
-  const { downloadQueueStatus, totalAddedToDownloadQueue, totalDownloaded } = useDownloadContext();
+  const {
+    downloadQueueStatus,
+    totalAddedToDownloadQueue,
+    totalDownloaded,
+    totalFailed,
+    currentDownloadProgress,
+  } = useDownloadContext();
+
+  const progressPercentage = (
+    currentDownloadProgress.total === 0
+      ? 0
+      : (currentDownloadProgress.progress / currentDownloadProgress.total) * 100
+  ).toFixed(2);
+
+  const downloadedSize = filesize(currentDownloadProgress.progress, {
+    base: 2,
+    standard: "jedec",
+  });
+
+  const totalSize = filesize(currentDownloadProgress.total, {
+    base: 2,
+    standard: "jedec",
+  });
+
+  if (totalAddedToDownloadQueue === 0) {
+    return null;
+  }
 
   return (
     <Box flexDirection="column">
       <Text wrap="truncate">
         <Text color="green">
-          DONE: {totalDownloaded}/{totalAddedToDownloadQueue}
+          DONE {totalDownloaded}/{totalAddedToDownloadQueue}
         </Text>{" "}
+        {totalFailed > 0 && <Text color="redBright">FAIL ({totalFailed}) </Text>}
         to <Text color="blueBright">{process.cwd()}</Text>
       </Text>
-      {downloadStatusIndicators[downloadQueueStatus]}
+      <Text wrap="truncate">
+        {downloadStatusIndicators[downloadQueueStatus]}
+        <Text color="greenBright"> {progressPercentage}%</Text>
+        <Text color="magentaBright">
+          {" "}
+          {downloadedSize}/{totalSize}
+        </Text>
+        <Text color="yellow"> {currentDownloadProgress.filename}</Text>
+      </Text>
     </Box>
   );
 };
