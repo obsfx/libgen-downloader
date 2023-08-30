@@ -27,7 +27,6 @@ import SpinnerText from "../components/SpinnerText";
 
 export interface IAppActionContext {
   handleSearch: () => Promise<void>;
-  handleSingleDownload: (entry: Entry) => void;
 }
 
 export const AppActionContext = React.createContext<IAppActionContext | null>(null);
@@ -121,69 +120,6 @@ export const AppActionContextProvider: React.FC<{
     setCachedNextPageEntries,
   ]);
 
-  const handleSingleDownload = useCallback(
-    async (entry: Entry) => {
-      // TODO: Move this to a separate function
-      // Also we need a queue for single downloads
-
-      throwError("Not implemented yet");
-      //const mirrorPageDocument = await attempt(
-      //  () => getDocument(entry.mirror),
-      //  pushLog,
-      //  throwError,
-      //  clearLog
-      //);
-
-      //if (!mirrorPageDocument) {
-      //  return;
-      //}
-
-      //const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, throwError);
-      //if (!downloadUrl) {
-      //  console.log("no download url");
-      //  return;
-      //}
-
-      //const downloadStream = await attempt(() => fetch(downloadUrl), pushLog, throwError, clearLog);
-      //if (!downloadStream) {
-      //  console.log("no download stream");
-      //  return;
-      //}
-      //const downloadContentDisposition = downloadStream?.headers.get("content-disposition") || "";
-      //const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
-      //const path = `./${parsedContentDisposition.parameters.filename}`;
-
-      //const file: fs.WriteStream = fs.createWriteStream(path);
-
-      //const total = Number(downloadStream?.headers.get("content-length") || 0);
-      //const filename = parsedContentDisposition.parameters.filename;
-
-      //console.log("total", total);
-
-      //downloadStream?.body?.on("data", (chunk) => {
-      //  console.log("on data", {
-      //    total,
-      //    chunk,
-      //  });
-      //});
-
-      //downloadStream?.body?.on("finish", () => {
-      //  console.log("finsih", {
-      //    filename,
-      //  });
-      //});
-
-      //downloadStream?.body?.on("error", () => {
-      //  console.log("error", {
-      //    filename,
-      //  });
-      //});
-
-      //downloadStream?.body?.pipe(file);
-    },
-    [clearLog, pushLog, throwError]
-  );
-
   const handlePrevPage = useCallback(async () => {
     setIsLoading(true);
     setLoaderMessage(Label.GETTING_RESULTS);
@@ -253,7 +189,6 @@ export const AppActionContextProvider: React.FC<{
     <AppActionContext.Provider
       value={{
         handleSearch,
-        handleSingleDownload,
       }}
     >
       {isLoading && (

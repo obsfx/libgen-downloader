@@ -4,6 +4,7 @@ import { useDownloadContext } from "../contexts/DownloadContext";
 import { DownloadStatus } from "../../download-statuses";
 
 const downloadStatusIndicators = {
+  [DownloadStatus.IDLE]: null,
   [DownloadStatus.IN_QUEUE]: (
     <Text color="grey" inverse={true}>
       {" "}

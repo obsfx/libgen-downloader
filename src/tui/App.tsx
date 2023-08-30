@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useStdin, Box, Text } from "ink";
+import { useStdin, Box } from "ink";
 
 import Layouts from "./layouts";
 import { DownloadIndicator } from "./components/DownloadIndicator";

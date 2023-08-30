@@ -12,10 +12,10 @@ import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
-import { useAppActionContext } from "../../contexts/AppActionContext";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { useDownloadContext } from "../../contexts/DownloadContext";
 import { useAppStateContext } from "../../contexts/AppStateContext";
+import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -26,8 +26,6 @@ const ResultListItemEntry: React.FC<{
   const { bulkDownloadMap } = useDownloadContext();
 
   const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppStateContext();
-
-  const { handleSingleDownload } = useAppActionContext();
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
@@ -50,7 +48,7 @@ const ResultListItemEntry: React.FC<{
       },
       [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
         label: Label.DOWNLOAD_DIRECTLY,
-        onSelect: () => handleSingleDownload(item.data),
+        onSelect: () => StandardDownloadManager.pushToDownloadQueueMap(item.data),
       },
       [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
         label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
@@ -75,7 +73,6 @@ const ResultListItemEntry: React.FC<{
       alternativeDownloadURLs,
       bulkDownloadMap,
       handleSeeDetailsOptions,
-      handleSingleDownload,
       handleBulkDownloadQueueOption,
       handleTurnBackToTheListOption,
       item.data,
