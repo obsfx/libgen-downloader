@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Box, Text, useInput, Key } from "ink";
+import InkSpinner from "ink-spinner";
 import figures from "figures";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
@@ -12,10 +13,10 @@ import { parseDownloadUrls } from "../../../api/data/url";
 import { getDocument } from "../../../api/data/document";
 import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
-import { useAppActionContext } from "../../contexts/AppActionContext";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { useDownloadContext } from "../../contexts/DownloadContext";
 import { useAppStateContext } from "../../contexts/AppStateContext";
+import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -23,11 +24,9 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const { bulkDownloadMap } = useDownloadContext();
+  const { bulkDownloadMap, downloadQueueMap } = useDownloadContext();
 
   const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppStateContext();
-
-  const { handleSingleDownload } = useAppActionContext();
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
@@ -37,6 +36,8 @@ const ResultListItemEntry: React.FC<{
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
+
+  const inDownloadQueue = !!downloadQueueMap[item.data.id];
 
   const entryOptions: Record<string, IOption> = useMemo(
     () => ({
@@ -49,12 +50,13 @@ const ResultListItemEntry: React.FC<{
           }),
       },
       [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
-        label: Label.DOWNLOAD_DIRECTLY,
-        onSelect: () => handleSingleDownload(item.data),
+        loading: inDownloadQueue,
+        label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+        onSelect: () => StandardDownloadManager.pushToDownloadQueueMap(item.data),
       },
       [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
         label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
-        loading: alternativeDownloadURLs.length === 0,
+        loading: alternativeDownloadURLs.length === 0 || inDownloadQueue,
         onSelect: () => {
           setActiveExpandedListLength(alternativeDownloadURLs.length + 1);
           setShowAlternativeDownloads(true);
@@ -75,11 +77,11 @@ const ResultListItemEntry: React.FC<{
       alternativeDownloadURLs,
       bulkDownloadMap,
       handleSeeDetailsOptions,
-      handleSingleDownload,
       handleBulkDownloadQueueOption,
       handleTurnBackToTheListOption,
       item.data,
       setActiveExpandedListLength,
+      inDownloadQueue,
     ]
   );
 
@@ -89,8 +91,16 @@ const ResultListItemEntry: React.FC<{
         return {
           ...prev,
           [idx]: {
-            label: `(Mirror ${idx + 1}) ${current}`,
-            onSelect: () => undefined,
+            label: `(${idx + 1}) ${current}`,
+            onSelect: () => {
+              StandardDownloadManager.pushToDownloadQueueMap({
+                ...item.data,
+                alternativeDirectDownloadUrl: current,
+              });
+
+              setShowAlternativeDownloads(false);
+              setActiveExpandedListLength(Object.keys(entryOptions).length);
+            },
           },
         };
       }, {}),
@@ -102,7 +112,7 @@ const ResultListItemEntry: React.FC<{
         },
       },
     }),
-    [alternativeDownloadURLs, setActiveExpandedListLength, entryOptions]
+    [alternativeDownloadURLs, setActiveExpandedListLength, entryOptions, item.data]
   );
 
   useInput(
@@ -170,6 +180,11 @@ const ResultListItemEntry: React.FC<{
       >
         {isActive && !isExpanded && figures.pointer} [
         {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
+        {inDownloadQueue && (
+          <Text color="green">
+            <InkSpinner type="dots" />{" "}
+          </Text>
+        )}
         <Text color={isFadedOut ? "gray" : "green"} bold={true}>
           {item.data.extension}
         </Text>{" "}

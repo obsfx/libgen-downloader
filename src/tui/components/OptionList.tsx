@@ -7,7 +7,9 @@ const OptionList: React.FC<{
   options: Record<string, IOption>;
 }> = ({ options }) => {
   const { selectedOptionIndex } = useListControls(Object.values(options), (item) => {
-    item.onSelect();
+    if (!item.loading) {
+      item.onSelect();
+    }
   });
 
   return (
