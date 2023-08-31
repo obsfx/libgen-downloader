@@ -10,7 +10,7 @@ export interface Config {
   MD5ReqPattern: string;
 }
 
-export async function fetchConfig() {
+export async function fetchConfig(): Promise<Config> {
   try {
     const response = await fetch(CONFIGURATION_URL);
     const json = await response.json();

@@ -23,6 +23,10 @@ export function constructSearchURL({
     .replace("{pageSize}", pageSize.toString());
 }
 
+export function constructMD5SearchUrl(pattern: string, mirror: string, md5: string): string {
+  return pattern.replace("{mirror}", mirror).replace("{md5}", md5);
+}
+
 export function parseEntries(document: Document, throwError: ThrowError): Entry[] | undefined {
   const entries: Entry[] = [];
   const containerTable = document.querySelector<HTMLTableElement>(

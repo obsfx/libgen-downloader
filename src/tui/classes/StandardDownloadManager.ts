@@ -21,7 +21,7 @@ export abstract class StandardDownloadManager {
   private static queueMap: Record<string, Entry> = {};
   private static queueStatus: DownloadStatus = DownloadStatus.IDLE;
 
-  static registerEvents({
+  public static registerEvents({
     onFail,
     onStatusChange,
     onStageComplete,
@@ -68,14 +68,7 @@ export abstract class StandardDownloadManager {
   }
 
   private static removeEntryFromQueueMap(entry: Entry) {
-    const entries = Object.values(this.queueMap);
-    this.queueMap = entries.reduce<Record<string, Entry>>((acc, currentEntry) => {
-      if (currentEntry.id === entry?.id) {
-        return acc;
-      }
-      acc[currentEntry.id] = currentEntry;
-      return acc;
-    }, {});
+    delete this.queueMap[entry.id];
     this.subscribeToDownloadQueueMap(this.queueMap);
   }
 
@@ -168,7 +161,6 @@ export abstract class StandardDownloadManager {
         this.onDownloadComplete(downloadResult);
       } catch (error) {
         handleDownloadFail();
-        continue;
       } finally {
         this.removeEntryFromQueueMap(entry);
       }
