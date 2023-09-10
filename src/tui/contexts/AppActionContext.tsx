@@ -15,7 +15,6 @@ import { ListItem } from "../../api/models/ListItem";
 import { attempt, constructListItems } from "../../utils";
 import { useSearch } from "../hooks/useSearch";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
-import { useLayoutContext } from "./LayoutContext";
 import { LAYOUT_KEY } from "../layouts/keys";
 import Label from "../../labels";
 import { getDocument } from "../../api/data/document";
@@ -36,9 +35,7 @@ import {
   searchValueAtom,
 } from "../store/app";
 
-export interface IAppActionContext {
-  handleSearch: () => Promise<void>;
-}
+export interface IAppActionContext {}
 
 export const AppActionContext = React.createContext<IAppActionContext | null>(null);
 
@@ -64,7 +61,6 @@ export const AppActionContextProvider: React.FC<{
 
   const { startBulkDownload } = useDownloadContext();
 
-  const { setActiveLayout } = useLayoutContext();
   const { errorThrown, throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
 
@@ -152,42 +148,38 @@ export const AppActionContextProvider: React.FC<{
     setFilters({} as FilterRecord);
   }, [setSearchValue, setCurrentPage, setEntries, setFilters]);
 
-  useEffect(() => {
-    const constructedListItems = constructListItems({
-      entries,
-      currentPage,
-      nextPageEntries: cachedNextPageEntries,
-      handleSearchOption: () => {
-        resetAppState();
-        setActiveLayout(LAYOUT_KEY.SEARCH_LAYOUT);
-      },
-      handleNextPageOption: handleNextPage,
-      handlePrevPageOption: handlePrevPage,
-      handleStartBulkDownloadOption: startBulkDownload,
-      handleExitOption: () => {
-        console.log("exit");
-      },
-    });
+  //useEffect(() => {
+  //  const constructedListItems = constructListItems({
+  //    entries,
+  //    currentPage,
+  //    nextPageEntries: cachedNextPageEntries,
+  //    handleSearchOption: () => {
+  //      resetAppState();
+  //      setActiveLayout(LAYOUT_KEY.SEARCH_LAYOUT);
+  //    },
+  //    handleNextPageOption: handleNextPage,
+  //    handlePrevPageOption: handlePrevPage,
+  //    handleStartBulkDownloadOption: startBulkDownload,
+  //    handleExitOption: () => {
+  //      console.log("exit");
+  //    },
+  //  });
 
-    setListItems(constructedListItems);
-  }, [
-    entries,
-    cachedNextPageEntries,
-    currentPage,
-    handleNextPage,
-    handlePrevPage,
-    resetAppState,
-    setActiveLayout,
-    setListItems,
-    startBulkDownload,
-  ]);
+  //  setListItems(constructedListItems);
+  //}, [
+  //  entries,
+  //  cachedNextPageEntries,
+  //  currentPage,
+  //  handleNextPage,
+  //  handlePrevPage,
+  //  resetAppState,
+  //  setActiveLayout,
+  //  setListItems,
+  //  startBulkDownload,
+  //]);
 
   return (
-    <AppActionContext.Provider
-      value={{
-        handleSearch,
-      }}
-    >
+    <AppActionContext.Provider value={{}}>
       {isLoading && (
         <SpinnerText>
           <Text>{loaderMessage}</Text>

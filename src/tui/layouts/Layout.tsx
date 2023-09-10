@@ -1,12 +1,12 @@
+import { useAtom } from "jotai";
 import React, { useEffect } from "react";
-
-import { LayoutContextProvider, useLayoutContext } from "../contexts/LayoutContext";
+import { activeLayoutAtom } from "../store/app";
 
 export const LayoutInner: React.FC<{
   children: React.ReactNode;
   initialLayout: string;
 }> = ({ children, initialLayout }) => {
-  const { setActiveLayout } = useLayoutContext();
+  const [, setActiveLayout] = useAtom(activeLayoutAtom);
 
   useEffect(() => {
     setActiveLayout(initialLayout);
@@ -19,17 +19,13 @@ export const LayoutWrapper: React.FC<{
   children: React.ReactNode;
   initialLayout: string;
 }> = ({ children, initialLayout }) => {
-  return (
-    <LayoutContextProvider>
-      <LayoutInner initialLayout={initialLayout}>{children}</LayoutInner>
-    </LayoutContextProvider>
-  );
+  return <LayoutInner initialLayout={initialLayout}>{children}</LayoutInner>;
 };
 
 export const Layout: React.FC<{
   children: React.ReactNode;
   layoutName: string;
 }> = ({ children, layoutName }) => {
-  const { activeLayout } = useLayoutContext();
+  const [activeLayout] = useAtom(activeLayoutAtom);
   return <>{activeLayout === layoutName && children}</>;
 };

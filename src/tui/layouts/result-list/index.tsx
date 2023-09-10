@@ -10,16 +10,27 @@ import { getRenderedListItems } from "../../../utils";
 import UsageInfo from "../../components/UsageInfo";
 import ResultListInfo from "../../components/ResultListInfo";
 import { useAtom } from "jotai";
-import { activeExpandedListLengthAtom, anyEntryExpandedAtom, listItemsAtom } from "../../store/app";
+import {
+  activeExpandedListLengthAtom,
+  anyEntryExpandedAtom,
+  listItemsAtom,
+  listItemsCursorAtom,
+} from "../../store/app";
 
 const ResultList: React.FC = () => {
   const [anyEntryExpanded] = useAtom(anyEntryExpandedAtom);
   const [activeExpandedListLength] = useAtom(activeExpandedListLengthAtom);
-  const [listItems, setListItems] = useAtom(listItemsAtom);
+  const [listItems] = useAtom(listItemsAtom);
+  const [listItemsCursor, setListItemsCursor] = useAtom(listItemsCursorAtom);
 
   const { isFocused } = useFocus({ autoFocus: true });
-  useScrollableListControls(listItems, setListItems, isFocused && !anyEntryExpanded);
-  const renderedItems = getRenderedListItems(listItems, anyEntryExpanded, activeExpandedListLength);
+  useScrollableListControls(setListItemsCursor, listItems.length, isFocused && !anyEntryExpanded);
+  const renderedItems = getRenderedListItems(
+    listItemsCursor,
+    listItems,
+    anyEntryExpanded,
+    activeExpandedListLength
+  );
 
   const activeListIndex =
     renderedItems.length - 1 < RESULT_LIST_ACTIVE_LIST_INDEX ? 1 : RESULT_LIST_ACTIVE_LIST_INDEX;

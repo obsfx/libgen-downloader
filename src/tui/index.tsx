@@ -9,6 +9,7 @@ import { LayoutWrapper } from "./layouts/Layout";
 import { LAYOUT_KEY } from "./layouts/keys";
 import App from "./App";
 import { DownloadContextProvider } from "./contexts/DownloadContext";
+import { EventManagerReactTreeComponent } from "./components/EventManagerReactTreeComponent";
 
 export default function renderTUI() {
   const clearANSI: string = process.platform === "win32" ? "u001b[H\u001bc" : "\u001b[2J";
@@ -25,6 +26,7 @@ export default function renderTUI() {
             <DownloadContextProvider>
               <AppActionContextProvider>
                 <App />
+                <EventManagerReactTreeComponent />
               </AppActionContextProvider>
             </DownloadContextProvider>
           </ConfigContextProvider>

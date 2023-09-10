@@ -107,6 +107,7 @@ export const constructListItems = ({
 };
 
 export const getRenderedListItems = (
+  cursor: number,
   listItems: ListItem[],
   anyEntryExpanded: boolean,
   activeExpandedListLength: number
@@ -115,7 +116,16 @@ export const getRenderedListItems = (
     MIN_RESULT_LIST_LENGTH,
     anyEntryExpanded ? RESULT_LIST_LENGTH - activeExpandedListLength : RESULT_LIST_LENGTH
   );
-  const renderedItems = listItems.slice(0, renderedItemsLimit);
+  const renderedItems: ListItem[] = [];
+
+  for (let i = 0; i < renderedItemsLimit; i++) {
+    if (i >= listItems.length) {
+      break;
+    }
+
+    const itemIndex = (cursor + i) % listItems.length;
+    renderedItems.push(listItems[itemIndex]);
+  }
 
   return renderedItems;
 };
