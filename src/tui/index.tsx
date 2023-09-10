@@ -4,7 +4,6 @@ import { render } from "ink";
 import { ErrorContextProvider } from "./contexts/ErrorContext";
 import { LogContextProvider } from "./contexts/LogContext";
 import { ConfigContextProvider } from "./contexts/ConfigContext";
-import { AppActionContextProvider } from "./contexts/AppActionContext";
 import { LayoutWrapper } from "./layouts/Layout";
 import { LAYOUT_KEY } from "./layouts/keys";
 import App from "./App";
@@ -24,10 +23,8 @@ export default function renderTUI() {
         <ErrorContextProvider>
           <ConfigContextProvider>
             <DownloadContextProvider>
-              <AppActionContextProvider>
-                <App />
-                <EventManagerReactTreeComponent />
-              </AppActionContextProvider>
+              <App />
+              <EventManagerReactTreeComponent />
             </DownloadContextProvider>
           </ConfigContextProvider>
         </ErrorContextProvider>

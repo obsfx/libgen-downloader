@@ -6,6 +6,7 @@ import {
   currentPageAtom,
   entriesAtom,
   isLoadingAtom,
+  listItemsCursorAtom,
   loaderMessageAtom,
   searchValueAtom,
 } from "../store/app";
@@ -16,12 +17,13 @@ import { useResetApp } from "../hooks/useResetApp";
 
 export function EventManagerReactTreeComponent() {
   const [searchValue] = useAtom(searchValueAtom);
-  const [currentPage] = useAtom(currentPageAtom);
+  const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
+  const [entries, setEntries] = useAtom(entriesAtom);
+  const [cachedNextPageEntries, setCachedNextPageEntries] = useAtom(cachedNextPageEntriesAtom);
   const [, setIsLoading] = useAtom(isLoadingAtom);
   const [, setLoaderMessage] = useAtom(loaderMessageAtom);
-  const [, setEntries] = useAtom(entriesAtom);
-  const [, setCachedNextPageEntries] = useAtom(cachedNextPageEntriesAtom);
   const [, setActiveLayout] = useAtom(activeLayoutAtom);
+  const [, setListItemsCursor] = useAtom(listItemsCursorAtom);
 
   const { search } = useSearch();
   const { resetApp } = useResetApp();
@@ -43,6 +45,50 @@ export function EventManagerReactTreeComponent() {
   EventManager.on(AppEvent.BACK_TO_SEARCH, () => {
     resetApp();
     setActiveLayout(LAYOUT_KEY.SEARCH_LAYOUT);
+  });
+
+  EventManager.on(AppEvent.NEXT_PAGE, async () => {
+    setIsLoading(true);
+    setLoaderMessage(Label.GETTING_RESULTS);
+
+    if (cachedNextPageEntries.length === 0) {
+      setIsLoading(false);
+      return;
+    }
+
+    setEntries(cachedNextPageEntries);
+
+    const nextPageEntries = await search(searchValue, currentPage + 2);
+    setCachedNextPageEntries(nextPageEntries);
+    setCurrentPage((prev) => prev + 1);
+    setListItemsCursor(0);
+    setIsLoading(false);
+  });
+
+  EventManager.on(AppEvent.PREV_PAGE, async () => {
+    setIsLoading(true);
+    setLoaderMessage(Label.GETTING_RESULTS);
+
+    if (currentPage < 2) {
+      setIsLoading(false);
+      return;
+    }
+
+    setCachedNextPageEntries(entries);
+
+    const prevPageEntries = await search(searchValue, currentPage - 1);
+    setEntries(prevPageEntries);
+    setCurrentPage((prev) => prev - 1);
+    setListItemsCursor(0);
+    setIsLoading(false);
+  });
+
+  EventManager.on(AppEvent.START_BULK_DOWNLOAD, () => {
+    console.log("START_BULK_DOWNLOAD");
+  });
+
+  EventManager.on(AppEvent.EXIT, () => {
+    console.log("EXIT");
   });
 
   return null;
