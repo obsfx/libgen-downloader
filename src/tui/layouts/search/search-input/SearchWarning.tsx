@@ -2,10 +2,11 @@ import React from "react";
 import { Text } from "ink";
 
 import { SEARCH_MIN_CHAR } from "../../../../constants";
-import { useAppStateContext } from "../../../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { showSearchMinCharWarningAtom } from "../../../store/app";
 
 const SearchWarning: React.FC = () => {
-  const { showSearchMinCharWarning } = useAppStateContext();
+  const [showSearchMinCharWarning] = useAtom(showSearchMinCharWarningAtom);
 
   if (!showSearchMinCharWarning) {
     return null;

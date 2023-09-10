@@ -22,9 +22,19 @@ import { getDocument } from "../../api/data/document";
 import { useErrorContext } from "./ErrorContext";
 import { useLogContext } from "./LogContext";
 import { findDownloadUrlFromMirror } from "../../api/data/url";
-import { useAppStateContext } from "./AppStateContext";
 import SpinnerText from "../components/SpinnerText";
 import { useDownloadContext } from "./DownloadContext";
+import { useAtom } from "jotai";
+import {
+  cachedNextPageEntriesAtom,
+  currentPageAtom,
+  entriesAtom,
+  filtersAtom,
+  isLoadingAtom,
+  listItemsAtom,
+  loaderMessageAtom,
+  searchValueAtom,
+} from "../store/app";
 
 export interface IAppActionContext {
   handleSearch: () => Promise<void>;
@@ -43,29 +53,14 @@ export const useAppActionContext = () => {
 export const AppActionContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const {
-    isLoading,
-    setIsLoading,
-
-    loaderMessage,
-    setLoaderMessage,
-
-    searchValue,
-    setSearchValue,
-
-    currentPage,
-    setCurrentPage,
-
-    entries,
-    setEntries,
-
-    cachedNextPageEntries,
-    setCachedNextPageEntries,
-
-    setListItems,
-
-    setFilters,
-  } = useAppStateContext();
+  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
+  const [loaderMessage, setLoaderMessage] = useAtom(loaderMessageAtom);
+  const [searchValue, setSearchValue] = useAtom(searchValueAtom);
+  const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
+  const [entries, setEntries] = useAtom(entriesAtom);
+  const [cachedNextPageEntries, setCachedNextPageEntries] = useAtom(cachedNextPageEntriesAtom);
+  const [, setListItems] = useAtom(listItemsAtom);
+  const [, setFilters] = useAtom(filtersAtom);
 
   const { startBulkDownload } = useDownloadContext();
 

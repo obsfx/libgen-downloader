@@ -3,13 +3,14 @@ import { useFocus } from "ink";
 
 import Input from "../../../components/Input";
 import { FilterKey } from "./Filter.data";
-import { useAppStateContext } from "../../../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { filtersAtom } from "../../../store/app";
 
 const FilterInput: React.FC<{
   label: string;
   filterKey: FilterKey;
 }> = ({ label, filterKey }) => {
-  const { filters, setFilters } = useAppStateContext();
+  const [filters, setFilters] = useAtom(filtersAtom);
 
   const { isFocused } = useFocus({ autoFocus: true });
 

@@ -62,6 +62,7 @@
     "ink": "3.2.0",
     "ink-spinner": "4.0.3",
     "ink-text-input": "4.0.3",
+    "jotai": "2.4.2",
     "jsdom": "19.0.0",
     "node-fetch": "2.6.0",
     "react": "17.0.2"

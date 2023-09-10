@@ -1,16 +1,17 @@
 import { useCallback } from "react";
-
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useLogContext } from "../contexts/LogContext";
 import Label from "../../labels";
 import { attempt } from "../../utils";
 import { fetchConfig, findMirror } from "../../api/data/config";
-import { useAppStateContext } from "../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { isLoadingAtom, loaderMessageAtom } from "../store/app";
 
 export const useConfig = () => {
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
-  const { setIsLoading, setLoaderMessage } = useAppStateContext();
+  const [, setIsLoading] = useAtom(isLoadingAtom);
+  const [, setLoaderMessage] = useAtom(loaderMessageAtom);
 
   const getConfig = useCallback(async () => {
     // Fetch configuration from the github

@@ -5,13 +5,14 @@ import { DetailEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { useLayoutContext } from "../../contexts/LayoutContext";
-import { useAppStateContext } from "../../contexts/AppStateContext";
 import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
 import { useDownloadContext } from "../../contexts/DownloadContext";
+import { useAtom } from "jotai";
+import { detailedEntryAtom } from "../../store/app";
 
 const DetailEntryOptions: React.FC = () => {
   const { downloadQueueMap } = useDownloadContext();
-  const { detailedEntry, setDetailedEntry } = useAppStateContext();
+  const [detailedEntry, setDetailedEntry] = useAtom(detailedEntryAtom);
   const { setActiveLayout } = useLayoutContext();
 
   const inDownloadQueue = detailedEntry ? !!downloadQueueMap[detailedEntry.id] : false;

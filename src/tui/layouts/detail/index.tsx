@@ -4,10 +4,11 @@ import ContentContainer from "../../components/ContentContainer";
 import DetailRow from "./DetailRow";
 import DetailEntryOptions from "./DetailEntryOptions";
 import UsageInfo from "../../components/UsageInfo";
-import { useAppStateContext } from "../../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { detailedEntryAtom } from "../../store/app";
 
 const Detail: React.FC = () => {
-  const { detailedEntry } = useAppStateContext();
+  const [detailedEntry] = useAtom(detailedEntryAtom);
 
   if (!detailedEntry) {
     return null;

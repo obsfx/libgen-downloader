@@ -2,7 +2,8 @@ import React, { useCallback, useContext, useState } from "react";
 import { Box, Text } from "ink";
 import { useLogContext } from "./LogContext";
 import OptionList from "../components/OptionList";
-import { useAppStateContext } from "./AppStateContext";
+import { useAtom } from "jotai";
+import { isLoadingAtom } from "../store/app";
 
 export type ThrowError = (err: string | null) => void;
 
@@ -49,7 +50,7 @@ const ErrorFallback: React.FC<{ error: string; onClearError: () => void }> = ({
 
 export const ErrorContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { clearLog } = useLogContext();
-  const { setIsLoading } = useAppStateContext();
+  const [, setIsLoading] = useAtom(isLoadingAtom);
 
   const [err, setErr] = useState<string | null>(null);
 

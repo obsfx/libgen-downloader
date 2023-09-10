@@ -3,7 +3,8 @@ import { Entry } from "../../api/models/Entry";
 import { useLayoutContext } from "./LayoutContext";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { useDownloadContext } from "./DownloadContext";
-import { useAppStateContext } from "./AppStateContext";
+import { useAtom } from "jotai";
+import { anyEntryExpandedAtom, detailedEntryAtom } from "../store/app";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
@@ -25,8 +26,10 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [, setDetailedEntry] = useAtom(detailedEntryAtom);
+  const [, setAnyEntryExpanded] = useAtom(anyEntryExpandedAtom);
+
   const { bulkDownloadMap, setBulkDownloadMap } = useDownloadContext();
-  const { setDetailedEntry, setAnyEntryExpanded } = useAppStateContext();
   const { setActiveLayout } = useLayoutContext();
 
   const handleSeeDetailsOptions = useCallback(

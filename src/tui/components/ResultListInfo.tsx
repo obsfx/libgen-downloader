@@ -1,11 +1,13 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useDownloadContext } from "../contexts/DownloadContext";
-import { useAppStateContext } from "../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { searchValueAtom, currentPageAtom } from "../store/app";
 
 const ResultListInfo: React.FC = () => {
   const { bulkDownloadMap } = useDownloadContext();
-  const { searchValue, currentPage } = useAppStateContext();
+  const [searchValue] = useAtom(searchValueAtom);
+  const [currentPage] = useAtom(currentPageAtom);
 
   return (
     <Box>

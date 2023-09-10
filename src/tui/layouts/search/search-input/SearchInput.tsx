@@ -6,11 +6,11 @@ import { useAppActionContext } from "../../../contexts/AppActionContext";
 import { useLayoutContext } from "../../../contexts/LayoutContext";
 import { SEARCH_MIN_CHAR } from "../../../../constants";
 import { LAYOUT_KEY } from "../../keys";
-import { useAppStateContext } from "../../../contexts/AppStateContext";
+import { useAtom } from "jotai";
+import { searchValueAtom } from "../../../store/app";
 
 const SearchInput: React.FC = () => {
-  const { searchValue, setSearchValue, showSearchMinCharWarning, setShowSearchMinCharWarning } =
-    useAppStateContext();
+  const [searchValue, setSearchValue] = useAtom(searchValueAtom);
 
   const { handleSearch } = useAppActionContext();
 
@@ -20,19 +20,13 @@ const SearchInput: React.FC = () => {
 
   const handleSubmit = useCallback(async () => {
     if (searchValue.length < SEARCH_MIN_CHAR) {
-      setShowSearchMinCharWarning(true);
       return;
     }
 
     await handleSearch();
     setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
-  }, [searchValue, setShowSearchMinCharWarning, handleSearch, setActiveLayout]);
+  }, [searchValue, handleSearch, setActiveLayout]);
 
-  useEffect(() => {
-    if (showSearchMinCharWarning && searchValue.length >= SEARCH_MIN_CHAR) {
-      setShowSearchMinCharWarning(false);
-    }
-  }, [searchValue, showSearchMinCharWarning, setShowSearchMinCharWarning]);
   return (
     <Input
       label="Search"

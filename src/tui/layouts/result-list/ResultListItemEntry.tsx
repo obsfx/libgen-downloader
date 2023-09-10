@@ -15,8 +15,13 @@ import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { useDownloadContext } from "../../contexts/DownloadContext";
-import { useAppStateContext } from "../../contexts/AppStateContext";
 import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
+import { useAtom } from "jotai";
+import {
+  activeExpandedListLengthAtom,
+  anyEntryExpandedAtom,
+  currentPageAtom,
+} from "../../store/app";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -26,7 +31,9 @@ const ResultListItemEntry: React.FC<{
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
   const { bulkDownloadMap, downloadQueueMap } = useDownloadContext();
 
-  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppStateContext();
+  const [currentPage] = useAtom(currentPageAtom);
+  const [, setAnyEntryExpanded] = useAtom(anyEntryExpandedAtom);
+  const [, setActiveExpandedListLength] = useAtom(activeExpandedListLengthAtom);
 
   const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
