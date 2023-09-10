@@ -27,6 +27,14 @@ export function constructMD5SearchUrl(pattern: string, mirror: string, md5: stri
   return pattern.replace("{mirror}", mirror).replace("{md5}", md5);
 }
 
+export function constructFindMD5SearchUrl(
+  pattern: string,
+  mirror: string,
+  idList: string[]
+): string {
+  return pattern.replace("{mirror}", mirror).replace("{idList}", idList.join(","));
+}
+
 export function parseEntries(document: Document, throwError: ThrowError): Entry[] | undefined {
   const entries: Entry[] = [];
   const containerTable = document.querySelector<HTMLTableElement>(

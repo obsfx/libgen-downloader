@@ -1,8 +1,13 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
 import { useLogContext } from "./LogContext";
 import { StandardDownloadManager } from "../classes/StandardDownloadManager";
+import { constructFindMD5SearchUrl } from "../../api/data/search";
+import { useConfigContext } from "./ConfigContext";
+import { BulkDownloadManager, BulkDownloadState } from "../classes/BulkDownloadManager";
+import { attempt } from "../../utils";
+import { useErrorContext } from "./ErrorContext";
 
 export interface IDownloadContext {
   downloadQueueMap: Record<string, Entry>;
@@ -17,6 +22,7 @@ export interface IDownloadContext {
     progress: number;
     total: number;
   };
+  startBulkDownload: () => Promise<void>;
 }
 
 export const DownloadContext = React.createContext<IDownloadContext | null>(null);
@@ -33,6 +39,8 @@ export const DownloadContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const { pushLog, clearLog } = useLogContext();
+  const { throwError } = useErrorContext();
+  const { config, mirror } = useConfigContext();
 
   const [downloadQueueMap, setDownloadQueueMap] = useState<Record<string, Entry>>({});
   const [downloadQueueStatus, setDownloadQueueStatus] = useState(DownloadStatus.IDLE);
@@ -83,6 +91,25 @@ export const DownloadContextProvider: React.FC<{
     },
   });
 
+  BulkDownloadManager.registerAppConfig(config);
+  BulkDownloadManager.registerEvents({
+    subscribeToBulkDownloadProgress: (bulkMap: Record<string, BulkDownloadState>) => {
+      console.log("subscribeToBulkDownloadMap", bulkMap);
+    },
+  });
+
+  const startBulkDownload = useCallback(async () => {
+    console.log("startBulkDownload");
+
+    const entryIDList = Object.values(bulkDownloadMap)
+      .filter((entry) => entry !== null)
+      .map((entry) => (entry as Entry).id);
+    const findMD5SearchUrl = constructFindMD5SearchUrl(config.MD5ReqPattern, mirror, entryIDList);
+    const md5List = await attempt(() => fetch(findMD5SearchUrl), pushLog, throwError);
+
+    console.log("md5List", md5List);
+  }, [bulkDownloadMap, config, mirror, pushLog, throwError]);
+
   return (
     <DownloadContext.Provider
       value={{
@@ -94,6 +121,7 @@ export const DownloadContextProvider: React.FC<{
         bulkDownloadMap,
         setBulkDownloadMap,
         currentDownloadProgress,
+        startBulkDownload,
       }}
     >
       {children}

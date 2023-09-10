@@ -24,6 +24,7 @@ import { useLogContext } from "./LogContext";
 import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { useAppStateContext } from "./AppStateContext";
 import SpinnerText from "../components/SpinnerText";
+import { useDownloadContext } from "./DownloadContext";
 
 export interface IAppActionContext {
   handleSearch: () => Promise<void>;
@@ -65,6 +66,8 @@ export const AppActionContextProvider: React.FC<{
 
     setFilters,
   } = useAppStateContext();
+
+  const { startBulkDownload } = useDownloadContext();
 
   const { setActiveLayout } = useLayoutContext();
   const { errorThrown, throwError } = useErrorContext();
@@ -165,9 +168,7 @@ export const AppActionContextProvider: React.FC<{
       },
       handleNextPageOption: handleNextPage,
       handlePrevPageOption: handlePrevPage,
-      handleStartBulkDownloadOption: () => {
-        console.log("bulk download");
-      },
+      handleStartBulkDownloadOption: startBulkDownload,
       handleExitOption: () => {
         console.log("exit");
       },
@@ -183,6 +184,7 @@ export const AppActionContextProvider: React.FC<{
     resetAppState,
     setActiveLayout,
     setListItems,
+    startBulkDownload,
   ]);
 
   return (

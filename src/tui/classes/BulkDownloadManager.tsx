@@ -7,7 +7,7 @@ import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utils";
 
-interface BulkDownloadState {
+export interface BulkDownloadState {
   md5: string;
   status: DownloadStatus;
   filename: string;
