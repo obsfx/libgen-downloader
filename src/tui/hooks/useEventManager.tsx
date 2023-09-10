@@ -11,11 +11,11 @@ import {
   searchValueAtom,
 } from "../store/app";
 import Label from "../../labels";
-import { useSearch } from "../hooks/useSearch";
+import { useSearch } from "./useSearch";
+import { useResetApp } from "./useResetApp";
 import { LAYOUT_KEY } from "../layouts/keys";
-import { useResetApp } from "../hooks/useResetApp";
 
-export function EventManagerReactTreeComponent() {
+export const useEventManager = () => {
   const [searchValue] = useAtom(searchValueAtom);
   const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
   const [entries, setEntries] = useAtom(entriesAtom);
@@ -90,6 +90,4 @@ export function EventManagerReactTreeComponent() {
   EventManager.on(AppEvent.EXIT, () => {
     console.log("EXIT");
   });
-
-  return null;
-}
+};

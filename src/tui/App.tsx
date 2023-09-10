@@ -7,11 +7,16 @@ import { Loader } from "./components/Loader";
 import { useErrorContext } from "./contexts/ErrorContext";
 import { useAtom } from "jotai";
 import { isLoadingAtom } from "./store/app";
+import { useDownloadManager } from "./hooks/useDownloadManager";
+import { useEventManager } from "./hooks/useEventManager";
 
 const App: React.FC = () => {
   const { setRawMode } = useStdin();
   const [isLoading] = useAtom(isLoadingAtom);
   const { errorThrown } = useErrorContext();
+
+  useEventManager();
+  useDownloadManager();
 
   useEffect(() => {
     setRawMode(true);

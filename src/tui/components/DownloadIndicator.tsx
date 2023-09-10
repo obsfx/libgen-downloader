@@ -1,8 +1,15 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { filesize } from "filesize";
-import { useDownloadContext } from "../contexts/DownloadContext";
 import { DownloadStatus } from "../../download-statuses";
+import { useAtom } from "jotai";
+import {
+  currentDownloadProgressAtom,
+  downloadQueueStatusAtom,
+  totalAddedToDownloadQueueAtom,
+  totalDownloadedAtom,
+  totalFailedAtom,
+} from "../store/download";
 
 const downloadStatusIndicators = {
   [DownloadStatus.IDLE]: null,
@@ -45,13 +52,11 @@ const downloadStatusIndicators = {
 };
 
 export const DownloadIndicator: React.FC = () => {
-  const {
-    downloadQueueStatus,
-    totalAddedToDownloadQueue,
-    totalDownloaded,
-    totalFailed,
-    currentDownloadProgress,
-  } = useDownloadContext();
+  const [downloadQueueStatus] = useAtom(downloadQueueStatusAtom);
+  const [totalAddedToDownloadQueue] = useAtom(totalAddedToDownloadQueueAtom);
+  const [totalDownloaded] = useAtom(totalDownloadedAtom);
+  const [totalFailed] = useAtom(totalFailedAtom);
+  const [currentDownloadProgress] = useAtom(currentDownloadProgressAtom);
 
   const progressPercentage = (
     currentDownloadProgress.total === 0
