@@ -3,7 +3,6 @@ import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
 import { StandardDownloadManager } from "../classes/StandardDownloadManager";
 import { useConfigContext } from "../contexts/ConfigContext";
-import { useErrorContext } from "../contexts/ErrorContext";
 import { useLogContext } from "../contexts/LogContext";
 import {
   currentDownloadProgressAtom,
@@ -16,7 +15,6 @@ import {
 
 export const useDownloadManager = () => {
   const { pushLog, clearLog } = useLogContext();
-  const { throwError } = useErrorContext();
   const { config, mirror } = useConfigContext();
 
   const [, setDownloadQueueStatus] = useAtom(downloadQueueStatusAtom);

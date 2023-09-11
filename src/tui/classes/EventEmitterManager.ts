@@ -6,18 +6,19 @@ export enum AppEvent {
   NEXT_PAGE = "nextPage",
   PREV_PAGE = "prevPage",
   START_BULK_DOWNLOAD = "startBulkDownload",
+  THROW_ERROR = "throwError",
   EXIT = "exit",
 }
 
 export abstract class EventManager {
   private static eventEmitter: EventEmitter = new EventEmitter();
 
-  public static on(event: AppEvent, listener: () => void) {
+  public static on(event: AppEvent, listener: (...args: unknown[]) => void) {
     this.eventEmitter.removeAllListeners(event);
     this.eventEmitter.on(event, listener);
   }
 
-  public static emit(event: AppEvent) {
-    this.eventEmitter.emit(event);
+  public static emit(event: AppEvent, ...args: unknown[]) {
+    this.eventEmitter.emit(event, ...args);
   }
 }

@@ -63,3 +63,5 @@ export const showSearchMinCharWarningAtom = atom((get) => {
 });
 
 export const activeLayoutAtom = atom("");
+
+export const errorMessageAtom = atom<string | null>(null);

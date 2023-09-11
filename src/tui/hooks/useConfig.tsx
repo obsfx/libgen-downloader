@@ -1,14 +1,13 @@
 import { useCallback } from "react";
-import { useErrorContext } from "../contexts/ErrorContext";
 import { useLogContext } from "../contexts/LogContext";
 import Label from "../../labels";
 import { attempt } from "../../utils";
 import { fetchConfig, findMirror } from "../../api/data/config";
 import { useAtom } from "jotai";
 import { isLoadingAtom, loaderMessageAtom } from "../store/app";
+import { AppEvent, EventManager } from "../classes/EventEmitterManager";
 
 export const useConfig = () => {
-  const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
   const [, setIsLoading] = useAtom(isLoadingAtom);
   const [, setLoaderMessage] = useAtom(loaderMessageAtom);
@@ -25,7 +24,7 @@ export const useConfig = () => {
         return config;
       },
       pushLog,
-      throwError,
+      (error) => EventManager.emit(AppEvent.THROW_ERROR, error),
       clearLog
     );
 
@@ -43,14 +42,14 @@ export const useConfig = () => {
 
     if (!mirror) {
       setIsLoading(false);
-      throwError("Couldn't find an available libgen mirror.");
+      EventManager.emit(AppEvent.THROW_ERROR, "Couldn't find an available libgen mirror.");
       return {};
     }
 
     setIsLoading(false);
 
     return { config, mirror };
-  }, [pushLog, clearLog, setIsLoading, setLoaderMessage, throwError]);
+  }, [pushLog, clearLog, setIsLoading, setLoaderMessage]);
 
   return { getConfig };
 };

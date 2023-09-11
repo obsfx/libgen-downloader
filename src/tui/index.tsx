@@ -1,7 +1,6 @@
 import React from "react";
 import { render } from "ink";
 
-import { ErrorContextProvider } from "./contexts/ErrorContext";
 import { LogContextProvider } from "./contexts/LogContext";
 import { ConfigContextProvider } from "./contexts/ConfigContext";
 import { LayoutWrapper } from "./layouts/Layout";
@@ -18,11 +17,9 @@ export default function renderTUI() {
   render(
     <LogContextProvider>
       <LayoutWrapper initialLayout={LAYOUT_KEY.SEARCH_LAYOUT}>
-        <ErrorContextProvider>
-          <ConfigContextProvider>
-            <App />
-          </ConfigContextProvider>
-        </ErrorContextProvider>
+        <ConfigContextProvider>
+          <App />
+        </ConfigContextProvider>
       </LayoutWrapper>
     </LogContextProvider>
   );

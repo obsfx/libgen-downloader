@@ -4,12 +4,11 @@ import { getDocument } from "../../api/data/document";
 import { SEARCH_PAGE_SIZE } from "../../settings";
 import { attempt } from "../../utils";
 import { useConfigContext } from "../contexts/ConfigContext";
-import { useErrorContext } from "../contexts/ErrorContext";
 import { useLogContext } from "../contexts/LogContext";
+import { AppEvent, EventManager } from "../classes/EventEmitterManager";
 
 export const useSearch = () => {
   const { config, mirror } = useConfigContext();
-  const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
 
   const fetchEntries = useCallback(
@@ -24,16 +23,19 @@ export const useSearch = () => {
       const pageDocument = await attempt(
         () => getDocument(searchURL),
         pushLog,
-        throwError,
+        (error) => EventManager.emit(AppEvent.THROW_ERROR, error),
         clearLog
       );
       if (!pageDocument) {
         return [];
       }
-      const entries = parseEntries(pageDocument, throwError) || [];
+      const entries =
+        parseEntries(pageDocument, (error: string) => {
+          EventManager.emit(AppEvent.THROW_ERROR, error);
+        }) || [];
       return entries;
     },
-    [config.searchReqPattern, mirror, pushLog, clearLog, throwError]
+    [config.searchReqPattern, mirror, pushLog, clearLog]
   );
 
   const search = useCallback(

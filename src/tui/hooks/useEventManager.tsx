@@ -5,6 +5,7 @@ import {
   cachedNextPageEntriesAtom,
   currentPageAtom,
   entriesAtom,
+  errorMessageAtom,
   isLoadingAtom,
   listItemsCursorAtom,
   loaderMessageAtom,
@@ -24,6 +25,7 @@ export const useEventManager = () => {
   const [, setLoaderMessage] = useAtom(loaderMessageAtom);
   const [, setActiveLayout] = useAtom(activeLayoutAtom);
   const [, setListItemsCursor] = useAtom(listItemsCursorAtom);
+  const [, setErrorMessage] = useAtom(errorMessageAtom);
 
   const { search } = useSearch();
   const { resetApp } = useResetApp();
@@ -85,6 +87,11 @@ export const useEventManager = () => {
 
   EventManager.on(AppEvent.START_BULK_DOWNLOAD, () => {
     console.log("START_BULK_DOWNLOAD");
+  });
+
+  EventManager.on(AppEvent.THROW_ERROR, (message) => {
+    setIsLoading(false);
+    setErrorMessage(message as string);
   });
 
   EventManager.on(AppEvent.EXIT, () => {

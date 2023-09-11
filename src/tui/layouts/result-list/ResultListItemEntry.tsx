@@ -4,7 +4,6 @@ import InkSpinner from "ink-spinner";
 import figures from "figures";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
-import { useErrorContext } from "../../contexts/ErrorContext";
 import { useLogContext } from "../../contexts/LogContext";
 import { useResultListContext } from "../../contexts/ResultListContext";
 import { ResultListEntryOption } from "../../../options";
@@ -22,6 +21,7 @@ import {
   currentPageAtom,
 } from "../../store/app";
 import { bulkDownloadMapAtom, downloadQueueMapAtom } from "../../store/download";
+import { AppEvent, EventManager } from "../../classes/EventEmitterManager";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -36,7 +36,6 @@ const ResultListItemEntry: React.FC<{
   const [, setAnyEntryExpanded] = useAtom(anyEntryExpandedAtom);
   const [, setActiveExpandedListLength] = useAtom(activeExpandedListLengthAtom);
 
-  const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
 
   const { handleSeeDetailsOptions, handleBulkDownloadQueueOption, handleTurnBackToTheListOption } =
@@ -144,7 +143,7 @@ const ResultListItemEntry: React.FC<{
       const pageDocument = await attempt(
         () => getDocument(item.data.mirror),
         pushLog,
-        throwError,
+        (error) => EventManager.emit(AppEvent.THROW_ERROR, error),
         clearLog
       );
 
@@ -152,7 +151,9 @@ const ResultListItemEntry: React.FC<{
         return;
       }
 
-      const parsedDownloadUrls = parseDownloadUrls(pageDocument, throwError);
+      const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) =>
+        EventManager.emit(AppEvent.THROW_ERROR, error)
+      );
 
       if (!parsedDownloadUrls) {
         return;
@@ -172,7 +173,6 @@ const ResultListItemEntry: React.FC<{
     item.data.mirror,
     pushLog,
     clearLog,
-    throwError,
     setActiveExpandedListLength,
     entryOptions,
     alternativeDownloadURLs,

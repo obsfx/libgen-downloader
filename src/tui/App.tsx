@@ -4,16 +4,16 @@ import { useStdin, Box } from "ink";
 import Layouts from "./layouts";
 import { DownloadIndicator } from "./components/DownloadIndicator";
 import { Loader } from "./components/Loader";
-import { useErrorContext } from "./contexts/ErrorContext";
 import { useAtom } from "jotai";
-import { isLoadingAtom } from "./store/app";
+import { errorMessageAtom, isLoadingAtom } from "./store/app";
 import { useDownloadManager } from "./hooks/useDownloadManager";
 import { useEventManager } from "./hooks/useEventManager";
+import { ErrorMessage } from "./components/ErrorMessage";
 
 const App: React.FC = () => {
   const { setRawMode } = useStdin();
   const [isLoading] = useAtom(isLoadingAtom);
-  const { errorThrown } = useErrorContext();
+  const [errorMessage] = useAtom(errorMessageAtom);
 
   useEventManager();
   useDownloadManager();
@@ -25,8 +25,8 @@ const App: React.FC = () => {
     };
   }, [setRawMode]);
 
-  if (errorThrown) {
-    return null;
+  if (errorMessage) {
+    return <ErrorMessage />;
   }
 
   return (

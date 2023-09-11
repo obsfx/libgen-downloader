@@ -1,6 +1,5 @@
 import { Entry } from "../models/Entry";
 import Selector from "../selectors";
-import { ThrowError } from "../../tui/contexts/ErrorContext";
 
 export interface constructSearchURLParams {
   query: string;
@@ -35,7 +34,10 @@ export function constructFindMD5SearchUrl(
   return pattern.replace("{mirror}", mirror).replace("{idList}", idList.join(","));
 }
 
-export function parseEntries(document: Document, throwError: ThrowError): Entry[] | undefined {
+export function parseEntries(
+  document: Document,
+  throwError: (message: string) => void
+): Entry[] | undefined {
   const entries: Entry[] = [];
   const containerTable = document.querySelector<HTMLTableElement>(
     Selector.TABLE_CONTAINER_SELECTOR
