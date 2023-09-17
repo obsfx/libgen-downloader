@@ -3,14 +3,14 @@ import { useFocus } from "ink";
 
 import Input from "../../../components/Input";
 import { FilterKey } from "./Filter.data";
-import { useAtom } from "jotai";
-import { filtersAtom } from "../../../store/app";
+import { useBoundStore } from "../../../store";
 
 const FilterInput: React.FC<{
   label: string;
   filterKey: FilterKey;
 }> = ({ label, filterKey }) => {
-  const [filters, setFilters] = useAtom(filtersAtom);
+  const filters = useBoundStore((state) => state.filters);
+  const setFilters = useBoundStore((state) => state.setFilters);
 
   const { isFocused } = useFocus({ autoFocus: true });
 

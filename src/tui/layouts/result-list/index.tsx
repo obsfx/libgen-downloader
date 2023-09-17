@@ -9,22 +9,22 @@ import { useScrollableListControls } from "../../hooks/useScrollableListControls
 import { getRenderedListItems } from "../../../utils";
 import UsageInfo from "../../components/UsageInfo";
 import ResultListInfo from "../../components/ResultListInfo";
-import { useAtom } from "jotai";
-import {
-  activeExpandedListLengthAtom,
-  anyEntryExpandedAtom,
-  listItemsAtom,
-  listItemsCursorAtom,
-} from "../../store/app";
+import { useBoundStore } from "../../store";
 
 const ResultList: React.FC = () => {
-  const [anyEntryExpanded] = useAtom(anyEntryExpandedAtom);
-  const [activeExpandedListLength] = useAtom(activeExpandedListLengthAtom);
-  const [listItems] = useAtom(listItemsAtom);
-  const [listItemsCursor, setListItemsCursor] = useAtom(listItemsCursorAtom);
+  const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
+  const activeExpandedListLength = useBoundStore((state) => state.activeExpandedListLength);
+  const listItems = useBoundStore((state) => state.listItems);
+  const listItemsCursor = useBoundStore((state) => state.listItemsCursor);
+  const setListItemsCursor = useBoundStore((state) => state.setListItemsCursor);
 
   const { isFocused } = useFocus({ autoFocus: true });
-  useScrollableListControls(setListItemsCursor, listItems.length, isFocused && !anyEntryExpanded);
+  useScrollableListControls(
+    listItemsCursor,
+    setListItemsCursor,
+    listItems.length,
+    isFocused && !anyEntryExpanded
+  );
   const renderedItems = getRenderedListItems(
     listItemsCursor,
     listItems,

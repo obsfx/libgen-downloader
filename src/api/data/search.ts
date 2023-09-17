@@ -36,7 +36,7 @@ export function constructFindMD5SearchUrl(
 
 export function parseEntries(
   document: Document,
-  throwError: (message: string) => void
+  throwError?: (message: string) => void
 ): Entry[] | undefined {
   const entries: Entry[] = [];
   const containerTable = document.querySelector<HTMLTableElement>(
@@ -44,7 +44,9 @@ export function parseEntries(
   );
 
   if (!containerTable) {
-    throwError("containerTable is undefined");
+    if (throwError) {
+      throwError("containerTable is undefined");
+    }
     return;
   }
 

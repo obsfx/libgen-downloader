@@ -14,14 +14,9 @@ import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
-import { useAtom } from "jotai";
-import {
-  activeExpandedListLengthAtom,
-  anyEntryExpandedAtom,
-  currentPageAtom,
-} from "../../store/app";
 import { bulkDownloadMapAtom, downloadQueueMapAtom } from "../../store/download";
 import { AppEvent, EventManager } from "../../classes/EventEmitterManager";
+import { useBoundStore } from "../../store";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -29,6 +24,8 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
+  const bulkDownloadMap = useBoundStore((state) => state.bulkDownloadMap);
+
   const [bulkDownloadMap] = useAtom(bulkDownloadMapAtom);
   const [downloadQueueMap] = useAtom(downloadQueueMapAtom);
 

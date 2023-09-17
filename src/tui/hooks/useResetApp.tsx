@@ -2,9 +2,9 @@ import { useAtom } from "jotai";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
 import {
   currentPageAtom,
-  entriesAtom,
   filtersAtom,
   listItemsCursorAtom,
+  readWriteEntriesAtom,
   searchValueAtom,
 } from "../store/app";
 
@@ -12,7 +12,7 @@ export const useResetApp = () => {
   const [, setSearchValue] = useAtom(searchValueAtom);
   const [, setCurrentPage] = useAtom(currentPageAtom);
   const [, setListItemsCursor] = useAtom(listItemsCursorAtom);
-  const [, setEntries] = useAtom(entriesAtom);
+  const [, setEntries] = useAtom(readWriteEntriesAtom);
   const [, setFilter] = useAtom(filtersAtom);
 
   const resetApp = () => {

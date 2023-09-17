@@ -19,8 +19,8 @@ export function delay(ms: number): Promise<void> {
 
 export async function attempt<T>(
   cb: () => Promise<T>,
-  onFail: (message: string) => void,
-  onError: (message: string) => void,
+  onFail?: (message: string) => void,
+  onError?: (message: string) => void,
   onComplete?: () => void
 ): Promise<T | null> {
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
@@ -33,10 +33,14 @@ export async function attempt<T>(
 
       return result;
     } catch (e: unknown) {
-      onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      if (onFail) {
+        onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      }
       await delay(FAIL_REQ_ATTEMPT_DELAY_MS);
       if (i + 1 === FAIL_REQ_ATTEMPT_COUNT) {
-        onError((e as Error)?.message);
+        if (onError) {
+          onError((e as Error)?.message);
+        }
       }
     }
   }

@@ -1,20 +1,20 @@
-import React, { useCallback } from "react";
-import { useAtom } from "jotai";
+import React from "react";
 import Input from "../../../components/Input";
 import { SEARCH_MIN_CHAR } from "../../../../constants";
-import { searchValueAtom } from "../../../store/app";
-import { AppEvent, EventManager } from "../../../classes/EventEmitterManager";
+import { useBoundStore } from "../../../store";
 
 const SearchInput: React.FC = () => {
-  const [searchValue, setSearchValue] = useAtom(searchValueAtom);
+  const searchValue = useBoundStore((state) => state.searchValue);
+  const setSearchValue = useBoundStore((state) => state.setSearchValue);
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const search = useBoundStore((state) => state.search);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     if (searchValue.length < SEARCH_MIN_CHAR) {
       return;
     }
-
-    EventManager.emit(AppEvent.SEARCH);
-  }, [searchValue]);
+    search(searchValue, currentPage);
+  };
 
   return (
     <Input
