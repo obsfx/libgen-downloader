@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useAtom } from "jotai";
-import { errorMessageAtom } from "../store/app";
 import OptionList from "./OptionList";
+import { useBoundStore } from "../store";
 
 export function ErrorMessage() {
-  const [errorMessage, setErrorMessage] = useAtom(errorMessageAtom);
+  const errorMessage = useBoundStore((state) => state.errorMessage);
+  const setErrorMessage = useBoundStore((state) => state.setErrorMessage);
 
   return (
     <Box>

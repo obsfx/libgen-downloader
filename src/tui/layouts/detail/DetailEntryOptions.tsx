@@ -5,16 +5,15 @@ import { DetailEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
-import { useAtom } from "jotai";
-import { activeLayoutAtom, detailedEntryAtom } from "../../store/app";
-import { downloadQueueMapAtom } from "../../store/download";
+import { useBoundStore } from "../../store";
 
 const DetailEntryOptions: React.FC = () => {
-  const [downloadQueueMap] = useAtom(downloadQueueMapAtom);
-  const [detailedEntry, setDetailedEntry] = useAtom(detailedEntryAtom);
-  const [, setActiveLayout] = useAtom(activeLayoutAtom);
+  const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
+  const detailedEntry = useBoundStore((state) => state.detailedEntry);
+  const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
+  const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
 
-  const inDownloadQueue = detailedEntry ? !!downloadQueueMap[detailedEntry.id] : false;
+  const inDownloadQueue = detailedEntry ? isInDownloadQueue(detailedEntry.id) : false;
 
   const detailOptions: Record<string, IOption> = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {

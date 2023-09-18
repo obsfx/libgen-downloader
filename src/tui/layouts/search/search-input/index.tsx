@@ -5,7 +5,9 @@ import SearchInfo from "./SearchInfo";
 import SearchWarning from "./SearchWarning";
 import SearchInput from "./SearchInput";
 
-const Search: React.FC = () => {
+const SearchInputMain: React.FC = () => {
+  console.log("SearchInputMain");
+
   return (
     <Box flexDirection="column">
       <SearchInfo />
@@ -15,4 +17,4 @@ const Search: React.FC = () => {
   );
 };
 
-export default Search;
+export default SearchInputMain;

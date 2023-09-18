@@ -7,6 +7,7 @@ import { useBoundStore } from "../../../store";
 const SearchWarning: React.FC = () => {
   const showSearchMinCharWarning = useBoundStore((state) => state.showSearchMinCharWarning);
 
+  console.log("SearchWarning", { showSearchMinCharWarning });
   if (!showSearchMinCharWarning) {
     return null;
   }

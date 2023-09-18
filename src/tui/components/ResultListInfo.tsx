@@ -1,13 +1,11 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useAtom } from "jotai";
-import { searchValueAtom, currentPageAtom } from "../store/app";
-import { bulkDownloadMapAtom } from "../store/download";
+import { useBoundStore } from "../store";
 
 const ResultListInfo: React.FC = () => {
-  const [bulkDownloadMap] = useAtom(bulkDownloadMapAtom);
-  const [searchValue] = useAtom(searchValueAtom);
-  const [currentPage] = useAtom(currentPageAtom);
+  const searchValue = useBoundStore((state) => state.searchValue);
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
 
   return (
     <Box>
@@ -17,10 +15,7 @@ const ResultListInfo: React.FC = () => {
       </Text>
       <Text color="gray">{" | "}</Text>
       <Text wrap="truncate">
-        Bulk download queue:{" "}
-        <Text color="green">
-          {Object.entries(bulkDownloadMap).filter(([_, val]) => val).length}
-        </Text>
+        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntries.length}</Text>
       </Text>
     </Box>
   );

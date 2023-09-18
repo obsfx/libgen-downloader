@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Box, Text } from "ink";
 import InkTextInput from "ink-text-input";
 
@@ -10,20 +10,18 @@ const Input: React.FC<{
   onSearchValueChange: (value: string) => void;
   onSubmit?: () => void;
 }> = ({ label, placeholder, isFocused, searchValue, onSearchValueChange, onSubmit }) => {
-  const handleOnChange = useCallback(
-    (val: string) => {
-      if (isFocused) {
-        onSearchValueChange(val);
-      }
-    },
-    [isFocused, onSearchValueChange]
-  );
+  const handleOnChange = (val: string) => {
+    console.log("Input", { val, isFocused });
+    if (isFocused) {
+      onSearchValueChange(val);
+    }
+  };
 
-  const handleOnSubmit = useCallback(() => {
+  const handleOnSubmit = () => {
     if (isFocused && onSubmit) {
       onSubmit();
     }
-  }, [isFocused, onSubmit]);
+  };
 
   return (
     <Box>

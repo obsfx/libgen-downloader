@@ -4,11 +4,10 @@ import ContentContainer from "../../components/ContentContainer";
 import DetailRow from "./DetailRow";
 import DetailEntryOptions from "./DetailEntryOptions";
 import UsageInfo from "../../components/UsageInfo";
-import { useAtom } from "jotai";
-import { detailedEntryAtom } from "../../store/app";
+import { useBoundStore } from "../../store";
 
 const Detail: React.FC = () => {
-  const [detailedEntry] = useAtom(detailedEntryAtom);
+  const detailedEntry = useBoundStore((state) => state.detailedEntry);
 
   if (!detailedEntry) {
     return null;

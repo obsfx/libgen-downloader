@@ -14,7 +14,6 @@ import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { attempt } from "../../../utils";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
-import { bulkDownloadMapAtom, downloadQueueMapAtom } from "../../store/download";
 import { AppEvent, EventManager } from "../../classes/EventEmitterManager";
 import { useBoundStore } from "../../store";
 
@@ -24,24 +23,24 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const bulkDownloadMap = useBoundStore((state) => state.bulkDownloadMap);
+  const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
+  const isInBulkDownloadQueue = useBoundStore((state) => state.isInBulkDownloadQueue);
+  const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
+  const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
 
-  const [bulkDownloadMap] = useAtom(bulkDownloadMapAtom);
-  const [downloadQueueMap] = useAtom(downloadQueueMapAtom);
-
-  const [currentPage] = useAtom(currentPageAtom);
-  const [, setAnyEntryExpanded] = useAtom(anyEntryExpandedAtom);
-  const [, setActiveExpandedListLength] = useAtom(activeExpandedListLengthAtom);
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
+  const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
 
   const { pushLog, clearLog } = useLogContext();
 
-  const { handleSeeDetailsOptions, handleBulkDownloadQueueOption, handleTurnBackToTheListOption } =
-    useResultListContext();
+  const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
 
-  const inDownloadQueue = !!downloadQueueMap[item.data.id];
+  const inDownloadQueue = isInDownloadQueue(item.data.id);
+  const inBulkDownloadQueue = isInBulkDownloadQueue(item.data.id);
 
   const entryOptions: Record<string, IOption> = useMemo(
     () => ({
@@ -67,10 +66,17 @@ const ResultListItemEntry: React.FC<{
         },
       },
       [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
-        label: bulkDownloadMap[item.data.id]
+        label: inBulkDownloadQueue
           ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
           : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
-        onSelect: () => handleBulkDownloadQueueOption(item.data),
+        onSelect: () => {
+          if (inBulkDownloadQueue) {
+            removeFromBulkDownloadQueue(item.data.id);
+            return;
+          }
+
+          addToBulkDownloadQueue(item.data);
+        },
       },
       [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
         label: Label.TURN_BACK_TO_THE_LIST,
@@ -79,13 +85,14 @@ const ResultListItemEntry: React.FC<{
     }),
     [
       alternativeDownloadURLs,
-      bulkDownloadMap,
       handleSeeDetailsOptions,
-      handleBulkDownloadQueueOption,
       handleTurnBackToTheListOption,
       item.data,
       setActiveExpandedListLength,
       inDownloadQueue,
+      inBulkDownloadQueue,
+      addToBulkDownloadQueue,
+      removeFromBulkDownloadQueue,
     ]
   );
 
