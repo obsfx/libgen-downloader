@@ -6,16 +6,7 @@ import { useBoundStore } from "../../../store/index.js";
 const SearchInput: React.FC = () => {
   const searchValue = useBoundStore((state) => state.searchValue);
   const setSearchValue = useBoundStore((state) => state.setSearchValue);
-  const currentPage = useBoundStore((state) => state.currentPage);
-  const search = useBoundStore((state) => state.search);
-
-  const handleSubmit = () => {
-    if (searchValue.length < SEARCH_MIN_CHAR) {
-      return;
-    }
-    console.log("SearchInput: handleSubmit: searchValue: ", searchValue);
-    search(searchValue, currentPage);
-  };
+  const handleSearchSubmit = useBoundStore((state) => state.handleSearchSubmit);
 
   return (
     <Input
@@ -24,7 +15,7 @@ const SearchInput: React.FC = () => {
       isFocused={true}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
-      onSubmit={handleSubmit}
+      onSubmit={handleSearchSubmit}
     />
   );
 };

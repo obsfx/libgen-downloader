@@ -11,6 +11,7 @@ import { getDocument } from "../../api/data/document.js";
 export interface IEventActions {
   backToSearch: () => void;
   search: (query: string, page: number) => Promise<Entry[]>;
+  handleSearchSubmit: () => Promise<void>;
   nextPage: () => Promise<void>;
   prevPage: () => Promise<void>;
 }
@@ -61,10 +62,20 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       return [];
     }
 
-    console.log("4");
-
     store.setEntryCacheMap(pageNumber, entries);
     return entries;
+  },
+  handleSearchSubmit: async () => {
+    const store = get();
+
+    if (store.searchValue.length < 3) {
+      return;
+    }
+
+    const entries = await store.search(store.searchValue, store.currentPage);
+    store.setEntries(entries);
+    await store.search(store.searchValue, store.currentPage + 1);
+    store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
   },
   nextPage: async () => {
     const store = get();
