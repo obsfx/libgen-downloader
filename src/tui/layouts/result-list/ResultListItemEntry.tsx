@@ -12,8 +12,9 @@ import { getDocument } from "../../../api/data/document.js";
 import { IResultListItemEntry } from "../../../api/models/ListItem.js";
 import { attempt } from "../../../utils.js";
 import { SEARCH_PAGE_SIZE } from "../../../settings.js";
-import { AppEvent, EventManager } from "../../classes/EventEmitterManager.js";
 import { useBoundStore } from "../../store/index.js";
+import { getDownloadProgress } from "../../helpers/progress.js";
+import { downloadStatusIndicators } from "../../../download-statuses.js";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -28,16 +29,22 @@ const ResultListItemEntry: React.FC<{
   const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
 
-  const { pushLog, clearLog } = useLogContext();
-  const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
-  const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
-  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
-
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = inDownloadQueueEntryIds.includes(item.data.id);
 
   const bulkDownloadSelectedEntryIds = useBoundStore((state) => state.bulkDownloadSelectedEntryIds);
   const inBulkDownloadQueue = bulkDownloadSelectedEntryIds.includes(item.data.id);
+
+  const downloadProgressMap = useBoundStore((state) => state.downloadProgressMap);
+  const downloadProgressData = downloadProgressMap[item.data.id];
+  const downloadProgress = downloadProgressData
+    ? getDownloadProgress(downloadProgressData.progress || 0, downloadProgressData.total)
+    : null;
+
+  const { pushLog, clearLog } = useLogContext();
+  const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
+  const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
+  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
 
   const entryOptions: Record<string, IOption> = useMemo(
     () => ({
@@ -145,7 +152,9 @@ const ResultListItemEntry: React.FC<{
       const pageDocument = await attempt(
         () => getDocument(item.data.mirror),
         pushLog,
-        (error) => EventManager.emit(AppEvent.THROW_ERROR, error),
+        (error) => {
+          //throw new Error(error);
+        },
         clearLog
       );
 
@@ -153,9 +162,9 @@ const ResultListItemEntry: React.FC<{
         return;
       }
 
-      const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) =>
-        EventManager.emit(AppEvent.THROW_ERROR, error)
-      );
+      const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) => {
+        //throw new Error(error);
+      });
 
       if (!parsedDownloadUrls) {
         return;
@@ -186,15 +195,22 @@ const ResultListItemEntry: React.FC<{
       <Text
         wrap="truncate"
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
-        bold={isActive}
       >
         {isActive && !isExpanded && figures.pointer} [
         {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
-        {inDownloadQueue && <Text color="yellow">(In download queue) </Text>}
+        {downloadProgressData && (
+          <>
+            {downloadStatusIndicators[downloadProgressData.status]}{" "}
+            <Text color="magenta">
+              {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
+              {downloadProgress?.totalSize}
+            </Text>{" "}
+          </>
+        )}
         <Text color={isFadedOut ? "gray" : "green"} bold={true}>
           {item.data.extension}
         </Text>{" "}
-        {item.data.title}
+        <Text bold={isActive}>{item.data.title}</Text>
       </Text>
 
       {isExpanded &&

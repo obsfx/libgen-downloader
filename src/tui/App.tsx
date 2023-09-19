@@ -4,6 +4,8 @@ import { useStdin, Box } from "ink";
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
 // [x] Download queue
+// [ ] Move result list logic to zustand
+// [ ] Move result list entry logic to zustand
 // [ ] Move download progress to entry item
 // [ ] Result list skeleton loader getting results
 // [ ] better download status
