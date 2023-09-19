@@ -1,12 +1,12 @@
 import { StateCreator } from "zustand";
-import { TCombinedStore } from ".";
-import { LAYOUT_KEY } from "../layouts/keys";
-import Label from "../../labels";
-import { Entry } from "../../api/models/Entry";
-import { constructSearchURL, parseEntries } from "../../api/data/search";
-import { SEARCH_PAGE_SIZE } from "../../settings";
-import { attempt } from "../../utils";
-import { getDocument } from "../../api/data/document";
+import { TCombinedStore } from "./index.js";
+import { LAYOUT_KEY } from "../layouts/keys.js";
+import Label from "../../labels.js";
+import { Entry } from "../../api/models/Entry.js";
+import { constructSearchURL, parseEntries } from "../../api/data/search.js";
+import { SEARCH_PAGE_SIZE } from "../../settings.js";
+import { attempt } from "../../utils.js";
+import { getDocument } from "../../api/data/document.js";
 
 export interface IEventActions {
   backToSearch: () => void;
@@ -34,6 +34,8 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       return cachedEntries;
     }
 
+    console.log("1");
+
     const searchURL = constructSearchURL({
       query,
       mirror: store.mirror,
@@ -42,17 +44,24 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       searchReqPattern: store.searchReqPattern,
     });
 
+    console.log("2");
+
     const pageDocument = await attempt(() => getDocument(searchURL));
+    console.log(pageDocument);
     if (!pageDocument) {
       // throw error
       return [];
     }
+
+    console.log("3");
 
     const entries = parseEntries(pageDocument);
     if (!entries) {
       // throw error
       return [];
     }
+
+    console.log("4");
 
     store.setEntryCacheMap(pageNumber, entries);
     return entries;

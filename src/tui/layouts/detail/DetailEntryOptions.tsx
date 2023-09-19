@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { IOption } from "../../components/Option";
-import OptionList from "../../components/OptionList";
-import { DetailEntryOption } from "../../../options";
-import Label from "../../../labels";
-import { LAYOUT_KEY } from "../keys";
-import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
-import { useBoundStore } from "../../store";
+import { IOption } from "../../components/Option.js";
+import OptionList from "../../components/OptionList.js";
+import { DetailEntryOption } from "../../../options.js";
+import Label from "../../../labels.js";
+import { LAYOUT_KEY } from "../keys.js";
+//import { StandardDownloadManager } from "../../classes/StandardDownloadManager.js";
+import { useBoundStore } from "../../store/index.js";
 
 const DetailEntryOptions: React.FC = () => {
   const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
@@ -28,7 +28,7 @@ const DetailEntryOptions: React.FC = () => {
       label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
       onSelect: () => {
         if (detailedEntry) {
-          StandardDownloadManager.pushToDownloadQueueMap(detailedEntry);
+          //StandardDownloadManager.pushToDownloadQueueMap(detailedEntry);
         }
       },
     },
@@ -52,10 +52,10 @@ const DetailEntryOptions: React.FC = () => {
           label: `(${idx + 1}) ${current}`,
           onSelect: () => {
             if (detailedEntry) {
-              StandardDownloadManager.pushToDownloadQueueMap({
-                ...detailedEntry,
-                alternativeDirectDownloadUrl: current,
-              });
+              //StandardDownloadManager.pushToDownloadQueueMap({
+              //  ...detailedEntry,
+              //  alternativeDirectDownloadUrl: current,
+              //});
 
               setShowAlternativeDownloads(false);
             }

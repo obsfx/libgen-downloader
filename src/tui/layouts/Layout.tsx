@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { useBoundStore } from "../store";
-import { LAYOUT_KEY } from "./keys";
+import { useBoundStore } from "../store/index.js";
+import { LAYOUT_KEY } from "./keys.js";
 
 export const LayoutInner: React.FC<{
   children: React.ReactNode;

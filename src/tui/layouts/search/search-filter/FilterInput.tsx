@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { useFocus } from "ink";
 
-import Input from "../../../components/Input";
-import { FilterKey } from "./Filter.data";
-import { useBoundStore } from "../../../store";
+import Input from "../../../components/Input.js";
+import { FilterKey } from "./Filter.data.js";
+import { useBoundStore } from "../../../store/index.js";
 
 const FilterInput: React.FC<{
   label: string;

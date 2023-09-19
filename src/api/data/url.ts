@@ -1,5 +1,5 @@
-import Label from "../../labels";
-import Selector from "../selectors";
+import Label from "../../labels.js";
+import Selector from "../selectors.js";
 
 export function parseDownloadUrls(
   document: Document,

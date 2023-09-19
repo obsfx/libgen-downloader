@@ -1,8 +1,8 @@
 import { StateCreator } from "zustand";
-import { TCombinedStore } from ".";
-import { Config, fetchConfig, findMirror } from "../../api/data/config";
-import Label from "../../labels";
-import { attempt } from "../../utils";
+import { TCombinedStore } from "./index.js";
+import { Config, fetchConfig, findMirror } from "../../api/data/config.js";
+import Label from "../../labels.js";
+import { attempt } from "../../utils.js";
 
 export interface IConfigState extends Config {
   mirror: string;

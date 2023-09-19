@@ -2,8 +2,8 @@ import React from "react";
 import { Text, useInput, Key } from "ink";
 import figures from "figures";
 
-import { IResultListItemOption } from "../../../api/models/ListItem";
-import { useBoundStore } from "../../store";
+import { IResultListItemOption } from "../../../api/models/ListItem.js";
+import { useBoundStore } from "../../store/index.js";
 
 const ResultListItemOption: React.FC<{
   item: IResultListItemOption;

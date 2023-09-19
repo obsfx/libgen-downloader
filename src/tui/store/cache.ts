@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
-import { TCombinedStore } from ".";
-import { Entry } from "../../api/models/Entry";
+import { TCombinedStore } from "./index.js";
+import { Entry } from "../../api/models/Entry.js";
 
 export interface ICacheState {
   entryCacheMap: Record<number, Entry[]>;

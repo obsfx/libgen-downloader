@@ -1,13 +1,11 @@
 import React from "react";
 import { Box } from "ink";
 
-import SearchInfo from "./SearchInfo";
-import SearchWarning from "./SearchWarning";
-import SearchInput from "./SearchInput";
+import SearchInfo from "./SearchInfo.js";
+import SearchWarning from "./SearchWarning.js";
+import SearchInput from "./SearchInput.js";
 
 const SearchInputMain: React.FC = () => {
-  console.log("SearchInputMain");
-
   return (
     <Box flexDirection="column">
       <SearchInfo />

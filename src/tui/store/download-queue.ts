@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
-import { TCombinedStore } from ".";
-import { Entry } from "../../api/models/Entry";
-import { DownloadStatus } from "../../download-statuses";
+import { TCombinedStore } from "./index.js";
+import { Entry } from "../../api/models/Entry.js";
+import { DownloadStatus } from "../../download-statuses.js";
 
 export interface IDownloadQueueState {
   downloadQueue: Entry[];

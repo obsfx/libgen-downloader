@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { filesize } from "filesize";
-import { DownloadStatus } from "../../download-statuses";
-import { useBoundStore } from "../store";
+import { DownloadStatus } from "../../download-statuses.js";
+import { useBoundStore } from "../store/index.js";
 
 const downloadStatusIndicators = {
   [DownloadStatus.IDLE]: null,

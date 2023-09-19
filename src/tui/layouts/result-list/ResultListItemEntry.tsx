@@ -2,20 +2,20 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Box, Text, useInput, Key } from "ink";
 import InkSpinner from "ink-spinner";
 import figures from "figures";
-import { IOption } from "../../components/Option";
-import OptionList from "../../components/OptionList";
-import { useLogContext } from "../../contexts/LogContext";
-import { useResultListContext } from "../../contexts/ResultListContext";
-import { ResultListEntryOption } from "../../../options";
-import Label from "../../../labels";
-import { parseDownloadUrls } from "../../../api/data/url";
-import { getDocument } from "../../../api/data/document";
-import { IResultListItemEntry } from "../../../api/models/ListItem";
-import { attempt } from "../../../utils";
-import { SEARCH_PAGE_SIZE } from "../../../settings";
-import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
-import { AppEvent, EventManager } from "../../classes/EventEmitterManager";
-import { useBoundStore } from "../../store";
+import { IOption } from "../../components/Option.js";
+import OptionList from "../../components/OptionList.js";
+import { useLogContext } from "../../contexts/LogContext.js";
+import { useResultListContext } from "../../contexts/ResultListContext.js";
+import { ResultListEntryOption } from "../../../options.js";
+import Label from "../../../labels.js";
+import { parseDownloadUrls } from "../../../api/data/url.js";
+import { getDocument } from "../../../api/data/document.js";
+import { IResultListItemEntry } from "../../../api/models/ListItem.js";
+import { attempt } from "../../../utils.js";
+import { SEARCH_PAGE_SIZE } from "../../../settings.js";
+//import { StandardDownloadManager } from "../../classes/StandardDownloadManager.js";
+import { AppEvent, EventManager } from "../../classes/EventEmitterManager.js";
+import { useBoundStore } from "../../store/index.js";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -55,7 +55,9 @@ const ResultListItemEntry: React.FC<{
       [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
         loading: inDownloadQueue,
         label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
-        onSelect: () => StandardDownloadManager.pushToDownloadQueueMap(item.data),
+        onSelect: () => {
+          //StandardDownloadManager.pushToDownloadQueueMap(item.data)
+        },
       },
       [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
         label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
@@ -104,10 +106,10 @@ const ResultListItemEntry: React.FC<{
           [idx]: {
             label: `(${idx + 1}) ${current}`,
             onSelect: () => {
-              StandardDownloadManager.pushToDownloadQueueMap({
-                ...item.data,
-                alternativeDirectDownloadUrl: current,
-              });
+              //StandardDownloadManager.pushToDownloadQueueMap({
+              //  ...item.data,
+              //  alternativeDirectDownloadUrl: current,
+              //});
 
               setShowAlternativeDownloads(false);
               setActiveExpandedListLength(Object.keys(entryOptions).length);

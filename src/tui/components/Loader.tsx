@@ -1,7 +1,7 @@
 import React from "react";
 import { Text } from "ink";
-import SpinnerText from "./SpinnerText";
-import { useBoundStore } from "../store";
+import SpinnerText from "./SpinnerText.js";
+import { useBoundStore } from "../store/index.js";
 
 export function Loader() {
   const isLoading = useBoundStore((state) => state.isLoading);

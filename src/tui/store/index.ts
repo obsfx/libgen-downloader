@@ -1,10 +1,13 @@
 import { create } from "zustand";
-import { createAppStateSlice, IAppState } from "./app";
-import { createBulkDownloadQueueStateSlice, IBulkDownloadQueueState } from "./bulk-download-queue";
-import { createCacheStateSlice, ICacheState } from "./cache";
-import { createConfigStateSlice, IConfigState } from "./config";
-import { createDownloadQueueStateSlice, IDownloadQueueState } from "./download-queue";
-import { createEventActionsSlice, IEventActions } from "./events";
+import { createAppStateSlice, IAppState } from "./app.js";
+import {
+  createBulkDownloadQueueStateSlice,
+  IBulkDownloadQueueState,
+} from "./bulk-download-queue.js";
+import { createCacheStateSlice, ICacheState } from "./cache.js";
+import { createConfigStateSlice, IConfigState } from "./config.js";
+import { createDownloadQueueStateSlice, IDownloadQueueState } from "./download-queue.js";
+import { createEventActionsSlice, IEventActions } from "./events.js";
 
 export type TCombinedStore = IAppState &
   IConfigState &
@@ -20,14 +23,4 @@ export const useBoundStore = create<TCombinedStore>()((...args) => ({
   ...createBulkDownloadQueueStateSlice(...args),
   ...createCacheStateSlice(...args),
   ...createEventActionsSlice(...args),
-}));
-
-interface BearState {
-  bears: number;
-  increase: (by: number) => void;
-}
-
-export const useBearStore = create<BearState>()((set) => ({
-  bears: 0,
-  increase: (by) => set((state) => ({ bears: state.bears + by })),
 }));

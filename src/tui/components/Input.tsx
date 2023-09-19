@@ -11,7 +11,6 @@ const Input: React.FC<{
   onSubmit?: () => void;
 }> = ({ label, placeholder, isFocused, searchValue, onSearchValueChange, onSubmit }) => {
   const handleOnChange = (val: string) => {
-    console.log("Input", { val, isFocused });
     if (isFocused) {
       onSearchValueChange(val);
     }

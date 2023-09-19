@@ -1,13 +1,13 @@
-import { Entry } from "./api/models/Entry";
-import { ListItem, IResultListItemType } from "./api/models/ListItem";
+import { Entry } from "./api/models/Entry.js";
+import { ListItem, IResultListItemType } from "./api/models/ListItem.js";
 import {
   MIN_RESULT_LIST_LENGTH,
   RESULT_LIST_ACTIVE_LIST_INDEX,
   RESULT_LIST_LENGTH,
-} from "./constants";
-import { Option } from "./options";
-import Label from "./labels";
-import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings";
+} from "./constants.js";
+import { Option } from "./options.js";
+import Label from "./labels.js";
+import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings.js";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -26,6 +26,7 @@ export async function attempt<T>(
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
     try {
       const result = await cb();
+      console.log("attempt success", result);
 
       if (onComplete) {
         onComplete();

@@ -1,10 +1,10 @@
 import { StateCreator } from "zustand";
-import { TCombinedStore } from ".";
-import { Entry } from "../../api/models/Entry";
-import { ListItem } from "../../api/models/ListItem";
-import { constructListItems } from "../../utils";
-import { LAYOUT_KEY } from "../layouts/keys";
-import { FilterRecord } from "../layouts/search/search-filter/Filter.data";
+import { TCombinedStore } from "./index.js";
+import { Entry } from "../../api/models/Entry.js";
+import { ListItem } from "../../api/models/ListItem.js";
+import { constructListItems } from "../../utils.js";
+import { LAYOUT_KEY } from "../layouts/keys.js";
+import { FilterRecord } from "../layouts/search/search-filter/Filter.data.js";
 
 export interface IAppState {
   isLoading: boolean;
@@ -52,7 +52,7 @@ export const initialAppState = {
   showSearchMinCharWarning: true,
 
   loaderMessage: "",
-  searchValue: "test",
+  searchValue: "",
   errorMessage: null,
 
   currentPage: 1,
@@ -72,25 +72,19 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
 
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
   setAnyEntryExpanded: (anyEntryExpanded: boolean) => set({ anyEntryExpanded }),
+
   setLoaderMessage: (loaderMessage: string) => set({ loaderMessage }),
-  setSearchValue: () => {
-    console.log("tick", {
-      set,
-      get,
-      t: get().currentPage,
-    });
-    set(
-      (state) => ({
-        currentPage: Date.now(),
-      }),
-      true
-    );
+  setSearchValue: (searchValue: string) => {
+    set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
+    set({ searchValue });
   },
   setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
+
   setCurrentPage: (currentPage: number) => set({ currentPage }),
   setActiveExpandedListLength: (activeExpandedListLength: number) =>
     set({ activeExpandedListLength }),
   setListItemsCursor: (listItemsCursor: number) => set({ listItemsCursor }),
+
   setFilters: (filters: FilterRecord) => set({ filters }),
   setDetailedEntry: (detailedEntry: Entry | null) => set({ detailedEntry }),
   setEntries: (entries: Entry[]) => {
@@ -113,9 +107,8 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
   },
   setCachedNextPageEntries: (cachedNextPageEntries: Entry[]) => set({ cachedNextPageEntries }),
   setActiveLayout: (activeLayout: LAYOUT_KEY) => set({ activeLayout }),
-  resetAppState: () => {
-    console.log("resetAppState");
-  },
+
+  resetAppState: () => set(initialAppState),
 });
 
 //const entriesAtom = atom<Entry[]>([]);

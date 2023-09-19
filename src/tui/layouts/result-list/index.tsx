@@ -1,15 +1,15 @@
 import React from "react";
 import { Box, useFocus } from "ink";
-import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
-import ResultListItemOption from "./ResultListItemOption";
-import ResultListItemEntry from "./ResultListItemEntry";
-import { IResultListItemType } from "../../../api/models/ListItem";
-import ContentContainer from "../../components/ContentContainer";
-import { useScrollableListControls } from "../../hooks/useScrollableListControls";
-import { getRenderedListItems } from "../../../utils";
-import UsageInfo from "../../components/UsageInfo";
-import ResultListInfo from "../../components/ResultListInfo";
-import { useBoundStore } from "../../store";
+import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants.js";
+import ResultListItemOption from "./ResultListItemOption.js";
+import ResultListItemEntry from "./ResultListItemEntry.js";
+import { IResultListItemType } from "../../../api/models/ListItem.js";
+import ContentContainer from "../../components/ContentContainer.js";
+import { useScrollableListControls } from "../../hooks/useScrollableListControls.js";
+import { getRenderedListItems } from "../../../utils.js";
+import UsageInfo from "../../components/UsageInfo.js";
+import ResultListInfo from "../../components/ResultListInfo.js";
+import { useBoundStore } from "../../store/index.js";
 
 const ResultList: React.FC = () => {
   const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
