@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 
-import ExpandableSection from "../../../components/ExpandableSection";
-import FilterInput from "./FilterInput";
-import { FilterInputs } from "./Filter.data";
+import ExpandableSection from "../../../components/ExpandableSection.js";
+import FilterInput from "./FilterInput.js";
+import { FilterInputs } from "./Filter.data.js";
 
 const SearchFilter: React.FC = () => {
   const renderInputs = useMemo(() => {

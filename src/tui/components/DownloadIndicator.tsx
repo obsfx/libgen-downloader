@@ -1,15 +1,8 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { filesize } from "filesize";
-import { DownloadStatus } from "../../download-statuses";
-import { useAtom } from "jotai";
-import {
-  currentDownloadProgressAtom,
-  downloadQueueStatusAtom,
-  totalAddedToDownloadQueueAtom,
-  totalDownloadedAtom,
-  totalFailedAtom,
-} from "../store/download";
+import { DownloadStatus } from "../../download-statuses.js";
+import { useBoundStore } from "../store/index.js";
 
 const downloadStatusIndicators = {
   [DownloadStatus.IDLE]: null,
@@ -52,11 +45,11 @@ const downloadStatusIndicators = {
 };
 
 export const DownloadIndicator: React.FC = () => {
-  const [downloadQueueStatus] = useAtom(downloadQueueStatusAtom);
-  const [totalAddedToDownloadQueue] = useAtom(totalAddedToDownloadQueueAtom);
-  const [totalDownloaded] = useAtom(totalDownloadedAtom);
-  const [totalFailed] = useAtom(totalFailedAtom);
-  const [currentDownloadProgress] = useAtom(currentDownloadProgressAtom);
+  const downloadQueueStatus = useBoundStore((state) => state.downloadQueueStatus);
+  const totalAddedToDownloadQueue = useBoundStore((state) => state.totalAddedToDownloadQueue);
+  const totalDownloaded = useBoundStore((state) => state.totalDownloaded);
+  const totalFailed = useBoundStore((state) => state.totalFailed);
+  const currentDownloadProgress = useBoundStore((state) => state.currentDownloadProgress);
 
   const progressPercentage = (
     currentDownloadProgress.total === 0
@@ -73,6 +66,8 @@ export const DownloadIndicator: React.FC = () => {
     base: 2,
     standard: "jedec",
   });
+
+  console.log("DownloadIndicator rendered");
 
   if (totalAddedToDownloadQueue === 0) {
     return null;

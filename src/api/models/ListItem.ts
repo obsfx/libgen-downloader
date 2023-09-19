@@ -1,4 +1,4 @@
-import { Entry } from "./Entry";
+import { Entry } from "./Entry.js";
 
 export enum IResultListItemType {
   Entry,

@@ -7,11 +7,12 @@
     "libgen-downloader": "./bin/index.js",
     "obsfx@libgen-downloader": "./bin/index.js"
   },
+  "type": "module",
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
     "react-dt": "react-devtools",
     "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
-    "ts-node": "npx -c 'DEV=true ts-node ./src/index.ts'",
+    "ts-node": "npx -c 'DEV=true ts-node-esm ./src/index.ts'",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
@@ -41,8 +42,8 @@
     "@types/content-disposition": "0.5.5",
     "@types/jsdom": "16.2.14",
     "@types/node": "17.0.21",
-    "@types/node-fetch": "2.5.7",
-    "@types/react": "17.0.40",
+    "@types/node-fetch": "2.6.5",
+    "@types/react": "18.2.22",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.5",
     "eslint": "8.19.0",
@@ -52,19 +53,19 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
-    "ts-node": "10.7.0",
-    "typescript": "4.6.2"
+    "typescript": "5.2.2"
   },
   "dependencies": {
     "content-disposition": "^0.5.4",
     "figures": "3.2.0",
     "filesize": "10.0.12",
-    "ink": "3.2.0",
-    "ink-spinner": "4.0.3",
-    "ink-text-input": "4.0.3",
-    "jotai": "2.4.2",
+    "ink": "4.4.1",
+    "ink-spinner": "5.0.0",
+    "ink-text-input": "5.0.1",
     "jsdom": "19.0.0",
-    "node-fetch": "2.6.0",
-    "react": "17.0.2"
+    "node-fetch": "3.3.2",
+    "react": "18.2.0",
+    "ts-node": "10.9.1",
+    "zustand": "4.4.1"
   }
 }

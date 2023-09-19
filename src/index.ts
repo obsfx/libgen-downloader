@@ -1,3 +1,3 @@
-import renderTUI from "./tui";
+import renderTUI from "./tui/index.js";
 
 renderTUI();

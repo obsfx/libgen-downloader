@@ -1,12 +1,11 @@
 import React from "react";
-import { useAtom } from "jotai";
 import { Text } from "ink";
-import { isLoadingAtom, loaderMessageAtom } from "../store/app";
-import SpinnerText from "./SpinnerText";
+import SpinnerText from "./SpinnerText.js";
+import { useBoundStore } from "../store/index.js";
 
 export function Loader() {
-  const [isLoading] = useAtom(isLoadingAtom);
-  const [loaderMessage] = useAtom(loaderMessageAtom);
+  const isLoading = useBoundStore((state) => state.isLoading);
+  const loaderMessage = useBoundStore((state) => state.loaderMessage);
 
   if (!isLoading) {
     return null;

@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
-
-import { CONFIGURATION_URL } from "../../settings";
+import { CONFIGURATION_URL } from "../../settings.js";
 
 export interface Config {
   latestVersion: string;

@@ -1,12 +1,11 @@
 import React from "react";
 import { Text } from "ink";
 
-import { SEARCH_MIN_CHAR } from "../../../../constants";
-import { useAtom } from "jotai";
-import { showSearchMinCharWarningAtom } from "../../../store/app";
+import { SEARCH_MIN_CHAR } from "../../../../constants.js";
+import { useBoundStore } from "../../../store/index.js";
 
 const SearchWarning: React.FC = () => {
-  const [showSearchMinCharWarning] = useAtom(showSearchMinCharWarningAtom);
+  const showSearchMinCharWarning = useBoundStore((state) => state.showSearchMinCharWarning);
 
   if (!showSearchMinCharWarning) {
     return null;
