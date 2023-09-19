@@ -1,7 +1,6 @@
 import React from "react";
 import { Box } from "ink";
-
-import Spinner from "./Spinner";
+import Spinner from "./Spinner.js";
 
 const SpinnerText: React.FC<{
   children: React.ReactNode;

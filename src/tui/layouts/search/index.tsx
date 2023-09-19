@@ -1,13 +1,13 @@
 import React from "react";
 import { Box } from "ink";
 
-import SearchInput from "./search-input";
-import SearchFilter from "./search-filter";
+import SearchInputMain from "./search-input/index.js";
+import SearchFilter from "./search-filter/index.js";
 
 const Search: React.FC = () => {
   return (
     <Box flexDirection="column">
-      <SearchInput />
+      <SearchInputMain />
       <SearchFilter />
     </Box>
   );

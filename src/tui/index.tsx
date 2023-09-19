@@ -1,15 +1,10 @@
 import React from "react";
-import { render, Box } from "ink";
+import { render } from "ink";
 
-import { ErrorContextProvider } from "./contexts/ErrorContext";
-import { LogContextProvider } from "./contexts/LogContext";
-import { ConfigContextProvider } from "./contexts/ConfigContext";
-import { AppActionContextProvider } from "./contexts/AppActionContext";
-import { LayoutWrapper } from "./layouts/Layout";
-import { LAYOUT_KEY } from "./layouts/keys";
-import App from "./App";
-import { DownloadContextProvider } from "./contexts/DownloadContext";
-import { AppStateContextProvider } from "./contexts/AppStateContext";
+import { LogContextProvider } from "./contexts/LogContext.js";
+import { LayoutWrapper } from "./layouts/Layout.js";
+import { LAYOUT_KEY } from "./layouts/keys.js";
+import App from "./App.js";
 
 export default function renderTUI() {
   const clearANSI: string = process.platform === "win32" ? "u001b[H\u001bc" : "\u001b[2J";
@@ -19,20 +14,10 @@ export default function renderTUI() {
   process.stdout.write(clearANSI);
 
   render(
-    <AppStateContextProvider>
-      <LogContextProvider>
-        <LayoutWrapper initialLayout={LAYOUT_KEY.SEARCH_LAYOUT}>
-          <ErrorContextProvider>
-            <ConfigContextProvider>
-              <DownloadContextProvider>
-                <AppActionContextProvider>
-                  <App />
-                </AppActionContextProvider>
-              </DownloadContextProvider>
-            </ConfigContextProvider>
-          </ErrorContextProvider>
-        </LayoutWrapper>
-      </LogContextProvider>
-    </AppStateContextProvider>
+    <LogContextProvider>
+      <LayoutWrapper initialLayout={LAYOUT_KEY.SEARCH_LAYOUT}>
+        <App />
+      </LayoutWrapper>
+    </LogContextProvider>
   );
 }

@@ -1,10 +1,9 @@
-import Label from "../../labels";
-import Selector from "../selectors";
-import { ThrowError } from "../../tui/contexts/ErrorContext";
+import Label from "../../labels.js";
+import Selector from "../selectors.js";
 
 export function parseDownloadUrls(
   document: Document,
-  throwError: ThrowError
+  throwError: (message: string) => void
 ): string[] | undefined {
   const urls: string[] = [];
 
@@ -53,7 +52,10 @@ export function parseDownloadUrls(
   }
 }
 
-export function findDownloadUrlFromMirror(document: Document, throwError: ThrowError) {
+export function findDownloadUrlFromMirror(
+  document: Document,
+  throwError: (message: string) => void
+) {
   const downloadLinkElement = document.querySelector(Selector.MAIN_DOWNLOAD_URL_SELECTOR);
 
   if (!downloadLinkElement) {

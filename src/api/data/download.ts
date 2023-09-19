@@ -1,7 +1,7 @@
 import contentDisposition from "content-disposition";
-import fs from "fs";
+import * as fs from "fs";
 import { Response } from "node-fetch";
-import { DownloadResult } from "../models/DownloadResult";
+import { DownloadResult } from "../models/DownloadResult.js";
 
 interface downloadFileArgs {
   downloadStream: Response;
@@ -26,6 +26,11 @@ export const downloadFile = async ({
     const file: fs.WriteStream = fs.createWriteStream(path);
     const total = Number(downloadStream.headers.get("content-length") || 0);
     const filename = parsedContentDisposition.parameters.filename;
+
+    if (!downloadStream.body) {
+      //throw error
+      return;
+    }
 
     onStart(filename, total);
 

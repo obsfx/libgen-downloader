@@ -1,10 +1,10 @@
 import React from "react";
-import { Layout } from "./Layout";
-import { LAYOUT_KEY } from "./keys";
-import Search from "./search";
-import ResultList from "./result-list";
-import { ResultListContextProvider } from "../contexts/ResultListContext";
-import Detail from "./detail";
+import { Layout } from "./Layout.js";
+import { LAYOUT_KEY } from "./keys.js";
+import Search from "./search/index.js";
+import ResultList from "./result-list/index.js";
+import { ResultListContextProvider } from "../contexts/ResultListContext.js";
+import Detail from "./detail/index.js";
 
 const Layouts: React.FC = () => {
   return (

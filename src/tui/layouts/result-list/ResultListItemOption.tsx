@@ -2,14 +2,14 @@ import React from "react";
 import { Text, useInput, Key } from "ink";
 import figures from "figures";
 
-import { IResultListItemOption } from "../../../api/models/ListItem";
-import { useAppStateContext } from "../../contexts/AppStateContext";
+import { IResultListItemOption } from "../../../api/models/ListItem.js";
+import { useBoundStore } from "../../store/index.js";
 
 const ResultListItemOption: React.FC<{
   item: IResultListItemOption;
   isActive: boolean;
 }> = ({ item, isActive }) => {
-  const { anyEntryExpanded } = useAppStateContext();
+  const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
 
   useInput(
     (_, key: Key) => {

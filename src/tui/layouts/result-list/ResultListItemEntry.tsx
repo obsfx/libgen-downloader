@@ -2,21 +2,20 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Box, Text, useInput, Key } from "ink";
 import InkSpinner from "ink-spinner";
 import figures from "figures";
-import { IOption } from "../../components/Option";
-import OptionList from "../../components/OptionList";
-import { useErrorContext } from "../../contexts/ErrorContext";
-import { useLogContext } from "../../contexts/LogContext";
-import { useResultListContext } from "../../contexts/ResultListContext";
-import { ResultListEntryOption } from "../../../options";
-import Label from "../../../labels";
-import { parseDownloadUrls } from "../../../api/data/url";
-import { getDocument } from "../../../api/data/document";
-import { IResultListItemEntry } from "../../../api/models/ListItem";
-import { attempt } from "../../../utils";
-import { SEARCH_PAGE_SIZE } from "../../../settings";
-import { useDownloadContext } from "../../contexts/DownloadContext";
-import { useAppStateContext } from "../../contexts/AppStateContext";
-import { StandardDownloadManager } from "../../classes/StandardDownloadManager";
+import { IOption } from "../../components/Option.js";
+import OptionList from "../../components/OptionList.js";
+import { useLogContext } from "../../contexts/LogContext.js";
+import { useResultListContext } from "../../contexts/ResultListContext.js";
+import { ResultListEntryOption } from "../../../options.js";
+import Label from "../../../labels.js";
+import { parseDownloadUrls } from "../../../api/data/url.js";
+import { getDocument } from "../../../api/data/document.js";
+import { IResultListItemEntry } from "../../../api/models/ListItem.js";
+import { attempt } from "../../../utils.js";
+import { SEARCH_PAGE_SIZE } from "../../../settings.js";
+//import { StandardDownloadManager } from "../../classes/StandardDownloadManager.js";
+import { AppEvent, EventManager } from "../../classes/EventEmitterManager.js";
+import { useBoundStore } from "../../store/index.js";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -24,20 +23,24 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const { bulkDownloadMap, downloadQueueMap } = useDownloadContext();
+  const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
+  const isInBulkDownloadQueue = useBoundStore((state) => state.isInBulkDownloadQueue);
+  const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
+  const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
 
-  const { currentPage, setAnyEntryExpanded, setActiveExpandedListLength } = useAppStateContext();
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
+  const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
 
-  const { throwError } = useErrorContext();
   const { pushLog, clearLog } = useLogContext();
 
-  const { handleSeeDetailsOptions, handleBulkDownloadQueueOption, handleTurnBackToTheListOption } =
-    useResultListContext();
+  const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
 
-  const inDownloadQueue = !!downloadQueueMap[item.data.id];
+  const inDownloadQueue = isInDownloadQueue(item.data.id);
+  const inBulkDownloadQueue = isInBulkDownloadQueue(item.data.id);
 
   const entryOptions: Record<string, IOption> = useMemo(
     () => ({
@@ -52,7 +55,9 @@ const ResultListItemEntry: React.FC<{
       [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
         loading: inDownloadQueue,
         label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
-        onSelect: () => StandardDownloadManager.pushToDownloadQueueMap(item.data),
+        onSelect: () => {
+          //StandardDownloadManager.pushToDownloadQueueMap(item.data)
+        },
       },
       [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
         label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
@@ -63,10 +68,17 @@ const ResultListItemEntry: React.FC<{
         },
       },
       [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
-        label: bulkDownloadMap[item.data.id]
+        label: inBulkDownloadQueue
           ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
           : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
-        onSelect: () => handleBulkDownloadQueueOption(item.data),
+        onSelect: () => {
+          if (inBulkDownloadQueue) {
+            removeFromBulkDownloadQueue(item.data.id);
+            return;
+          }
+
+          addToBulkDownloadQueue(item.data);
+        },
       },
       [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
         label: Label.TURN_BACK_TO_THE_LIST,
@@ -75,13 +87,14 @@ const ResultListItemEntry: React.FC<{
     }),
     [
       alternativeDownloadURLs,
-      bulkDownloadMap,
       handleSeeDetailsOptions,
-      handleBulkDownloadQueueOption,
       handleTurnBackToTheListOption,
       item.data,
       setActiveExpandedListLength,
       inDownloadQueue,
+      inBulkDownloadQueue,
+      addToBulkDownloadQueue,
+      removeFromBulkDownloadQueue,
     ]
   );
 
@@ -93,10 +106,10 @@ const ResultListItemEntry: React.FC<{
           [idx]: {
             label: `(${idx + 1}) ${current}`,
             onSelect: () => {
-              StandardDownloadManager.pushToDownloadQueueMap({
-                ...item.data,
-                alternativeDirectDownloadUrl: current,
-              });
+              //StandardDownloadManager.pushToDownloadQueueMap({
+              //  ...item.data,
+              //  alternativeDirectDownloadUrl: current,
+              //});
 
               setShowAlternativeDownloads(false);
               setActiveExpandedListLength(Object.keys(entryOptions).length);
@@ -136,7 +149,7 @@ const ResultListItemEntry: React.FC<{
       const pageDocument = await attempt(
         () => getDocument(item.data.mirror),
         pushLog,
-        throwError,
+        (error) => EventManager.emit(AppEvent.THROW_ERROR, error),
         clearLog
       );
 
@@ -144,7 +157,9 @@ const ResultListItemEntry: React.FC<{
         return;
       }
 
-      const parsedDownloadUrls = parseDownloadUrls(pageDocument, throwError);
+      const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) =>
+        EventManager.emit(AppEvent.THROW_ERROR, error)
+      );
 
       if (!parsedDownloadUrls) {
         return;
@@ -164,7 +179,6 @@ const ResultListItemEntry: React.FC<{
     item.data.mirror,
     pushLog,
     clearLog,
-    throwError,
     setActiveExpandedListLength,
     entryOptions,
     alternativeDownloadURLs,

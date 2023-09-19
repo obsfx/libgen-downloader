@@ -1,13 +1,13 @@
 import React from "react";
 import { Box } from "ink";
-import ContentContainer from "../../components/ContentContainer";
-import DetailRow from "./DetailRow";
-import DetailEntryOptions from "./DetailEntryOptions";
-import UsageInfo from "../../components/UsageInfo";
-import { useAppStateContext } from "../../contexts/AppStateContext";
+import ContentContainer from "../../components/ContentContainer.js";
+import DetailRow from "./DetailRow.js";
+import DetailEntryOptions from "./DetailEntryOptions.js";
+import UsageInfo from "../../components/UsageInfo.js";
+import { useBoundStore } from "../../store/index.js";
 
 const Detail: React.FC = () => {
-  const { detailedEntry } = useAppStateContext();
+  const detailedEntry = useBoundStore((state) => state.detailedEntry);
 
   if (!detailedEntry) {
     return null;

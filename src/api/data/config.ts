@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
-
-import { CONFIGURATION_URL } from "../../settings";
+import { CONFIGURATION_URL } from "../../settings.js";
 
 export interface Config {
   latestVersion: string;
@@ -10,7 +9,7 @@ export interface Config {
   MD5ReqPattern: string;
 }
 
-export async function fetchConfig() {
+export async function fetchConfig(): Promise<Config> {
   try {
     const response = await fetch(CONFIGURATION_URL);
     const json = await response.json();

@@ -1,13 +1,10 @@
 import React, { useCallback, useContext } from "react";
-import { Entry } from "../../api/models/Entry";
-import { useLayoutContext } from "./LayoutContext";
-import { LAYOUT_KEY } from "../layouts/keys";
-import { useDownloadContext } from "./DownloadContext";
-import { useAppStateContext } from "./AppStateContext";
+import { Entry } from "../../api/models/Entry.js";
+import { LAYOUT_KEY } from "../layouts/keys.js";
+import { useBoundStore } from "../store/index.js";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
-  handleBulkDownloadQueueOption: (entry: Entry) => void;
   handleTurnBackToTheListOption: () => void;
   handleDetailTurnBackToTheList: () => void;
 }
@@ -25,9 +22,9 @@ export const useResultListContext = () => {
 export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { bulkDownloadMap, setBulkDownloadMap } = useDownloadContext();
-  const { setDetailedEntry, setAnyEntryExpanded } = useAppStateContext();
-  const { setActiveLayout } = useLayoutContext();
+  const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
+  const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
+  const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
 
   const handleSeeDetailsOptions = useCallback(
     (entry: Entry) => {
@@ -35,24 +32,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
       setActiveLayout(LAYOUT_KEY.DETAIL_LAYOUT);
     },
     [setDetailedEntry, setActiveLayout]
-  );
-
-  const handleBulkDownloadQueueOption = useCallback(
-    (entry: Entry) => {
-      if (bulkDownloadMap[entry.id]) {
-        setBulkDownloadMap((prev) => ({
-          ...prev,
-          [entry.id]: null,
-        }));
-        return;
-      }
-
-      setBulkDownloadMap((prev) => ({
-        ...prev,
-        [entry.id]: entry,
-      }));
-    },
-    [bulkDownloadMap, setBulkDownloadMap]
   );
 
   const handleTurnBackToTheListOption = useCallback(() => {
@@ -68,7 +47,6 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
     <ResultListContext.Provider
       value={{
         handleSeeDetailsOptions,
-        handleBulkDownloadQueueOption,
         handleTurnBackToTheListOption,
         handleDetailTurnBackToTheList,
       }}

@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useDownloadContext } from "../contexts/DownloadContext";
-import { useAppStateContext } from "../contexts/AppStateContext";
+import { useBoundStore } from "../store/index.js";
 
 const ResultListInfo: React.FC = () => {
-  const { bulkDownloadMap } = useDownloadContext();
-  const { searchValue, currentPage } = useAppStateContext();
+  const searchValue = useBoundStore((state) => state.searchValue);
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
 
   return (
     <Box>
@@ -15,10 +15,7 @@ const ResultListInfo: React.FC = () => {
       </Text>
       <Text color="gray">{" | "}</Text>
       <Text wrap="truncate">
-        Bulk download queue:{" "}
-        <Text color="green">
-          {Object.entries(bulkDownloadMap).filter(([_, val]) => val).length}
-        </Text>
+        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntries.length}</Text>
       </Text>
     </Box>
   );

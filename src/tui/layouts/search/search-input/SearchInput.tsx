@@ -1,43 +1,27 @@
-import React, { useCallback, useEffect } from "react";
-import { useFocus } from "ink";
-
-import Input from "../../../components/Input";
-import { useAppActionContext } from "../../../contexts/AppActionContext";
-import { useLayoutContext } from "../../../contexts/LayoutContext";
-import { SEARCH_MIN_CHAR } from "../../../../constants";
-import { LAYOUT_KEY } from "../../keys";
-import { useAppStateContext } from "../../../contexts/AppStateContext";
+import React from "react";
+import Input from "../../../components/Input.js";
+import { SEARCH_MIN_CHAR } from "../../../../constants.js";
+import { useBoundStore } from "../../../store/index.js";
 
 const SearchInput: React.FC = () => {
-  const { searchValue, setSearchValue, showSearchMinCharWarning, setShowSearchMinCharWarning } =
-    useAppStateContext();
+  const searchValue = useBoundStore((state) => state.searchValue);
+  const setSearchValue = useBoundStore((state) => state.setSearchValue);
+  const currentPage = useBoundStore((state) => state.currentPage);
+  const search = useBoundStore((state) => state.search);
 
-  const { handleSearch } = useAppActionContext();
-
-  const { setActiveLayout } = useLayoutContext();
-
-  const { isFocused } = useFocus({ autoFocus: true });
-
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = () => {
     if (searchValue.length < SEARCH_MIN_CHAR) {
-      setShowSearchMinCharWarning(true);
       return;
     }
+    console.log("SearchInput: handleSubmit: searchValue: ", searchValue);
+    search(searchValue, currentPage);
+  };
 
-    await handleSearch();
-    setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
-  }, [searchValue, setShowSearchMinCharWarning, handleSearch, setActiveLayout]);
-
-  useEffect(() => {
-    if (showSearchMinCharWarning && searchValue.length >= SEARCH_MIN_CHAR) {
-      setShowSearchMinCharWarning(false);
-    }
-  }, [searchValue, showSearchMinCharWarning, setShowSearchMinCharWarning]);
   return (
     <Input
       label="Search"
       placeholder={`Search string must contain minimum ${SEARCH_MIN_CHAR} characters.`}
-      isFocused={isFocused}
+      isFocused={true}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
       onSubmit={handleSubmit}

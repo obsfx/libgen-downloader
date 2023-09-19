@@ -1,13 +1,13 @@
-import { Entry } from "./api/models/Entry";
-import { ListItem, IResultListItemType } from "./api/models/ListItem";
+import { Entry } from "./api/models/Entry.js";
+import { ListItem, IResultListItemType } from "./api/models/ListItem.js";
 import {
   MIN_RESULT_LIST_LENGTH,
   RESULT_LIST_ACTIVE_LIST_INDEX,
   RESULT_LIST_LENGTH,
-} from "./constants";
-import { Option } from "./options";
-import Label from "./labels";
-import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings";
+} from "./constants.js";
+import { Option } from "./options.js";
+import Label from "./labels.js";
+import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings.js";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -19,13 +19,14 @@ export function delay(ms: number): Promise<void> {
 
 export async function attempt<T>(
   cb: () => Promise<T>,
-  onFail: (message: string) => void,
-  onError: (message: string) => void,
+  onFail?: (message: string) => void,
+  onError?: (message: string) => void,
   onComplete?: () => void
 ): Promise<T | null> {
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
     try {
       const result = await cb();
+      console.log("attempt success", result);
 
       if (onComplete) {
         onComplete();
@@ -33,10 +34,14 @@ export async function attempt<T>(
 
       return result;
     } catch (e: unknown) {
-      onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      if (onFail) {
+        onFail(`Request failed, trying again ${i + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      }
       await delay(FAIL_REQ_ATTEMPT_DELAY_MS);
       if (i + 1 === FAIL_REQ_ATTEMPT_COUNT) {
-        onError((e as Error)?.message);
+        if (onError) {
+          onError((e as Error)?.message);
+        }
       }
     }
   }
@@ -107,6 +112,7 @@ export const constructListItems = ({
 };
 
 export const getRenderedListItems = (
+  cursor: number,
   listItems: ListItem[],
   anyEntryExpanded: boolean,
   activeExpandedListLength: number
@@ -115,7 +121,16 @@ export const getRenderedListItems = (
     MIN_RESULT_LIST_LENGTH,
     anyEntryExpanded ? RESULT_LIST_LENGTH - activeExpandedListLength : RESULT_LIST_LENGTH
   );
-  const renderedItems = listItems.slice(0, renderedItemsLimit);
+  const renderedItems: ListItem[] = [];
+
+  for (let i = 0; i < renderedItemsLimit; i++) {
+    if (i >= listItems.length) {
+      break;
+    }
+
+    const itemIndex = (cursor + i) % listItems.length;
+    renderedItems.push(listItems[itemIndex]);
+  }
 
   return renderedItems;
 };
