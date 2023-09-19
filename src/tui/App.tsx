@@ -3,7 +3,10 @@ import { useStdin, Box } from "ink";
 
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
-// [ ] Download queue
+// [x] Download queue
+// [ ] Move download progress to entry item
+// [ ] Result list skeleton loader getting results
+// [ ] better download status
 // [ ] Bulk download queue
 // [ ] Remove unsued imports and code
 // [ ] check double press search is causing issues

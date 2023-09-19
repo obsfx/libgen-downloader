@@ -8,12 +8,14 @@ import { LAYOUT_KEY } from "../keys.js";
 import { useBoundStore } from "../../store/index.js";
 
 const DetailEntryOptions: React.FC = () => {
-  const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
 
-  const inDownloadQueue = detailedEntry ? isInDownloadQueue(detailedEntry.id) : false;
+  const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
+  const inDownloadQueue = detailedEntry
+    ? inDownloadQueueEntryIds.includes(detailedEntry.id)
+    : false;
 
   const detailOptions: Record<string, IOption> = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {

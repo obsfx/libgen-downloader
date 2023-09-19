@@ -1,7 +1,12 @@
 import { StateCreator } from "zustand";
+import fetch from "node-fetch";
 import { TCombinedStore } from "./index.js";
 import { Entry } from "../../api/models/Entry.js";
 import { DownloadStatus } from "../../download-statuses.js";
+import { attempt } from "../../utils.js";
+import { getDocument } from "../../api/data/document.js";
+import { findDownloadUrlFromMirror } from "../../api/data/url.js";
+import { downloadFile } from "../../api/data/download.js";
 
 export interface IDownloadQueueState {
   downloadQueue: Entry[];
@@ -16,14 +21,15 @@ export interface IDownloadQueueState {
   totalDownloaded: number;
   totalFailed: number;
 
-  isInDownloadQueue: (entryId: string) => boolean;
   pushDownloadQueue: (entry: Entry) => void;
-  popDownloadQueue: () => Entry | undefined;
+  consumeDownloadQueue: () => Entry | undefined;
+  removeEntryIdFromDownloadQueue: (entryId: string) => void;
+  iterateQueue: () => Promise<void>;
   updateDownloadQueueStatus: (status: DownloadStatus) => void;
-  updateCurrentDownloadProgress: (filename: string, progress: number, total: number) => void;
-  updateTotalAddedToDownloadQueue: (total: number) => void;
-  updateTotalDownloaded: (total: number) => void;
-  updateTotalFailed: (total: number) => void;
+  updateCurrentDownloadProgress: (filename: string, progress: number | null, total: number) => void;
+  increaseTotalAddedToDownloadQueue: () => void;
+  increaseTotalDownloaded: () => void;
+  increaseTotalFailed: () => void;
 }
 
 export const initialDownloadQueueState = {
@@ -48,14 +54,10 @@ export const createDownloadQueueStateSlice: StateCreator<
 > = (set, get) => ({
   ...initialDownloadQueueState,
 
-  isInDownloadQueue: (entryId: string) => {
-    const store = get();
-    return store.inDownloadQueueEntryIds.includes(entryId);
-  },
   pushDownloadQueue: (entry: Entry) => {
     const store = get();
 
-    if (store.isInDownloadQueue(entry.id)) {
+    if (store.inDownloadQueueEntryIds.includes(entry.id)) {
       return;
     }
 
@@ -63,8 +65,20 @@ export const createDownloadQueueStateSlice: StateCreator<
       downloadQueue: [...store.downloadQueue, entry],
       inDownloadQueueEntryIds: [...store.inDownloadQueueEntryIds, entry.id],
     });
+
+    store.increaseTotalAddedToDownloadQueue();
+
+    if (
+      store.downloadQueueStatus !== DownloadStatus.IDLE &&
+      store.downloadQueueStatus !== DownloadStatus.DONE
+    ) {
+      return;
+    }
+
+    store.iterateQueue();
   },
-  popDownloadQueue: () => {
+
+  consumeDownloadQueue: () => {
     const store = get();
 
     if (store.downloadQueue.length < 1) {
@@ -75,13 +89,79 @@ export const createDownloadQueueStateSlice: StateCreator<
 
     set({
       downloadQueue: store.downloadQueue.slice(1, store.downloadQueue.length),
-      inDownloadQueueEntryIds: store.inDownloadQueueEntryIds.slice(
-        1,
-        store.inDownloadQueueEntryIds.length
-      ),
     });
 
     return entry;
+  },
+
+  removeEntryIdFromDownloadQueue: (entryId: string) => {
+    const store = get();
+    set({
+      inDownloadQueueEntryIds: store.inDownloadQueueEntryIds.filter((id) => id !== entryId),
+    });
+  },
+
+  iterateQueue: async () => {
+    const store = get();
+
+    while (true) {
+      const entry = store.consumeDownloadQueue();
+      if (!entry) {
+        break;
+      }
+
+      store.updateDownloadQueueStatus(DownloadStatus.CONNECTING_TO_LIBGEN);
+
+      let downloadUrl: string | null | undefined = "";
+      if (entry.alternativeDirectDownloadUrl !== undefined) {
+        downloadUrl = entry.alternativeDirectDownloadUrl;
+      } else {
+        const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
+
+        if (!mirrorPageDocument) {
+          // throw some error
+          continue;
+        }
+
+        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, (message) => {
+          // throw some error
+          console.log(message);
+        });
+      }
+
+      if (!downloadUrl) {
+        // throw some error
+        continue;
+      }
+
+      const downloadStream = await attempt(() => fetch(downloadUrl as string));
+      if (!downloadStream) {
+        // throw some error
+        continue;
+      }
+
+      try {
+        store.updateDownloadQueueStatus(DownloadStatus.DOWNLOADING);
+
+        await downloadFile({
+          downloadStream,
+          onStart: (filename, total) => {
+            store.updateCurrentDownloadProgress(filename, null, total);
+          },
+          onData: (filename, chunk, total) => {
+            store.updateCurrentDownloadProgress(filename, chunk.length, total);
+          },
+        });
+
+        store.increaseTotalDownloaded();
+        store.removeEntryIdFromDownloadQueue(entry.id);
+      } catch (error) {
+        // throw some error
+        store.increaseTotalFailed();
+      }
+    }
+
+    store.updateDownloadQueueStatus(DownloadStatus.DONE);
   },
 
   updateDownloadQueueStatus: (status: DownloadStatus) => {
@@ -90,31 +170,31 @@ export const createDownloadQueueStateSlice: StateCreator<
     });
   },
 
-  updateCurrentDownloadProgress: (filename: string, progress: number, total: number) => {
-    set({
+  updateCurrentDownloadProgress: (filename: string, progress: number | null, total: number) => {
+    set((prev) => ({
       currentDownloadProgress: {
         filename,
-        progress,
+        progress: progress === null ? 0 : prev.currentDownloadProgress.progress + progress,
         total,
       },
-    });
+    }));
   },
 
-  updateTotalAddedToDownloadQueue: (total: number) => {
-    set({
-      totalAddedToDownloadQueue: total,
-    });
+  increaseTotalAddedToDownloadQueue: () => {
+    set((prev) => ({
+      totalAddedToDownloadQueue: prev.totalAddedToDownloadQueue + 1,
+    }));
   },
 
-  updateTotalDownloaded: (total: number) => {
-    set({
-      totalDownloaded: total,
-    });
+  increaseTotalDownloaded: () => {
+    set((prev) => ({
+      totalDownloaded: prev.totalDownloaded + 1,
+    }));
   },
 
-  updateTotalFailed: (total: number) => {
-    set({
-      totalFailed: total,
-    });
+  increaseTotalFailed: () => {
+    set((prev) => ({
+      totalFailed: prev.totalFailed + 1,
+    }));
   },
 });

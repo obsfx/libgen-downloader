@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Box, Text, useInput, Key } from "ink";
-import InkSpinner from "ink-spinner";
 import figures from "figures";
 import { IOption } from "../../components/Option.js";
 import OptionList from "../../components/OptionList.js";
@@ -13,7 +12,6 @@ import { getDocument } from "../../../api/data/document.js";
 import { IResultListItemEntry } from "../../../api/models/ListItem.js";
 import { attempt } from "../../../utils.js";
 import { SEARCH_PAGE_SIZE } from "../../../settings.js";
-//import { StandardDownloadManager } from "../../classes/StandardDownloadManager.js";
 import { AppEvent, EventManager } from "../../classes/EventEmitterManager.js";
 import { useBoundStore } from "../../store/index.js";
 
@@ -23,24 +21,23 @@ const ResultListItemEntry: React.FC<{
   isExpanded: boolean;
   isFadedOut: boolean;
 }> = ({ item, isActive, isExpanded, isFadedOut }) => {
-  const isInDownloadQueue = useBoundStore((state) => state.isInDownloadQueue);
-  const isInBulkDownloadQueue = useBoundStore((state) => state.isInBulkDownloadQueue);
   const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
   const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
-
   const currentPage = useBoundStore((state) => state.currentPage);
   const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
   const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
+  const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
 
   const { pushLog, clearLog } = useLogContext();
-
   const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
-
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
 
-  const inDownloadQueue = isInDownloadQueue(item.data.id);
-  const inBulkDownloadQueue = isInBulkDownloadQueue(item.data.id);
+  const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
+  const inDownloadQueue = inDownloadQueueEntryIds.includes(item.data.id);
+
+  const bulkDownloadSelectedEntryIds = useBoundStore((state) => state.bulkDownloadSelectedEntryIds);
+  const inBulkDownloadQueue = bulkDownloadSelectedEntryIds.includes(item.data.id);
 
   const entryOptions: Record<string, IOption> = useMemo(
     () => ({
@@ -56,7 +53,7 @@ const ResultListItemEntry: React.FC<{
         loading: inDownloadQueue,
         label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
         onSelect: () => {
-          //StandardDownloadManager.pushToDownloadQueueMap(item.data)
+          pushDownloadQueue(item.data);
         },
       },
       [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
@@ -106,11 +103,10 @@ const ResultListItemEntry: React.FC<{
           [idx]: {
             label: `(${idx + 1}) ${current}`,
             onSelect: () => {
-              //StandardDownloadManager.pushToDownloadQueueMap({
-              //  ...item.data,
-              //  alternativeDirectDownloadUrl: current,
-              //});
-
+              pushDownloadQueue({
+                ...item.data,
+                alternativeDirectDownloadUrl: current,
+              });
               setShowAlternativeDownloads(false);
               setActiveExpandedListLength(Object.keys(entryOptions).length);
             },
@@ -194,11 +190,7 @@ const ResultListItemEntry: React.FC<{
       >
         {isActive && !isExpanded && figures.pointer} [
         {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
-        {inDownloadQueue && (
-          <Text color="green">
-            <InkSpinner type="dots" />{" "}
-          </Text>
-        )}
+        {inDownloadQueue && <Text color="yellow">(In download queue) </Text>}
         <Text color={isFadedOut ? "gray" : "green"} bold={true}>
           {item.data.extension}
         </Text>{" "}

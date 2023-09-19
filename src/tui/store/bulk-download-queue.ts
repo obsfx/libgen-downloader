@@ -16,9 +16,9 @@ export interface IBulkDownloadQueueState {
   bulkDownloadSelectedEntryIds: string[];
   bulkDownloadQueue: IBulkDownloadQueueItem[];
 
-  isInBulkDownloadQueue: (entryId: string) => boolean;
   addToBulkDownloadQueue: (entry: Entry) => void;
   removeFromBulkDownloadQueue: (entryId: string) => void;
+  removeEntryIdFromBulkDownloadQueue: (entryId: string) => void;
 }
 
 export const initialBulkDownloadQueueState = {
@@ -35,14 +35,10 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
 > = (set, get) => ({
   ...initialBulkDownloadQueueState,
 
-  isInBulkDownloadQueue: (entryId: string) => {
-    const store = get();
-    return store.bulkDownloadSelectedEntryIds.includes(entryId);
-  },
   addToBulkDownloadQueue: (entry: Entry) => {
     const store = get();
 
-    if (store.isInBulkDownloadQueue(entry.id)) {
+    if (store.bulkDownloadSelectedEntryIds.includes(entry.id)) {
       return;
     }
 
@@ -54,7 +50,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
   removeFromBulkDownloadQueue: (entryId: string) => {
     const store = get();
 
-    if (!store.isInBulkDownloadQueue(entryId)) {
+    if (!store.bulkDownloadSelectedEntryIds.includes(entryId)) {
       return;
     }
 
@@ -62,6 +58,12 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
       bulkDownloadSelectedEntries: store.bulkDownloadSelectedEntries.filter(
         (entry) => entry.id !== entryId
       ),
+    });
+  },
+
+  removeEntryIdFromBulkDownloadQueue: (entryId: string) => {
+    const store = get();
+    set({
       bulkDownloadSelectedEntryIds: store.bulkDownloadSelectedEntryIds.filter(
         (id) => id !== entryId
       ),
