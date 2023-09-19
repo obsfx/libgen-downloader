@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import { useStdin, Box } from "ink";
 
 // TODO:
-// - Drop nextPageEntries and use only general entry cache
-// - Download queue
-// - Bulk download queue
-// - Remove unsued imports and code
-// - check double press search is causing issues
+// [x] Drop nextPageEntries and use only general entry cache
+// [ ] Download queue
+// [ ] Bulk download queue
+// [ ] Remove unsued imports and code
+// [ ] check double press search is causing issues
+// [ ] proper error handling
 
 import Layouts from "./layouts/index.js";
 import { DownloadIndicator } from "./components/DownloadIndicator.js";
@@ -29,8 +30,6 @@ const App: React.FC = () => {
   const isLoading = useBoundStore((state) => state.isLoading);
   const errorMessage = useBoundStore((state) => state.errorMessage);
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
-
-  console.log("App rendered", renderCount++);
 
   useEffect(() => {
     fetchConfig();

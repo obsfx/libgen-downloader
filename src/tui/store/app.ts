@@ -22,7 +22,6 @@ export interface IAppState {
   filters: FilterRecord;
   detailedEntry: Entry | null;
   entries: Entry[];
-  cachedNextPageEntries: Entry[];
   listItems: ListItem[];
   activeLayout: LAYOUT_KEY;
 
@@ -40,7 +39,6 @@ export interface IAppState {
   setFilters: (filters: FilterRecord) => void;
   setDetailedEntry: (detailedEntry: Entry | null) => void;
   setEntries: (entries: Entry[]) => void;
-  setCachedNextPageEntries: (cachedNextPageEntries: Entry[]) => void;
   setActiveLayout: (activeLayout: LAYOUT_KEY) => void;
 
   resetAppState: () => void;
@@ -62,7 +60,6 @@ export const initialAppState = {
   filters: {} as FilterRecord,
   detailedEntry: null,
   entries: [],
-  cachedNextPageEntries: [],
   listItems: [],
   activeLayout: LAYOUT_KEY.SEARCH_LAYOUT,
 };
@@ -92,7 +89,7 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     const listItems = constructListItems({
       entries,
       currentPage: store.currentPage,
-      nextPageEntries: store.cachedNextPageEntries,
+      isNextPageAvailable: (store.entryCacheMap[store.currentPage + 1] || []).length > 0,
       handleSearchOption: () => store.search(store.searchValue, store.currentPage + 1),
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,
@@ -105,7 +102,6 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     });
     set({ entries, listItems });
   },
-  setCachedNextPageEntries: (cachedNextPageEntries: Entry[]) => set({ cachedNextPageEntries }),
   setActiveLayout: (activeLayout: LAYOUT_KEY) => set({ activeLayout }),
 
   resetAppState: () => set(initialAppState),

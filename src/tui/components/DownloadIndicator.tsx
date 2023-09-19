@@ -67,8 +67,6 @@ export const DownloadIndicator: React.FC = () => {
     standard: "jedec",
   });
 
-  console.log("DownloadIndicator rendered");
-
   if (totalAddedToDownloadQueue === 0) {
     return null;
   }

@@ -35,8 +35,6 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       return cachedEntries;
     }
 
-    console.log("1");
-
     const searchURL = constructSearchURL({
       query,
       mirror: store.mirror,
@@ -45,16 +43,11 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       searchReqPattern: store.searchReqPattern,
     });
 
-    console.log("2");
-
     const pageDocument = await attempt(() => getDocument(searchURL));
-    console.log(pageDocument);
     if (!pageDocument) {
       // throw error
       return [];
     }
-
-    console.log("3");
 
     const entries = parseEntries(pageDocument);
     if (!entries) {
@@ -68,29 +61,37 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
   handleSearchSubmit: async () => {
     const store = get();
 
+    store.setIsLoading(true);
+    store.setLoaderMessage(Label.GETTING_RESULTS);
+
     if (store.searchValue.length < 3) {
       return;
     }
 
     const entries = await store.search(store.searchValue, store.currentPage);
-    store.setEntries(entries);
+    // search to cache next page
     await store.search(store.searchValue, store.currentPage + 1);
+    store.setIsLoading(false);
+    store.setEntries(entries);
     store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
   },
   nextPage: async () => {
     const store = get();
+
     store.setIsLoading(true);
     store.setLoaderMessage(Label.GETTING_RESULTS);
 
-    if (store.cachedNextPageEntries.length === 0) {
-      store.setIsLoading(false);
-      return;
+    let entries = store.entryCacheMap[store.currentPage + 1] || [];
+    if (entries.length === 0) {
+      entries = await store.search(store.searchValue, store.currentPage + 1);
     }
 
-    store.setEntries(store.cachedNextPageEntries);
-    const nextPageEntries = await store.search(store.searchValue, store.currentPage + 2);
-    store.setCachedNextPageEntries(nextPageEntries);
+    // search to cache next page
+    await store.search(store.searchValue, store.currentPage + 2);
+
+    // It is important to set entries after the search cause of caching controls
     store.setCurrentPage(store.currentPage + 1);
+    store.setEntries(entries);
     store.setListItemsCursor(0);
     store.setIsLoading(false);
   },
@@ -104,10 +105,12 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       return;
     }
 
-    store.setCachedNextPageEntries(store.entries);
+    // search retrives from cache
     const prevPageEntries = await store.search(store.searchValue, store.currentPage - 1);
-    store.setEntries(prevPageEntries);
+
+    // It is important to set entries after the search cause of caching controls
     store.setCurrentPage(store.currentPage - 1);
+    store.setEntries(prevPageEntries);
     store.setListItemsCursor(0);
     store.setIsLoading(false);
   },

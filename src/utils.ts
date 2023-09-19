@@ -26,7 +26,6 @@ export async function attempt<T>(
   for (let i = 0; i < FAIL_REQ_ATTEMPT_COUNT; i++) {
     try {
       const result = await cb();
-      console.log("attempt success", result);
 
       if (onComplete) {
         onComplete();
@@ -60,7 +59,7 @@ export const createOptionItem = (id: string, label: string, onSelect: () => void
 interface constructInitialListItemsArgs {
   entries: Entry[];
   currentPage: number;
-  nextPageEntries: Entry[];
+  isNextPageAvailable: boolean;
   handleSearchOption: () => void;
   handleNextPageOption: () => void;
   handlePrevPageOption: () => void;
@@ -71,7 +70,7 @@ interface constructInitialListItemsArgs {
 export const constructListItems = ({
   entries,
   currentPage,
-  nextPageEntries,
+  isNextPageAvailable,
   handleSearchOption,
   handleNextPageOption,
   handlePrevPageOption,
@@ -92,7 +91,7 @@ export const constructListItems = ({
 
     createOptionItem(Option.SEARCH, Label.SEARCH, handleSearchOption),
 
-    ...(nextPageEntries.length > 0
+    ...(isNextPageAvailable
       ? [createOptionItem(Option.NEXT_PAGE, Label.NEXT_PAGE, handleNextPageOption)]
       : []),
 
