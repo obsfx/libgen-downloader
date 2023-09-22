@@ -28,6 +28,9 @@ const ResultListItemEntry: React.FC<{
   const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
   const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
+  const fetchEntryAlternativeDownloadURLs = useBoundStore(
+    (state) => state.fetchEntryAlternativeDownloadURLs
+  );
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = inDownloadQueueEntryIds.includes(item.data.id);
@@ -46,90 +49,74 @@ const ResultListItemEntry: React.FC<{
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
 
-  const entryOptions: Record<string, IOption> = useMemo(
-    () => ({
-      [ResultListEntryOption.SEE_DETAILS]: {
-        label: Label.SEE_DETAILS,
-        onSelect: () =>
-          handleSeeDetailsOptions({
-            ...item.data,
-            downloadUrls: alternativeDownloadURLs,
-          }),
+  const entryOptions: Record<string, IOption> = {
+    [ResultListEntryOption.SEE_DETAILS]: {
+      label: Label.SEE_DETAILS,
+      onSelect: () =>
+        handleSeeDetailsOptions({
+          ...item.data,
+          downloadUrls: alternativeDownloadURLs,
+        }),
+    },
+    [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
+      loading: inDownloadQueue,
+      label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+      onSelect: () => {
+        pushDownloadQueue(item.data);
       },
-      [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
-        loading: inDownloadQueue,
-        label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
-        onSelect: () => {
-          pushDownloadQueue(item.data);
-        },
+    },
+    [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
+      label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
+      loading: alternativeDownloadURLs.length === 0 || inDownloadQueue,
+      onSelect: () => {
+        setActiveExpandedListLength(alternativeDownloadURLs.length + 1);
+        setShowAlternativeDownloads(true);
       },
-      [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
-        label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
-        loading: alternativeDownloadURLs.length === 0 || inDownloadQueue,
-        onSelect: () => {
-          setActiveExpandedListLength(alternativeDownloadURLs.length + 1);
-          setShowAlternativeDownloads(true);
-        },
-      },
-      [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
-        label: inBulkDownloadQueue
-          ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
-          : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
-        onSelect: () => {
-          if (inBulkDownloadQueue) {
-            removeFromBulkDownloadQueue(item.data.id);
-            return;
-          }
+    },
+    [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
+      label: inBulkDownloadQueue
+        ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
+        : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      onSelect: () => {
+        if (inBulkDownloadQueue) {
+          removeFromBulkDownloadQueue(item.data.id);
+          return;
+        }
 
-          addToBulkDownloadQueue(item.data);
-        },
+        addToBulkDownloadQueue(item.data);
       },
-      [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
-        label: Label.TURN_BACK_TO_THE_LIST,
-        onSelect: handleTurnBackToTheListOption,
-      },
-    }),
-    [
-      alternativeDownloadURLs,
-      handleSeeDetailsOptions,
-      handleTurnBackToTheListOption,
-      item.data,
-      setActiveExpandedListLength,
-      inDownloadQueue,
-      inBulkDownloadQueue,
-      addToBulkDownloadQueue,
-      removeFromBulkDownloadQueue,
-    ]
-  );
+    },
+    [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
+      label: Label.TURN_BACK_TO_THE_LIST,
+      onSelect: handleTurnBackToTheListOption,
+    },
+  };
 
-  const alternativeDownloadOptions = useMemo(
-    () => ({
-      ...alternativeDownloadURLs.reduce<Record<string, IOption>>((prev, current, idx) => {
-        return {
-          ...prev,
-          [idx]: {
-            label: `(${idx + 1}) ${current}`,
-            onSelect: () => {
-              pushDownloadQueue({
-                ...item.data,
-                alternativeDirectDownloadUrl: current,
-              });
-              setShowAlternativeDownloads(false);
-              setActiveExpandedListLength(Object.keys(entryOptions).length);
-            },
+  const alternativeDownloadOptions = {
+    ...alternativeDownloadURLs.reduce<Record<string, IOption>>((prev, current, idx) => {
+      return {
+        ...prev,
+        [idx]: {
+          label: `(${idx + 1}) ${current}`,
+          onSelect: () => {
+            pushDownloadQueue({
+              ...item.data,
+              alternativeDirectDownloadUrl: current,
+            });
+            setShowAlternativeDownloads(false);
+            setActiveExpandedListLength(Object.keys(entryOptions).length);
           },
-        };
-      }, {}),
-      [ResultListEntryOption.BACK_TO_ENTRY_OPTIONS]: {
-        label: Label.BACK_TO_ENTRY_OPTIONS,
-        onSelect: () => {
-          setShowAlternativeDownloads(false);
-          setActiveExpandedListLength(Object.keys(entryOptions).length);
         },
+      };
+    }, {}),
+    [ResultListEntryOption.BACK_TO_ENTRY_OPTIONS]: {
+      label: Label.BACK_TO_ENTRY_OPTIONS,
+      onSelect: () => {
+        setShowAlternativeDownloads(false);
+        setActiveExpandedListLength(Object.keys(entryOptions).length);
       },
-    }),
-    [alternativeDownloadURLs, setActiveExpandedListLength, entryOptions, item.data]
-  );
+    },
+  };
 
   useInput(
     (_, key: Key) => {
@@ -142,53 +129,17 @@ const ResultListItemEntry: React.FC<{
   );
 
   useEffect(() => {
-    let isMounted = true;
-
     if (!isExpanded || alternativeDownloadURLs.length > 0) {
       return;
     }
 
     const fetchDownloadUrls = async () => {
-      const pageDocument = await attempt(
-        () => getDocument(item.data.mirror),
-        pushLog,
-        (error) => {
-          //throw new Error(error);
-        },
-        clearLog
-      );
-
-      if (!pageDocument || !isMounted) {
-        return;
-      }
-
-      const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) => {
-        //throw new Error(error);
-      });
-
-      if (!parsedDownloadUrls) {
-        return;
-      }
-
-      setAlternativeDownloadURLs(parsedDownloadUrls);
+      const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(item.data);
+      setAlternativeDownloadURLs(alternativeDownloadURLs);
     };
 
     fetchDownloadUrls();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    isExpanded,
-    item.data,
-    item.data.mirror,
-    pushLog,
-    clearLog,
-    setActiveExpandedListLength,
-    entryOptions,
-    alternativeDownloadURLs,
-    handleSeeDetailsOptions,
-  ]);
+  }, [isExpanded, item.data]);
 
   return (
     <Box flexDirection="column" paddingLeft={isExpanded ? 1 : 0}>

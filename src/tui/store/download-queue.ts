@@ -173,13 +173,17 @@ export const createDownloadQueueStateSlice: StateCreator<
         });
 
         store.increaseTotalDownloaded();
-        store.removeEntryIdFromDownloadQueue(entry.id);
         store.updateCurrentDownloadProgress(entry.id, {
           status: DownloadStatus.DONE,
         });
       } catch (error) {
         // throw some error
         store.increaseTotalFailed();
+        store.updateCurrentDownloadProgress(entry.id, {
+          status: DownloadStatus.FAILED,
+        });
+      } finally {
+        store.removeEntryIdFromDownloadQueue(entry.id);
       }
     }
 

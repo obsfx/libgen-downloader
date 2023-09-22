@@ -6,10 +6,14 @@ export interface ICacheState {
   entryCacheMap: Record<number, Entry[]>;
   setEntryCacheMap: (pageNumber: number, entryList: Entry[]) => void;
   resetEntryCacheMap: () => void;
+
+  alternativeDownloadURLsCacheMap: Record<string, string[]>;
+  setAlternativeDownloadURLsCacheMap: (entryId: string, urlList: string[]) => void;
 }
 
 export const initialCacheState = {
   entryCacheMap: {},
+  alternativeDownloadURLsCacheMap: {},
 };
 
 export const createCacheStateSlice: StateCreator<TCombinedStore, [], [], ICacheState> = (
@@ -33,5 +37,16 @@ export const createCacheStateSlice: StateCreator<TCombinedStore, [], [], ICacheS
     set({
       entryCacheMap: {},
     });
+  },
+
+  setAlternativeDownloadURLsCacheMap: (entryId: string, urlList: string[]) => {
+    const store = get();
+
+    const alternativeDownloadURLsCacheMap = {
+      ...store.alternativeDownloadURLsCacheMap,
+      [entryId]: urlList,
+    };
+
+    set({ alternativeDownloadURLsCacheMap });
   },
 });

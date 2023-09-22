@@ -7,12 +7,15 @@ import { useStdin, Box } from "ink";
 // [ ] Move result list logic to zustand
 // [ ] Move result list entry logic to zustand
 // [ ] Move download progress to entry item
-// [ ] Result list skeleton loader getting results
+// [x] Result list skeleton loader getting results
+// [x] Entry detail download progress
+// [x] Alternative download cache map
 // [ ] better download status
 // [ ] Bulk download queue
 // [ ] Remove unsued imports and code
 // [ ] check double press search is causing issues
 // [ ] proper error handling
+// [ ] disable alternative downloads if no alternative downloads
 
 import Layouts from "./layouts/index.js";
 import { DownloadIndicator } from "./components/DownloadIndicator.js";

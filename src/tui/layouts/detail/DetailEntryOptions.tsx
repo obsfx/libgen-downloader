@@ -4,13 +4,13 @@ import OptionList from "../../components/OptionList.js";
 import { DetailEntryOption } from "../../../options.js";
 import Label from "../../../labels.js";
 import { LAYOUT_KEY } from "../keys.js";
-//import { StandardDownloadManager } from "../../classes/StandardDownloadManager.js";
 import { useBoundStore } from "../../store/index.js";
 
 const DetailEntryOptions: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
+  const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = detailedEntry
@@ -30,13 +30,13 @@ const DetailEntryOptions: React.FC = () => {
       label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
       onSelect: () => {
         if (detailedEntry) {
-          //StandardDownloadManager.pushToDownloadQueueMap(detailedEntry);
+          pushDownloadQueue(detailedEntry);
         }
       },
     },
     [DetailEntryOption.ALTERNATIVE_DOWNLOADS]: {
       loading: inDownloadQueue,
-      label: Label.ALTERNATIVE_DOWNLOADS,
+      label: `${Label.ALTERNATIVE_DOWNLOADS} (${(detailedEntry?.downloadUrls || []).length})`,
       onSelect: () => setShowAlternativeDownloads(true),
     },
     [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
@@ -54,11 +54,10 @@ const DetailEntryOptions: React.FC = () => {
           label: `(${idx + 1}) ${current}`,
           onSelect: () => {
             if (detailedEntry) {
-              //StandardDownloadManager.pushToDownloadQueueMap({
-              //  ...detailedEntry,
-              //  alternativeDirectDownloadUrl: current,
-              //});
-
+              pushDownloadQueue({
+                ...detailedEntry,
+                alternativeDirectDownloadUrl: current,
+              });
               setShowAlternativeDownloads(false);
             }
           },

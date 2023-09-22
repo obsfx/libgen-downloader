@@ -7,6 +7,7 @@ import { constructSearchURL, parseEntries } from "../../api/data/search.js";
 import { SEARCH_PAGE_SIZE } from "../../settings.js";
 import { attempt } from "../../utils.js";
 import { getDocument } from "../../api/data/document.js";
+import { parseDownloadUrls } from "../../api/data/url.js";
 
 export interface IEventActions {
   backToSearch: () => void;
@@ -14,6 +15,7 @@ export interface IEventActions {
   handleSearchSubmit: () => Promise<void>;
   nextPage: () => Promise<void>;
   prevPage: () => Promise<void>;
+  fetchEntryAlternativeDownloadURLs: (entry: Entry) => Promise<string[]>;
 }
 
 export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEventActions> = (
@@ -114,5 +116,31 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
     store.setEntries(prevPageEntries);
     store.setListItemsCursor(0);
     store.setIsLoading(false);
+  },
+
+  fetchEntryAlternativeDownloadURLs: async (entry: Entry) => {
+    const store = get();
+
+    const cachedAlternativeDownloadURLs = store.alternativeDownloadURLsCacheMap[entry.id];
+    if (cachedAlternativeDownloadURLs) {
+      return cachedAlternativeDownloadURLs;
+    }
+
+    const pageDocument = await attempt(() => getDocument(entry.mirror));
+    if (!pageDocument) {
+      // throw error
+      return [];
+    }
+
+    const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) => {
+      //throw new Error(error);
+    });
+    if (!parsedDownloadUrls) {
+      // throw error
+      return [];
+    }
+
+    store.setAlternativeDownloadURLsCacheMap(entry.id, parsedDownloadUrls);
+    return parsedDownloadUrls;
   },
 });
