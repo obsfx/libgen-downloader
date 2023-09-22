@@ -16,7 +16,6 @@ import { useStdin, Box } from "ink";
 
 import Layouts from "./layouts/index.js";
 import { DownloadIndicator } from "./components/DownloadIndicator.js";
-import { Loader } from "./components/Loader.js";
 //import { useAtom } from "jotai";
 //import { errorMessageAtom, isLoadingAtom } from "./store/app";
 //import { useDownloadManager } from "./hooks/useDownloadManager";
@@ -32,7 +31,6 @@ const App: React.FC = () => {
 
   const { setRawMode } = useStdin();
 
-  const isLoading = useBoundStore((state) => state.isLoading);
   const errorMessage = useBoundStore((state) => state.errorMessage);
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
 
@@ -53,11 +51,8 @@ const App: React.FC = () => {
 
   return (
     <Box width={80} marginLeft={1} paddingRight={4} flexDirection="column">
-      <Loader />
-      <Box display={isLoading ? "none" : "flex"} flexDirection="column">
-        <Layouts />
-        <DownloadIndicator />
-      </Box>
+      <Layouts />
+      <DownloadIndicator />
     </Box>
   );
 };

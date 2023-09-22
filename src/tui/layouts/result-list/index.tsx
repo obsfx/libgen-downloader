@@ -10,6 +10,7 @@ import { getRenderedListItems } from "../../../utils.js";
 import UsageInfo from "../../components/UsageInfo.js";
 import ResultListInfo from "../../components/ResultListInfo.js";
 import { useBoundStore } from "../../store/index.js";
+import { ResultListLoadingSkeleton } from "./ResultListLoadingSkeleton.js";
 
 const ResultList: React.FC = () => {
   const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
@@ -17,6 +18,9 @@ const ResultList: React.FC = () => {
   const listItems = useBoundStore((state) => state.listItems);
   const listItemsCursor = useBoundStore((state) => state.listItemsCursor);
   const setListItemsCursor = useBoundStore((state) => state.setListItemsCursor);
+
+  const isLoading = useBoundStore((state) => state.isLoading);
+  const loaderMessage = useBoundStore((state) => state.loaderMessage);
 
   const { isFocused } = useFocus({ autoFocus: true });
   useScrollableListControls(
@@ -38,25 +42,29 @@ const ResultList: React.FC = () => {
   return (
     <Box flexDirection="column">
       <ResultListInfo />
-      <ContentContainer>
-        {renderedItems.map((item, index) =>
-          item.type === IResultListItemType.Option ? (
-            <ResultListItemOption
-              key={item.data.id}
-              item={item}
-              isActive={index === activeListIndex}
-            />
-          ) : (
-            <ResultListItemEntry
-              key={item.data.id}
-              item={item}
-              isActive={index === activeListIndex}
-              isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
-              isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
-            />
-          )
-        )}
-      </ContentContainer>
+      {isLoading ? (
+        <ResultListLoadingSkeleton />
+      ) : (
+        <ContentContainer>
+          {renderedItems.map((item, index) =>
+            item.type === IResultListItemType.Option ? (
+              <ResultListItemOption
+                key={item.data.id}
+                item={item}
+                isActive={index === activeListIndex}
+              />
+            ) : (
+              <ResultListItemEntry
+                key={item.data.id}
+                item={item}
+                isActive={index === activeListIndex}
+                isExpanded={index === RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
+                isFadedOut={index !== RESULT_LIST_ACTIVE_LIST_INDEX && anyEntryExpanded}
+              />
+            )
+          )}
+        </ContentContainer>
+      )}
       <UsageInfo />
     </Box>
   );

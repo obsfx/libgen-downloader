@@ -90,7 +90,7 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
       entries,
       currentPage: store.currentPage,
       isNextPageAvailable: (store.entryCacheMap[store.currentPage + 1] || []).length > 0,
-      handleSearchOption: () => store.search(store.searchValue, store.currentPage + 1),
+      handleSearchOption: () => store.backToSearch(),
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,
       handleStartBulkDownloadOption: () => {

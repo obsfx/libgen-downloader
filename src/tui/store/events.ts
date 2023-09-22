@@ -61,6 +61,7 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
   handleSearchSubmit: async () => {
     const store = get();
 
+    store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
     store.setIsLoading(true);
     store.setLoaderMessage(Label.GETTING_RESULTS);
 
@@ -71,9 +72,9 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
     const entries = await store.search(store.searchValue, store.currentPage);
     // search to cache next page
     await store.search(store.searchValue, store.currentPage + 1);
-    store.setIsLoading(false);
     store.setEntries(entries);
-    store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
+
+    store.setIsLoading(false);
   },
   nextPage: async () => {
     const store = get();

@@ -16,6 +16,6 @@ export default {
   FINDING_MIRROR: "Finding an available mirror...",
   COULDNT_REACH_TO_CONF: "Couldn't reach to configuration",
   COULDNT_REACH_TO_MIRROR: "Couldn't reach to mirror",
-  GETTING_RESULTS: "Getting results...",
+  GETTING_RESULTS: "Getting results",
   ERR_OCCURED_WHILE_PARSING_DOC: "Error occured while parsing the document",
 };
