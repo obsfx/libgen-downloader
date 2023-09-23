@@ -4,18 +4,20 @@ import { useStdin, Box } from "ink";
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
 // [x] Download queue
-// [ ] Move result list logic to zustand
-// [ ] Move result list entry logic to zustand
-// [ ] Move download progress to entry item
+// [x] Move download progress to entry item
 // [x] Result list skeleton loader getting results
 // [x] Entry detail download progress
 // [x] Alternative download cache map
 // [ ] better download status
 // [ ] Bulk download queue
 // [ ] Remove unsued imports and code
-// [ ] check double press search is causing issues
+// [x] check double press search is causing issues
 // [ ] proper error handling
 // [ ] disable alternative downloads if no alternative downloads
+// [ ] add error logging
+// [ ] config fetchin pre scene
+// [ ] drop log context
+// [ ] drop result list context
 
 import Layouts from "./layouts/index.js";
 import { DownloadIndicator } from "./components/DownloadIndicator.js";

@@ -31,7 +31,7 @@ export function constructFindMD5SearchUrl(
   mirror: string,
   idList: string[]
 ): string {
-  return pattern.replace("{mirror}", mirror).replace("{idList}", idList.join(","));
+  return pattern.replace("{mirror}", mirror).replace("{id}", idList.join(","));
 }
 
 export function parseEntries(

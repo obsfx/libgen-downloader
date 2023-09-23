@@ -90,12 +90,10 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
       entries,
       currentPage: store.currentPage,
       isNextPageAvailable: (store.entryCacheMap[store.currentPage + 1] || []).length > 0,
-      handleSearchOption: () => store.backToSearch(),
+      handleSearchOption: store.backToSearch,
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,
-      handleStartBulkDownloadOption: () => {
-        console.log("start bulk download");
-      },
+      handleStartBulkDownloadOption: store.startBulkDownload,
       handleExitOption: () => {
         console.log("exit");
       },

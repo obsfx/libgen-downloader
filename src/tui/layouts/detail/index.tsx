@@ -1,21 +1,18 @@
 import React from "react";
-import { Box, Text } from "ink";
+import { Box } from "ink";
 import ContentContainer from "../../components/ContentContainer.js";
 import DetailRow from "./DetailRow.js";
 import DetailEntryOptions from "./DetailEntryOptions.js";
 import UsageInfo from "../../components/UsageInfo.js";
 import { useBoundStore } from "../../store/index.js";
-import { getDownloadProgress } from "../../helpers/progress.js";
-import { downloadStatusIndicators } from "../../../download-statuses.js";
+import ResultListInfo from "../../components/ResultListInfo.js";
+import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
 
 const Detail: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
 
   const downloadProgressMap = useBoundStore((state) => state.downloadProgressMap);
   const downloadProgressData = detailedEntry ? downloadProgressMap[detailedEntry.id] : undefined;
-  const downloadProgress = downloadProgressData
-    ? getDownloadProgress(downloadProgressData.progress || 0, downloadProgressData.total)
-    : null;
 
   if (!detailedEntry) {
     return null;
@@ -23,6 +20,7 @@ const Detail: React.FC = () => {
 
   return (
     <Box flexDirection="column">
+      <ResultListInfo />
       <ContentContainer>
         {Object.entries(detailedEntry)
           .filter(([key]) => key !== "downloadUrls")
@@ -36,13 +34,7 @@ const Detail: React.FC = () => {
 
         {downloadProgressData && (
           <Box paddingLeft={3}>
-            <Text>
-              {downloadStatusIndicators[downloadProgressData.status]}{" "}
-              <Text color="magenta">
-                {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
-                {downloadProgress?.totalSize}
-              </Text>{" "}
-            </Text>
+            <DownloadStatusAndProgress downloadProgressData={downloadProgressData} />
           </Box>
         )}
         <DetailEntryOptions />

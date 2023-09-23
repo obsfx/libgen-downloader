@@ -5,6 +5,7 @@ import Search from "./search/index.js";
 import ResultList from "./result-list/index.js";
 import { ResultListContextProvider } from "../contexts/ResultListContext.js";
 import Detail from "./detail/index.js";
+import { BulkDownload } from "./bulk-download/index.js";
 
 const Layouts: React.FC = () => {
   return (
@@ -21,6 +22,10 @@ const Layouts: React.FC = () => {
 
       <Layout layoutName={LAYOUT_KEY.DETAIL_LAYOUT}>
         <Detail />
+      </Layout>
+
+      <Layout layoutName={LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT}>
+        <BulkDownload />
       </Layout>
     </>
   );

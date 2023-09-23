@@ -20,7 +20,6 @@ const ResultList: React.FC = () => {
   const setListItemsCursor = useBoundStore((state) => state.setListItemsCursor);
 
   const isLoading = useBoundStore((state) => state.isLoading);
-  const loaderMessage = useBoundStore((state) => state.loaderMessage);
 
   const { isFocused } = useFocus({ autoFocus: true });
   useScrollableListControls(

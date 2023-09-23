@@ -1,20 +1,15 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, useInput, Key } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/Option.js";
 import OptionList from "../../components/OptionList.js";
-import { useLogContext } from "../../contexts/LogContext.js";
 import { useResultListContext } from "../../contexts/ResultListContext.js";
 import { ResultListEntryOption } from "../../../options.js";
 import Label from "../../../labels.js";
-import { parseDownloadUrls } from "../../../api/data/url.js";
-import { getDocument } from "../../../api/data/document.js";
 import { IResultListItemEntry } from "../../../api/models/ListItem.js";
-import { attempt } from "../../../utils.js";
 import { SEARCH_PAGE_SIZE } from "../../../settings.js";
 import { useBoundStore } from "../../store/index.js";
-import { getDownloadProgress } from "../../helpers/progress.js";
-import { downloadStatusIndicators } from "../../../download-statuses.js";
+import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -40,11 +35,7 @@ const ResultListItemEntry: React.FC<{
 
   const downloadProgressMap = useBoundStore((state) => state.downloadProgressMap);
   const downloadProgressData = downloadProgressMap[item.data.id];
-  const downloadProgress = downloadProgressData
-    ? getDownloadProgress(downloadProgressData.progress || 0, downloadProgressData.total)
-    : null;
 
-  const { pushLog, clearLog } = useLogContext();
   const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
@@ -147,16 +138,11 @@ const ResultListItemEntry: React.FC<{
         wrap="truncate"
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
       >
-        {isActive && !isExpanded && figures.pointer} [
-        {item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}]{" "}
+        {isActive && !isExpanded && figures.pointer}
+        {inBulkDownloadQueue && <Text color="green"> {figures.tick} </Text>}
+        <Text>[{item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}] </Text>
         {downloadProgressData && (
-          <>
-            {downloadStatusIndicators[downloadProgressData.status]}{" "}
-            <Text color="magenta">
-              {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
-              {downloadProgress?.totalSize}
-            </Text>{" "}
-          </>
+          <DownloadStatusAndProgress downloadProgressData={downloadProgressData} />
         )}
         <Text color={isFadedOut ? "gray" : "green"} bold={true}>
           {item.data.extension}

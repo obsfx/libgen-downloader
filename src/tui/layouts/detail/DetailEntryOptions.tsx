@@ -11,10 +11,17 @@ const DetailEntryOptions: React.FC = () => {
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
+  const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
+  const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = detailedEntry
     ? inDownloadQueueEntryIds.includes(detailedEntry.id)
+    : false;
+
+  const bulkDownloadSelectedEntryIds = useBoundStore((state) => state.bulkDownloadSelectedEntryIds);
+  const inBulkDownloadQueue = detailedEntry
+    ? bulkDownloadSelectedEntryIds.includes(detailedEntry.id)
     : false;
 
   const detailOptions: Record<string, IOption> = {
@@ -40,8 +47,21 @@ const DetailEntryOptions: React.FC = () => {
       onSelect: () => setShowAlternativeDownloads(true),
     },
     [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
-      label: Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
-      onSelect: () => undefined,
+      label: inBulkDownloadQueue
+        ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
+        : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      onSelect: () => {
+        if (!detailedEntry) {
+          return;
+        }
+
+        if (inBulkDownloadQueue) {
+          removeFromBulkDownloadQueue(detailedEntry.id);
+          return;
+        }
+
+        addToBulkDownloadQueue(detailedEntry);
+      },
     },
   };
 

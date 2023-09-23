@@ -1,6 +1,5 @@
 import React from "react";
 import { Text } from "ink";
-
 export enum DownloadStatus {
   IDLE = "IDLE",
   IN_QUEUE = "IN_QUEUE",
@@ -9,6 +8,7 @@ export enum DownloadStatus {
   DONE = "DONE",
   FAILED = "FAILED",
   CONNECTING_TO_LIBGEN = "CONNECTING_TO_LIBGEN",
+  FETCHING_MD5 = "FETCHING_MD5",
 }
 
 export const downloadStatusIndicators = {
@@ -47,6 +47,12 @@ export const downloadStatusIndicators = {
     <Text color="yellowBright" inverse={true}>
       {" "}
       CONNECTING TO LIBGEN{" "}
+    </Text>
+  ),
+  [DownloadStatus.FETCHING_MD5]: (
+    <Text color="whiteBright" inverse={true}>
+      {" "}
+      FETCHING MD5{" "}
     </Text>
   ),
 };

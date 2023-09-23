@@ -18,4 +18,5 @@ export default {
   COULDNT_REACH_TO_MIRROR: "Couldn't reach to mirror",
   GETTING_RESULTS: "Getting results",
   ERR_OCCURED_WHILE_PARSING_DOC: "Error occured while parsing the document",
+  PREPARING_FOR_BULK_DOWNLOAD: "Preparing for bulk download...",
 };
