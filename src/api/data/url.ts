@@ -54,12 +54,14 @@ export function parseDownloadUrls(
 
 export function findDownloadUrlFromMirror(
   document: Document,
-  throwError: (message: string) => void
+  throwError?: (message: string) => void
 ) {
   const downloadLinkElement = document.querySelector(Selector.MAIN_DOWNLOAD_URL_SELECTOR);
 
   if (!downloadLinkElement) {
-    throwError("downloadLinkElement is undefined");
+    if (throwError) {
+      throwError("downloadLinkElement is undefined");
+    }
     return;
   }
 

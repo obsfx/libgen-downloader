@@ -2,23 +2,56 @@ import React from "react";
 import { Box, Text } from "ink";
 import { useBoundStore } from "../../store/index.js";
 import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
-import { LoadingSpinner } from "../../components/LoadingSpinner.js";
+import InkSpinner from "ink-spinner";
 
 export function BulkDownload() {
   const bulkDownloadQueue = useBoundStore((state) => state.bulkDownloadQueue);
-  const isLoading = useBoundStore((state) => state.isLoading);
-  const loaderMessage = useBoundStore((state) => state.loaderMessage);
+  const completedBulkDownloadItemCount = useBoundStore(
+    (state) => state.completedBulkDownloadItemCount
+  );
+  const failedBulkDownloadItemCount = useBoundStore((state) => state.failedBulkDownloadItemCount);
+  const createdMD5ListFileName = useBoundStore((state) => state.createdMD5ListFileName);
+  const totalItemCount = bulkDownloadQueue.length;
 
   return (
     <Box flexDirection="column">
-      {isLoading && <LoadingSpinner message={loaderMessage} />}
       <Box paddingLeft={3} paddingTop={1} flexDirection="column">
+        <Text wrap="truncate-end">
+          <Text color="greenBright">COMPLETED ({completedBulkDownloadItemCount}) </Text>
+          <Text color="redBright">FAILED ({failedBulkDownloadItemCount}) </Text>
+          <Text color="white">TOTAL ({totalItemCount})</Text>
+        </Text>
+
+        <Text color="gray">
+          {createdMD5ListFileName ? (
+            <Text>
+              MD5 list file created: <Text color="blueBright">{createdMD5ListFileName}</Text>
+            </Text>
+          ) : (
+            <InkSpinner type="simpleDotsScrolling" />
+          )}
+        </Text>
+
+        <Text color="white">
+          Downloading files to <Text color="blueBright">{process.cwd()}</Text>
+        </Text>
+
         {bulkDownloadQueue.map((item, idx) => (
-          <Box key={idx}>
+          <Text key={idx} wrap="truncate-end">
             <DownloadStatusAndProgress downloadProgressData={item} />
-            <Text color="gray">md5: </Text>
-            {item.md5 ? <Text color="green">{item.md5}</Text> : <Text color="gray">-</Text>}
-          </Box>
+            {item.filename ? (
+              <Text>
+                <Text color="green">{item.filename}</Text>
+              </Text>
+            ) : item.md5 ? (
+              <Text>
+                <Text color="gray">md5: </Text>
+                <Text color="green">{item.md5}</Text>
+              </Text>
+            ) : (
+              <Text color="gray">-</Text>
+            )}
+          </Text>
         ))}
       </Box>
     </Box>

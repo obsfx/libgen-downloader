@@ -3,11 +3,18 @@ import fetch from "node-fetch";
 import { TCombinedStore } from "./index.js";
 import { Entry } from "../../api/models/Entry.js";
 import { DownloadStatus } from "../../download-statuses.js";
-import { constructFindMD5SearchUrl } from "../../api/data/search.js";
+import {
+  constructFindMD5SearchUrl,
+  constructMD5SearchUrl,
+  parseEntries,
+} from "../../api/data/search.js";
 import { attempt } from "../../utils.js";
 import { LAYOUT_KEY } from "../layouts/keys.js";
-import Label from "../../labels.js";
 import { IDownloadProgress } from "./download-queue.js";
+import { getDocument } from "../../api/data/document.js";
+import { findDownloadUrlFromMirror } from "../../api/data/url.js";
+import { downloadFile } from "../../api/data/download.js";
+import { createMD5ListFile } from "../../api/data/file.js";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
   md5: string;
@@ -17,10 +24,18 @@ export interface IBulkDownloadQueueState {
   bulkDownloadSelectedEntries: Entry[];
   bulkDownloadSelectedEntryIds: string[];
   bulkDownloadQueue: IBulkDownloadQueueItem[];
+  completedBulkDownloadItemCount: number;
+  failedBulkDownloadItemCount: number;
+  createdMD5ListFileName: string;
 
   addToBulkDownloadQueue: (entry: Entry) => void;
   removeFromBulkDownloadQueue: (entryId: string) => void;
   removeEntryIdFromBulkDownloadQueue: (entryId: string) => void;
+  onBulkQueueItemProcessing: (index: number) => void;
+  onBulkQueueItemStart: (index: number, filename: string, total: number) => void;
+  onBulkQueueItemData: (index: number, filename: string, chunk: Buffer, total: number) => void;
+  onBulkQueueItemComplete: (index: number) => void;
+  onBulkQueueItemFail: (index: number) => void;
   startBulkDownload: () => Promise<void>;
 }
 
@@ -28,6 +43,9 @@ export const initialBulkDownloadQueueState = {
   bulkDownloadSelectedEntries: [],
   bulkDownloadSelectedEntryIds: [],
   bulkDownloadQueue: [],
+  completedBulkDownloadItemCount: 0,
+  failedBulkDownloadItemCount: 0,
+  createdMD5ListFileName: "",
 };
 
 export const createBulkDownloadQueueStateSlice: StateCreator<
@@ -76,14 +94,103 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     });
   },
 
+  onBulkQueueItemProcessing: (index: number) => {
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
+        if (index !== i) {
+          return item;
+        }
+
+        return {
+          ...item,
+          status: DownloadStatus.PROCESSING,
+        };
+      }),
+    }));
+  },
+
+  onBulkQueueItemStart: (index: number, filename: string, total: number) => {
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
+        if (index !== i) {
+          return item;
+        }
+
+        return {
+          ...item,
+          filename,
+          total,
+          status: DownloadStatus.DOWNLOADING,
+        };
+      }),
+    }));
+  },
+
+  onBulkQueueItemData: (index: number, filename: string, chunk: Buffer, total: number) => {
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
+        if (index !== i) {
+          return item;
+        }
+
+        return {
+          ...item,
+          filename,
+          total,
+          progress: (item.progress || 0) + chunk.length,
+        };
+      }),
+    }));
+  },
+
+  onBulkQueueItemComplete: (index: number) => {
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
+        if (index !== i) {
+          return item;
+        }
+
+        return {
+          ...item,
+          status: DownloadStatus.DONE,
+        };
+      }),
+    }));
+
+    set((prev) => ({
+      completedBulkDownloadItemCount: prev.completedBulkDownloadItemCount + 1,
+    }));
+  },
+
+  onBulkQueueItemFail: (index: number) => {
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
+        if (index !== i) {
+          return item;
+        }
+
+        return {
+          ...item,
+          status: DownloadStatus.FAILED,
+        };
+      }),
+    }));
+
+    set((prev) => ({
+      failedBulkDownloadItemCount: prev.failedBulkDownloadItemCount + 1,
+    }));
+  },
+
   startBulkDownload: async () => {
-    const store = get();
-    store.setIsLoading(true);
-    store.setLoaderMessage(Label.PREPARING_FOR_BULK_DOWNLOAD);
-    store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
+    set({
+      createdMD5ListFileName: "",
+      completedBulkDownloadItemCount: 0,
+      failedBulkDownloadItemCount: 0,
+    });
+    get().setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
 
     // initialize bulk queue
-    const initialBulkDownloadQueue = store.bulkDownloadSelectedEntries.map(() => ({
+    const initialBulkDownloadQueue = get().bulkDownloadSelectedEntries.map(() => ({
       md5: "",
       status: DownloadStatus.FETCHING_MD5,
       filename: "",
@@ -96,8 +203,8 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     });
 
     // find md5list
-    const entryIds = store.bulkDownloadSelectedEntryIds;
-    const findMD5SearchUrl = constructFindMD5SearchUrl(store.MD5ReqPattern, store.mirror, entryIds);
+    const entryIds = get().bulkDownloadSelectedEntryIds;
+    const findMD5SearchUrl = constructFindMD5SearchUrl(get().MD5ReqPattern, get().mirror, entryIds);
 
     const md5ListResponse = await attempt(() => fetch(findMD5SearchUrl));
     if (!md5ListResponse) {
@@ -114,5 +221,77 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
         md5: md5List[index],
       })),
     });
+
+    const bulkDownloadQueue = get().bulkDownloadQueue;
+    for (let i = 0; i < bulkDownloadQueue.length; i++) {
+      const item = bulkDownloadQueue[i];
+      const md5SearchUrl = constructMD5SearchUrl(get().searchByMD5Pattern, get().mirror, item.md5);
+
+      get().onBulkQueueItemProcessing(i);
+
+      const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
+      if (!searchPageDocument || i === 1) {
+        // throw error
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
+
+      const entry = parseEntries(searchPageDocument)?.[0];
+      if (!entry) {
+        // throw error
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
+
+      const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
+      if (!mirrorPageDocument) {
+        // throw error
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
+
+      const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+      if (!downloadUrl) {
+        // throw error
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
+
+      const downloadStream = await attempt(() => fetch(downloadUrl));
+      if (!downloadStream) {
+        // throw error
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
+
+      try {
+        await downloadFile({
+          downloadStream,
+          onStart: (filename, total) => {
+            get().onBulkQueueItemStart(i, filename, total);
+          },
+          onData: (filename, chunk, total) => {
+            get().onBulkQueueItemData(i, filename, chunk, total);
+          },
+        });
+
+        get().onBulkQueueItemComplete(i);
+      } catch (err) {
+        get().onBulkQueueItemFail(i);
+      }
+    }
+
+    const completedMD5List = get()
+      .bulkDownloadQueue.filter((item) => item.status === DownloadStatus.DONE)
+      .map((item) => item.md5);
+
+    try {
+      const filename = await createMD5ListFile(completedMD5List);
+      set({
+        createdMD5ListFileName: filename,
+      });
+    } catch (err) {
+      // throw error
+    }
   },
 });
