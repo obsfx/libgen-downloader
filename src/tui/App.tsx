@@ -9,7 +9,7 @@ import { useStdin, Box } from "ink";
 // [x] Entry detail download progress
 // [x] Alternative download cache map
 // [ ] better download status
-// [ ] Bulk download queue
+// [x] Bulk download queue
 // [ ] Remove unsued imports and code
 // [x] check double press search is causing issues
 // [ ] proper error handling
@@ -28,6 +28,7 @@ import { DownloadIndicator } from "./components/DownloadIndicator.js";
 import { ErrorMessage } from "./components/ErrorMessage.js";
 //import { useConfig } from "./hooks/useConfig";
 import { useBoundStore } from "./store/index.js";
+import { AppHeader } from "./components/AppHeader.js";
 
 let renderCount = 0;
 const App: React.FC = () => {
@@ -56,6 +57,7 @@ const App: React.FC = () => {
 
   return (
     <Box width={80} marginLeft={1} paddingRight={4} flexDirection="column">
+      <AppHeader />
       <Layouts />
       <DownloadIndicator />
     </Box>

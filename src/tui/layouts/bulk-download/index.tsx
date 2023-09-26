@@ -17,7 +17,7 @@ export function BulkDownload() {
 
   return (
     <Box flexDirection="column">
-      <Box paddingLeft={3} paddingTop={1} flexDirection="column">
+      <Box paddingLeft={3} flexDirection="column">
         <Text wrap="truncate-end">
           <Text color="greenBright">COMPLETED ({completedBulkDownloadItemCount}) </Text>
           <Text color="redBright">FAILED ({failedBulkDownloadItemCount}) </Text>

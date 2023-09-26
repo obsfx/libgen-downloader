@@ -12,8 +12,9 @@
   "scripts": {
     "react-dt": "react-devtools",
     "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
-    "ts-node": "npx -c 'DEV=true ts-node-esm ./src/index.ts'",
-    "build": "tsc -b",
+    "ts-node": "npm run generateVersionFile && DEV=true ts-node-esm ./src/index.ts",
+    "build": "npm run generateVersionFile && tsc -b",
+    "generateVersionFile": "echo \"export const APP_VERSION = '$(cat package.json | json version)'\" > ./src/app-version.ts",
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
@@ -51,6 +52,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.6.0",
+    "json": "11.0.0",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
     "typescript": "5.2.2"
