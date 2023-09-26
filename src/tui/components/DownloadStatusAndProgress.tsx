@@ -17,7 +17,7 @@ export function DownloadStatusAndProgress({ downloadProgressData }: Props) {
   return (
     <Text>
       {downloadStatusIndicators[downloadProgressData.status]}{" "}
-      <Text color="magenta">
+      <Text color="white">
         {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
         {downloadProgress?.totalSize}
       </Text>{" "}

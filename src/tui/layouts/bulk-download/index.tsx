@@ -3,9 +3,11 @@ import { Box, Text } from "ink";
 import { useBoundStore } from "../../store/index.js";
 import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
 import InkSpinner from "ink-spinner";
+import { BulkDownloadAfterCompleteOptions } from "./BulkDownloadAfterCompleteOptions.js";
 
 export function BulkDownload() {
   const bulkDownloadQueue = useBoundStore((state) => state.bulkDownloadQueue);
+  const isBulkDownloadComplete = useBoundStore((state) => state.isBulkDownloadComplete);
   const completedBulkDownloadItemCount = useBoundStore(
     (state) => state.completedBulkDownloadItemCount
   );
@@ -53,6 +55,8 @@ export function BulkDownload() {
             )}
           </Text>
         ))}
+
+        {isBulkDownloadComplete && <BulkDownloadAfterCompleteOptions />}
       </Box>
     </Box>
   );

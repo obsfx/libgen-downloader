@@ -29,3 +29,8 @@ export enum DetailEntryOption {
   BULK_DOWNLOAD_QUEUE,
   BACK_TO_ENTRY_OPTIONS,
 }
+
+export enum BulkDownloadAfterCompleteOption {
+  TURN_BACK_TO_THE_LIST,
+  BACK_TO_SEARCH,
+}

@@ -27,6 +27,7 @@ export interface IBulkDownloadQueueState {
   completedBulkDownloadItemCount: number;
   failedBulkDownloadItemCount: number;
   createdMD5ListFileName: string;
+  isBulkDownloadComplete: boolean;
 
   addToBulkDownloadQueue: (entry: Entry) => void;
   removeFromBulkDownloadQueue: (entryId: string) => void;
@@ -37,6 +38,7 @@ export interface IBulkDownloadQueueState {
   onBulkQueueItemComplete: (index: number) => void;
   onBulkQueueItemFail: (index: number) => void;
   startBulkDownload: () => Promise<void>;
+  resetBulkDownloadQueue: () => void;
 }
 
 export const initialBulkDownloadQueueState = {
@@ -46,6 +48,7 @@ export const initialBulkDownloadQueueState = {
   completedBulkDownloadItemCount: 0,
   failedBulkDownloadItemCount: 0,
   createdMD5ListFileName: "",
+  isBulkDownloadComplete: false,
 };
 
 export const createBulkDownloadQueueStateSlice: StateCreator<
@@ -183,9 +186,10 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
 
   startBulkDownload: async () => {
     set({
-      createdMD5ListFileName: "",
       completedBulkDownloadItemCount: 0,
       failedBulkDownloadItemCount: 0,
+      createdMD5ListFileName: "",
+      isBulkDownloadComplete: false,
     });
     get().setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
 
@@ -230,7 +234,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
       get().onBulkQueueItemProcessing(i);
 
       const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
-      if (!searchPageDocument || i === 1) {
+      if (!searchPageDocument) {
         // throw error
         get().onBulkQueueItemFail(i);
         continue;
@@ -281,6 +285,10 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
       }
     }
 
+    set({
+      isBulkDownloadComplete: true,
+    });
+
     const completedMD5List = get()
       .bulkDownloadQueue.filter((item) => item.status === DownloadStatus.DONE)
       .map((item) => item.md5);
@@ -293,5 +301,11 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     } catch (err) {
       // throw error
     }
+  },
+
+  resetBulkDownloadQueue: () => {
+    set({
+      ...initialBulkDownloadQueueState,
+    });
   },
 });
