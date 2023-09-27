@@ -3,21 +3,38 @@ import meow from "meow";
 export const cli = meow(
   `
 	Usage
-	  $ foo <input>
+	  $ libgen-downloader <input>
 
 	Options
-	  --rainbow, -r  Include a rainbow
+    -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
+    -u, --url <MD5>           get the download URL
+    -d, --download <MD5>      download the file
+    -h, --help                display help for command
 
 	Examples
-	  $ foo unicorns --rainbow
-	  🌈 unicorns 🌈
+    $ libgen-downloader  start the app in interactive mode
+    $ libgen-downloader -b ./MD5_LIST_1695686580524.txt  start the app in bulk downloading mode
+    $ libgen-downloader -u 1234567890abcdef1234567890abcdef  get the download URL
+    $ libgen-downloader -d 1234567890abcdef1234567890abcdef  download the file
 `,
   {
     importMeta: import.meta,
     flags: {
-      rainbow: {
+      bulk: {
+        type: "string",
+        shortFlag: "b",
+      },
+      url: {
+        type: "string",
+        shortFlag: "u",
+      },
+      download: {
+        type: "string",
+        shortFlag: "d",
+      },
+      help: {
         type: "boolean",
-        shortFlag: "r",
+        shortFlag: "h",
       },
     },
   }

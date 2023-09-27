@@ -1,7 +1,4 @@
 import { cli } from "./cli/index.js";
-import renderTUI from "./tui/index.js";
-
-export const { input, flags, pkg } = cli;
-
-//console.log(cli);
-renderTUI();
+import { operate } from "./cli/operate.js";
+export const APP_VERSION = cli.pkg.version;
+operate(cli.flags);

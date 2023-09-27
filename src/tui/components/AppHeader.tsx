@@ -1,13 +1,12 @@
 import React from "react";
 import { Box, Text } from "ink";
-//import { APP_VERSION } from "../../app-version.js";
 import figures from "figures";
 import { useBoundStore } from "../store/index.js";
-import { pkg } from "../../index.js";
+import { APP_VERSION } from "../../index.js";
 
 export function AppHeader() {
   const latestVersion = useBoundStore((state) => state.latestVersion);
-  const newVersionAvailable = latestVersion && latestVersion !== pkg.version;
+  const newVersionAvailable = latestVersion && latestVersion !== APP_VERSION;
 
   return (
     <>
@@ -15,7 +14,7 @@ export function AppHeader() {
         <Box>
           <Text>
             <Text color="white">libgen-downloader </Text>
-            <Text color="green">@{pkg.version}</Text>
+            <Text color="green">@{APP_VERSION}</Text>
             <Text> {figures.arrowRight} </Text>
             <Text color="gray">github.com/obsfx/libgen-downloader</Text>
           </Text>

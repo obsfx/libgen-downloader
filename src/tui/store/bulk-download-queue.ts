@@ -37,7 +37,9 @@ export interface IBulkDownloadQueueState {
   onBulkQueueItemData: (index: number, filename: string, chunk: Buffer, total: number) => void;
   onBulkQueueItemComplete: (index: number) => void;
   onBulkQueueItemFail: (index: number) => void;
+  operateBulkDownloadQueue: () => Promise<void>;
   startBulkDownload: () => Promise<void>;
+  startBulkDownloadInCLI: (md5List: string[]) => Promise<void>;
   resetBulkDownloadQueue: () => void;
 }
 
@@ -184,48 +186,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     }));
   },
 
-  startBulkDownload: async () => {
-    set({
-      completedBulkDownloadItemCount: 0,
-      failedBulkDownloadItemCount: 0,
-      createdMD5ListFileName: "",
-      isBulkDownloadComplete: false,
-    });
-    get().setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
-
-    // initialize bulk queue
-    const initialBulkDownloadQueue = get().bulkDownloadSelectedEntries.map(() => ({
-      md5: "",
-      status: DownloadStatus.FETCHING_MD5,
-      filename: "",
-      progress: 0,
-      total: 0,
-    }));
-
-    set({
-      bulkDownloadQueue: initialBulkDownloadQueue,
-    });
-
-    // find md5list
-    const entryIds = get().bulkDownloadSelectedEntryIds;
-    const findMD5SearchUrl = constructFindMD5SearchUrl(get().MD5ReqPattern, get().mirror, entryIds);
-
-    const md5ListResponse = await attempt(() => fetch(findMD5SearchUrl));
-    if (!md5ListResponse) {
-      // throw error
-      return;
-    }
-    const md5Arr = (await md5ListResponse.json()) as { md5: string }[];
-    const md5List = md5Arr.map((item) => item.md5);
-
-    set({
-      bulkDownloadQueue: initialBulkDownloadQueue.map((item, index) => ({
-        ...item,
-        status: DownloadStatus.IN_QUEUE,
-        md5: md5List[index],
-      })),
-    });
-
+  operateBulkDownloadQueue: async () => {
     const bulkDownloadQueue = get().bulkDownloadQueue;
     for (let i = 0; i < bulkDownloadQueue.length; i++) {
       const item = bulkDownloadQueue[i];
@@ -301,6 +262,66 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     } catch (err) {
       // throw error
     }
+  },
+
+  startBulkDownload: async () => {
+    set({
+      completedBulkDownloadItemCount: 0,
+      failedBulkDownloadItemCount: 0,
+      createdMD5ListFileName: "",
+      isBulkDownloadComplete: false,
+    });
+    get().setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
+
+    // initialize bulk queue
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadSelectedEntries.map(() => ({
+        md5: "",
+        status: DownloadStatus.FETCHING_MD5,
+        filename: "",
+        progress: 0,
+        total: 0,
+      })),
+    }));
+
+    // find md5list
+    const entryIds = get().bulkDownloadSelectedEntryIds;
+    const findMD5SearchUrl = constructFindMD5SearchUrl(get().MD5ReqPattern, get().mirror, entryIds);
+
+    const md5ListResponse = await attempt(() => fetch(findMD5SearchUrl));
+    if (!md5ListResponse) {
+      // throw error
+      return;
+    }
+    const md5Arr = (await md5ListResponse.json()) as { md5: string }[];
+    const md5List = md5Arr.map((item) => item.md5);
+
+    set((prev) => ({
+      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, index) => ({
+        ...item,
+        status: DownloadStatus.IN_QUEUE,
+        md5: md5List[index],
+      })),
+    }));
+
+    get().operateBulkDownloadQueue();
+  },
+
+  startBulkDownloadInCLI: async (md5List: string[]) => {
+    set({
+      bulkDownloadQueue: md5List.map((md5) => ({
+        md5,
+        status: DownloadStatus.IN_QUEUE,
+        filename: "",
+        progress: 0,
+        total: 0,
+      })),
+    });
+
+    await get().operateBulkDownloadQueue();
+
+    // process exit successfully
+    process.exit(0);
   },
 
   resetBulkDownloadQueue: () => {

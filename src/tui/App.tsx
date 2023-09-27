@@ -31,7 +31,12 @@ import { useBoundStore } from "./store/index.js";
 import { AppHeader } from "./components/AppHeader.js";
 
 let renderCount = 0;
-const App: React.FC = () => {
+
+interface Props {
+  doNotFetchConfigInitially: boolean;
+}
+
+export function App({ doNotFetchConfigInitially }: Props) {
   //useEventManager();
   //useDownloadManager();
 
@@ -41,6 +46,10 @@ const App: React.FC = () => {
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
 
   useEffect(() => {
+    if (doNotFetchConfigInitially) {
+      return;
+    }
+
     fetchConfig();
   }, []);
 
@@ -62,6 +71,6 @@ const App: React.FC = () => {
       <DownloadIndicator />
     </Box>
   );
-};
+}
 
 export default App;

@@ -7,6 +7,8 @@ import { LAYOUT_KEY } from "../layouts/keys.js";
 import { FilterRecord } from "../layouts/search/search-filter/Filter.data.js";
 
 export interface IAppState {
+  CLIMode: boolean;
+
   isLoading: boolean;
   anyEntryExpanded: boolean;
   showSearchMinCharWarning: boolean;
@@ -24,6 +26,8 @@ export interface IAppState {
   entries: Entry[];
   listItems: ListItem[];
   activeLayout: LAYOUT_KEY;
+
+  setCLIMode: (CLIMode: boolean) => void;
 
   setIsLoading: (isLoading: boolean) => void;
   setAnyEntryExpanded: (anyEntryExpanded: boolean) => void;
@@ -65,6 +69,9 @@ export const initialAppState = {
 };
 
 export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState> = (set, get) => ({
+  CLIMode: false,
+  setCLIMode: (CLIMode: boolean) => set({ CLIMode }),
+
   ...initialAppState,
 
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
@@ -104,94 +111,3 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
 
   resetAppState: () => set(initialAppState),
 });
-
-//const entriesAtom = atom<Entry[]>([]);
-//export const readWriteEntriesAtom = atom(
-//  (get) => get(entriesAtom),
-//  (get, set, entries: Entry[]) => {
-//    const cachedNextPageEntries = get(cachedNextPageEntriesAtom);
-//    const currentPage = get(currentPageAtom);
-//
-//    const handleSearchOption = () => {
-//      EventManager.emit(AppEvent.BACK_TO_SEARCH);
-//    };
-//
-//    const handleNextPageOption = () => {
-//      EventManager.emit(AppEvent.NEXT_PAGE);
-//    };
-//
-//    const handlePrevPageOption = () => {
-//      EventManager.emit(AppEvent.PREV_PAGE);
-//    };
-//
-//    const handleStartBulkDownloadOption = () => {
-//      EventManager.emit(AppEvent.START_BULK_DOWNLOAD);
-//    };
-//
-//    const handleExitOption = () => {
-//      EventManager.emit(AppEvent.EXIT);
-//    };
-//
-//    const listItems = constructListItems({
-//      entries,
-//      currentPage,
-//      nextPageEntries: cachedNextPageEntries,
-//      handleSearchOption,
-//      handleNextPageOption,
-//      handlePrevPageOption,
-//      handleStartBulkDownloadOption,
-//      handleExitOption,
-//    });
-//    set(listItemsAtom, listItems);
-//  }
-//);
-//
-//export const cachedNextPageEntriesAtom = atom<Entry[]>([]);
-//export const listItemsAtom = atom<ListItem[]>([]);
-//export const readWriteListItemsAtom = atom<ListItem[], [Entry[]], void>(
-//  (get) => get(listItemsAtom),
-//  (get, set, entries: Entry[]) => {
-//    const cachedNextPageEntries = get(cachedNextPageEntriesAtom);
-//    const currentPage = get(currentPageAtom);
-//
-//    const handleSearchOption = () => {
-//      EventManager.emit(AppEvent.BACK_TO_SEARCH);
-//    };
-//
-//    const handleNextPageOption = () => {
-//      EventManager.emit(AppEvent.NEXT_PAGE);
-//    };
-//
-//    const handlePrevPageOption = () => {
-//      EventManager.emit(AppEvent.PREV_PAGE);
-//    };
-//
-//    const handleStartBulkDownloadOption = () => {
-//      EventManager.emit(AppEvent.START_BULK_DOWNLOAD);
-//    };
-//
-//    const handleExitOption = () => {
-//      EventManager.emit(AppEvent.EXIT);
-//    };
-//
-//    return constructListItems({
-//      entries,
-//      currentPage,
-//      nextPageEntries: cachedNextPageEntries,
-//      handleSearchOption,
-//      handleNextPageOption,
-//      handlePrevPageOption,
-//      handleStartBulkDownloadOption,
-//      handleExitOption,
-//    });
-//  }
-//);
-//
-//export const showSearchMinCharWarningAtom = atom((get) => {
-//  const searchValue = get(searchValueAtom);
-//  return searchValue.length < 3;
-//});
-//
-//export const activeLayoutAtom = atom("");
-//
-//export const errorMessageAtom = atom<string | null>(null);

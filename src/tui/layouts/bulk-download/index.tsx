@@ -13,6 +13,7 @@ export function BulkDownload() {
   );
   const failedBulkDownloadItemCount = useBoundStore((state) => state.failedBulkDownloadItemCount);
   const createdMD5ListFileName = useBoundStore((state) => state.createdMD5ListFileName);
+  const CLIMode = useBoundStore((state) => state.CLIMode);
   const totalItemCount = bulkDownloadQueue.length;
 
   return (
@@ -56,7 +57,7 @@ export function BulkDownload() {
           </Text>
         ))}
 
-        {isBulkDownloadComplete && <BulkDownloadAfterCompleteOptions />}
+        {!CLIMode && isBulkDownloadComplete && <BulkDownloadAfterCompleteOptions />}
       </Box>
     </Box>
   );
