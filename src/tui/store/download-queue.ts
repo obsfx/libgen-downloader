@@ -7,6 +7,7 @@ import { attempt } from "../../utils.js";
 import { getDocument } from "../../api/data/document.js";
 import { findDownloadUrlFromMirror } from "../../api/data/url.js";
 import { downloadFile } from "../../api/data/download.js";
+import { constructMD5SearchUrl, parseEntries } from "../../api/data/search.js";
 
 export interface IDownloadProgress {
   filename: string;
@@ -35,6 +36,7 @@ export interface IDownloadQueueState {
   increaseTotalAddedToDownloadQueue: () => void;
   increaseTotalDownloaded: () => void;
   increaseTotalFailed: () => void;
+  findDownloadUrlFromMD5: (md5: string) => Promise<string | undefined>;
 }
 
 export const initialDownloadQueueState = {
@@ -223,5 +225,31 @@ export const createDownloadQueueStateSlice: StateCreator<
     set((prev) => ({
       totalFailed: prev.totalFailed + 1,
     }));
+  },
+
+  findDownloadUrlFromMD5: async (md5) => {
+    const md5SearchUrl = constructMD5SearchUrl(get().searchByMD5Pattern, get().mirror, md5);
+
+    const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
+    if (!searchPageDocument) {
+      throw new Error("Failed to get search page document");
+    }
+
+    const entry = parseEntries(searchPageDocument)?.[0];
+    if (!entry) {
+      throw new Error("Failed to parse entry");
+    }
+
+    const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
+    if (!mirrorPageDocument) {
+      throw new Error("Failed to get mirror page document");
+    }
+
+    const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+    if (!downloadUrl) {
+      throw new Error("Failed to find download url");
+    }
+
+    return downloadUrl;
   },
 });
