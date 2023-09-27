@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "ink";
 import { IDownloadProgress } from "../store/download-queue.js";
 import { getDownloadProgress } from "../helpers/progress.js";
-import { downloadStatusIndicators } from "../../download-statuses.js";
+import { DownloadStatus, downloadStatusIndicators } from "../../download-statuses.js";
 
 interface Props {
   downloadProgressData: IDownloadProgress;
@@ -17,10 +17,14 @@ export function DownloadStatusAndProgress({ downloadProgressData }: Props) {
   return (
     <Text>
       {downloadStatusIndicators[downloadProgressData.status]}{" "}
-      <Text color="white">
-        {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
-        {downloadProgress?.totalSize}
-      </Text>{" "}
+      {downloadProgressData.status !== DownloadStatus.DONE && (
+        <>
+          <Text color="white">
+            {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}
+            {downloadProgress?.totalSize}
+          </Text>{" "}
+        </>
+      )}
     </Text>
   );
 }
