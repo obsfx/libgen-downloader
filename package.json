@@ -12,9 +12,8 @@
   "scripts": {
     "react-dt": "react-devtools",
     "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
-    "ts-node": "npm run generateVersionFile && DEV=true ts-node-esm ./src/index.ts",
-    "build": "npm run generateVersionFile && tsc -b",
-    "generateVersionFile": "echo \"export const APP_VERSION = '$(cat package.json | json version)'\" > ./src/app-version.ts",
+    "ts-node": "DEV=true ts-node-esm ./src/index.ts",
+    "build": "tsc -b",
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
@@ -52,7 +51,6 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.6.0",
-    "json": "11.0.0",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
     "typescript": "5.2.2"
@@ -65,6 +63,7 @@
     "ink-spinner": "5.0.0",
     "ink-text-input": "5.0.1",
     "jsdom": "19.0.0",
+    "meow": "12.1.1",
     "node-fetch": "3.3.2",
     "react": "18.2.0",
     "ts-node": "10.9.1",
