@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IOption } from "../../components/Option.js";
 import OptionList from "../../components/OptionList.js";
 import { DetailEntryOption } from "../../../options.js";
 import Label from "../../../labels.js";
 import { LAYOUT_KEY } from "../keys.js";
 import { useBoundStore } from "../../store/index.js";
+import { useInput } from "ink";
 
 const DetailEntryOptions: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
@@ -13,6 +14,9 @@ const DetailEntryOptions: React.FC = () => {
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
   const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
   const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
+  const fetchEntryAlternativeDownloadURLs = useBoundStore(
+    (state) => state.fetchEntryAlternativeDownloadURLs
+  );
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = detailedEntry
@@ -23,6 +27,37 @@ const DetailEntryOptions: React.FC = () => {
   const inBulkDownloadQueue = detailedEntry
     ? bulkDownloadSelectedEntryIds.includes(detailedEntry.id)
     : false;
+
+  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
+  const [alternativeDownloadURLsLoading, setAlternativeDownloadURLsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!detailedEntry) {
+      return;
+    }
+
+    const fetchDownloadUrls = async () => {
+      setAlternativeDownloadURLsLoading(true);
+      const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(detailedEntry);
+      setAlternativeDownloadURLs(alternativeDownloadURLs);
+      setAlternativeDownloadURLsLoading(false);
+    };
+
+    fetchDownloadUrls();
+  }, []);
+
+  const toggleBulkDownload = () => {
+    if (!detailedEntry) {
+      return;
+    }
+
+    if (inBulkDownloadQueue) {
+      removeFromBulkDownloadQueue(detailedEntry.id);
+      return;
+    }
+
+    addToBulkDownloadQueue(detailedEntry);
+  };
 
   const detailOptions: Record<string, IOption> = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {
@@ -42,8 +77,8 @@ const DetailEntryOptions: React.FC = () => {
       },
     },
     [DetailEntryOption.ALTERNATIVE_DOWNLOADS]: {
-      loading: inDownloadQueue,
-      label: `${Label.ALTERNATIVE_DOWNLOADS} (${(detailedEntry?.downloadUrls || []).length})`,
+      loading: alternativeDownloadURLsLoading || inDownloadQueue,
+      label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
       onSelect: () => setShowAlternativeDownloads(true),
     },
     [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
@@ -51,23 +86,14 @@ const DetailEntryOptions: React.FC = () => {
         ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
         : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
       onSelect: () => {
-        if (!detailedEntry) {
-          return;
-        }
-
-        if (inBulkDownloadQueue) {
-          removeFromBulkDownloadQueue(detailedEntry.id);
-          return;
-        }
-
-        addToBulkDownloadQueue(detailedEntry);
+        toggleBulkDownload();
       },
     },
   };
 
   const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
   const alternativeDownloadOptions: Record<string, IOption> = {
-    ...(detailedEntry?.downloadUrls || []).reduce<Record<string, IOption>>((prev, current, idx) => {
+    ...alternativeDownloadURLs.reduce<Record<string, IOption>>((prev, current, idx) => {
       return {
         ...prev,
         [idx]: {
@@ -89,6 +115,18 @@ const DetailEntryOptions: React.FC = () => {
       onSelect: () => setShowAlternativeDownloads(false),
     },
   };
+
+  useInput((input, key) => {
+    if (key.tab) {
+      toggleBulkDownload();
+      return;
+    }
+
+    if (input.toLowerCase() === "d" && detailedEntry) {
+      pushDownloadQueue(detailedEntry);
+      return;
+    }
+  });
 
   if (!detailedEntry) {
     return null;

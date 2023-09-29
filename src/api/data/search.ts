@@ -78,7 +78,6 @@ export function parseEntries(
       size,
       extension,
       mirror,
-      downloadUrls: [],
     });
   }
 

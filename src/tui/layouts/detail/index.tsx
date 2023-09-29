@@ -22,15 +22,13 @@ const Detail: React.FC = () => {
     <Box flexDirection="column">
       <ResultListInfo />
       <ContentContainer>
-        {Object.entries(detailedEntry)
-          .filter(([key]) => key !== "downloadUrls")
-          .map(([key, value], idx) => (
-            <DetailRow
-              key={idx}
-              label={key === "id" ? key.toUpperCase() : `${key[0].toUpperCase()}${key.slice(1)}`}
-              description={value}
-            />
-          ))}
+        {Object.entries(detailedEntry).map(([key, value], idx) => (
+          <DetailRow
+            key={idx}
+            label={key === "id" ? key.toUpperCase() : `${key[0].toUpperCase()}${key.slice(1)}`}
+            description={value}
+          />
+        ))}
 
         {downloadProgressData && (
           <Box paddingLeft={3}>
