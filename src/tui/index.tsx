@@ -1,7 +1,6 @@
 import React from "react";
 import { render } from "ink";
 
-import { LogContextProvider } from "./contexts/LogContext.js";
 import { LayoutWrapper } from "./layouts/Layout.js";
 import { LAYOUT_KEY } from "./layouts/keys.js";
 import App from "./App.js";
@@ -25,10 +24,8 @@ export default function renderTUI({ startInCLIMode, initialLayout }: renderTUIAr
   }
 
   render(
-    <LogContextProvider>
-      <LayoutWrapper initialLayout={initialLayout || LAYOUT_KEY.SEARCH_LAYOUT}>
-        <App doNotFetchConfigInitially={startInCLIMode} />
-      </LayoutWrapper>
-    </LogContextProvider>
+    <LayoutWrapper initialLayout={initialLayout || LAYOUT_KEY.SEARCH_LAYOUT}>
+      <App doNotFetchConfigInitially={startInCLIMode} />
+    </LayoutWrapper>
   );
 }

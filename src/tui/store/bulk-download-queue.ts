@@ -21,13 +21,16 @@ export interface IBulkDownloadQueueItem extends IDownloadProgress {
 }
 
 export interface IBulkDownloadQueueState {
-  bulkDownloadSelectedEntries: Entry[];
-  bulkDownloadSelectedEntryIds: string[];
-  bulkDownloadQueue: IBulkDownloadQueueItem[];
+  isBulkDownloadComplete: boolean;
+
   completedBulkDownloadItemCount: number;
   failedBulkDownloadItemCount: number;
+
   createdMD5ListFileName: string;
-  isBulkDownloadComplete: boolean;
+
+  bulkDownloadSelectedEntryIds: string[];
+  bulkDownloadSelectedEntries: Entry[];
+  bulkDownloadQueue: IBulkDownloadQueueItem[];
 
   addToBulkDownloadQueue: (entry: Entry) => void;
   removeFromBulkDownloadQueue: (entryId: string) => void;
@@ -44,13 +47,16 @@ export interface IBulkDownloadQueueState {
 }
 
 export const initialBulkDownloadQueueState = {
-  bulkDownloadSelectedEntries: [],
-  bulkDownloadSelectedEntryIds: [],
-  bulkDownloadQueue: [],
+  isBulkDownloadComplete: false,
+
   completedBulkDownloadItemCount: 0,
   failedBulkDownloadItemCount: 0,
+
   createdMD5ListFileName: "",
-  isBulkDownloadComplete: false,
+
+  bulkDownloadSelectedEntryIds: [],
+  bulkDownloadSelectedEntries: [],
+  bulkDownloadQueue: [],
 };
 
 export const createBulkDownloadQueueStateSlice: StateCreator<

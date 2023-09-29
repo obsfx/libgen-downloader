@@ -19,7 +19,7 @@ export interface IEventActions {
 }
 
 export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEventActions> = (
-  set,
+  _set,
   get
 ) => ({
   backToSearch: () => {
