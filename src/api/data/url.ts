@@ -3,7 +3,7 @@ import Selector from "../selectors.js";
 
 export function parseDownloadUrls(
   document: Document,
-  throwError: (message: string) => void
+  throwError?: (message: string) => void
 ): string[] | undefined {
   const urls: string[] = [];
 
@@ -11,9 +11,11 @@ export function parseDownloadUrls(
     const mainDownloadUrlElement = document.querySelector(Selector.MAIN_DOWNLOAD_URL_SELECTOR);
 
     if (!mainDownloadUrlElement) {
-      throwError(
-        `${Label.ERR_OCCURED_WHILE_PARSING_DOC} mainDownloadUrlElement ${Selector.MAIN_DOWNLOAD_URL_SELECTOR}`
-      );
+      if (throwError) {
+        throwError(
+          `${Label.ERR_OCCURED_WHILE_PARSING_DOC} mainDownloadUrlElement ${Selector.MAIN_DOWNLOAD_URL_SELECTOR}`
+        );
+      }
       return;
     }
 
@@ -28,9 +30,11 @@ export function parseDownloadUrls(
     );
 
     if (!otherDownloadUrlsContainerElement) {
-      throwError(
-        `${Label.ERR_OCCURED_WHILE_PARSING_DOC} otherDownloadUrlsContainerElement ${Selector.OTHER_DOWNLOAD_URLS_SELECTOR}`
-      );
+      if (throwError) {
+        throwError(
+          `${Label.ERR_OCCURED_WHILE_PARSING_DOC} otherDownloadUrlsContainerElement ${Selector.OTHER_DOWNLOAD_URLS_SELECTOR}`
+        );
+      }
       return;
     }
 
@@ -47,7 +51,9 @@ export function parseDownloadUrls(
 
     return urls;
   } catch (e) {
-    throwError("Error occured while fetching download urls");
+    if (throwError) {
+      throwError("Error occured while fetching download urls");
+    }
     return;
   }
 }

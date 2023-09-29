@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useStdin, Box } from "ink";
+import { Text, useStdin, Box } from "ink";
 
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
@@ -25,19 +25,15 @@ import { ErrorMessage } from "./components/ErrorMessage.js";
 import { useBoundStore } from "./store/index.js";
 import { AppHeader } from "./components/AppHeader.js";
 
-let renderCount = 0;
-
 interface Props {
   doNotFetchConfigInitially: boolean;
 }
 
 export function App({ doNotFetchConfigInitially }: Props) {
-  //useEventManager();
-  //useDownloadManager();
-
   const { setRawMode } = useStdin();
 
   const errorMessage = useBoundStore((state) => state.errorMessage);
+  const warningMessage = useBoundStore((state) => state.warningMessage);
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
 
   useEffect(() => {
@@ -46,7 +42,7 @@ export function App({ doNotFetchConfigInitially }: Props) {
     }
 
     fetchConfig();
-  }, []);
+  }, [doNotFetchConfigInitially, fetchConfig]);
 
   useEffect(() => {
     setRawMode(true);
@@ -64,6 +60,7 @@ export function App({ doNotFetchConfigInitially }: Props) {
       <AppHeader />
       <Layouts />
       <DownloadIndicator />
+      {warningMessage && <Text color="yellow">[!] {warningMessage}</Text>}
     </Box>
   );
 }

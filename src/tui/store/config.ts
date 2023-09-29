@@ -34,7 +34,7 @@ export const createConfigStateSlice: StateCreator<TCombinedStore, [], [], IConfi
 
     if (!config) {
       store.setIsLoading(false);
-      // throw error
+      store.setErrorMessage("Couldn't fetch the config");
       return;
     }
 
@@ -48,7 +48,7 @@ export const createConfigStateSlice: StateCreator<TCombinedStore, [], [], IConfi
     store.setIsLoading(false);
 
     if (!mirror) {
-      // throw error
+      store.setErrorMessage("Couldn't find a working mirror");
       return;
     }
 

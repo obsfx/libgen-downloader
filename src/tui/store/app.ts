@@ -16,6 +16,7 @@ export interface IAppState {
   loaderMessage: string;
   searchValue: string;
   errorMessage: string | null;
+  warningMessage: string | null;
 
   currentPage: number;
   activeExpandedListLength: number;
@@ -35,6 +36,7 @@ export interface IAppState {
   setLoaderMessage: (loaderMessage: string) => void;
   setSearchValue: (searchValue: string) => void;
   setErrorMessage: (errorMessage: string | null) => void;
+  setWarningMessage: (warningMessage: string | null) => void;
 
   setCurrentPage: (currentPage: number) => void;
   setActiveExpandedListLength: (activeExpandedListLength: number) => void;
@@ -56,6 +58,7 @@ export const initialAppState = {
   loaderMessage: "",
   searchValue: "",
   errorMessage: null,
+  warningMessage: null,
 
   currentPage: 1,
   activeExpandedListLength: 0,
@@ -83,6 +86,7 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     set({ searchValue });
   },
   setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
+  setWarningMessage: (warningMessage: string | null) => set({ warningMessage }),
 
   setCurrentPage: (currentPage: number) => set({ currentPage }),
   setActiveExpandedListLength: (activeExpandedListLength: number) =>

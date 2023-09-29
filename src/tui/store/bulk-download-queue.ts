@@ -202,35 +202,35 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
 
       const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
       if (!searchPageDocument) {
-        // throw error
+        get().setWarningMessage(`Couldn't fetch the search page for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
 
       const entry = parseEntries(searchPageDocument)?.[0];
       if (!entry) {
-        // throw error
+        get().setWarningMessage(`Couldn't find the entry for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
 
       const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
       if (!mirrorPageDocument) {
-        // throw error
+        get().setWarningMessage(`Couldn't fetch the mirror page for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
 
       const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
       if (!downloadUrl) {
-        // throw error
+        get().setWarningMessage(`Couldn't find the download url for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
 
       const downloadStream = await attempt(() => fetch(downloadUrl));
       if (!downloadStream) {
-        // throw error
+        get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
@@ -266,7 +266,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
         createdMD5ListFileName: filename,
       });
     } catch (err) {
-      // throw error
+      get().setWarningMessage("Couldn't create the MD5 list file");
     }
   },
 
@@ -296,7 +296,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
 
     const md5ListResponse = await attempt(() => fetch(findMD5SearchUrl));
     if (!md5ListResponse) {
-      // throw error
+      get().setWarningMessage("Couldn't fetch the MD5 list");
       return;
     }
     const md5Arr = (await md5ListResponse.json()) as { md5: string }[];

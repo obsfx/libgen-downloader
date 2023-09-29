@@ -111,7 +111,7 @@ export const createDownloadQueueStateSlice: StateCreator<
 
     set({ isQueueActive: true });
 
-    while (true) {
+    for (;;) {
       const entry = store.consumeDownloadQueue();
       if (!entry) {
         break;
@@ -128,24 +128,21 @@ export const createDownloadQueueStateSlice: StateCreator<
         const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
 
         if (!mirrorPageDocument) {
-          // throw some error
+          store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
           continue;
         }
 
-        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument, (message) => {
-          // throw some error
-          console.log(message);
-        });
+        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
       }
 
       if (!downloadUrl) {
-        // throw some error
+        store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);
         continue;
       }
 
       const downloadStream = await attempt(() => fetch(downloadUrl as string));
       if (!downloadStream) {
-        // throw some error
+        store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         continue;
       }
 
@@ -177,7 +174,7 @@ export const createDownloadQueueStateSlice: StateCreator<
           status: DownloadStatus.DONE,
         });
       } catch (error) {
-        // throw some error
+        store.setWarningMessage(`Couldn't download "${entry.title}"`);
         store.increaseTotalFailed();
         store.updateCurrentDownloadProgress(entry.id, {
           status: DownloadStatus.FAILED,

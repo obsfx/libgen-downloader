@@ -47,13 +47,13 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
 
     const pageDocument = await attempt(() => getDocument(searchURL));
     if (!pageDocument) {
-      // throw error
+      get().setWarningMessage(`Couldn't fetch the search page for "${query}"`);
       return [];
     }
 
     const entries = parseEntries(pageDocument);
     if (!entries) {
-      // throw error
+      get().setWarningMessage(`Couldn't parse the search page for "${query}"`);
       return [];
     }
 
@@ -128,15 +128,13 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
 
     const pageDocument = await attempt(() => getDocument(entry.mirror));
     if (!pageDocument) {
-      // throw error
+      get().setWarningMessage(`Couldn't fetch the entry page for "${entry.title}"`);
       return [];
     }
 
-    const parsedDownloadUrls = parseDownloadUrls(pageDocument, (error: string) => {
-      //throw new Error(error);
-    });
+    const parsedDownloadUrls = parseDownloadUrls(pageDocument);
     if (!parsedDownloadUrls) {
-      // throw error
+      get().setWarningMessage(`Couldn't parse the entry page for "${entry.title}"`);
       return [];
     }
 

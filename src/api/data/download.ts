@@ -28,7 +28,6 @@ export const downloadFile = async ({
     const filename = parsedContentDisposition.parameters.filename;
 
     if (!downloadStream.body) {
-      //throw error
       return;
     }
 
