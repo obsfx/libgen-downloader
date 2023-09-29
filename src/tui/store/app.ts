@@ -17,6 +17,7 @@ export interface IAppState {
   searchValue: string;
   errorMessage: string | null;
   warningMessage: string | null;
+  warningTimeout: NodeJS.Timeout | null;
 
   currentPage: number;
   activeExpandedListLength: number;
@@ -59,6 +60,7 @@ export const initialAppState = {
   searchValue: "",
   errorMessage: null,
   warningMessage: null,
+  warningTimeout: null,
 
   currentPage: 1,
   activeExpandedListLength: 0,
@@ -86,7 +88,20 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     set({ searchValue });
   },
   setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
-  setWarningMessage: (warningMessage: string | null) => set({ warningMessage }),
+  setWarningMessage: (warningMessage: string | null) => {
+    const WARNING_DURATION = 5000;
+
+    const timeout = get().warningTimeout;
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
+    set({ warningMessage });
+    const newTimeout = setTimeout(() => {
+      set({ warningMessage: null });
+    }, WARNING_DURATION);
+    set({ warningTimeout: newTimeout });
+  },
 
   setCurrentPage: (currentPage: number) => set({ currentPage }),
   setActiveExpandedListLength: (activeExpandedListLength: number) =>
