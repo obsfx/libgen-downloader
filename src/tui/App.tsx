@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, useStdin, Box, useApp } from "ink";
+import { Text, useStdin } from "ink";
 
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
@@ -12,13 +12,10 @@ import { Text, useStdin, Box, useApp } from "ink";
 // [x] Bulk download queue
 // [ ] Remove unsued imports and code
 // [x] check double press search is causing issues
-// [ ] proper error handling
-// [ ] disable alternative downloads if no alternative downloads
+// [x] proper error handling
 // [ ] add error logging
-// [ ] config fetchin pre scene
-// [ ] drop log context
-// [ ] drop result list context
-// [ ] filters -> filter selection component
+// [x] drop log context
+// [x] filters -> filter selection component
 // [ ] warning prompt before exit
 
 import Layouts from "./layouts/index.js";
@@ -26,26 +23,18 @@ import { DownloadIndicator } from "./components/DownloadIndicator.js";
 import { ErrorMessage } from "./components/ErrorMessage.js";
 import { useBoundStore } from "./store/index.js";
 import { AppHeader } from "./components/AppHeader.js";
+import { AppContainer } from "./components/AppContainer.js";
 
 interface Props {
   doNotFetchConfigInitially: boolean;
 }
 
 export function App({ doNotFetchConfigInitially }: Props) {
-  const { exit } = useApp();
   const { setRawMode } = useStdin();
 
   const errorMessage = useBoundStore((state) => state.errorMessage);
   const warningMessage = useBoundStore((state) => state.warningMessage);
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
-  const setExitCallback = useBoundStore((state) => state.setExitCallback);
-
-  useEffect(() => {
-    setExitCallback(() => {
-      exit();
-      process.exit(0);
-    });
-  }, [exit, setExitCallback]);
 
   useEffect(() => {
     if (doNotFetchConfigInitially) {
@@ -67,12 +56,12 @@ export function App({ doNotFetchConfigInitially }: Props) {
   }
 
   return (
-    <Box width={80} marginLeft={1} paddingRight={4} flexDirection="column">
+    <AppContainer>
       <AppHeader />
       <Layouts />
       <DownloadIndicator />
       {warningMessage && <Text color="yellow">[!] {warningMessage}</Text>}
-    </Box>
+    </AppContainer>
   );
 }
 

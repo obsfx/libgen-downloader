@@ -10,15 +10,14 @@ export function AppHeader() {
 
   return (
     <>
-      <Box borderColor="gray" borderStyle="round" paddingX={1} width={65} flexDirection="column">
-        <Box>
-          <Text>
-            <Text color="white">libgen-downloader </Text>
-            <Text color="green">@{APP_VERSION}</Text>
-            <Text> {figures.arrowRight} </Text>
-            <Text color="gray">github.com/obsfx/libgen-downloader</Text>
-          </Text>
-        </Box>
+      <Box paddingY={1} flexDirection="column">
+        <Text wrap="truncate-end">
+          <Text color="gray">{figures.bullet} </Text>
+          <Text color="white">libgen-downloader </Text>
+          <Text color="green">@{APP_VERSION}</Text>
+          <Text> {figures.arrowRight} </Text>
+          <Text color="gray">github.com/obsfx/libgen-downloader</Text>
+        </Text>
       </Box>
       {newVersionAvailable && (
         <Box>
