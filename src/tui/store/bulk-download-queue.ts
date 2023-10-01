@@ -271,6 +271,11 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
   },
 
   startBulkDownload: async () => {
+    if (get().bulkDownloadSelectedEntries.length === 0) {
+      get().setWarningMessage("Bulk download queue is empty");
+      return;
+    }
+
     set({
       completedBulkDownloadItemCount: 0,
       failedBulkDownloadItemCount: 0,
