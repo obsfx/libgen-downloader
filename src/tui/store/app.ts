@@ -116,7 +116,7 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     const listItems = constructListItems({
       entries,
       currentPage: store.currentPage,
-      isNextPageAvailable: (store.entryCacheMap[store.currentPage + 1] || []).length > 0,
+      isNextPageAvailable: store.lookupPageCache(store.currentPage + 1).length > 0,
       handleSearchOption: store.backToSearch,
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,

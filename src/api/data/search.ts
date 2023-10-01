@@ -7,6 +7,8 @@ export interface constructSearchURLParams {
   pageSize: number;
   mirror: string;
   searchReqPattern: string;
+  columnFilterQueryParamKey: string;
+  columnFilterQueryParamValue: string | null;
 }
 export function constructSearchURL({
   query,
@@ -14,12 +16,20 @@ export function constructSearchURL({
   pageSize,
   mirror,
   searchReqPattern,
+  columnFilterQueryParamKey,
+  columnFilterQueryParamValue,
 }: constructSearchURLParams): string {
-  return searchReqPattern
+  let url = searchReqPattern
     .replace("{mirror}", mirror)
     .replace("{query}", query)
     .replace("{pageNumber}", pageNumber.toString())
     .replace("{pageSize}", pageSize.toString());
+
+  if (columnFilterQueryParamValue) {
+    url += `&${columnFilterQueryParamKey}=${columnFilterQueryParamValue}`;
+  }
+
+  return url;
 }
 
 export function constructMD5SearchUrl(pattern: string, mirror: string, md5: string): string {

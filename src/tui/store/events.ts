@@ -26,16 +26,10 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
     const store = get();
 
     store.resetAppState();
-    store.resetEntryCacheMap();
     store.setActiveLayout(LAYOUT_KEY.SEARCH_LAYOUT);
   },
   search: async (query: string, pageNumber: number) => {
     const store = get();
-
-    const cachedEntries = store.entryCacheMap[pageNumber];
-    if (cachedEntries) {
-      return cachedEntries;
-    }
 
     const searchURL = constructSearchURL({
       query,
@@ -43,7 +37,14 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       pageNumber,
       pageSize: SEARCH_PAGE_SIZE,
       searchReqPattern: store.searchReqPattern,
+      columnFilterQueryParamKey: store.columnFilterQueryParamKey,
+      columnFilterQueryParamValue: store.selectedSearchByOption,
     });
+
+    const cachedEntries = store.lookupPageCache(pageNumber);
+    if (cachedEntries.length > 0) {
+      return cachedEntries;
+    }
 
     const pageDocument = await attempt(() => getDocument(searchURL));
     if (!pageDocument) {
@@ -57,19 +58,19 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
       return [];
     }
 
-    store.setEntryCacheMap(pageNumber, entries);
+    store.setEntryCacheMap(searchURL, entries);
     return entries;
   },
   handleSearchSubmit: async () => {
     const store = get();
 
-    store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
-    store.setIsLoading(true);
-    store.setLoaderMessage(Label.GETTING_RESULTS);
-
     if (store.searchValue.length < 3) {
       return;
     }
+
+    store.setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
+    store.setIsLoading(true);
+    store.setLoaderMessage(Label.GETTING_RESULTS);
 
     const entries = await store.search(store.searchValue, store.currentPage);
     // search to cache next page
@@ -81,22 +82,26 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
   nextPage: async () => {
     const store = get();
 
+    const nextPageNumber = store.currentPage + 1;
+    const furtherPageNumber = store.currentPage + 2;
+
     store.setIsLoading(true);
     store.setLoaderMessage(Label.GETTING_RESULTS);
 
-    let entries = store.entryCacheMap[store.currentPage + 1] || [];
+    let entries = store.lookupPageCache(nextPageNumber);
     if (entries.length === 0) {
-      entries = await store.search(store.searchValue, store.currentPage + 1);
+      entries = await store.search(store.searchValue, nextPageNumber);
     }
 
     // search to cache next page
-    await store.search(store.searchValue, store.currentPage + 2);
+    await store.search(store.searchValue, furtherPageNumber);
 
-    // It is important to set entries after the search cause of caching controls
-    store.setCurrentPage(store.currentPage + 1);
-    store.setEntries(entries);
+    store.setCurrentPage(nextPageNumber);
     store.setListItemsCursor(0);
     store.setIsLoading(false);
+    // It is important to set entries after the search cause of determine
+    // next page availability
+    store.setEntries(entries);
   },
   prevPage: async () => {
     const store = get();

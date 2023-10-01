@@ -1,10 +1,13 @@
 import { StateCreator } from "zustand";
 import { TCombinedStore } from "./index.js";
 import { Entry } from "../../api/models/Entry.js";
+import { constructSearchURL } from "../../api/data/search.js";
+import { SEARCH_PAGE_SIZE } from "../../settings.js";
 
 export interface ICacheState {
-  entryCacheMap: Record<number, Entry[]>;
-  setEntryCacheMap: (pageNumber: number, entryList: Entry[]) => void;
+  entryCacheMap: Record<string, Entry[]>;
+  setEntryCacheMap: (searchURL: string, entryList: Entry[]) => void;
+  lookupPageCache: (pageNumber: number) => Entry[];
   resetEntryCacheMap: () => void;
 
   alternativeDownloadURLsCacheMap: Record<string, string[]>;
@@ -22,12 +25,12 @@ export const createCacheStateSlice: StateCreator<TCombinedStore, [], [], ICacheS
 ) => ({
   ...initialCacheState,
 
-  setEntryCacheMap: (pageNumber: number, entryList: Entry[]) => {
+  setEntryCacheMap: (searchURL: string, entryList: Entry[]) => {
     const store = get();
 
     const entryCacheMap = {
       ...store.entryCacheMap,
-      [pageNumber]: entryList,
+      [searchURL]: entryList,
     };
 
     set({ entryCacheMap });
@@ -37,6 +40,22 @@ export const createCacheStateSlice: StateCreator<TCombinedStore, [], [], ICacheS
     set({
       entryCacheMap: {},
     });
+  },
+
+  lookupPageCache: (pageNumber: number) => {
+    const store = get();
+
+    const searchURLAsCacheMapKey = constructSearchURL({
+      query: store.searchValue,
+      mirror: store.mirror,
+      pageNumber,
+      pageSize: SEARCH_PAGE_SIZE,
+      searchReqPattern: store.searchReqPattern,
+      columnFilterQueryParamKey: store.columnFilterQueryParamKey,
+      columnFilterQueryParamValue: store.selectedSearchByOption,
+    });
+
+    return store.entryCacheMap[searchURLAsCacheMapKey] || [];
   },
 
   setAlternativeDownloadURLsCacheMap: (entryId: string, urlList: string[]) => {
