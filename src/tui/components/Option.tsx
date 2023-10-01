@@ -7,6 +7,7 @@ export interface IOption {
   label: string;
   onSelect: () => void;
   loading?: boolean;
+  order?: number;
 }
 
 const Option: React.FC<

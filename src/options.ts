@@ -34,3 +34,12 @@ export enum BulkDownloadAfterCompleteOption {
   TURN_BACK_TO_THE_LIST,
   BACK_TO_SEARCH,
 }
+
+export enum ErrorMessageOption {
+  EXIT,
+}
+
+export enum BeforeExitOption {
+  YES,
+  NO,
+}

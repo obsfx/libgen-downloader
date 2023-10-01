@@ -3,9 +3,11 @@ import { Box, Text } from "ink";
 import OptionList from "./OptionList.js";
 import { useBoundStore } from "../store/index.js";
 import Label from "../../labels.js";
+import { ErrorMessageOption } from "../../options.js";
 
 export function ErrorMessage() {
   const errorMessage = useBoundStore((state) => state.errorMessage);
+  const handleExit = useBoundStore((state) => state.handleExit);
 
   return (
     <Box flexDirection="column">
@@ -18,11 +20,9 @@ export function ErrorMessage() {
 
       <OptionList
         options={{
-          ["Exit"]: {
+          [ErrorMessageOption.EXIT]: {
             label: Label.EXIT,
-            onSelect: () => {
-              process.exit(0);
-            },
+            onSelect: () => handleExit(),
           },
         }}
       />

@@ -6,7 +6,13 @@ import { useListControls } from "../hooks/useListControls.js";
 const OptionList: React.FC<{
   options: Record<string, IOption>;
 }> = ({ options }) => {
-  const { selectedOptionIndex } = useListControls(Object.values(options), (item) => {
+  const sortedEntries = Object.entries(options).sort(
+    ([, a], [, b]) => (a.order ?? 0) - (b.order ?? 0)
+  );
+
+  const values = sortedEntries.map(([, option]) => option);
+
+  const { selectedOptionIndex } = useListControls(values, (item) => {
     if (!item.loading) {
       item.onSelect();
     }
@@ -14,7 +20,7 @@ const OptionList: React.FC<{
 
   return (
     <Box flexDirection="column" paddingLeft={3}>
-      {Object.entries(options).map(([key, option], idx) => {
+      {sortedEntries.map(([key, option], idx) => {
         const isOptionActive = idx === selectedOptionIndex;
         return <Option key={key} isOptionActive={isOptionActive} option={option} />;
       })}

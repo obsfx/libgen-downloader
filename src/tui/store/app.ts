@@ -121,7 +121,19 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,
       handleStartBulkDownloadOption: store.startBulkDownload,
-      handleExitOption: () => process.exit(0),
+      handleExitOption: () => {
+        if (get().inDownloadQueueEntryIds.length > 0) {
+          store.setActiveLayout(LAYOUT_KEY.DOWNLOAD_QUEUE_BEFORE_EXIT_LAYOUT);
+          return;
+        }
+
+        if (get().bulkDownloadSelectedEntryIds.length > 0) {
+          store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_BEFORE_EXIT_LAYOUT);
+          return;
+        }
+
+        store.handleExit();
+      },
     });
     set({ entries, listItems });
   },

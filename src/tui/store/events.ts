@@ -16,6 +16,7 @@ export interface IEventActions {
   nextPage: () => Promise<void>;
   prevPage: () => Promise<void>;
   fetchEntryAlternativeDownloadURLs: (entry: Entry) => Promise<string[]>;
+  handleExit: () => void;
 }
 
 export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEventActions> = (
@@ -145,5 +146,9 @@ export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEven
 
     store.setAlternativeDownloadURLsCacheMap(entry.id, parsedDownloadUrls);
     return parsedDownloadUrls;
+  },
+
+  handleExit: () => {
+    process.exit(0);
   },
 });

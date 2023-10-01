@@ -332,7 +332,7 @@ export const createBulkDownloadQueueStateSlice: StateCreator<
     await get().operateBulkDownloadQueue();
 
     // process exit successfully
-    process.exit(0);
+    get().handleExit();
   },
 
   resetBulkDownloadQueue: () => {
