@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useInput, Box, Text } from "ink";
+import figures from "figures";
 import { IOption } from "../../components/Option.js";
 import OptionList from "../../components/OptionList.js";
 import { DetailEntryOption } from "../../../options.js";
 import Label from "../../../labels.js";
 import { LAYOUT_KEY } from "../keys.js";
 import { useBoundStore } from "../../store/index.js";
-import { useInput } from "ink";
 
 const DetailEntryOptions: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
@@ -44,7 +45,7 @@ const DetailEntryOptions: React.FC = () => {
     };
 
     fetchDownloadUrls();
-  }, []);
+  }, [detailedEntry, fetchEntryAlternativeDownloadURLs]);
 
   const toggleBulkDownload = () => {
     if (!detailedEntry) {
@@ -132,10 +133,21 @@ const DetailEntryOptions: React.FC = () => {
     return null;
   }
 
-  return showAlternativeDownloads ? (
-    <OptionList key={"alternativeDownloadOptions"} options={alternativeDownloadOptions} />
-  ) : (
-    <OptionList key={"detailOptions"} options={detailOptions} />
+  return (
+    <>
+      <Box paddingLeft={3} height={1}>
+        {inBulkDownloadQueue && (
+          <Text color="green">
+            {figures.tick} {Label.ADDED_TO_BULK_DOWNLOAD_QUEUE}
+          </Text>
+        )}
+      </Box>
+      {showAlternativeDownloads ? (
+        <OptionList key={"alternativeDownloadOptions"} options={alternativeDownloadOptions} />
+      ) : (
+        <OptionList key={"detailOptions"} options={detailOptions} />
+      )}
+    </>
   );
 };
 

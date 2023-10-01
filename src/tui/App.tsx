@@ -18,6 +18,8 @@ import { Text, useStdin, Box } from "ink";
 // [ ] config fetchin pre scene
 // [ ] drop log context
 // [ ] drop result list context
+// [ ] filters -> filter selection component
+// [ ] warning prompt before exit
 
 import Layouts from "./layouts/index.js";
 import { DownloadIndicator } from "./components/DownloadIndicator.js";

@@ -10,6 +10,7 @@ export default {
   DOWNLOADING: "Downloading...",
   ADD_TO_BULK_DOWNLOAD_QUEUE: "Add To Bulk Download Queue",
   REMOVE_FROM_BULK_DOWNLOAD_QUEUE: "Remove From Bulk Download Queue",
+  ADDED_TO_BULK_DOWNLOAD_QUEUE: "Added To Bulk Download Queue",
   TURN_BACK_TO_THE_LIST: "Turn Back To The List",
   BACK_TO_ENTRY_OPTIONS: "Back",
   FETCHING_CONFIG: "Fetching configuration file...",

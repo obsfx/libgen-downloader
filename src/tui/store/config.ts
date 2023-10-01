@@ -16,6 +16,8 @@ export const initialConfigState = {
   searchByMD5Pattern: "",
   MD5ReqPattern: "",
   mirror: "",
+  columnFilterQueryParamKey: "",
+  columnFilterQueryParamValues: {},
 };
 
 export const createConfigStateSlice: StateCreator<TCombinedStore, [], [], IConfigState> = (

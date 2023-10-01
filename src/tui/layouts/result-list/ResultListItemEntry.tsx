@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, useInput, Key } from "ink";
+import { Box, Text, useInput } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/Option.js";
 import OptionList from "../../components/OptionList.js";
@@ -144,7 +144,7 @@ const ResultListItemEntry: React.FC<{
     };
 
     fetchDownloadUrls();
-  }, [isExpanded, item.data]);
+  }, [isExpanded, item.data, fetchEntryAlternativeDownloadURLs, alternativeDownloadURLs]);
 
   return (
     <Box flexDirection="column" paddingLeft={isExpanded ? 1 : 0}>

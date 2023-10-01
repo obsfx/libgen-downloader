@@ -4,7 +4,6 @@ import { Entry } from "../../api/models/Entry.js";
 import { ListItem } from "../../api/models/ListItem.js";
 import { constructListItems } from "../../utils.js";
 import { LAYOUT_KEY } from "../layouts/keys.js";
-import { FilterRecord } from "../layouts/search/search-filter/Filter.data.js";
 
 export interface IAppState {
   CLIMode: boolean;
@@ -15,6 +14,7 @@ export interface IAppState {
 
   loaderMessage: string;
   searchValue: string;
+  selectedSearchByOption: string | null;
   errorMessage: string | null;
   warningMessage: string | null;
   warningTimeout: NodeJS.Timeout | null;
@@ -23,7 +23,6 @@ export interface IAppState {
   activeExpandedListLength: number;
   listItemsCursor: number;
 
-  filters: FilterRecord;
   detailedEntry: Entry | null;
   entries: Entry[];
   listItems: ListItem[];
@@ -36,6 +35,7 @@ export interface IAppState {
 
   setLoaderMessage: (loaderMessage: string) => void;
   setSearchValue: (searchValue: string) => void;
+  setSelectedSearchByOption: (selectedSearchByOption: string | null) => void;
   setErrorMessage: (errorMessage: string | null) => void;
   setWarningMessage: (warningMessage: string | null) => void;
 
@@ -43,7 +43,6 @@ export interface IAppState {
   setActiveExpandedListLength: (activeExpandedListLength: number) => void;
   setListItemsCursor: (listItemsCursor: number) => void;
 
-  setFilters: (filters: FilterRecord) => void;
   setDetailedEntry: (detailedEntry: Entry | null) => void;
   setEntries: (entries: Entry[]) => void;
   setActiveLayout: (activeLayout: LAYOUT_KEY) => void;
@@ -58,6 +57,7 @@ export const initialAppState = {
 
   loaderMessage: "",
   searchValue: "",
+  selectedSearchByOption: null,
   errorMessage: null,
   warningMessage: null,
   warningTimeout: null,
@@ -66,7 +66,6 @@ export const initialAppState = {
   activeExpandedListLength: 0,
   listItemsCursor: 0,
 
-  filters: {} as FilterRecord,
   detailedEntry: null,
   entries: [],
   listItems: [],
@@ -86,6 +85,9 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
   setSearchValue: (searchValue: string) => {
     set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
     set({ searchValue });
+  },
+  setSelectedSearchByOption: (selectedSearchByOption: string | null) => {
+    set({ selectedSearchByOption });
   },
   setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
   setWarningMessage: (warningMessage: string | null) => {
@@ -108,7 +110,6 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
     set({ activeExpandedListLength }),
   setListItemsCursor: (listItemsCursor: number) => set({ listItemsCursor }),
 
-  setFilters: (filters: FilterRecord) => set({ filters }),
   setDetailedEntry: (detailedEntry: Entry | null) => set({ detailedEntry }),
   setEntries: (entries: Entry[]) => {
     const store = get();
