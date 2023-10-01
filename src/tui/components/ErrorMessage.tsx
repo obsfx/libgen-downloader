@@ -1,14 +1,15 @@
 import React from "react";
-import { Box, Text } from "ink";
+import { Box, Text, useApp } from "ink";
 import OptionList from "./OptionList.js";
 import { useBoundStore } from "../store/index.js";
+import Label from "../../labels.js";
 
 export function ErrorMessage() {
+  const { exit } = useApp();
   const errorMessage = useBoundStore((state) => state.errorMessage);
-  const setErrorMessage = useBoundStore((state) => state.setErrorMessage);
 
   return (
-    <Box>
+    <Box flexDirection="column">
       <Box>
         <Text>
           Something went wrong:
@@ -18,9 +19,12 @@ export function ErrorMessage() {
 
       <OptionList
         options={{
-          ["Clear Error"]: {
-            label: "Clear Error",
-            onSelect: () => setErrorMessage(""),
+          ["Exit"]: {
+            label: Label.EXIT,
+            onSelect: () => {
+              exit();
+              process.exit(0);
+            },
           },
         }}
       />

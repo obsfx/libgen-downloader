@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, useStdin, Box } from "ink";
+import { Text, useStdin, Box, useApp } from "ink";
 
 // TODO:
 // [x] Drop nextPageEntries and use only general entry cache
@@ -32,11 +32,20 @@ interface Props {
 }
 
 export function App({ doNotFetchConfigInitially }: Props) {
+  const { exit } = useApp();
   const { setRawMode } = useStdin();
 
   const errorMessage = useBoundStore((state) => state.errorMessage);
   const warningMessage = useBoundStore((state) => state.warningMessage);
   const fetchConfig = useBoundStore((state) => state.fetchConfig);
+  const setExitCallback = useBoundStore((state) => state.setExitCallback);
+
+  useEffect(() => {
+    setExitCallback(() => {
+      exit();
+      process.exit(0);
+    });
+  }, [exit, setExitCallback]);
 
   useEffect(() => {
     if (doNotFetchConfigInitially) {

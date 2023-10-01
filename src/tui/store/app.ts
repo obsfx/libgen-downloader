@@ -28,6 +28,8 @@ export interface IAppState {
   listItems: ListItem[];
   activeLayout: LAYOUT_KEY;
 
+  exitCallback: () => void;
+
   setCLIMode: (CLIMode: boolean) => void;
 
   setIsLoading: (isLoading: boolean) => void;
@@ -46,6 +48,8 @@ export interface IAppState {
   setDetailedEntry: (detailedEntry: Entry | null) => void;
   setEntries: (entries: Entry[]) => void;
   setActiveLayout: (activeLayout: LAYOUT_KEY) => void;
+
+  setExitCallback: (exitCallback: () => void) => void;
 
   resetAppState: () => void;
 }
@@ -70,6 +74,8 @@ export const initialAppState = {
   entries: [],
   listItems: [],
   activeLayout: LAYOUT_KEY.SEARCH_LAYOUT,
+
+  exitCallback: () => {},
 };
 
 export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState> = (set, get) => ({
@@ -121,13 +127,13 @@ export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState
       handleNextPageOption: store.nextPage,
       handlePrevPageOption: store.prevPage,
       handleStartBulkDownloadOption: store.startBulkDownload,
-      handleExitOption: () => {
-        console.log("exit");
-      },
+      handleExitOption: store.exitCallback,
     });
     set({ entries, listItems });
   },
   setActiveLayout: (activeLayout: LAYOUT_KEY) => set({ activeLayout }),
+
+  setExitCallback: (exitCallback: () => void) => set({ exitCallback }),
 
   resetAppState: () => set(initialAppState),
 });
