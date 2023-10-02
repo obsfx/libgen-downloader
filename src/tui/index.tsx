@@ -1,17 +1,21 @@
 import React from "react";
 import { render } from "ink";
 
-import { LayoutWrapper } from "./layouts/Layout.js";
 import { LAYOUT_KEY } from "./layouts/keys.js";
 import App from "./App.js";
 import { useBoundStore } from "./store/index.js";
 
 interface renderTUIArgs {
   startInCLIMode: boolean;
+  doNotFetchConfigInitially: boolean;
   initialLayout?: LAYOUT_KEY;
 }
 
-export default function renderTUI({ startInCLIMode, initialLayout }: renderTUIArgs) {
+export default function renderTUI({
+  startInCLIMode,
+  doNotFetchConfigInitially,
+  initialLayout,
+}: renderTUIArgs) {
   if (startInCLIMode) {
     const store = useBoundStore.getState();
     store.setCLIMode(true);
@@ -23,9 +27,8 @@ export default function renderTUI({ startInCLIMode, initialLayout }: renderTUIAr
     process.stdout.write(clearANSI);
   }
 
-  render(
-    <LayoutWrapper initialLayout={initialLayout || LAYOUT_KEY.SEARCH_LAYOUT}>
-      <App doNotFetchConfigInitially={startInCLIMode} />
-    </LayoutWrapper>
-  );
+  const store = useBoundStore.getState();
+  store.setActiveLayout(initialLayout || LAYOUT_KEY.SEARCH_LAYOUT);
+
+  render(<App doNotFetchConfigInitially={doNotFetchConfigInitially} />);
 }

@@ -6,6 +6,7 @@ export const cli = meow(
 	  $ libgen-downloader <input>
 
 	Options
+    -s, --search <query>      search for a book
     -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
     -u, --url <MD5>           get the download URL
     -d, --download <MD5>      download the file
@@ -20,6 +21,10 @@ export const cli = meow(
   {
     importMeta: import.meta,
     flags: {
+      search: {
+        type: "string",
+        shortFlag: "s",
+      },
       bulk: {
         type: "string",
         shortFlag: "b",

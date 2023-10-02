@@ -8,6 +8,24 @@ import { useBoundStore } from "../tui/store/index.js";
 import { attempt } from "../utils.js";
 
 export const operate = async (flags: Record<string, unknown>) => {
+  if (flags.search) {
+    const query = flags.search as string;
+    if (query.length < 3) {
+      console.log("Query must be at least 3 characters long");
+      return;
+    }
+
+    const store = useBoundStore.getState();
+    await store.fetchConfig();
+    store.setSearchValue(query);
+    renderTUI({
+      startInCLIMode: false,
+      doNotFetchConfigInitially: true,
+    });
+    store.handleSearchSubmit();
+    return;
+  }
+
   if (flags.bulk) {
     const filePath = flags.bulk as string;
     fs.readFile(filePath, "utf8", async (err, data) => {
@@ -20,6 +38,7 @@ export const operate = async (flags: Record<string, unknown>) => {
       await store.fetchConfig();
       renderTUI({
         startInCLIMode: true,
+        doNotFetchConfigInitially: true,
         initialLayout: LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT,
       });
       store.startBulkDownloadInCLI(md5List);
@@ -39,22 +58,26 @@ export const operate = async (flags: Record<string, unknown>) => {
 
     const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
     if (!searchPageDocument) {
-      throw new Error("Failed to get search page document");
+      console.log("Failed to get search page document");
+      return;
     }
 
     const entry = parseEntries(searchPageDocument)?.[0];
     if (!entry) {
-      throw new Error("Failed to parse entry");
+      console.log("Failed to parse entry");
+      return;
     }
 
     const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
     if (!mirrorPageDocument) {
-      throw new Error("Failed to get mirror page document");
+      console.log("Failed to get mirror page document");
+      return;
     }
 
     const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
     if (!downloadUrl) {
-      throw new Error("Failed to find download url");
+      console.log("Failed to find download url");
+      return;
     }
 
     console.log("Here is the direct download link:", downloadUrl);
@@ -68,6 +91,7 @@ export const operate = async (flags: Record<string, unknown>) => {
     await store.fetchConfig();
     renderTUI({
       startInCLIMode: true,
+      doNotFetchConfigInitially: true,
       initialLayout: LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT,
     });
     store.startBulkDownloadInCLI(md5List);
@@ -76,5 +100,6 @@ export const operate = async (flags: Record<string, unknown>) => {
 
   renderTUI({
     startInCLIMode: false,
+    doNotFetchConfigInitially: false,
   });
 };
