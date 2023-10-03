@@ -11,7 +11,7 @@
   "scripts": {
     "react-dt": "react-devtools",
     "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
-    "ts-node": "DEV=true ts-node ./src/index.ts",
+    "start": "ts-node src/index.ts",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
@@ -52,7 +52,7 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
-    "ts-node": "9.0.0",
+    "ts-node": "10.9.1",
     "typescript": "5.2.2"
   },
   "dependencies": {

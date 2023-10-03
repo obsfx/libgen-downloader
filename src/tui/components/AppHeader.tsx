@@ -19,7 +19,7 @@ export function AppHeader() {
           <Text color="gray">github.com/obsfx/libgen-downloader</Text>
         </Text>
       </Box>
-      {newVersionAvailable && (
+      {newVersionAvailable ? (
         <Box>
           <Text>
             <Text color="gray">New version available: </Text>
@@ -29,7 +29,7 @@ export function AppHeader() {
             <Text color="blue"> run npm i -g libgen-downloader to update</Text>
           </Text>
         </Box>
-      )}
+      ) : null}
     </>
   );
 }
