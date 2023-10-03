@@ -1,20 +1,20 @@
-import { StateCreator } from "zustand";
+import { GetState, SetState } from "zustand";
 import fetch from "node-fetch";
-import { TCombinedStore } from "./index.js";
-import { Entry } from "../../api/models/Entry.js";
-import { DownloadStatus } from "../../download-statuses.js";
+import { TCombinedStore } from "./index";
+import { Entry } from "../../api/models/Entry";
+import { DownloadStatus } from "../../download-statuses";
 import {
   constructFindMD5SearchUrl,
   constructMD5SearchUrl,
   parseEntries,
-} from "../../api/data/search.js";
-import { attempt } from "../../utils.js";
-import { LAYOUT_KEY } from "../layouts/keys.js";
-import { IDownloadProgress } from "./download-queue.js";
-import { getDocument } from "../../api/data/document.js";
-import { findDownloadUrlFromMirror } from "../../api/data/url.js";
-import { downloadFile } from "../../api/data/download.js";
-import { createMD5ListFile } from "../../api/data/file.js";
+} from "../../api/data/search";
+import { attempt } from "../../utils";
+import { LAYOUT_KEY } from "../layouts/keys";
+import { IDownloadProgress } from "./download-queue";
+import { getDocument } from "../../api/data/document";
+import { findDownloadUrlFromMirror } from "../../api/data/url";
+import { downloadFile } from "../../api/data/download";
+import { createMD5ListFile } from "../../api/data/file";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
   md5: string;
@@ -59,12 +59,10 @@ export const initialBulkDownloadQueueState = {
   bulkDownloadQueue: [],
 };
 
-export const createBulkDownloadQueueStateSlice: StateCreator<
-  TCombinedStore,
-  [],
-  [],
-  IBulkDownloadQueueState
-> = (set, get) => ({
+export const createBulkDownloadQueueStateSlice = (
+  set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
+) => ({
   ...initialBulkDownloadQueueState,
 
   addToBulkDownloadQueue: (entry: Entry) => {

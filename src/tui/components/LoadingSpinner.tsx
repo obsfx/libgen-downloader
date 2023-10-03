@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "ink";
-import SpinnerText from "./SpinnerText.js";
+import SpinnerText from "./SpinnerText";
 
 interface Props {
   message: string;

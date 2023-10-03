@@ -1,9 +1,9 @@
 import React from "react";
-import { Text, useInput, Key } from "ink";
+import { Text, useInput } from "ink";
 import figures from "figures";
 
-import { IResultListItemOption } from "../../../api/models/ListItem.js";
-import { useBoundStore } from "../../store/index.js";
+import { IResultListItemOption } from "../../../api/models/ListItem";
+import { useBoundStore } from "../../store/index";
 
 const ResultListItemOption: React.FC<{
   item: IResultListItemOption;
@@ -12,7 +12,7 @@ const ResultListItemOption: React.FC<{
   const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
 
   useInput(
-    (_, key: Key) => {
+    (_, key) => {
       if (key.return) {
         item.data.onSelect();
       }

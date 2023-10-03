@@ -1,7 +1,7 @@
 import React from "react";
-import Input from "../../../components/Input.js";
-import { SEARCH_MIN_CHAR } from "../../../../constants.js";
-import { useBoundStore } from "../../../store/index.js";
+import Input from "../../../components/Input";
+import { SEARCH_MIN_CHAR } from "../../../../constants";
+import { useBoundStore } from "../../../store/index";
 import { useFocus } from "ink";
 
 const SearchInput: React.FC = () => {

@@ -1,8 +1,8 @@
-import { StateCreator } from "zustand";
-import { TCombinedStore } from "./index.js";
-import { Config, fetchConfig, findMirror } from "../../api/data/config.js";
-import Label from "../../labels.js";
-import { attempt } from "../../utils.js";
+import { GetState, SetState } from "zustand";
+import { TCombinedStore } from "./index";
+import { Config, fetchConfig, findMirror } from "../../api/data/config";
+import Label from "../../labels";
+import { attempt } from "../../utils";
 
 export interface IConfigState extends Config {
   mirror: string;
@@ -20,9 +20,9 @@ export const initialConfigState = {
   columnFilterQueryParamValues: {},
 };
 
-export const createConfigStateSlice: StateCreator<TCombinedStore, [], [], IConfigState> = (
-  set,
-  get
+export const createConfigStateSlice = (
+  set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
 ) => ({
   ...initialConfigState,
 

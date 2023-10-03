@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useInput, Box, Text } from "ink";
+import { Box, Text, useInput } from "ink";
 import figures from "figures";
-import { IOption } from "../../components/Option.js";
-import OptionList from "../../components/OptionList.js";
-import { DetailEntryOption } from "../../../options.js";
-import Label from "../../../labels.js";
-import { LAYOUT_KEY } from "../keys.js";
-import { useBoundStore } from "../../store/index.js";
+import { IOption } from "../../components/Option";
+import OptionList from "../../components/OptionList";
+import { DetailEntryOption } from "../../../options";
+import Label from "../../../labels";
+import { LAYOUT_KEY } from "../keys";
+import { useBoundStore } from "../../store/index";
 
 const DetailEntryOptions: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);

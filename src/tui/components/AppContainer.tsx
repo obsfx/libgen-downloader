@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "ink";
-import { SCREEN_BASE_APP_WIDTH, SCREEN_PADDING, SCREEN_WIDTH_PERC } from "../../settings.js";
-import { useStdoutDimensions } from "../hooks/useStdoutDimensions.js";
+import { SCREEN_BASE_APP_WIDTH, SCREEN_PADDING, SCREEN_WIDTH_PERC } from "../../settings";
+import { useStdoutDimensions } from "../hooks/useStdoutDimensions";
 
 interface Props {
   children: React.ReactNode;

@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text } from "ink";
-import Label from "../../../labels.js";
 import InkSpinner from "ink-spinner";
-import { RESULT_LIST_LENGTH } from "../../../constants.js";
+import Label from "../../../labels";
+import { RESULT_LIST_LENGTH } from "../../../constants";
 
 export function ResultListLoadingSkeleton() {
   return (

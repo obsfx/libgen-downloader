@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "target": "ES2021",
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "target": "ES2016",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "jsx": "react",
     "outDir": "./build",
     "strict": true,
@@ -12,9 +13,7 @@
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

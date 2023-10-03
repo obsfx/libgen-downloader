@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "ink";
-import Option, { IOption } from "./Option.js";
-import { useListControls } from "../hooks/useListControls.js";
+import Option, { IOption } from "./Option";
+import { useListControls } from "../hooks/useListControls";
 
 const OptionList: React.FC<{
   options: Record<string, IOption>;

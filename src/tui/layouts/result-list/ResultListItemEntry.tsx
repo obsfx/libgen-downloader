@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
-import { IOption } from "../../components/Option.js";
-import OptionList from "../../components/OptionList.js";
-import { useResultListContext } from "../../contexts/ResultListContext.js";
-import { ResultListEntryOption } from "../../../options.js";
-import Label from "../../../labels.js";
-import { IResultListItemEntry } from "../../../api/models/ListItem.js";
-import { SEARCH_PAGE_SIZE } from "../../../settings.js";
-import { useBoundStore } from "../../store/index.js";
-import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
+import { IOption } from "../../components/Option";
+import OptionList from "../../components/OptionList";
+import { useResultListContext } from "../../contexts/ResultListContext";
+import { ResultListEntryOption } from "../../../options";
+import Label from "../../../labels";
+import { IResultListItemEntry } from "../../../api/models/ListItem";
+import { SEARCH_PAGE_SIZE } from "../../../settings";
+import { useBoundStore } from "../../store/index";
+import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;

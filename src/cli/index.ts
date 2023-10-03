@@ -13,33 +13,33 @@ export const cli = meow(
     -h, --help                display help for command
 
 	Examples
-    $ libgen-downloader  start the app in interactive mode
-    $ libgen-downloader -b ./MD5_LIST_1695686580524.txt  start the app in bulk downloading mode
-    $ libgen-downloader -u 1234567890abcdef1234567890abcdef  get the download URL
-    $ libgen-downloader -d 1234567890abcdef1234567890abcdef  download the file
+    $ libgen-downloader    (start the app in interactive mode witout flags)
+    $ libgen-downloader -s "The Art of War"
+    $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
+    $ libgen-downloader -u 1234567890abcdef1234567890abcdef
+    $ libgen-downloader -d 1234567890abcdef1234567890abcdef
 `,
   {
-    importMeta: import.meta,
     flags: {
       search: {
         type: "string",
-        shortFlag: "s",
+        alias: "s",
       },
       bulk: {
         type: "string",
-        shortFlag: "b",
+        alias: "b",
       },
       url: {
         type: "string",
-        shortFlag: "u",
+        alias: "u",
       },
       download: {
         type: "string",
-        shortFlag: "d",
+        alias: "d",
       },
       help: {
         type: "boolean",
-        shortFlag: "h",
+        alias: "h",
       },
     },
   }

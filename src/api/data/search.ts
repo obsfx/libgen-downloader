@@ -1,5 +1,5 @@
-import { Entry } from "../models/Entry.js";
-import Selector from "../selectors.js";
+import { Entry } from "../models/Entry";
+import Selector from "../selectors";
 
 export interface constructSearchURLParams {
   query: string;

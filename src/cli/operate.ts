@@ -1,11 +1,11 @@
 import fs from "fs";
-import { getDocument } from "../api/data/document.js";
-import { constructMD5SearchUrl, parseEntries } from "../api/data/search.js";
-import { findDownloadUrlFromMirror } from "../api/data/url.js";
-import renderTUI from "../tui/index.js";
-import { LAYOUT_KEY } from "../tui/layouts/keys.js";
-import { useBoundStore } from "../tui/store/index.js";
-import { attempt } from "../utils.js";
+import { getDocument } from "../api/data/document";
+import { constructMD5SearchUrl, parseEntries } from "../api/data/search";
+import { findDownloadUrlFromMirror } from "../api/data/url";
+import renderTUI from "../tui/index";
+import { LAYOUT_KEY } from "../tui/layouts/keys";
+import { useBoundStore } from "../tui/store/index";
+import { attempt } from "../utils";
 
 export const operate = async (flags: Record<string, unknown>) => {
   if (flags.search) {

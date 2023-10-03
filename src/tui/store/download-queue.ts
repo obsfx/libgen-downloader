@@ -1,12 +1,12 @@
-import { StateCreator } from "zustand";
+import { GetState, SetState } from "zustand";
 import fetch from "node-fetch";
-import { TCombinedStore } from "./index.js";
-import { Entry } from "../../api/models/Entry.js";
-import { DownloadStatus } from "../../download-statuses.js";
-import { attempt } from "../../utils.js";
-import { getDocument } from "../../api/data/document.js";
-import { findDownloadUrlFromMirror } from "../../api/data/url.js";
-import { downloadFile } from "../../api/data/download.js";
+import { TCombinedStore } from "./index";
+import { Entry } from "../../api/models/Entry";
+import { DownloadStatus } from "../../download-statuses";
+import { attempt } from "../../utils";
+import { getDocument } from "../../api/data/document";
+import { findDownloadUrlFromMirror } from "../../api/data/url";
+import { downloadFile } from "../../api/data/download";
 
 export interface IDownloadProgress {
   filename: string;
@@ -47,12 +47,10 @@ export const initialDownloadQueueState = {
   isQueueActive: false,
 };
 
-export const createDownloadQueueStateSlice: StateCreator<
-  TCombinedStore,
-  [],
-  [],
-  IDownloadQueueState
-> = (set, get) => ({
+export const createDownloadQueueStateSlice = (
+  set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
+) => ({
   ...initialDownloadQueueState,
 
   pushDownloadQueue: (entry: Entry) => {
@@ -187,7 +185,10 @@ export const createDownloadQueueStateSlice: StateCreator<
     set({ isQueueActive: false });
   },
 
-  updateCurrentDownloadProgress: (entryId, downloadProgress) => {
+  updateCurrentDownloadProgress: (
+    entryId: string,
+    downloadProgress: Partial<IDownloadProgress>
+  ) => {
     set((prev) => ({
       downloadProgressMap: {
         ...prev.downloadProgressMap,

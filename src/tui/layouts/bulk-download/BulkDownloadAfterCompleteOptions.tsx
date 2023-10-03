@@ -1,10 +1,10 @@
 import React from "react";
-import { BulkDownloadAfterCompleteOption } from "../../../options.js";
-import { IOption } from "../../components/Option.js";
-import { useBoundStore } from "../../store/index.js";
-import Label from "../../../labels.js";
-import { LAYOUT_KEY } from "../keys.js";
-import OptionList from "../../components/OptionList.js";
+import { BulkDownloadAfterCompleteOption } from "../../../options";
+import { IOption } from "../../components/Option";
+import { useBoundStore } from "../../store/index";
+import Label from "../../../labels";
+import { LAYOUT_KEY } from "../keys";
+import OptionList from "../../components/OptionList";
 
 export function BulkDownloadAfterCompleteOptions() {
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);

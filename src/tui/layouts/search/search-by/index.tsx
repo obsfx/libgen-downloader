@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../../../store/index.js";
-import { SearchByItem } from "./SearchByItem.js";
+import { useBoundStore } from "../../../store/index";
+import { SearchByItem } from "./SearchByItem";
 
 export function SearchBy() {
   const columnFilterQueryParamValues = useBoundStore((state) => state.columnFilterQueryParamValues);

@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text } from "ink";
 import figures from "figures";
-import { useBoundStore } from "../store/index.js";
-import { APP_VERSION } from "../../index.js";
+import { useBoundStore } from "../store/index";
+import { APP_VERSION } from "../../index";
 
 export function AppHeader() {
   const latestVersion = useBoundStore((state) => state.latestVersion);
@@ -19,7 +19,7 @@ export function AppHeader() {
           <Text color="gray">github.com/obsfx/libgen-downloader</Text>
         </Text>
       </Box>
-      {newVersionAvailable && (
+      {newVersionAvailable ? (
         <Box>
           <Text>
             <Text color="gray">New version available: </Text>
@@ -29,7 +29,7 @@ export function AppHeader() {
             <Text color="blue"> run npm i -g libgen-downloader to update</Text>
           </Text>
         </Box>
-      )}
+      ) : null}
     </>
   );
 }

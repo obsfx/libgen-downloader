@@ -1,8 +1,8 @@
-import { StateCreator } from "zustand";
-import { TCombinedStore } from "./index.js";
-import { Entry } from "../../api/models/Entry.js";
-import { constructSearchURL } from "../../api/data/search.js";
-import { SEARCH_PAGE_SIZE } from "../../settings.js";
+import { GetState, SetState } from "zustand";
+import { TCombinedStore } from "./index";
+import { Entry } from "../../api/models/Entry";
+import { constructSearchURL } from "../../api/data/search";
+import { SEARCH_PAGE_SIZE } from "../../settings";
 
 export interface ICacheState {
   entryCacheMap: Record<string, Entry[]>;
@@ -19,9 +19,9 @@ export const initialCacheState = {
   alternativeDownloadURLsCacheMap: {},
 };
 
-export const createCacheStateSlice: StateCreator<TCombinedStore, [], [], ICacheState> = (
-  set,
-  get
+export const createCacheStateSlice = (
+  set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
 ) => ({
   ...initialCacheState,
 

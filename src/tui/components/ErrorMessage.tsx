@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Text } from "ink";
-import OptionList from "./OptionList.js";
-import { useBoundStore } from "../store/index.js";
-import Label from "../../labels.js";
-import { ErrorMessageOption } from "../../options.js";
+import OptionList from "./OptionList";
+import { useBoundStore } from "../store/index";
+import Label from "../../labels";
+import { ErrorMessageOption } from "../../options";
 
 export function ErrorMessage() {
   const errorMessage = useBoundStore((state) => state.errorMessage);
