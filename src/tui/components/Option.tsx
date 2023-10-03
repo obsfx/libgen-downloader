@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import figures from "figures";
-import Spinner from "./Spinner.js";
+import Spinner from "./Spinner";
 
 export interface IOption {
   label: string;

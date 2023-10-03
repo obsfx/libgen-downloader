@@ -1,9 +1,9 @@
 import React from "react";
 import { render } from "ink";
 
-import { LAYOUT_KEY } from "./layouts/keys.js";
-import App from "./App.js";
-import { useBoundStore } from "./store/index.js";
+import { LAYOUT_KEY } from "./layouts/keys";
+import App from "./App";
+import { useBoundStore } from "./store/index";
 
 interface renderTUIArgs {
   startInCLIMode: boolean;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../store/index.js";
+import { useBoundStore } from "../store/index";
 
 const ResultListInfo: React.FC = () => {
   const searchValue = useBoundStore((state) => state.searchValue);

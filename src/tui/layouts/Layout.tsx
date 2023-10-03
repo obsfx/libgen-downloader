@@ -1,5 +1,5 @@
 import React from "react";
-import { useBoundStore } from "../store/index.js";
+import { useBoundStore } from "../store/index";
 
 export const Layout: React.FC<{
   children: React.ReactNode;

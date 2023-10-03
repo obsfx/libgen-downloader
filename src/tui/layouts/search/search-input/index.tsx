@@ -1,9 +1,9 @@
 import React from "react";
 import { Box } from "ink";
 
-import SearchInfo from "./SearchInfo.js";
-import SearchWarning from "./SearchWarning.js";
-import SearchInput from "./SearchInput.js";
+import SearchInfo from "./SearchInfo";
+import SearchWarning from "./SearchWarning";
+import SearchInput from "./SearchInput";
 
 const SearchInputMain: React.FC = () => {
   return (

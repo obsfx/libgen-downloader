@@ -1,11 +1,11 @@
 import React from "react";
 import { Box } from "ink";
 
-import SearchInputMain from "./search-input/index.js";
-import { useBoundStore } from "../../store/index.js";
-import { LoadingSpinner } from "../../components/LoadingSpinner.js";
-import { SearchBy } from "./search-by/index.js";
-import ExpandableSection from "../../components/ExpandableSection.js";
+import SearchInputMain from "./search-input/index";
+import { useBoundStore } from "../../store/index";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { SearchBy } from "./search-by/index";
+import ExpandableSection from "../../components/ExpandableSection";
 
 const Search: React.FC = () => {
   const isLoading = useBoundStore((state) => state.isLoading);

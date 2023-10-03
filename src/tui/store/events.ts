@@ -1,13 +1,13 @@
-import { StateCreator } from "zustand";
-import { TCombinedStore } from "./index.js";
-import { LAYOUT_KEY } from "../layouts/keys.js";
-import Label from "../../labels.js";
-import { Entry } from "../../api/models/Entry.js";
-import { constructSearchURL, parseEntries } from "../../api/data/search.js";
-import { SEARCH_PAGE_SIZE } from "../../settings.js";
-import { attempt } from "../../utils.js";
-import { getDocument } from "../../api/data/document.js";
-import { parseDownloadUrls } from "../../api/data/url.js";
+import { GetState, SetState, StateCreator } from "zustand";
+import { TCombinedStore } from "./index";
+import { LAYOUT_KEY } from "../layouts/keys";
+import Label from "../../labels";
+import { Entry } from "../../api/models/Entry";
+import { constructSearchURL, parseEntries } from "../../api/data/search";
+import { SEARCH_PAGE_SIZE } from "../../settings";
+import { attempt } from "../../utils";
+import { getDocument } from "../../api/data/document";
+import { parseDownloadUrls } from "../../api/data/url";
 
 export interface IEventActions {
   backToSearch: () => void;
@@ -19,9 +19,9 @@ export interface IEventActions {
   handleExit: () => void;
 }
 
-export const createEventActionsSlice: StateCreator<TCombinedStore, [], [], IEventActions> = (
-  _set,
-  get
+export const createEventActionsSlice = (
+  _set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
 ) => ({
   backToSearch: () => {
     const store = get();

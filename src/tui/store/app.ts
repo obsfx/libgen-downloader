@@ -1,9 +1,9 @@
-import { StateCreator } from "zustand";
-import { TCombinedStore } from "./index.js";
-import { Entry } from "../../api/models/Entry.js";
-import { ListItem } from "../../api/models/ListItem.js";
-import { constructListItems } from "../../utils.js";
-import { LAYOUT_KEY } from "../layouts/keys.js";
+import { GetState, SetState } from "zustand";
+import { TCombinedStore } from "./index";
+import { Entry } from "../../api/models/Entry";
+import { ListItem } from "../../api/models/ListItem";
+import { constructListItems } from "../../utils";
+import { LAYOUT_KEY } from "../layouts/keys";
 
 export interface IAppState {
   CLIMode: boolean;
@@ -72,7 +72,10 @@ export const initialAppState = {
   activeLayout: LAYOUT_KEY.SEARCH_LAYOUT,
 };
 
-export const createAppStateSlice: StateCreator<TCombinedStore, [], [], IAppState> = (set, get) => ({
+export const createAppStateSlice = (
+  set: SetState<TCombinedStore>,
+  get: GetState<TCombinedStore>
+) => ({
   CLIMode: false,
   setCLIMode: (CLIMode: boolean) => set({ CLIMode }),
 

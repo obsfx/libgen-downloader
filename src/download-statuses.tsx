@@ -1,5 +1,6 @@
 import React from "react";
 import { Text } from "ink";
+
 export enum DownloadStatus {
   IDLE = "IDLE",
   IN_QUEUE = "IN_QUEUE",

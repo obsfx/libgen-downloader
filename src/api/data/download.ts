@@ -1,7 +1,7 @@
 import contentDisposition from "content-disposition";
-import * as fs from "fs";
+import fs from "fs";
 import { Response } from "node-fetch";
-import { DownloadResult } from "../models/DownloadResult.js";
+import { DownloadResult } from "../models/DownloadResult";
 
 interface downloadFileArgs {
   downloadStream: Response;

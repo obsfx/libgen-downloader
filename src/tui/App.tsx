@@ -18,12 +18,12 @@ import { Text, useStdin } from "ink";
 // [x] filters -> filter selection component
 // [ ] warning prompt before exit
 
-import Layouts from "./layouts/index.js";
-import { DownloadIndicator } from "./components/DownloadIndicator.js";
-import { ErrorMessage } from "./components/ErrorMessage.js";
-import { useBoundStore } from "./store/index.js";
-import { AppHeader } from "./components/AppHeader.js";
-import { AppContainer } from "./components/AppContainer.js";
+import Layouts from "./layouts/index";
+import { DownloadIndicator } from "./components/DownloadIndicator";
+import { ErrorMessage } from "./components/ErrorMessage";
+import { useBoundStore } from "./store/index";
+import { AppHeader } from "./components/AppHeader";
+import { AppContainer } from "./components/AppContainer";
 
 interface Props {
   doNotFetchConfigInitially: boolean;

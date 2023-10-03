@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text } from "ink";
 import figures from "figures";
-import { useBoundStore } from "../store/index.js";
-import { APP_VERSION } from "../../index.js";
+import { useBoundStore } from "../store/index";
+import { APP_VERSION } from "../../index";
 
 export function AppHeader() {
   const latestVersion = useBoundStore((state) => state.latestVersion);

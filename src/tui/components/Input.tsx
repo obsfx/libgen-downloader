@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import InkTextInput from "ink-text-input";
+import InkTextInput from "ink-text-input"
 
 const Input: React.FC<{
   label: string;

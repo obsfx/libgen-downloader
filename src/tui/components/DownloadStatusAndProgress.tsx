@@ -1,8 +1,8 @@
 import React from "react";
 import { Text } from "ink";
-import { IDownloadProgress } from "../store/download-queue.js";
-import { getDownloadProgress } from "../helpers/progress.js";
-import { DownloadStatus, downloadStatusIndicators } from "../../download-statuses.js";
+import { IDownloadProgress } from "../store/download-queue";
+import { getDownloadProgress } from "../helpers/progress";
+import { DownloadStatus, downloadStatusIndicators } from "../../download-statuses";
 
 interface Props {
   downloadProgressData: IDownloadProgress;

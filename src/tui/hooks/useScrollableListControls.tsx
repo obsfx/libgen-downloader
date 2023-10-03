@@ -1,4 +1,4 @@
-import { useInput, Key } from "ink";
+import { useInput } from "ink";
 
 export const useScrollableListControls = (
   cursorIndex: number,
@@ -7,7 +7,7 @@ export const useScrollableListControls = (
   isActive?: boolean
 ) => {
   useInput(
-    (input: string, key: Key) => {
+    (input, key) => {
       if (input.toLowerCase() === "j" || key.downArrow) {
         setCursorIndex((cursorIndex + 1) % listLength);
         return;

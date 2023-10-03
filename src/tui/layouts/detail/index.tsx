@@ -1,12 +1,12 @@
 import React from "react";
 import { Box } from "ink";
-import ContentContainer from "../../components/ContentContainer.js";
-import DetailRow from "./DetailRow.js";
-import DetailEntryOptions from "./DetailEntryOptions.js";
-import UsageInfo from "../../components/UsageInfo.js";
-import { useBoundStore } from "../../store/index.js";
-import ResultListInfo from "../../components/ResultListInfo.js";
-import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
+import ContentContainer from "../../components/ContentContainer";
+import DetailRow from "./DetailRow";
+import DetailEntryOptions from "./DetailEntryOptions";
+import UsageInfo from "../../components/UsageInfo";
+import { useBoundStore } from "../../store/index";
+import ResultListInfo from "../../components/ResultListInfo";
+import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
 
 const Detail: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);

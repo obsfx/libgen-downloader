@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../../store/index.js";
-import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress.js";
 import InkSpinner from "ink-spinner";
-import { BulkDownloadAfterCompleteOptions } from "./BulkDownloadAfterCompleteOptions.js";
+import { useBoundStore } from "../../store/index";
+import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
+import { BulkDownloadAfterCompleteOptions } from "./BulkDownloadAfterCompleteOptions";
 
 export function BulkDownload() {
   const bulkDownloadQueue = useBoundStore((state) => state.bulkDownloadQueue);

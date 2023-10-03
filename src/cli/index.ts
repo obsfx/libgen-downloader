@@ -19,7 +19,6 @@ export const cli = meow(
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef  download the file
 `,
   {
-    importMeta: import.meta,
     flags: {
       search: {
         type: "string",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInput, Key } from "ink";
+import { useInput } from "ink";
 
 export const useListControls = <T,>(
   listItems: T[],
@@ -9,7 +9,7 @@ export const useListControls = <T,>(
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
 
   useInput(
-    (input: string, key: Key) => {
+    (input, key) => {
       if (input.toLowerCase() === "j" || key.downArrow) {
         const nextIndex =
           selectedOptionIndex === listItems.length - 1 ? 0 : selectedOptionIndex + 1;

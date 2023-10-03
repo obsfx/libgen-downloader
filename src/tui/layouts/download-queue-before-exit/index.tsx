@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../../store/index.js";
-import { IOption } from "../../components/Option.js";
-import OptionList from "../../components/OptionList.js";
-import { BeforeExitOption } from "../../../options.js";
-import Label from "../../../labels.js";
-import { LAYOUT_KEY } from "../keys.js";
+import { useBoundStore } from "../../store/index";
+import { IOption } from "../../components/Option";
+import OptionList from "../../components/OptionList";
+import { BeforeExitOption } from "../../../options";
+import Label from "../../../labels";
+import { LAYOUT_KEY } from "../keys";
 
 export function DownloadQueueBeforeExit() {
   const handleExit = useBoundStore((state) => state.handleExit);
