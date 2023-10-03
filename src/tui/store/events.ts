@@ -1,4 +1,4 @@
-import { GetState, SetState, StateCreator } from "zustand";
+import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { LAYOUT_KEY } from "../layouts/keys";
 import Label from "../../labels";

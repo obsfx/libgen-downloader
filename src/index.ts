@@ -1,4 +1,5 @@
 import { cli } from "./cli/index";
 import { operate } from "./cli/operate";
-export const APP_VERSION = cli.pkg.version;
+import { version } from "../package.json";
+export const APP_VERSION = version;
 operate(cli.flags);

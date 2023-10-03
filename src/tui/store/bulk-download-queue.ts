@@ -1,4 +1,4 @@
-import { GetState, SetState, StateCreator } from "zustand";
+import { GetState, SetState } from "zustand";
 import fetch from "node-fetch";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";

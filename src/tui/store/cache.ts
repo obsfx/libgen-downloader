@@ -1,9 +1,8 @@
-import { GetState, SetState, StateCreator } from "zustand";
+import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { constructSearchURL } from "../../api/data/search";
 import { SEARCH_PAGE_SIZE } from "../../settings";
-import { TcpNetConnectOpts } from "net";
 
 export interface ICacheState {
   entryCacheMap: Record<string, Entry[]>;

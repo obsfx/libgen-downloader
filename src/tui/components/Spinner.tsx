@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "ink";
-import InkSpinner from "ink-spinner"
+import InkSpinner from "ink-spinner";
 
 const Spinner: React.FC = () => {
   return (

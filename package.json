@@ -16,7 +16,9 @@
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
-    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "pkg-create": "pkg -t node16-win-x64,node16-macos-arm64,node16-macos-x64,node16-linux-arm64,node16-linux-x64 . --out-path ./standalone-executables",
+    "create-standalone": "npm run build && npm run pkg-create"
   },
   "keywords": [
     "libgen",
@@ -50,6 +52,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.6.0",
+    "pkg": "5.8.1",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
     "ts-node": "10.9.1",

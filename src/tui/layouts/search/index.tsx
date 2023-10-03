@@ -5,7 +5,6 @@ import SearchInputMain from "./search-input/index";
 import { useBoundStore } from "../../store/index";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { SearchBy } from "./search-by/index";
-import ExpandableSection from "../../components/ExpandableSection";
 
 const Search: React.FC = () => {
   const isLoading = useBoundStore((state) => state.isLoading);
