@@ -24,6 +24,7 @@ export function SearchByItem({ isSelected, label, onSelect }: Props) {
     <Text color={isSelected ? "green" : "white"}>
       {" "}
       {isSelected ? figures.tick : " "} <Text inverse={isFocused}>{label}</Text>
+      {isFocused && !isSelected ? <Text color="gray"> (Press [ENTER] to select)</Text> : ""}
     </Text>
   );
 }
