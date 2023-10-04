@@ -161,7 +161,7 @@ export const createBulkDownloadQueueStateSlice = (
 
         return {
           ...item,
-          status: DownloadStatus.DONE,
+          status: DownloadStatus.DOWNLOADED,
         };
       }),
     }));
@@ -255,7 +255,7 @@ export const createBulkDownloadQueueStateSlice = (
     });
 
     const completedMD5List = get()
-      .bulkDownloadQueue.filter((item) => item.status === DownloadStatus.DONE)
+      .bulkDownloadQueue.filter((item) => item.status === DownloadStatus.DOWNLOADED)
       .map((item) => item.md5);
 
     try {

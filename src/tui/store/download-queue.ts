@@ -169,7 +169,7 @@ export const createDownloadQueueStateSlice = (
 
         store.increaseTotalDownloaded();
         store.updateCurrentDownloadProgress(entry.id, {
-          status: DownloadStatus.DONE,
+          status: DownloadStatus.DOWNLOADED,
         });
       } catch (error) {
         store.setWarningMessage(`Couldn't download "${entry.title}"`);

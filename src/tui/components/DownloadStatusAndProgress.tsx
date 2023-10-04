@@ -17,7 +17,7 @@ export function DownloadStatusAndProgress({ downloadProgressData }: Props) {
   return (
     <Text>
       {downloadStatusIndicators[downloadProgressData.status]}{" "}
-      {downloadProgressData.status !== DownloadStatus.DONE && (
+      {downloadProgressData.status !== DownloadStatus.DOWNLOADED && (
         <>
           <Text color="white">
             {downloadProgress?.progressPercentage}% {downloadProgress?.downloadedSize} /{" "}

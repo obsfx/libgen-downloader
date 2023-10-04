@@ -15,7 +15,7 @@ export const DownloadIndicator: React.FC = () => {
     <Box flexDirection="column">
       <Text wrap="truncate">
         <Text color="green">
-          DONE {totalDownloaded}/{totalAddedToDownloadQueue}
+          DOWNLOADED {totalDownloaded}/{totalAddedToDownloadQueue}
         </Text>{" "}
         {totalFailed > 0 && <Text color="redBright">FAIL ({totalFailed}) </Text>}
         to <Text color="blueBright">{process.cwd()}</Text>
