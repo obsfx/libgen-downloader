@@ -136,14 +136,25 @@ const ResultListItemEntry: React.FC<{
       return;
     }
 
+    let isMounted = true;
+
     const fetchDownloadUrls = async () => {
       setAlternativeDownloadURLsLoading(true);
       const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(item.data);
+
+      if (!isMounted) {
+        return;
+      }
+
       setAlternativeDownloadURLs(alternativeDownloadURLs);
       setAlternativeDownloadURLsLoading(false);
     };
 
     fetchDownloadUrls();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isExpanded, item.data, fetchEntryAlternativeDownloadURLs, alternativeDownloadURLs]);
 
   return (

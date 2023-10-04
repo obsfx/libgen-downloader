@@ -37,14 +37,25 @@ const DetailEntryOptions: React.FC = () => {
       return;
     }
 
+    let isMounted = true;
+
     const fetchDownloadUrls = async () => {
       setAlternativeDownloadURLsLoading(true);
       const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(detailedEntry);
+
+      if (!isMounted) {
+        return;
+      }
+
       setAlternativeDownloadURLs(alternativeDownloadURLs);
       setAlternativeDownloadURLsLoading(false);
     };
 
     fetchDownloadUrls();
+
+    return () => {
+      isMounted = false;
+    };
   }, [detailedEntry, fetchEntryAlternativeDownloadURLs]);
 
   const toggleBulkDownload = () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, useFocus } from "ink";
+import { Box } from "ink";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./ResultListItemOption";
 import ResultListItemEntry from "./ResultListItemEntry";
@@ -21,12 +21,11 @@ const ResultList: React.FC = () => {
 
   const isLoading = useBoundStore((state) => state.isLoading);
 
-  const { isFocused } = useFocus({ autoFocus: true });
   useScrollableListControls(
     listItemsCursor,
     setListItemsCursor,
     listItems.length,
-    isFocused && !anyEntryExpanded
+    !anyEntryExpanded
   );
   const renderedItems = getRenderedListItems(
     listItemsCursor,

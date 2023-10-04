@@ -4,6 +4,7 @@ import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
 import { constructListItems } from "../../utils";
 import { LAYOUT_KEY } from "../layouts/keys";
+import { clearScreen } from "../helpers/screen";
 
 export interface IAppState {
   CLIMode: boolean;
@@ -140,7 +141,14 @@ export const createAppStateSlice = (
     });
     set({ entries, listItems });
   },
-  setActiveLayout: (activeLayout: LAYOUT_KEY) => set({ activeLayout }),
+  setActiveLayout: (activeLayout: LAYOUT_KEY) => {
+    const store = get();
+    if (!store.CLIMode) {
+      clearScreen();
+    }
+
+    set({ activeLayout });
+  },
 
   resetAppState: () => set(initialAppState),
 });

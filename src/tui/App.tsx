@@ -1,23 +1,6 @@
 import React, { useEffect } from "react";
 import { Text, useStdin } from "ink";
 
-// TODO:
-// [x] Drop nextPageEntries and use only general entry cache
-// [x] Download queue
-// [x] Move download progress to entry item
-// [x] Result list skeleton loader getting results
-// [x] Entry detail download progress
-// [x] Alternative download cache map
-// [ ] better download status
-// [x] Bulk download queue
-// [ ] Remove unsued imports and code
-// [x] check double press search is causing issues
-// [x] proper error handling
-// [ ] add error logging
-// [x] drop log context
-// [x] filters -> filter selection component
-// [ ] warning prompt before exit
-
 import Layouts from "./layouts/index";
 import { DownloadIndicator } from "./components/DownloadIndicator";
 import { ErrorMessage } from "./components/ErrorMessage";
