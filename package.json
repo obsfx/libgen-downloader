@@ -13,12 +13,13 @@
     "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
     "start": "ts-node src/index.ts",
     "build": "tsc -b",
+    "build:complete": "npm run rimraf && npm run build && npm run pkg",
     "watch": "tsc -b --watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "pkg-create": "pkg -t node16-win-x64,node16-macos-arm64,node16-macos-x64,node16-linux-arm64,node16-linux-x64 . --out-path ./standalone-executables",
-    "create-standalone": "npm run build && npm run pkg-create"
+    "rimraf": "rimraf ./build && rimraf ./standalone-executables",
+    "pkg": "pkg -t node16-win-x64,node16-macos-arm64,node16-macos-x64,node16-linux-arm64,node16-linux-x64 . --out-path ./standalone-executables"
   },
   "keywords": [
     "libgen",
@@ -55,6 +56,7 @@
     "pkg": "5.8.1",
     "prettier": "2.5.1",
     "react-devtools": "4.24.0",
+    "rimraf": "5.0.5",
     "ts-node": "10.9.1",
     "typescript": "5.2.2"
   },
