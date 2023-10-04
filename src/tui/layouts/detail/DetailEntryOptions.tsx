@@ -82,6 +82,7 @@ const DetailEntryOptions: React.FC = () => {
     [DetailEntryOption.DOWNLOAD_DIRECTLY]: {
       loading: inDownloadQueue,
       label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+      description: "(Press [D])",
       onSelect: () => {
         if (detailedEntry) {
           pushDownloadQueue(detailedEntry);
@@ -97,6 +98,7 @@ const DetailEntryOptions: React.FC = () => {
       label: inBulkDownloadQueue
         ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
         : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      description: "(Press [TAB])",
       onSelect: () => {
         toggleBulkDownload();
       },

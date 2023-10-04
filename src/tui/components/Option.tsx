@@ -5,6 +5,7 @@ import Spinner from "./Spinner";
 
 export interface IOption {
   label: string;
+  description?: string;
   onSelect: () => void;
   loading?: boolean;
   order?: number;
@@ -38,6 +39,12 @@ const Option: React.FC<
         >
           {option.label}
         </Text>
+        {option.description ? (
+          <Text wrap="truncate" color="gray">
+            {" "}
+            {option.description}
+          </Text>
+        ) : null}
       </Box>
     </Box>
   );

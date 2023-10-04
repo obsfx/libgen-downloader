@@ -18,7 +18,6 @@ const ResultList: React.FC = () => {
   const listItems = useBoundStore((state) => state.listItems);
   const listItemsCursor = useBoundStore((state) => state.listItemsCursor);
   const setListItemsCursor = useBoundStore((state) => state.setListItemsCursor);
-
   const isLoading = useBoundStore((state) => state.isLoading);
 
   useScrollableListControls(
@@ -27,6 +26,7 @@ const ResultList: React.FC = () => {
     listItems.length,
     !anyEntryExpanded
   );
+
   const renderedItems = getRenderedListItems(
     listItemsCursor,
     listItems,

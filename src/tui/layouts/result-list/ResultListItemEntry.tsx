@@ -58,6 +58,7 @@ const ResultListItemEntry: React.FC<{
     [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
       loading: inDownloadQueue,
       label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+      description: "(Press [D])",
       onSelect: () => {
         pushDownloadQueue(item.data);
       },
@@ -74,6 +75,7 @@ const ResultListItemEntry: React.FC<{
       label: inBulkDownloadQueue
         ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
         : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      description: "(Press [TAB])",
       onSelect: () => {
         toggleBulkDownload();
       },
