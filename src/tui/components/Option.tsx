@@ -21,7 +21,7 @@ const Option: React.FC<
     <Box {...rest}>
       <Box paddingRight={1}>
         <Text color={isOptionActive ? "yellow" : ""} bold={isOptionActive}>
-          {isOptionActive && figures.pointer}
+          {isOptionActive ? figures.pointer : " "}
         </Text>
       </Box>
 

@@ -26,7 +26,7 @@ const ResultListItemOption: React.FC<{
       color={anyEntryExpanded ? "gray" : isActive ? "cyanBright" : "yellow"}
       bold={isActive}
     >
-      {isActive && figures.pointer} {item.data.label}
+      {isActive ? figures.pointer : " "} {item.data.label}
     </Text>
   );
 };

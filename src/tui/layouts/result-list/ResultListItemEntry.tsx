@@ -165,7 +165,7 @@ const ResultListItemEntry: React.FC<{
         wrap="truncate"
         color={isFadedOut ? "gray" : isExpanded ? "cyanBright" : isActive ? "cyanBright" : ""}
       >
-        {isActive && !isExpanded && figures.pointer}
+        {isActive && !isExpanded ? figures.pointer : " "}
         {inBulkDownloadQueue && <Text color="green"> {figures.tick} </Text>}
         <Text>[{item.order + (currentPage - 1) * SEARCH_PAGE_SIZE}] </Text>
         {downloadProgressData && (
