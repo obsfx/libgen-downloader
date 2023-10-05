@@ -9,5 +9,6 @@
 *.djvu
 *.epub
 *.txt
+*.tgz
 
 ws.session
