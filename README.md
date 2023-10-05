@@ -9,7 +9,11 @@
 `libgen-downloader` is a simple command line tool to search and download ebooks from libgen. It is developed using `NodeJS`, `TypeScript`, `React`, `Ink` and `Zustand`. It does not use a search API. It accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.
 
 
-![](https://raw.githubusercontent.com/obsfx/libgen-downloader/gh-pages/media/demo.gif)
+https://github.com/obsfx/libgen-downloader/assets/13767783/8b8a923b-2a34-4ec4-89f8-f671c2bc0dc4
+
+
+
+https://github.com/obsfx/libgen-downloader/assets/13767783/96a56146-18b3-49af-a50a-b088365e73d5
 
 
 # Installation
