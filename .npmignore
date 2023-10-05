@@ -7,3 +7,9 @@
 /legacy
 
 .gitignore
+
+*.chm
+*.pdf
+*.djvu
+*.epub
+*.txt
