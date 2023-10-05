@@ -10,7 +10,7 @@ export const cli = meow(
     -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
     -u, --url <MD5>           get the download URL
     -d, --download <MD5>      download the file
-    -h, --help                display help for command
+    -h, --help                display help
 
 	Examples
     $ libgen-downloader    (start the app in interactive mode witout flags)
