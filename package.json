@@ -1,7 +1,7 @@
 {
   "name": "libgen-downloader",
-  "version": "1.3.8",
-  "description": "a simple tool to search and download pdfs via command line interface from libgen",
+  "version": "2.0.0",
+  "description": "a simple tool to search and download pdfs via terminal user interface from libgen",
   "main": "./bin/index.js",
   "bin": {
     "libgen-downloader": "./bin/index.js",
@@ -9,12 +9,17 @@
   },
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
-    "run": "DEV=true ts-node ./src/index.ts",
-    "run-dt": "npx react-devtools",
-    "inspect": "node --inspect -r ts-node/register ./src/index.ts",
+    "react-dt": "react-devtools",
+    "inspect": "node --inspect-brk -r ts-node/register ./src/index.ts",
+    "start": "ts-node src/index.ts",
     "build": "tsc -b",
+    "build:complete": "npm run rimraf && npm run build && npm run pkg",
     "watch": "tsc -b --watch",
-    "standalone": "pkg -t node14-linux-x64,node14-macos-x64,node14-win-x64 . --out-path ./standalone-executables"
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "rimraf": "rimraf ./build && rimraf ./standalone-executables",
+    "pkg": "pkg -t node16-win-x64,node16-macos-arm64,node16-macos-x64,node16-linux-arm64,node16-linux-x64 . --out-path ./standalone-executables"
   },
   "keywords": [
     "libgen",
@@ -29,38 +34,43 @@
     "library",
     "genesis"
   ],
-  "author": "obsfx",
+  "author": "Omercan Balandi<balandiomer@gmail.com>",
   "license": "WTFPL",
   "repository": {
     "type": "git",
     "url": "https://github.com/obsfx/libgen-downloader.git"
   },
   "devDependencies": {
-    "@types/content-disposition": "^0.5.3",
-    "@types/jsdom": "^12.2.4",
-    "@types/minimist": "^1.2.1",
-    "@types/node": "^12.19.4",
-    "@types/node-fetch": "^2.5.7",
-    "@types/react": "^16.9.56",
-    "@types/uuid": "^8.3.0",
-    "pkg": "^4.4.9",
-    "react-devtools": "^4.10.0",
-    "ts-node": "^9.0.0",
-    "typescript": "^3.9.7"
+    "@types/content-disposition": "0.5.5",
+    "@types/jsdom": "21.1.3",
+    "@types/node": "12.19.4",
+    "@types/node-fetch": "2.5.7",
+    "@types/react": "16.9.56",
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "@typescript-eslint/parser": "6.7.0",
+    "eslint": "8.19.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "pkg": "5.8.1",
+    "prettier": "2.5.1",
+    "react-devtools": "4.24.0",
+    "rimraf": "5.0.5",
+    "ts-node": "10.9.1",
+    "typescript": "5.2.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.5",
-    "commander": "^6.2.1",
-    "content-disposition": "^0.5.3",
-    "figures": "^3.2.0",
-    "ink": "^3.0.8",
-    "ink-spinner": "^4.0.1",
-    "ink-text-input": "^4.0.1",
-    "ink-use-stdout-dimensions": "^1.0.5",
-    "jsdom": "^16.4.0",
-    "node-fetch": "^2.6.0",
-    "prettysize": "^2.0.0",
-    "react": "^17.0.1",
-    "zustand": "^3.1.4"
+    "content-disposition": "0.5.4",
+    "figures": "3.2.0",
+    "filesize": "10.0.12",
+    "ink": "3.0.8",
+    "ink-spinner": "4.0.3",
+    "ink-text-input": "4.0.3",
+    "jsdom": "22.1.0",
+    "meow": "9.0.0",
+    "node-fetch": "2.6.0",
+    "react": "17.0.1",
+    "zustand": "3.7.2"
   }
 }

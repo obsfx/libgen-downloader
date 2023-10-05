@@ -1,6 +1,5 @@
-import cli from './cli';
-import { init } from './app';
-
-if (!cli(process.argv)) {
-  init();
-}
+import { cli } from "./cli/index";
+import { operate } from "./cli/operate";
+import { version } from "../package.json";
+export const APP_VERSION = version;
+operate(cli.flags);

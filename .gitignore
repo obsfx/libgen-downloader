@@ -1,3 +1,4 @@
+.DS_Store
 /node_modules
 /build
 /standalone-executables
@@ -8,5 +9,6 @@
 *.djvu
 *.epub
 *.txt
+*.tgz
 
 ws.session
