@@ -32,14 +32,23 @@ or you can download one of the `standalone executable` versions. *(You can click
 - Alternative download options.
 - Command line parameters;
   ```
-  Usage: libgen-downloader [options]
-  
-  Options:
-    -s, --search <query>      search query from cli
-    -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
-    -u, --url <MD5>           get the download URL
-    -d, --download <MD5>      download the file
-    -h, --help                display help for command
+  Usage
+  	$ libgen-downloader <input>
+
+  Options
+  	-s, --search <query>      search for a book
+  	-b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
+  	-u, --url <MD5>           get the download URL
+  	-d, --download <MD5>      download the file
+  	-h, --help                display help
+
+  Examples
+  	$ libgen-downloader    (start the app in interactive mode witout flags)
+  	$ libgen-downloader -s "The Art of War"
+  	$ libgen-downloader -b ./MD5_LIST_1695686580524.txt
+  	$ libgen-downloader -u 1234567890abcdef1234567890abcdef
+  	$ libgen-downloader -d 1234567890abcdef1234567890abcdef
+
   ```
 
 
