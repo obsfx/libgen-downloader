@@ -15,6 +15,8 @@ export const downloadFile = async ({
   onData,
 }: downloadFileArgs): Promise<DownloadResult> => {
   return new Promise((resolve, reject) => {
+    const MAX_FILE_NAME_LENGTH = 128;
+
     const downloadContentDisposition = downloadStream.headers.get("content-disposition");
     if (!downloadContentDisposition) {
       reject(new Error("No content-disposition header found"));
@@ -22,7 +24,13 @@ export const downloadFile = async ({
     }
 
     const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
-    const path = `./${parsedContentDisposition.parameters.filename}`;
+    const fullFileName = parsedContentDisposition.parameters.filename;
+    const slicedFileName = fullFileName.slice(
+      Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0),
+      fullFileName.length
+    );
+    const path = `./${slicedFileName}`;
+
     const file: fs.WriteStream = fs.createWriteStream(path);
     const total = Number(downloadStream.headers.get("content-length") || 0);
     const filename = parsedContentDisposition.parameters.filename;
