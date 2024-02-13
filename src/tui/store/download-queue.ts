@@ -7,6 +7,7 @@ import { attempt } from "../../utils";
 import { getDocument } from "../../api/data/document";
 import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { downloadFile } from "../../api/data/download";
+import { httpAgent } from "../../settings";
 
 export interface IDownloadProgress {
   filename: string;
@@ -138,7 +139,11 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() => fetch(downloadUrl as string));
+      const downloadStream = await attempt(() =>
+        fetch(downloadUrl as string, {
+          agent: httpAgent,
+        })
+      );
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         continue;

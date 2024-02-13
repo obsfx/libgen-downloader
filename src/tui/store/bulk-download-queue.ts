@@ -15,6 +15,7 @@ import { getDocument } from "../../api/data/document";
 import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { downloadFile } from "../../api/data/download";
 import { createMD5ListFile } from "../../api/data/file";
+import { httpAgent } from "../../settings";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
   md5: string;
@@ -226,7 +227,11 @@ export const createBulkDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() => fetch(downloadUrl));
+      const downloadStream = await attempt(() =>
+        fetch(downloadUrl, {
+          agent: httpAgent,
+        })
+      );
       if (!downloadStream) {
         get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get().onBulkQueueItemFail(i);
