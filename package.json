@@ -55,7 +55,7 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "pkg": "5.8.1",
     "prettier": "2.5.1",
-    "react-devtools": "4.24.0",
+    "react-devtools": "4.28.5",
     "rimraf": "5.0.5",
     "ts-node": "10.9.1",
     "typescript": "5.2.2"
