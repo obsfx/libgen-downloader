@@ -3,7 +3,8 @@
   "mirrors": [
     "https://libgen.is/",
     "https://libgen.st/",
-    "http://libgen.rs/"
+    "http://libgen.rs/",
+    "https://libgen.li/"
   ],
   "searchReqPattern": "{mirror}search.php?&req={query}&page={pageNumber}&res={pageSize}&sort_mode=ASC",
   "searchByMD5Pattern": "{mirror}search.php?req={md5}&column=md5",
