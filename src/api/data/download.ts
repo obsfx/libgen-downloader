@@ -28,7 +28,7 @@ export const downloadFile = async ({
     const fullFileName = parsedContentDisposition.parameters.filename;
 
     // Sanitize filename to handle special characters and spaces
-    const sanitizedFileName = fullFileName.replace(/[<>:"/\\|?*]/g, '_');
+    const sanitizedFileName = fullFileName.replace(/[<>:"/\\|?*]/g, "_");
 
     const slicedFileName = sanitizedFileName.slice(
       Math.max(sanitizedFileName.length - MAX_FILE_NAME_LENGTH, 0),
@@ -128,5 +128,5 @@ export const downloadFileWithMirrorFallback = async ({
     }
   }
 
-  throw lastError || new Error('All mirrors failed to download the file');
+  throw lastError || new Error("All mirrors failed to download the file");
 };

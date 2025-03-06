@@ -14,7 +14,7 @@ export async function attempt<T>(fn: () => Promise<T>): Promise<T | null> {
  * Sleep for a specified number of milliseconds
  */
 export const sleep = (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(resolve, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Rate limiter to avoid overloading the API

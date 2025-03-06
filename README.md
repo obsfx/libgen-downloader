@@ -1,4 +1,3 @@
-
 # libgen-downloader
 
 [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
@@ -19,7 +18,7 @@ if you have already installed `NodeJS` and `npm`, you can install it using `npm`
 npm i -g libgen-downloader
 ```
 
-or you can download one of the `standalone executable` versions. *(You can click and execute windows executable but in macOS / Linux you have to run it in your terminal.)*
+or you can download one of the `standalone executable` versions. _(You can click and execute windows executable but in macOS / Linux you have to run it in your terminal.)_
 
 #### [Standalone Executables](https://github.com/obsfx/libgen-cli-downloader/releases)
 
@@ -60,9 +59,9 @@ v2.0.0
 - Added a cache mechanism to quickly retrieve previously searched results..
 - Added new CLI parameter `-s, --search` to search queries directly in the command line.
 - Added new shortcut keys to simplify usage:
- 	- `[J]` and `[K]` to move up and down for vimmers.
- 	- `[TAB]` to add an entry to the bulk download queue.
- 	- `[D]` to download an entry directly.
+  - `[J]` and `[K]` to move up and down for vimmers.
+  - `[TAB]` to add an entry to the bulk download queue.
+  - `[D]` to download an entry directly.
 - Dropped result filtering. Instead added `Search by` filtering options to filter in columns like the original libgen search functionality.
 
 ---

@@ -44,8 +44,8 @@ export const operate = async (flags: Record<string, unknown>): Promise<void> => 
         const data = await readFileAsync(filePath, "utf8");
         const md5List = data
           .split("\n")
-          .map(line => line.trim())
-          .filter(line => line && isValidMD5(line));
+          .map((line) => line.trim())
+          .filter((line) => line && isValidMD5(line));
 
         if (md5List.length === 0) {
           console.log("No valid MD5 hashes found in the file");
@@ -142,7 +142,10 @@ export const operate = async (flags: Record<string, unknown>): Promise<void> => 
       doNotFetchConfigInitially: false,
     });
   } catch (error) {
-    console.error("An unexpected error occurred:", error instanceof Error ? error.message : String(error));
+    console.error(
+      "An unexpected error occurred:",
+      error instanceof Error ? error.message : String(error)
+    );
     process.exit(1);
   }
 };

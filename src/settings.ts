@@ -7,7 +7,8 @@ export const SCREEN_WIDTH_PERC = 95;
 /**
  * URL for fetching the application configuration
  */
-export const CONFIGURATION_URL = "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.json";
+export const CONFIGURATION_URL =
+  "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.json";
 
 /**
  * Default application settings
@@ -15,10 +16,7 @@ export const CONFIGURATION_URL = "https://raw.githubusercontent.com/obsfx/libgen
 export const DEFAULT_SETTINGS = {
   downloadDirectory: process.cwd(),
   maxConcurrentDownloads: 3,
-  defaultMirrors: [
-    "https://libgen.li/",
-    "https://libgen.vg/",
-  ]
+  defaultMirrors: ["https://libgen.li/", "https://libgen.vg/"],
 };
 
 export const FAIL_REQ_ATTEMPT_COUNT = 5;

@@ -9,14 +9,14 @@ async function main() {
   try {
     await operate(cli.flags);
   } catch (error) {
-    console.error('Fatal error:', error instanceof Error ? error.message : String(error));
+    console.error("Fatal error:", error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Promise Rejection:', reason);
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Promise Rejection:", reason);
   process.exit(1);
 });
 

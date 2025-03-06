@@ -13,7 +13,7 @@ export function useStdoutDimensions(): [number, number] {
     if (!stdout) {
       return;
     }
-    
+
     const handler = () => setDimensions([stdout.columns, stdout.rows]);
     stdout.on("resize", handler);
     return () => {
