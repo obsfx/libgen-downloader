@@ -12,3 +12,4 @@
 *.tgz
 
 ws.session
+.vscode/
