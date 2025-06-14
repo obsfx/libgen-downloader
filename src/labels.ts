@@ -3,6 +3,7 @@ export default {
   NEXT_PAGE: "→ Next Page",
   PREV_PAGE: "← Prev Page",
   START_BULK_DOWNLOAD: "@ Start Bulk Download",
+  SELECT_ALL: "* Select All Results",
   EXIT: "✖ Exit",
   SEE_DETAILS: "See Details",
   ALTERNATIVE_DOWNLOADS: "Alternative Downloads",

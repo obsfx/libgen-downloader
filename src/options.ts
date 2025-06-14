@@ -11,6 +11,7 @@ export enum Option {
   REMOVE_FROM_BULK_DOWNLOAD_QUEUE = "remove_from_bulk_download_queue_option",
   TURN_BACK_TO_THE_LIST = "turn_back_to_the_list_option",
   BACK_TO_ENTRY_OPTIONS = "back_to_entry_options",
+  SELECT_ALL = "select_all_option",
 }
 
 export enum ResultListEntryOption {

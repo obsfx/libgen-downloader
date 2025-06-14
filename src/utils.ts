@@ -76,7 +76,8 @@ export const constructListItems = ({
   handlePrevPageOption,
   handleStartBulkDownloadOption,
   handleExitOption,
-}: constructInitialListItemsArgs) => {
+  handleSelectAllOption,
+}: constructInitialListItemsArgs & { handleSelectAllOption: () => void }) => {
   const entryListItems: ListItem[] = entries.map<ListItem>((entry, idx) => ({
     type: IResultListItemType.Entry,
     data: entry,
@@ -90,6 +91,8 @@ export const constructListItems = ({
     ),
 
     createOptionItem(Option.SEARCH, Label.SEARCH, handleSearchOption),
+
+    createOptionItem(Option.SELECT_ALL, Label.SELECT_ALL, handleSelectAllOption),
 
     ...(isNextPageAvailable
       ? [createOptionItem(Option.NEXT_PAGE, Label.NEXT_PAGE, handleNextPageOption)]

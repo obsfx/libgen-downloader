@@ -117,6 +117,9 @@ export const createAppStateSlice = (
   setDetailedEntry: (detailedEntry: Entry | null) => set({ detailedEntry }),
   setEntries: (entries: Entry[]) => {
     const store = get();
+    const allSelected = entries.every((entry) =>
+      get().bulkDownloadSelectedEntryIds.includes(entry.id)
+    );
     const listItems = constructListItems({
       entries,
       currentPage: store.currentPage,
@@ -130,13 +133,26 @@ export const createAppStateSlice = (
           store.setActiveLayout(LAYOUT_KEY.DOWNLOAD_QUEUE_BEFORE_EXIT_LAYOUT);
           return;
         }
-
         if (get().bulkDownloadSelectedEntryIds.length > 0) {
           store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_BEFORE_EXIT_LAYOUT);
           return;
         }
-
         store.handleExit();
+      },
+      handleSelectAllOption: () => {
+        const addToBulkDownloadQueue = get().addToBulkDownloadQueue;
+        const removeFromBulkDownloadQueue = get().removeFromBulkDownloadQueue;
+        if (
+          entries.every((entry) =>
+            get().bulkDownloadSelectedEntryIds.includes(entry.id)
+          )
+        ) {
+          // Deselect all
+          entries.forEach((entry) => removeFromBulkDownloadQueue(entry.id));
+        } else {
+          // Select all
+          entries.forEach((entry) => addToBulkDownloadQueue(entry));
+        }
       },
     });
     set({ entries, listItems });
