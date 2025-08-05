@@ -3,6 +3,10 @@
 
 [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
+---
+## ⚠️ Important
+For the last couple months libgen was barely accessible and all the known mirrors are down now. So you probably not gonna be able to use it until the mirros are back. See the status here https://open-slum.org/
+
 
 ---
 
