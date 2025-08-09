@@ -7,6 +7,7 @@ import { APP_VERSION } from "../../index";
 export function AppHeader() {
   const latestVersion = useBoundStore((state) => state.latestVersion);
   const newVersionAvailable = latestVersion && latestVersion !== APP_VERSION;
+  const mirrorAdapter = useBoundStore((state) => state.mirrorAdapter);
 
   return (
     <>
@@ -18,6 +19,13 @@ export function AppHeader() {
           <Text> {figures.arrowRight} </Text>
           <Text color="gray">github.com/obsfx/libgen-downloader</Text>
         </Text>
+        {mirrorAdapter?.baseURL && (
+          <Box>
+            <Text color="gray">
+              Active mirror {figures.arrowRight} {mirrorAdapter?.baseURL}
+            </Text>
+          </Box>
+        )}
       </Box>
       {newVersionAvailable ? (
         <Box>

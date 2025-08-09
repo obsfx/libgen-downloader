@@ -1,26 +1,21 @@
 
-# libgen-downloader 
+# libgen-downloader
 
 [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
----
-## ⚠️ Important
-For the last couple months libgen was barely accessible and all the known mirrors are down now. So you probably not gonna be able to use it until the mirros are back. See the status here https://open-slum.org/
-
-
----
 
 `libgen-downloader` is a simple command line tool to search and download ebooks from libgen. It is developed using `NodeJS`, `TypeScript`, `React`, `Ink` and `Zustand`. It does not use a search API. It accesses the web pages like a web browser, parses the HTML response and shows the appropriate output to the user. Depending on the status of libgen servers, you might get a connection error while you are searching, downloading or loading new pages.
 
-
-https://github.com/obsfx/libgen-downloader/assets/13767783/8b8a923b-2a34-4ec4-89f8-f671c2bc0dc4
-
-
-
-https://github.com/obsfx/libgen-downloader/assets/13767783/96a56146-18b3-49af-a50a-b088365e73d5
+## Important Update
+After the original `libgen` mirrors are blocked and not available anymore (see their status from here https://open-slum.org/), `libgen-downloader` now uses the `libgen+` mirrors as its primary source. You can see the new available mirrors from [configuration](https://github.com/obsfx/libgen-downloader/blob/configuration/config.v3.json).
 
 
-# Installation
+https://github.com/obsfx/libgen-downloader/blob/assets/v3-basic.mp4
+
+https://github.com/obsfx/libgen-downloader/blob/assets/v3-basic.mp4
+
+
+## Installation
 
 
 if you have already installed `NodeJS` and `npm`, you can install it using `npm`:
@@ -32,7 +27,7 @@ npm i -g libgen-downloader
 or you can download one of the `standalone executable` versions. *(You can click and execute windows executable but in macOS / Linux you have to run it in your terminal.)*
 #### [Standalone Executables](https://github.com/obsfx/libgen-cli-downloader/releases)
 
-# Features
+## Features
 
 - Interactive user interface.
 - Non app blocking direct downloading.
@@ -61,7 +56,15 @@ or you can download one of the `standalone executable` versions. *(You can click
 
 
 
-# Changelogs
+## Changelogs
+
+v3.0.0
+
+- Added new `libgen+` mirrors as primary source. App is now usable as long as the `libgen+` mirrors are available.
+- Dropped `search by` filtering options to make it compatible with the new `libgen+` mirrors.
+- Dropped `alternative downloads` feature to make it compatible with the new `libgen+` mirrors.
+
+---
 
 v2.0.0
 
@@ -70,9 +73,9 @@ v2.0.0
 - Added a cache mechanism to quickly retrieve previously searched results..
 - Added new CLI parameter `-s, --search` to search queries directly in the command line.
 - Added new shortcut keys to simplify usage:
-	- `[J]` and `[K]` to move up and down for vimmers. 
+	- `[J]` and `[K]` to move up and down for vimmers.
 	- `[TAB]` to add an entry to the bulk download queue.
-	- `[D]` to download an entry directly. 
+	- `[D]` to download an entry directly.
 - Dropped result filtering. Instead added `Search by` filtering options to filter in columns like the original libgen search functionality.
 
 ---

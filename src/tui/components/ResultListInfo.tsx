@@ -7,6 +7,8 @@ const ResultListInfo: React.FC = () => {
   const currentPage = useBoundStore((state) => state.currentPage);
   const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
 
+  const bulkDownloadSelectedEntriesCount = Object.keys(bulkDownloadSelectedEntries).length;
+
   return (
     <Box>
       <Text wrap="truncate">
@@ -15,7 +17,7 @@ const ResultListInfo: React.FC = () => {
       </Text>
       <Text color="gray">{" | "}</Text>
       <Text wrap="truncate">
-        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntries.length}</Text>
+        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntriesCount}</Text>
       </Text>
     </Box>
   );

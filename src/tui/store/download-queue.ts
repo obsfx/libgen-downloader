@@ -122,12 +122,14 @@ export const createDownloadQueueStateSlice = (
       const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
       if (!detailPageUrl) {
         store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 
       const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
       if (!mirrorPageDocument) {
         store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 
@@ -135,6 +137,7 @@ export const createDownloadQueueStateSlice = (
 
       if (!downloadUrl) {
         store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 
@@ -145,6 +148,7 @@ export const createDownloadQueueStateSlice = (
       );
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 
