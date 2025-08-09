@@ -5,7 +5,6 @@ import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utils";
 import { getDocument } from "../../api/data/document";
-import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { downloadFile } from "../../api/data/download";
 import { httpAgent } from "../../settings";
 
@@ -124,14 +123,19 @@ export const createDownloadQueueStateSlice = (
       if (entry.alternativeDirectDownloadUrl !== undefined) {
         downloadUrl = entry.alternativeDirectDownloadUrl;
       } else {
-        const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
+        const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
+        if (!detailPageUrl) {
+          store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
+          continue;
+        }
 
+        const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
         if (!mirrorPageDocument) {
           store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
           continue;
         }
 
-        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+        downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageDocument);
       }
 
       if (!downloadUrl) {

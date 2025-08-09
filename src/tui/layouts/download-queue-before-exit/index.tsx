@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import { IOption } from "../../components/Option";
 import OptionList from "../../components/OptionList";
 import { BeforeExitOption } from "../../../options";

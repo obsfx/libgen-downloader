@@ -1,7 +1,7 @@
 import React from "react";
 import { BulkDownloadAfterCompleteOption } from "../../../options";
 import { IOption } from "../../components/Option";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import OptionList from "../../components/OptionList";

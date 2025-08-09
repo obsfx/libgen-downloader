@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import InkSpinner from "ink-spinner";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
 import { BulkDownloadAfterCompleteOptions } from "./BulkDownloadAfterCompleteOptions";
 

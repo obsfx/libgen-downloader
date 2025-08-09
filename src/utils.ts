@@ -133,3 +133,11 @@ export const getRenderedListItems = (
 
   return renderedItems;
 };
+
+export function clearText(text: string): string {
+  return text
+    .split("\n")[0]
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/g, "")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}

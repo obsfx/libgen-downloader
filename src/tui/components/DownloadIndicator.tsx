@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../store/index";
+import { useBoundStore } from "../store";
 
 export const DownloadIndicator: React.FC = () => {
   const totalAddedToDownloadQueue = useBoundStore((state) => state.totalAddedToDownloadQueue);

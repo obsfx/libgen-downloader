@@ -2,9 +2,8 @@ import React from "react";
 import { Box } from "ink";
 
 import SearchInputMain from "./search-input/index";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { SearchBy } from "./search-by/index";
 
 const Search: React.FC = () => {
   const isLoading = useBoundStore((state) => state.isLoading);
@@ -17,7 +16,6 @@ const Search: React.FC = () => {
   return (
     <Box flexDirection="column">
       <SearchInputMain />
-      <SearchBy />
     </Box>
   );
 };

@@ -4,7 +4,7 @@ import { Text, useStdin } from "ink";
 import Layouts from "./layouts/index";
 import { DownloadIndicator } from "./components/DownloadIndicator";
 import { ErrorMessage } from "./components/ErrorMessage";
-import { useBoundStore } from "./store/index";
+import { useBoundStore } from "./store";
 import { AppHeader } from "./components/AppHeader";
 import { AppContainer } from "./components/AppContainer";
 

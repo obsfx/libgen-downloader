@@ -5,9 +5,9 @@ import Search from "./search/index";
 import ResultList from "./result-list/index";
 import { ResultListContextProvider } from "../contexts/ResultListContext";
 import Detail from "./detail/index";
-import { BulkDownload } from "./bulk-download/index";
-import { BulkDownloadBeforeExit } from "./bulk-download-before-exit/index";
-import { DownloadQueueBeforeExit } from "./download-queue-before-exit/index";
+import { BulkDownload } from "./bulk-download";
+import { BulkDownloadBeforeExit } from "./bulk-download-before-exit";
+import { DownloadQueueBeforeExit } from "./download-queue-before-exit";
 
 const Layouts: React.FC = () => {
   return (

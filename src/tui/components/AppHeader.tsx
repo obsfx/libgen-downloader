@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import figures from "figures";
-import { useBoundStore } from "../store/index";
+import { useBoundStore } from "../store";
 import { APP_VERSION } from "../../index";
 
 export function AppHeader() {

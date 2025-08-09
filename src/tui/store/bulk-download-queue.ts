@@ -3,19 +3,14 @@ import fetch from "node-fetch";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
-import {
-  constructFindMD5SearchUrl,
-  constructMD5SearchUrl,
-  parseEntries,
-} from "../../api/data/search";
 import { attempt } from "../../utils";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { IDownloadProgress } from "./download-queue";
 import { getDocument } from "../../api/data/document";
-import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { downloadFile } from "../../api/data/download";
 import { createMD5ListFile } from "../../api/data/file";
 import { httpAgent } from "../../settings";
+import objectHash from "object-hash";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
   md5: string;
@@ -29,13 +24,11 @@ export interface IBulkDownloadQueueState {
 
   createdMD5ListFileName: string;
 
-  bulkDownloadSelectedEntryIds: string[];
-  bulkDownloadSelectedEntries: Entry[];
+  bulkDownloadSelectedEntries: Record<string, Entry>;
   bulkDownloadQueue: IBulkDownloadQueueItem[];
 
   addToBulkDownloadQueue: (entry: Entry) => void;
-  removeFromBulkDownloadQueue: (entryId: string) => void;
-  removeEntryIdFromBulkDownloadQueue: (entryId: string) => void;
+  removeFromBulkDownloadQueue: (entry: Entry) => void;
   onBulkQueueItemProcessing: (index: number) => void;
   onBulkQueueItemStart: (index: number, filename: string, total: number) => void;
   onBulkQueueItemData: (index: number, filename: string, chunk: Buffer, total: number) => void;
@@ -55,8 +48,7 @@ export const initialBulkDownloadQueueState = {
 
   createdMD5ListFileName: "",
 
-  bulkDownloadSelectedEntryIds: [],
-  bulkDownloadSelectedEntries: [],
+  bulkDownloadSelectedEntries: {},
   bulkDownloadQueue: [],
 };
 
@@ -69,38 +61,34 @@ export const createBulkDownloadQueueStateSlice = (
   addToBulkDownloadQueue: (entry: Entry) => {
     const store = get();
 
-    if (store.bulkDownloadSelectedEntryIds.includes(entry.id)) {
+    const entryHash = objectHash(entry);
+    if (store.bulkDownloadSelectedEntries[entryHash]) {
+      store.setWarningMessage(`Entry with ID ${entry.id} is already in the bulk download queue`);
       return;
     }
 
+    const newEntryMap = { ...store.bulkDownloadSelectedEntries, [entryHash]: entry };
+
     set({
-      bulkDownloadSelectedEntries: [...store.bulkDownloadSelectedEntries, entry],
-      bulkDownloadSelectedEntryIds: [...store.bulkDownloadSelectedEntryIds, entry.id],
+      bulkDownloadSelectedEntries: newEntryMap,
     });
   },
 
-  removeFromBulkDownloadQueue: (entryId: string) => {
+  removeFromBulkDownloadQueue: (entry: Entry) => {
     const store = get();
 
-    if (!store.bulkDownloadSelectedEntryIds.includes(entryId)) {
+    const entryHash = objectHash(entry);
+
+    if (!store.bulkDownloadSelectedEntries[entryHash]) {
+      store.setWarningMessage(`Entry with ID ${entry.id} is not in the bulk download queue`);
       return;
     }
 
-    set({
-      bulkDownloadSelectedEntries: store.bulkDownloadSelectedEntries.filter(
-        (entry) => entry.id !== entryId
-      ),
-    });
+    const newEntryMap = { ...store.bulkDownloadSelectedEntries };
+    delete newEntryMap[entryHash];
 
-    store.removeEntryIdFromBulkDownloadQueue(entryId);
-  },
-
-  removeEntryIdFromBulkDownloadQueue: (entryId: string) => {
-    const store = get();
     set({
-      bulkDownloadSelectedEntryIds: store.bulkDownloadSelectedEntryIds.filter(
-        (id) => id !== entryId
-      ),
+      bulkDownloadSelectedEntries: newEntryMap,
     });
   },
 
@@ -195,32 +183,24 @@ export const createBulkDownloadQueueStateSlice = (
     const bulkDownloadQueue = get().bulkDownloadQueue;
     for (let i = 0; i < bulkDownloadQueue.length; i++) {
       const item = bulkDownloadQueue[i];
-      const md5SearchUrl = constructMD5SearchUrl(get().searchByMD5Pattern, get().mirror, item.md5);
+
+      const detailPageUrl = get().mirrorAdapter?.getDetailPageURL(item.md5);
+      if (!detailPageUrl) {
+        get().setWarningMessage(`Couldn't get the detail page URL for ${item.md5}`);
+        get().onBulkQueueItemFail(i);
+        continue;
+      }
 
       get().onBulkQueueItemProcessing(i);
 
-      const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
-      if (!searchPageDocument) {
-        get().setWarningMessage(`Couldn't fetch the search page for ${item.md5}`);
+      const detailPageDocument = await attempt(() => getDocument(detailPageUrl));
+      if (!detailPageDocument) {
+        get().setWarningMessage(`Couldn't fetch the detail page for ${item.md5}`);
         get().onBulkQueueItemFail(i);
         continue;
       }
 
-      const entry = parseEntries(searchPageDocument)?.[0];
-      if (!entry) {
-        get().setWarningMessage(`Couldn't find the entry for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
-        continue;
-      }
-
-      const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
-      if (!mirrorPageDocument) {
-        get().setWarningMessage(`Couldn't fetch the mirror page for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
-        continue;
-      }
-
-      const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+      const downloadUrl = get().mirrorAdapter?.getMainDownloadURLFromDocument(detailPageDocument);
       if (!downloadUrl) {
         get().setWarningMessage(`Couldn't find the download url for ${item.md5}`);
         get().onBulkQueueItemFail(i);
@@ -274,7 +254,8 @@ export const createBulkDownloadQueueStateSlice = (
   },
 
   startBulkDownload: async () => {
-    if (get().bulkDownloadSelectedEntries.length === 0) {
+    const entries = Object.values(get().bulkDownloadSelectedEntries);
+    if (entries.length === 0) {
       get().setWarningMessage("Bulk download queue is empty");
       return;
     }
@@ -288,35 +269,33 @@ export const createBulkDownloadQueueStateSlice = (
     get().setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT);
 
     // initialize bulk queue
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadSelectedEntries.map(() => ({
-        md5: "",
-        status: DownloadStatus.FETCHING_MD5,
+    const bulkDownloadQueue: IBulkDownloadQueueItem[] = [];
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      const detailPageURL = get().mirrorAdapter?.getPageURL(entry.mirror);
+      if (!detailPageURL) {
+        continue;
+      }
+
+      const urlObject = new URL(detailPageURL);
+      const md5 = urlObject.searchParams.get("md5");
+      if (!md5) {
+        get().setWarningMessage(`Couldn't find MD5 for entry ${entry.id}`);
+        continue;
+      }
+
+      bulkDownloadQueue.push({
+        md5,
+        status: DownloadStatus.IN_QUEUE,
         filename: "",
         progress: 0,
         total: 0,
-      })),
-    }));
-
-    // find md5list
-    const entryIds = get().bulkDownloadSelectedEntryIds;
-    const findMD5SearchUrl = constructFindMD5SearchUrl(get().MD5ReqPattern, get().mirror, entryIds);
-
-    const md5ListResponse = await attempt(() => fetch(findMD5SearchUrl));
-    if (!md5ListResponse) {
-      get().setWarningMessage("Couldn't fetch the MD5 list");
-      return;
+      });
     }
-    const md5Arr = (await md5ListResponse.json()) as { md5: string }[];
-    const md5List = md5Arr.map((item) => item.md5);
 
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, index) => ({
-        ...item,
-        status: DownloadStatus.IN_QUEUE,
-        md5: md5List[index],
-      })),
-    }));
+    set({
+      bulkDownloadQueue,
+    });
 
     get().operateBulkDownloadQueue();
   },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/Option";
@@ -8,8 +8,9 @@ import { ResultListEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { IResultListItemEntry } from "../../../api/models/ListItem";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
+import objectHash from "object-hash";
 
 const ResultListItemEntry: React.FC<{
   item: IResultListItemEntry;
@@ -23,27 +24,21 @@ const ResultListItemEntry: React.FC<{
   const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
   const setActiveExpandedListLength = useBoundStore((state) => state.setActiveExpandedListLength);
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
-  const fetchEntryAlternativeDownloadURLs = useBoundStore(
-    (state) => state.fetchEntryAlternativeDownloadURLs
-  );
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = inDownloadQueueEntryIds.includes(item.data.id);
 
-  const bulkDownloadSelectedEntryIds = useBoundStore((state) => state.bulkDownloadSelectedEntryIds);
-  const inBulkDownloadQueue = bulkDownloadSelectedEntryIds.includes(item.data.id);
+  const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
+  const inBulkDownloadQueue = bulkDownloadSelectedEntries[objectHash(item.data)];
 
   const downloadProgressMap = useBoundStore((state) => state.downloadProgressMap);
   const downloadProgressData = downloadProgressMap[item.data.id];
 
   const { handleSeeDetailsOptions, handleTurnBackToTheListOption } = useResultListContext();
-  const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
-  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
-  const [alternativeDownloadURLsLoading, setAlternativeDownloadURLsLoading] = useState(false);
 
   const toggleBulkDownload = () => {
     if (inBulkDownloadQueue) {
-      removeFromBulkDownloadQueue(item.data.id);
+      removeFromBulkDownloadQueue(item.data);
       return;
     }
 
@@ -63,14 +58,6 @@ const ResultListItemEntry: React.FC<{
         pushDownloadQueue(item.data);
       },
     },
-    [ResultListEntryOption.ALTERNATIVE_DOWNLOADS]: {
-      label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
-      loading: alternativeDownloadURLsLoading || inDownloadQueue,
-      onSelect: () => {
-        setActiveExpandedListLength(alternativeDownloadURLs.length + 1);
-        setShowAlternativeDownloads(true);
-      },
-    },
     [ResultListEntryOption.BULK_DOWNLOAD_QUEUE]: {
       label: inBulkDownloadQueue
         ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
@@ -83,32 +70,6 @@ const ResultListItemEntry: React.FC<{
     [ResultListEntryOption.TURN_BACK_TO_THE_LIST]: {
       label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: handleTurnBackToTheListOption,
-    },
-  };
-
-  const alternativeDownloadOptions = {
-    ...alternativeDownloadURLs.reduce<Record<string, IOption>>((prev, current, idx) => {
-      return {
-        ...prev,
-        [idx]: {
-          label: `(${idx + 1}) ${current}`,
-          onSelect: () => {
-            pushDownloadQueue({
-              ...item.data,
-              alternativeDirectDownloadUrl: current,
-            });
-            setShowAlternativeDownloads(false);
-            setActiveExpandedListLength(Object.keys(entryOptions).length);
-          },
-        },
-      };
-    }, {}),
-    [ResultListEntryOption.BACK_TO_ENTRY_OPTIONS]: {
-      label: Label.BACK_TO_ENTRY_OPTIONS,
-      onSelect: () => {
-        setShowAlternativeDownloads(false);
-        setActiveExpandedListLength(Object.keys(entryOptions).length);
-      },
     },
   };
 
@@ -133,32 +94,6 @@ const ResultListItemEntry: React.FC<{
     { isActive }
   );
 
-  useEffect(() => {
-    if (!isExpanded || alternativeDownloadURLs.length > 0) {
-      return;
-    }
-
-    let isMounted = true;
-
-    const fetchDownloadUrls = async () => {
-      setAlternativeDownloadURLsLoading(true);
-      const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(item.data);
-
-      if (!isMounted) {
-        return;
-      }
-
-      setAlternativeDownloadURLs(alternativeDownloadURLs);
-      setAlternativeDownloadURLsLoading(false);
-    };
-
-    fetchDownloadUrls();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isExpanded, item.data, fetchEntryAlternativeDownloadURLs, alternativeDownloadURLs]);
-
   return (
     <Box flexDirection="column" paddingLeft={isExpanded ? 1 : 0}>
       <Text
@@ -177,12 +112,7 @@ const ResultListItemEntry: React.FC<{
         <Text bold={isActive}>{item.data.title}</Text>
       </Text>
 
-      {isExpanded &&
-        (showAlternativeDownloads ? (
-          <OptionList key={"alternativeDownloads"} options={alternativeDownloadOptions} />
-        ) : (
-          <OptionList key={"entryOptions"} options={entryOptions} />
-        ))}
+      {isExpanded && <OptionList key={"entryOptions"} options={entryOptions} />}
     </Box>
   );
 };

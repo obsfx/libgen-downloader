@@ -9,7 +9,7 @@ import { useScrollableListControls } from "../../hooks/useScrollableListControls
 import { getRenderedListItems } from "../../../utils";
 import UsageInfo from "../../components/UsageInfo";
 import ResultListInfo from "../../components/ResultListInfo";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
 import { ResultListLoadingSkeleton } from "./ResultListLoadingSkeleton";
 
 const ResultList: React.FC = () => {
