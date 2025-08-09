@@ -1,0 +1,21 @@
+{
+	"latest_version": "v3.0.0",
+	"mirrors": [
+		{
+			"src": "https://libgen.bz/",
+			"type": "libgen-plus"
+		},
+		{
+			"src": "https://libgen.gs/",
+			"type": "libgen-plus"
+		},
+		{
+			"src": "https://libgen.la/",
+			"type": "libgen-plus"
+		},
+		{
+			"src": "https://libgen.gl/",
+			"type": "libgen-plus"
+		}
+	]
+}
