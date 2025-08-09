@@ -22,7 +22,7 @@ export class LibgenPlusAdapter implements Adapter {
       if (throwError) {
         throwError("containerTable is undefined");
       }
-      return;
+      return [];
     }
 
     // Get rid of table header by slicing it
