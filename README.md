@@ -9,10 +9,10 @@
 ## Important Update
 After the original `libgen` mirrors are blocked and not available anymore (see their status from here https://open-slum.org/), `libgen-downloader` now uses the `libgen+` mirrors as its primary source. You can see the new available mirrors from [configuration](https://github.com/obsfx/libgen-downloader/blob/configuration/config.v3.json).
 
+https://github.com/user-attachments/assets/3d92eb78-1567-478d-a0d1-5724f647be10
 
-https://github.com/obsfx/libgen-downloader/blob/assets/v3-basic.mp4
+https://github.com/user-attachments/assets/9896d457-ccbf-40aa-ae6b-c253f7a97824
 
-https://github.com/obsfx/libgen-downloader/blob/assets/v3-basic.mp4
 
 
 ## Installation
