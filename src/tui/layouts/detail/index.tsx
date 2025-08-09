@@ -29,7 +29,7 @@ const Detail: React.FC = () => {
             <DetailRow
               key={idx}
               label={key === "id" ? key.toUpperCase() : `${key[0].toUpperCase()}${key.slice(1)}`}
-              description={value}
+              description={mirrorAdapter?.formatField(key, value) || value.toString()}
             />
           ))}
 

@@ -119,24 +119,19 @@ export const createDownloadQueueStateSlice = (
         status: DownloadStatus.CONNECTING_TO_LIBGEN,
       });
 
-      let downloadUrl: string | null | undefined = "";
-      if (entry.alternativeDirectDownloadUrl !== undefined) {
-        downloadUrl = entry.alternativeDirectDownloadUrl;
-      } else {
-        const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
-        if (!detailPageUrl) {
-          store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
-          continue;
-        }
-
-        const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
-        if (!mirrorPageDocument) {
-          store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
-          continue;
-        }
-
-        downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageDocument);
+      const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
+      if (!detailPageUrl) {
+        store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
+        continue;
       }
+
+      const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
+      if (!mirrorPageDocument) {
+        store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
+        continue;
+      }
+
+      const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageDocument);
 
       if (!downloadUrl) {
         store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);

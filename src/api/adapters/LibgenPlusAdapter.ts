@@ -5,20 +5,18 @@ import { clearText } from "../../utils";
 
 export class LibgenPlusAdapter implements Adapter {
   baseURL: string;
-  tableContainerSelector = "#tablelibgen > tbody";
-  mainDownloadURLSelector = "#main > tbody > tr:nth-child(1) > td:nth-child(2) > a";
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
   }
 
   isHiddenField(fieldName: string): boolean {
-    return !["id", "mirror"].includes(fieldName);
+    return !["id"].includes(fieldName);
   }
 
   parseEntries(document: Document, throwError?: (message: string) => void): Entry[] | undefined {
     const entries: Entry[] = [];
-    const containerTable = document.querySelector<HTMLTableElement>(this.tableContainerSelector);
+    const containerTable = document.querySelector<HTMLTableElement>("#tablelibgen > tbody");
 
     if (!containerTable) {
       if (throwError) {
@@ -28,7 +26,7 @@ export class LibgenPlusAdapter implements Adapter {
     }
 
     // Get rid of table header by slicing it
-    const entryElements = Array.from(containerTable.children).slice(1);
+    const entryElements = containerTable.children;
 
     for (let i = 0; i < entryElements.length; i++) {
       const element = entryElements[i];
@@ -38,7 +36,12 @@ export class LibgenPlusAdapter implements Adapter {
         .split(";")
         .map((author) => author.trim())
         .join(", ");
-      const title = clearText(element.children[0]?.textContent || "");
+      const titleSectionContent = Array.from(element.children[0].children)
+        .filter((child) => child.nodeName !== "NOBR")
+        .map((e) => e.textContent?.trim())
+        .filter((e) => e)
+        .join(" / ");
+      const title = clearText(titleSectionContent || "");
       const publisher = clearText(element.children[2]?.textContent || "");
       const year = clearText(element.children[3]?.textContent || "");
       const pages = clearText(element.children[5]?.textContent || "");
@@ -46,8 +49,7 @@ export class LibgenPlusAdapter implements Adapter {
       const size = clearText(element.children[6]?.textContent || "");
       const extension = clearText(element.children[7]?.textContent || "");
       const mirror =
-        element.children[8]?.children[0]?.children[0]?.getAttribute("href")?.slice(1) || "";
-
+        element.children[8]?.getElementsByTagName("a")?.[0]?.getAttribute("href") || "";
       entries.push({
         id,
         authors,
@@ -88,7 +90,9 @@ export class LibgenPlusAdapter implements Adapter {
     document: Document,
     throwError?: (message: string) => void
   ): string | null {
-    const downloadLinkElement = document.querySelector(this.mainDownloadURLSelector);
+    const downloadLinkElement = document.querySelector(
+      "#main > tbody > tr:nth-child(1) > td:nth-child(2) > a"
+    );
 
     if (!downloadLinkElement) {
       if (throwError) {
@@ -99,5 +103,28 @@ export class LibgenPlusAdapter implements Adapter {
 
     const href = downloadLinkElement.getAttribute("href");
     return this.getPageURL(href || "");
+  }
+
+  formatField(fieldName: string, value: string): string {
+    switch (fieldName) {
+      case "authors":
+        return value
+          .split(", ")
+          .map((author) => author.trim())
+          .join(", ");
+      case "title":
+        return value.trim();
+      case "publisher":
+      case "year":
+      case "pages":
+      case "language":
+      case "size":
+      case "extension":
+        return value.trim();
+      case "mirror":
+        return value.startsWith("http") ? value : this.getPageURL(value);
+      default:
+        return value;
+    }
   }
 }

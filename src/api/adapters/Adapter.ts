@@ -1,7 +1,7 @@
 import { Entry } from "../models/Entry";
 
 export abstract class Adapter {
-  abstract tableContainerSelector: string;
+  abstract baseURL: string;
 
   abstract isHiddenField(fieldName: string): boolean;
   abstract parseEntries(
@@ -15,4 +15,5 @@ export abstract class Adapter {
     document: Document,
     throwError?: (message: string) => void
   ): string | null;
+  abstract formatField(fieldName: string, value: string): string;
 }
