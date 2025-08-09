@@ -7,6 +7,9 @@
 /legacy
 
 .gitignore
+/.vscode
+/.idea
+/.claude
 
 *.chm
 *.pdf
