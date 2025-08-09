@@ -84,8 +84,14 @@ export const createBulkDownloadQueueStateSlice = (
       return;
     }
 
-    const newEntryMap = { ...store.bulkDownloadSelectedEntries };
-    delete newEntryMap[entryHash];
+    const newEntryMap = Object.entries(store.bulkDownloadSelectedEntries).reduce<
+      Record<string, Entry>
+    >((acc, [hash, item]) => {
+      if (hash !== entryHash) {
+        acc[hash] = item;
+      }
+      return acc;
+    }, {});
 
     set({
       bulkDownloadSelectedEntries: newEntryMap,
