@@ -13,7 +13,7 @@ export class LibgenPlusAdapter implements Adapter {
   }
 
   isHiddenField(fieldName: string): boolean {
-    return ["id", "mirror"].includes(fieldName);
+    return !["id", "mirror"].includes(fieldName);
   }
 
   parseEntries(document: Document, throwError?: (message: string) => void): Entry[] | undefined {
