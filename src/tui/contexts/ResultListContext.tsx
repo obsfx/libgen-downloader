@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Entry } from "../../api/models/Entry";
 import { LAYOUT_KEY } from "../layouts/keys";
-import { useBoundStore } from "../store/index";
+import { useBoundStore } from "../store";
 
 export interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;

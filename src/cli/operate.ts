@@ -1,7 +1,5 @@
 import fs from "fs";
 import { getDocument } from "../api/data/document";
-import { constructMD5SearchUrl, parseEntries } from "../api/data/search";
-import { findDownloadUrlFromMirror } from "../api/data/url";
 import renderTUI from "../tui/index";
 import { LAYOUT_KEY } from "../tui/layouts/keys";
 import { useBoundStore } from "../tui/store/index";
@@ -54,33 +52,27 @@ export const operate = async (flags: Record<string, unknown>) => {
     const store = useBoundStore.getState();
 
     console.log("Finding download url...");
-    const md5SearchUrl = constructMD5SearchUrl(store.searchByMD5Pattern, store.mirror, md5);
-
-    const searchPageDocument = await attempt(() => getDocument(md5SearchUrl));
-    if (!searchPageDocument) {
-      console.log("Failed to get search page document");
+    const detailPageUrl = store.mirrorAdapter?.getDetailPageURL(md5);
+    if (!detailPageUrl) {
+      console.log("Failed to get detail page URL");
       return;
     }
 
-    const entry = parseEntries(searchPageDocument)?.[0];
-    if (!entry) {
-      console.log("Failed to parse entry");
+    const detailPageDocument = await attempt(() => getDocument(detailPageUrl));
+    if (!detailPageDocument) {
+      console.log("Failed to get detail page document");
       return;
     }
 
-    const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
-    if (!mirrorPageDocument) {
-      console.log("Failed to get mirror page document");
-      return;
-    }
-
-    const downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+    const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(detailPageDocument);
     if (!downloadUrl) {
       console.log("Failed to find download url");
       return;
     }
 
-    console.log("Here is the direct download link:", downloadUrl);
+    console.log("Here is the direct download link:");
+    console.log(downloadUrl);
+
     return;
   }
 

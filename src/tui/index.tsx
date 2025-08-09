@@ -3,7 +3,7 @@ import { render } from "ink";
 
 import { LAYOUT_KEY } from "./layouts/keys";
 import App from "./App";
-import { useBoundStore } from "./store/index";
+import { useBoundStore } from "./store";
 
 interface renderTUIArgs {
   startInCLIMode: boolean;

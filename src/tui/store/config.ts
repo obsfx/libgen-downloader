@@ -1,23 +1,22 @@
 import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
-import { Config, fetchConfig, findMirror } from "../../api/data/config";
+import { Config, fetchConfig, findMirror, Mirror } from "../../api/data/config";
 import Label from "../../labels";
 import { attempt } from "../../utils";
+import { Adapter } from "../../api/adapters/Adapter";
+import { getAdapter } from "../../api/adapters";
 
 export interface IConfigState extends Config {
-  mirror: string;
+  mirrorAdapter: Adapter | null;
+  mirror: Mirror | null;
   fetchConfig: () => Promise<void>;
 }
 
-export const initialConfigState = {
+export const initialConfigState: Omit<IConfigState, "fetchConfig"> = {
+  mirrorAdapter: null,
   latestVersion: "",
   mirrors: [],
-  searchReqPattern: "",
-  searchByMD5Pattern: "",
-  MD5ReqPattern: "",
-  mirror: "",
-  columnFilterQueryParamKey: "",
-  columnFilterQueryParamValues: {},
+  mirror: null,
 };
 
 export const createConfigStateSlice = (
@@ -54,9 +53,12 @@ export const createConfigStateSlice = (
       return;
     }
 
+    const mirrorAdapter = getAdapter(mirror.src, mirror.type);
+
     set({
       ...config,
       mirror,
+      mirrorAdapter,
     });
   },
 });

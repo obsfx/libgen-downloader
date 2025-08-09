@@ -1,14 +1,16 @@
 import fetch from "node-fetch";
 import { CONFIGURATION_URL } from "../../settings";
 
+export type MirrorType = "libgen-plus";
+
+export interface Mirror {
+  src: string;
+  type: MirrorType;
+}
+
 export interface Config {
   latestVersion: string;
-  mirrors: string[];
-  searchReqPattern: string;
-  searchByMD5Pattern: string;
-  MD5ReqPattern: string;
-  columnFilterQueryParamKey: string;
-  columnFilterQueryParamValues: Record<string, string>;
+  mirrors: Mirror[];
 }
 
 export async function fetchConfig(): Promise<Config> {
@@ -19,30 +21,24 @@ export async function fetchConfig(): Promise<Config> {
 
     return {
       latestVersion: (conf["latest_version"] as string) || "",
-      mirrors: (conf["mirrors"] as string[]) || [],
-      searchReqPattern: (conf["searchReqPattern"] as string) || "",
-      searchByMD5Pattern: (conf["searchByMD5Pattern"] as string) || "",
-      MD5ReqPattern: (conf["MD5ReqPattern"] as string) || "",
-      columnFilterQueryParamKey: (conf["columnFilterQueryParamKey"] as string) || "",
-      columnFilterQueryParamValues:
-        (conf["columnFilterQueryParamValues"] as Record<string, string>) || {},
+      mirrors: (conf["mirrors"] as Mirror[]) || [],
     };
   } catch (e) {
-    throw new Error("Error occured while fetching configuration.");
+    throw new Error("Error occurred while fetching configuration.");
   }
 }
 
 export async function findMirror(
-  mirrors: string[],
+  mirrors: Mirror[],
   onMirrorFail: (failedMirror: string) => void
-): Promise<string | null> {
+): Promise<Mirror | null> {
   for (let i = 0; i < mirrors.length; i++) {
     const mirror = mirrors[i];
     try {
-      await fetch(mirror);
+      await fetch(mirror.src);
       return mirror;
     } catch (e) {
-      onMirrorFail(mirror);
+      onMirrorFail(mirror.src);
     }
   }
   return null;

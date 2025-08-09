@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/Option";
@@ -6,7 +6,8 @@ import OptionList from "../../components/OptionList";
 import { DetailEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
-import { useBoundStore } from "../../store/index";
+import { useBoundStore } from "../../store";
+import objectHash from "object-hash";
 
 const DetailEntryOptions: React.FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
@@ -15,48 +16,16 @@ const DetailEntryOptions: React.FC = () => {
   const pushDownloadQueue = useBoundStore((state) => state.pushDownloadQueue);
   const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
   const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
-  const fetchEntryAlternativeDownloadURLs = useBoundStore(
-    (state) => state.fetchEntryAlternativeDownloadURLs
-  );
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
   const inDownloadQueue = detailedEntry
     ? inDownloadQueueEntryIds.includes(detailedEntry.id)
     : false;
 
-  const bulkDownloadSelectedEntryIds = useBoundStore((state) => state.bulkDownloadSelectedEntryIds);
+  const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
   const inBulkDownloadQueue = detailedEntry
-    ? bulkDownloadSelectedEntryIds.includes(detailedEntry.id)
+    ? bulkDownloadSelectedEntries[objectHash(detailedEntry)]
     : false;
-
-  const [alternativeDownloadURLs, setAlternativeDownloadURLs] = useState<string[]>([]);
-  const [alternativeDownloadURLsLoading, setAlternativeDownloadURLsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!detailedEntry) {
-      return;
-    }
-
-    let isMounted = true;
-
-    const fetchDownloadUrls = async () => {
-      setAlternativeDownloadURLsLoading(true);
-      const alternativeDownloadURLs = await fetchEntryAlternativeDownloadURLs(detailedEntry);
-
-      if (!isMounted) {
-        return;
-      }
-
-      setAlternativeDownloadURLs(alternativeDownloadURLs);
-      setAlternativeDownloadURLsLoading(false);
-    };
-
-    fetchDownloadUrls();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [detailedEntry, fetchEntryAlternativeDownloadURLs]);
 
   const toggleBulkDownload = () => {
     if (!detailedEntry) {
@@ -64,7 +33,7 @@ const DetailEntryOptions: React.FC = () => {
     }
 
     if (inBulkDownloadQueue) {
-      removeFromBulkDownloadQueue(detailedEntry.id);
+      removeFromBulkDownloadQueue(detailedEntry);
       return;
     }
 
@@ -89,11 +58,6 @@ const DetailEntryOptions: React.FC = () => {
         }
       },
     },
-    [DetailEntryOption.ALTERNATIVE_DOWNLOADS]: {
-      loading: alternativeDownloadURLsLoading || inDownloadQueue,
-      label: `${Label.ALTERNATIVE_DOWNLOADS} (${alternativeDownloadURLs.length})`,
-      onSelect: () => setShowAlternativeDownloads(true),
-    },
     [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
       label: inBulkDownloadQueue
         ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
@@ -102,31 +66,6 @@ const DetailEntryOptions: React.FC = () => {
       onSelect: () => {
         toggleBulkDownload();
       },
-    },
-  };
-
-  const [showAlternativeDownloads, setShowAlternativeDownloads] = useState(false);
-  const alternativeDownloadOptions: Record<string, IOption> = {
-    ...alternativeDownloadURLs.reduce<Record<string, IOption>>((prev, current, idx) => {
-      return {
-        ...prev,
-        [idx]: {
-          label: `(${idx + 1}) ${current}`,
-          onSelect: () => {
-            if (detailedEntry) {
-              pushDownloadQueue({
-                ...detailedEntry,
-                alternativeDirectDownloadUrl: current,
-              });
-              setShowAlternativeDownloads(false);
-            }
-          },
-        },
-      };
-    }, {}),
-    [DetailEntryOption.BACK_TO_ENTRY_OPTIONS]: {
-      label: Label.BACK_TO_ENTRY_OPTIONS,
-      onSelect: () => setShowAlternativeDownloads(false),
     },
   };
 
@@ -155,11 +94,7 @@ const DetailEntryOptions: React.FC = () => {
           </Text>
         )}
       </Box>
-      {showAlternativeDownloads ? (
-        <OptionList key={"alternativeDownloadOptions"} options={alternativeDownloadOptions} />
-      ) : (
-        <OptionList key={"detailOptions"} options={detailOptions} />
-      )}
+      <OptionList key={"detailOptions"} options={detailOptions} />
     </>
   );
 };

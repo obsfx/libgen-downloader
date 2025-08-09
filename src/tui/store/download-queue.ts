@@ -5,7 +5,6 @@ import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utils";
 import { getDocument } from "../../api/data/document";
-import { findDownloadUrlFromMirror } from "../../api/data/url";
 import { downloadFile } from "../../api/data/download";
 import { httpAgent } from "../../settings";
 
@@ -120,22 +119,25 @@ export const createDownloadQueueStateSlice = (
         status: DownloadStatus.CONNECTING_TO_LIBGEN,
       });
 
-      let downloadUrl: string | null | undefined = "";
-      if (entry.alternativeDirectDownloadUrl !== undefined) {
-        downloadUrl = entry.alternativeDirectDownloadUrl;
-      } else {
-        const mirrorPageDocument = await attempt(() => getDocument(entry.mirror));
-
-        if (!mirrorPageDocument) {
-          store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
-          continue;
-        }
-
-        downloadUrl = findDownloadUrlFromMirror(mirrorPageDocument);
+      const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
+      if (!detailPageUrl) {
+        store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
+        store.increaseTotalFailed();
+        continue;
       }
+
+      const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
+      if (!mirrorPageDocument) {
+        store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
+        store.increaseTotalFailed();
+        continue;
+      }
+
+      const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageDocument);
 
       if (!downloadUrl) {
         store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 
@@ -146,6 +148,7 @@ export const createDownloadQueueStateSlice = (
       );
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
+        store.increaseTotalFailed();
         continue;
       }
 

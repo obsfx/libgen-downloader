@@ -15,7 +15,6 @@ export interface IAppState {
 
   loaderMessage: string;
   searchValue: string;
-  selectedSearchByOption: string | null;
   errorMessage: string | null;
   warningMessage: string | null;
   warningTimeout: NodeJS.Timeout | null;
@@ -36,7 +35,6 @@ export interface IAppState {
 
   setLoaderMessage: (loaderMessage: string) => void;
   setSearchValue: (searchValue: string) => void;
-  setSelectedSearchByOption: (selectedSearchByOption: string | null) => void;
   setErrorMessage: (errorMessage: string | null) => void;
   setWarningMessage: (warningMessage: string | null) => void;
 
@@ -58,7 +56,6 @@ export const initialAppState = {
 
   loaderMessage: "",
   searchValue: "",
-  selectedSearchByOption: null,
   errorMessage: null,
   warningMessage: null,
   warningTimeout: null,
@@ -89,9 +86,6 @@ export const createAppStateSlice = (
   setSearchValue: (searchValue: string) => {
     set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
     set({ searchValue });
-  },
-  setSelectedSearchByOption: (selectedSearchByOption: string | null) => {
-    set({ selectedSearchByOption });
   },
   setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
   setWarningMessage: (warningMessage: string | null) => {
@@ -131,7 +125,7 @@ export const createAppStateSlice = (
           return;
         }
 
-        if (get().bulkDownloadSelectedEntryIds.length > 0) {
+        if (Object.keys(get().bulkDownloadSelectedEntries).length > 0) {
           store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_BEFORE_EXIT_LAYOUT);
           return;
         }

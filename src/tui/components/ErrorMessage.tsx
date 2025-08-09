@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import OptionList from "./OptionList";
-import { useBoundStore } from "../store/index";
+import { useBoundStore } from "../store";
 import Label from "../../labels";
 import { ErrorMessageOption } from "../../options";
 

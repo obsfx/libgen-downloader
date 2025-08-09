@@ -1,11 +1,13 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useBoundStore } from "../store/index";
+import { useBoundStore } from "../store";
 
 const ResultListInfo: React.FC = () => {
   const searchValue = useBoundStore((state) => state.searchValue);
   const currentPage = useBoundStore((state) => state.currentPage);
   const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
+
+  const bulkDownloadSelectedEntriesCount = Object.keys(bulkDownloadSelectedEntries).length;
 
   return (
     <Box>
@@ -15,7 +17,7 @@ const ResultListInfo: React.FC = () => {
       </Text>
       <Text color="gray">{" | "}</Text>
       <Text wrap="truncate">
-        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntries.length}</Text>
+        Bulk download queue: <Text color="green">{bulkDownloadSelectedEntriesCount}</Text>
       </Text>
     </Box>
   );

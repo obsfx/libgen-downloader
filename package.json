@@ -61,6 +61,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "@types/object-hash": "3.0.6",
     "content-disposition": "0.5.4",
     "figures": "3.2.0",
     "filesize": "10.0.12",
@@ -69,7 +70,9 @@
     "ink-text-input": "4.0.3",
     "jsdom": "22.1.0",
     "meow": "9.0.0",
+    "nanoid": "5.1.5",
     "node-fetch": "2.6.0",
+    "object-hash": "3.0.0",
     "react": "17.0.1",
     "zustand": "3.7.2"
   }

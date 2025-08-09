@@ -15,19 +15,15 @@ export enum Option {
 
 export enum ResultListEntryOption {
   SEE_DETAILS,
-  ALTERNATIVE_DOWNLOADS,
   DOWNLOAD_DIRECTLY,
   BULK_DOWNLOAD_QUEUE,
   TURN_BACK_TO_THE_LIST,
-  BACK_TO_ENTRY_OPTIONS,
 }
 
 export enum DetailEntryOption {
   TURN_BACK_TO_THE_LIST,
   DOWNLOAD_DIRECTLY,
-  ALTERNATIVE_DOWNLOADS,
   BULK_DOWNLOAD_QUEUE,
-  BACK_TO_ENTRY_OPTIONS,
 }
 
 export enum BulkDownloadAfterCompleteOption {
