@@ -2,15 +2,15 @@
 	"latest_version": "3.0.2",
 	"mirrors": [
 		{
+			"src": "https://libgen.la/",
+			"type": "libgen-plus"
+		},
+		{
 			"src": "https://libgen.bz/",
 			"type": "libgen-plus"
 		},
 		{
 			"src": "https://libgen.gs/",
-			"type": "libgen-plus"
-		},
-		{
-			"src": "https://libgen.la/",
 			"type": "libgen-plus"
 		},
 		{
