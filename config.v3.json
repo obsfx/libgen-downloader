@@ -6,6 +6,10 @@
 			"type": "libgen-plus"
 		},
 		{
+			"src": "https://libgen.li/",
+			"type": "libgen-plus"
+		},
+		{
 			"src": "https://libgen.bz/",
 			"type": "libgen-plus"
 		},
