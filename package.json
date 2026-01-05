@@ -1,6 +1,6 @@
 {
   "name": "libgen-downloader",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "a simple tool to search and download pdfs via terminal user interface from libgen",
   "main": "./bin/index.js",
   "bin": {
