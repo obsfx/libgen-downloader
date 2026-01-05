@@ -19,6 +19,5 @@
 
 
 .eslintrc.cjs
-/.github
 .prettierrc
 CLAUDE.md
