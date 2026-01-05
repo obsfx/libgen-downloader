@@ -48,11 +48,10 @@ jobs:
           git push
           git push --tags
 
-  publish:
+  release:
     needs: bump
-    uses: ./.github/workflows/npm-publish.yml
+    uses: ./.github/workflows/release.yml
     with:
       tag: v${{ needs.bump.outputs.version }}
     permissions:
-      id-token: write
       contents: write
