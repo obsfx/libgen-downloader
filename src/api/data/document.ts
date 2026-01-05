@@ -1,11 +1,11 @@
-import { JSDOM } from "jsdom";
-import fetch from "node-fetch";
+import { parseHTML } from "linkedom";
 
 export async function getDocument(searchURL: string): Promise<Document> {
   try {
     const response = await fetch(searchURL);
     const htmlString = await response.text();
-    return new JSDOM(htmlString).window.document;
+    const { document } = parseHTML(htmlString);
+    return document as unknown as Document;
   } catch (e) {
     throw new Error(`Error occured while fetching document of ${searchURL}`);
   }

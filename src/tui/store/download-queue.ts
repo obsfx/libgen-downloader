@@ -1,12 +1,9 @@
-import { GetState, SetState } from "zustand";
-import fetch from "node-fetch";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utils";
 import { getDocument } from "../../api/data/document";
 import { downloadFile } from "../../api/data/download";
-import { httpAgent } from "../../settings";
 
 export interface IDownloadProgress {
   filename: string;
@@ -48,8 +45,8 @@ export const initialDownloadQueueState = {
 };
 
 export const createDownloadQueueStateSlice = (
-  set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   ...initialDownloadQueueState,
 
@@ -141,11 +138,7 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() =>
-        fetch(downloadUrl as string, {
-          agent: httpAgent,
-        })
-      );
+      const downloadStream = await attempt(() => fetch(downloadUrl as string));
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         store.increaseTotalFailed();

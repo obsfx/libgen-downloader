@@ -20,26 +20,27 @@ export const cli = meow(
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef
 `,
   {
+    importMeta: import.meta,
     flags: {
       search: {
         type: "string",
-        alias: "s",
+        shortFlag: "s",
       },
       bulk: {
         type: "string",
-        alias: "b",
+        shortFlag: "b",
       },
       url: {
         type: "string",
-        alias: "u",
+        shortFlag: "u",
       },
       download: {
         type: "string",
-        alias: "d",
+        shortFlag: "d",
       },
       help: {
         type: "boolean",
-        alias: "h",
+        shortFlag: "h",
       },
     },
   }
