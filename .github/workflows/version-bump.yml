@@ -19,11 +19,11 @@ permissions:
 jobs:
   bump:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Git
         run: |
@@ -46,3 +46,9 @@ jobs:
           git tag "v$VERSION"
           git push
           git push --tags
+
+  release:
+    needs: bump
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: v${{ needs.bump.outputs.version }}
