@@ -21,3 +21,8 @@
 .eslintrc.cjs
 .prettierrc
 CLAUDE.md
+
+/.beads
+/.github
+AGENTS.md
+tsconfig.json
