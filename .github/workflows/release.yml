@@ -21,7 +21,25 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: bun-linux-x64
+            artifact: libgen-downloader-linux-x64
+          - os: ubuntu-24.04-arm
+            target: bun-linux-arm64
+            artifact: libgen-downloader-linux-arm64
+          - os: macos-13
+            target: bun-darwin-x64
+            artifact: libgen-downloader-macos-x64
+          - os: macos-latest
+            target: bun-darwin-arm64
+            artifact: libgen-downloader-macos-arm64
+          - os: windows-latest
+            target: bun-windows-x64
+            artifact: libgen-downloader-windows-x64.exe
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,17 +52,31 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Compile executables
-        run: bun run compile
+      - name: Compile executable
+        run: bun build src/index.ts --compile --outfile ${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -la artifacts/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag || github.ref_name }}
-          files: |
-            standalone-executables/libgen-downloader-linux-x64
-            standalone-executables/libgen-downloader-linux-arm64
-            standalone-executables/libgen-downloader-macos-x64
-            standalone-executables/libgen-downloader-macos-arm64
-            standalone-executables/libgen-downloader-windows-x64.exe
+          files: artifacts/*
           generate_release_notes: true
