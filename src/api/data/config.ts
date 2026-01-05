@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { CONFIGURATION_URL } from "../../settings";
 
 export type MirrorType = "libgen-plus";

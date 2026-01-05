@@ -1,4 +1,3 @@
-import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { LAYOUT_KEY } from "../layouts/keys";
 import Label from "../../labels";
@@ -17,8 +16,8 @@ export interface IEventActions {
 }
 
 export const createEventActionsSlice = (
-  _set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  _set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   backToSearch: () => {
     const store = get();

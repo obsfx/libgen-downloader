@@ -1,4 +1,3 @@
-import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { SEARCH_PAGE_SIZE } from "../../settings";
@@ -15,8 +14,8 @@ export const initialCacheState = {
 };
 
 export const createCacheStateSlice = (
-  set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   ...initialCacheState,
 

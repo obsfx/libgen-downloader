@@ -26,21 +26,16 @@ export const operate = async (flags: Record<string, unknown>) => {
 
   if (flags.bulk) {
     const filePath = flags.bulk as string;
-    fs.readFile(filePath, "utf8", async (err, data) => {
-      if (err) {
-        throw err;
-      }
-
-      const md5List = data.split("\n");
-      const store = useBoundStore.getState();
-      await store.fetchConfig();
-      renderTUI({
-        startInCLIMode: true,
-        doNotFetchConfigInitially: true,
-        initialLayout: LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT,
-      });
-      store.startBulkDownloadInCLI(md5List);
+    const data = await fs.promises.readFile(filePath, "utf8");
+    const md5List = data.split("\n").filter((line) => line.trim());
+    const store = useBoundStore.getState();
+    await store.fetchConfig();
+    renderTUI({
+      startInCLIMode: true,
+      doNotFetchConfigInitially: true,
+      initialLayout: LAYOUT_KEY.BULK_DOWNLOAD_LAYOUT,
     });
+    store.startBulkDownloadInCLI(md5List);
     return;
   }
 

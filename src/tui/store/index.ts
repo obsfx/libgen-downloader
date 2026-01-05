@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import { createAppStateSlice, IAppState } from "./app";
 import { createBulkDownloadQueueStateSlice, IBulkDownloadQueueState } from "./bulk-download-queue";
 import { createCacheStateSlice, ICacheState } from "./cache";

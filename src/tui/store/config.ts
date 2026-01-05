@@ -1,4 +1,3 @@
-import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { Config, fetchConfig, findMirror, Mirror } from "../../api/data/config";
 import Label from "../../labels";
@@ -20,8 +19,8 @@ export const initialConfigState: Omit<IConfigState, "fetchConfig"> = {
 };
 
 export const createConfigStateSlice = (
-  set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   ...initialConfigState,
 

@@ -1,5 +1,3 @@
-import { GetState, SetState } from "zustand";
-import fetch from "node-fetch";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { DownloadStatus } from "../../download-statuses";
@@ -9,7 +7,6 @@ import { IDownloadProgress } from "./download-queue";
 import { getDocument } from "../../api/data/document";
 import { downloadFile } from "../../api/data/download";
 import { createMD5ListFile } from "../../api/data/file";
-import { httpAgent } from "../../settings";
 import objectHash from "object-hash";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
@@ -53,8 +50,8 @@ export const initialBulkDownloadQueueState = {
 };
 
 export const createBulkDownloadQueueStateSlice = (
-  set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   ...initialBulkDownloadQueueState,
 
@@ -213,11 +210,7 @@ export const createBulkDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() =>
-        fetch(downloadUrl, {
-          agent: httpAgent,
-        })
-      );
+      const downloadStream = await attempt(() => fetch(downloadUrl));
       if (!downloadStream) {
         get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get().onBulkQueueItemFail(i);

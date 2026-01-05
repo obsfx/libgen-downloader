@@ -91,7 +91,7 @@ export class LibgenPlusAdapter implements Adapter {
     throwError?: (message: string) => void
   ): string | null {
     const downloadLinkElement = document.querySelector(
-      "#main > tbody > tr:nth-child(1) > td:nth-child(2) > a"
+      "#main > tr:first-child > td:nth-child(2) > a"
     );
 
     if (!downloadLinkElement) {

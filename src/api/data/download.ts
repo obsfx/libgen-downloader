@@ -1,6 +1,5 @@
 import contentDisposition from "content-disposition";
 import fs from "fs";
-import { Response } from "node-fetch";
 import { DownloadResult } from "../models/DownloadResult";
 
 interface downloadFileArgs {
@@ -14,51 +13,59 @@ export const downloadFile = async ({
   onStart,
   onData,
 }: downloadFileArgs): Promise<DownloadResult> => {
-  return new Promise((resolve, reject) => {
-    const MAX_FILE_NAME_LENGTH = 128;
+  const MAX_FILE_NAME_LENGTH = 128;
 
-    const downloadContentDisposition = downloadStream.headers.get("content-disposition");
-    if (!downloadContentDisposition) {
-      reject(new Error("No content-disposition header found"));
-      return;
-    }
+  const downloadContentDisposition = downloadStream.headers.get("content-disposition");
+  if (!downloadContentDisposition) {
+    throw new Error("No content-disposition header found");
+  }
 
-    const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
-    const fullFileName = parsedContentDisposition.parameters.filename;
-    const slicedFileName = fullFileName.slice(
-      Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0),
-      fullFileName.length
-    );
-    const path = `./${slicedFileName}`;
+  const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
+  const fullFileName = parsedContentDisposition.parameters.filename;
+  const slicedFileName = fullFileName.slice(
+    Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0),
+    fullFileName.length
+  );
+  const path = `./${slicedFileName}`;
 
-    const file: fs.WriteStream = fs.createWriteStream(path);
-    const total = Number(downloadStream.headers.get("content-length") || 0);
-    const filename = parsedContentDisposition.parameters.filename;
+  const total = Number(downloadStream.headers.get("content-length") || 0);
+  const filename = parsedContentDisposition.parameters.filename;
 
-    if (!downloadStream.body) {
-      return;
-    }
+  if (!downloadStream.body) {
+    throw new Error("No response body");
+  }
 
-    onStart(filename, total);
+  onStart(filename, total);
 
-    downloadStream.body.on("data", (chunk) => {
+  const file = fs.createWriteStream(path);
+  const reader = downloadStream.body.getReader();
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = Buffer.from(value);
+      file.write(chunk);
       onData(filename, chunk, total);
+    }
+
+    file.end();
+
+    await new Promise<void>((resolve, reject) => {
+      file.on("finish", resolve);
+      file.on("error", reject);
     });
 
-    downloadStream.body.on("finish", () => {
-      const downloadResult: DownloadResult = {
-        path,
-        filename,
-        total,
-      };
+    const downloadResult: DownloadResult = {
+      path,
+      filename,
+      total,
+    };
 
-      resolve(downloadResult);
-    });
-
-    downloadStream.body.on("error", () => {
-      reject(new Error(`(${filename}) Error occurred while downloading file`));
-    });
-
-    downloadStream.body.pipe(file);
-  });
+    return downloadResult;
+  } catch (error) {
+    file.destroy();
+    throw new Error(`(${filename}) Error occurred while downloading file`);
+  }
 };

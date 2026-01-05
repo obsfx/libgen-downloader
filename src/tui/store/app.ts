@@ -1,4 +1,3 @@
-import { GetState, SetState } from "zustand";
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/Entry";
 import { ListItem } from "../../api/models/ListItem";
@@ -71,8 +70,8 @@ export const initialAppState = {
 };
 
 export const createAppStateSlice = (
-  set: SetState<TCombinedStore>,
-  get: GetState<TCombinedStore>
+  set: (partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)) => void,
+  get: () => TCombinedStore
 ) => ({
   CLIMode: false,
   setCLIMode: (CLIMode: boolean) => set({ CLIMode }),
