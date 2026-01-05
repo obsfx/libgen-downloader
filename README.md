@@ -24,8 +24,20 @@ if you have already installed `NodeJS` and `npm`, you can install it using `npm`
 npm i -g libgen-downloader
 ```
 
-or you can download one of the `standalone executable` versions. *(You can click and execute windows executable but in macOS / Linux you have to run it in your terminal.)*
-#### [Standalone Executables](https://github.com/obsfx/libgen-cli-downloader/releases)
+or you can download one of the `standalone executable` versions.
+
+#### [Standalone Executables](https://github.com/obsfx/libgen-downloader/releases)
+
+**macOS users:** After downloading, you need to remove the quarantine attribute and make it executable:
+```bash
+xattr -c ./libgen-downloader-macos-*
+chmod +x ./libgen-downloader-macos-*
+```
+
+**Linux users:** Make it executable:
+```bash
+chmod +x ./libgen-downloader-linux-*
+```
 
 ## Features
 
