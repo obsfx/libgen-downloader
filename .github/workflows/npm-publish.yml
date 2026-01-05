@@ -2,8 +2,8 @@ name: Publish to NPM
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "v*"
 
 permissions:
   id-token: write
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
       - name: Setup Bun
@@ -32,4 +32,4 @@ jobs:
         run: bun run build
 
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --provenance --access public
