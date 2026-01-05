@@ -16,3 +16,11 @@
 *.djvu
 *.epub
 *.txt
+
+
+.eslintrc.cjs
+/.github
+.prettierrc
+CLAUDE.md
+LICENSE
+README.md
