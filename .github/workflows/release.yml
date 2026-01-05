@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g., v3.0.3)"
+        required: true
+        type: string
   workflow_call:
     inputs:
       tag:
