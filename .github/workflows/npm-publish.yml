@@ -40,3 +40,11 @@ jobs:
 
       - name: Publish to NPM
         run: npm publish --provenance --access public
+
+  release:
+    needs: publish
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ inputs.tag || github.ref_name }}
+    permissions:
+      contents: write
