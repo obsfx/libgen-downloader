@@ -81,3 +81,18 @@ jobs:
           tag_name: ${{ inputs.tag || github.ref_name }}
           files: artifacts/*
           generate_release_notes: true
+          body: |
+            ## libgen-downloader ${{ inputs.tag || github.ref_name }}
+
+            ### Installation
+            Download the executable for your platform below and make it executable:
+            ```bash
+            chmod +x libgen-downloader-*
+            ```
+
+            Or install via npm:
+            ```bash
+            npm install -g libgen-downloader
+            ```
+
+            ---
