@@ -1,6 +1,7 @@
 {
   "name": "libgen-downloader",
   "version": "3.1.7",
+  "type": "module",
   "description": "a simple tool to search and download pdfs via terminal user interface from libgen",
   "main": "./build/index.js",
   "bin": {
@@ -9,7 +10,7 @@
   "homepage": "https://github.com/obsfx/libgen-downloader",
   "scripts": {
     "start": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir ./build --target node",
+    "build": "bun build src/index.ts --outdir ./build --target node && echo '#!/usr/bin/env node' | cat - ./build/index.js > ./build/temp && mv ./build/temp ./build/index.js",
     "compile": "bun run clean && bun run compile:linux-x64 && bun run compile:linux-arm64 && bun run compile:macos-x64 && bun run compile:macos-arm64 && bun run compile:windows-x64",
     "compile:linux-x64": "bun build src/index.ts --compile --target=bun-linux-x64 --outfile ./standalone-executables/libgen-downloader-linux-x64",
     "compile:linux-arm64": "bun build src/index.ts --compile --target=bun-linux-arm64 --outfile ./standalone-executables/libgen-downloader-linux-arm64",

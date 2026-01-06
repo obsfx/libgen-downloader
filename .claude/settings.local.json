@@ -41,7 +41,9 @@
       "Bash(git checkout:*)",
       "Bash(gh workflow run:*)",
       "Bash(gh run watch:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(chmod:*)",
+      "Bash(./build/index.js:*)"
     ],
     "deny": []
   }
