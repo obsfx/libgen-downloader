@@ -1,7 +1,7 @@
-import { Entry } from "../models/Entry";
-import { Adapter } from "./Adapter";
+import { Entry } from "../models/entry";
+import { Adapter } from "./adapter";
 import { nanoid } from "nanoid";
-import { clearText } from "../../utils";
+import { clearText } from "../../utilities";
 
 export class LibgenPlusAdapter implements Adapter {
   baseURL: string;
@@ -28,18 +28,17 @@ export class LibgenPlusAdapter implements Adapter {
     // Get rid of table header by slicing it
     const entryElements = containerTable.children;
 
-    for (let i = 0; i < entryElements.length; i++) {
-      const element = entryElements[i];
+    for (const element of entryElements) {
 
       const id = nanoid();
       const authors = clearText(element.children[1]?.textContent || "")
         .split(";")
         .map((author) => author.trim())
         .join(", ");
-      const titleSectionContent = Array.from(element.children[0].children)
+      const titleSectionContent = [...element.children[0].children]
         .filter((child) => child.nodeName !== "NOBR")
-        .map((e) => e.textContent?.trim())
-        .filter((e) => e)
+        .map((element) => element.textContent?.trim())
+        .filter(Boolean)
         .join(" / ");
       const title = clearText(titleSectionContent || "");
       const publisher = clearText(element.children[2]?.textContent || "");
@@ -89,7 +88,7 @@ export class LibgenPlusAdapter implements Adapter {
   getMainDownloadURLFromDocument(
     document: Document,
     throwError?: (message: string) => void
-  ): string | null {
+  ): string | undefined {
     const downloadLinkElement = document.querySelector(
       "#main > tr:first-child > td:nth-child(2) > a"
     );
@@ -98,33 +97,49 @@ export class LibgenPlusAdapter implements Adapter {
       if (throwError) {
         throwError("downloadLinkElement is undefined");
       }
-      return null;
+      return undefined;
     }
 
     const href = downloadLinkElement.getAttribute("href");
     return this.getPageURL(href || "");
   }
 
+  detectConnectionError(document: Document): string | undefined {
+    const alertElement = document.querySelector(".alert-danger");
+    if (alertElement) {
+      return alertElement.textContent?.trim() || "Unknown connection error";
+    }
+    return undefined;
+  }
+
   formatField(fieldName: string, value: string): string {
     switch (fieldName) {
-      case "authors":
+      case "authors": {
         return value
           .split(", ")
           .map((author) => author.trim())
           .join(", ");
-      case "title":
+      }
+      case "title": {
         return value.trim();
+      }
       case "publisher":
       case "year":
       case "pages":
       case "language":
       case "size":
-      case "extension":
+      case "extension": {
         return value.trim();
-      case "mirror":
-        return value.startsWith("http") ? value : this.getPageURL(value);
-      default:
+      }
+      case "mirror": {
+        if (value.startsWith("http")) {
+          return value;
+        }
+        return this.getPageURL(value);
+      }
+      default: {
         return value;
+      }
     }
   }
 }

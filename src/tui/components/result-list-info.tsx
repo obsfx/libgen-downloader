@@ -1,8 +1,7 @@
-import React from "react";
 import { Box, Text } from "ink";
 import { useBoundStore } from "../store";
 
-const ResultListInfo: React.FC = () => {
+const ResultListInfo = () => {
   const searchValue = useBoundStore((state) => state.searchValue);
   const currentPage = useBoundStore((state) => state.currentPage);
   const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);

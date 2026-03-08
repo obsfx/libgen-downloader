@@ -1,10 +1,10 @@
-import React from "react";
+import type { FC } from "react";
 import { Box } from "ink";
 
-import SearchWarning from "./SearchWarning";
-import SearchInput from "./SearchInput";
+import SearchWarning from "./search-warning";
+import SearchInput from "./search-input";
 
-const SearchInputMain: React.FC = () => {
+const SearchInputMain: FC = () => {
   return (
     <Box flexDirection="column">
       <SearchWarning />

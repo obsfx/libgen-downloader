@@ -1,18 +1,18 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Text, useStdin } from "ink";
 
 import Layouts from "./layouts/index";
-import { DownloadIndicator } from "./components/DownloadIndicator";
-import { ErrorMessage } from "./components/ErrorMessage";
+import { DownloadIndicator } from "./components/download-indicator";
+import { ErrorMessage } from "./components/error-message";
 import { useBoundStore } from "./store";
-import { AppHeader } from "./components/AppHeader";
-import { AppContainer } from "./components/AppContainer";
+import { AppHeader } from "./components/app-header";
+import { AppContainer } from "./components/app-container";
 
-interface Props {
+interface Properties {
   doNotFetchConfigInitially: boolean;
 }
 
-export function App({ doNotFetchConfigInitially }: Props) {
+export function App({ doNotFetchConfigInitially }: Properties) {
   const { setRawMode } = useStdin();
 
   const errorMessage = useBoundStore((state) => state.errorMessage);

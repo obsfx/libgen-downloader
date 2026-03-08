@@ -1,15 +1,15 @@
-import React from "react";
+import type { FC } from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
-import { IOption } from "../../components/Option";
-import OptionList from "../../components/OptionList";
+import { IOption } from "../../components/option";
+import OptionList from "../../components/option-list";
 import { DetailEntryOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { useBoundStore } from "../../store";
 import objectHash from "object-hash";
 
-const DetailEntryOptions: React.FC = () => {
+const DetailEntryOptions: FC = () => {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
@@ -18,14 +18,16 @@ const DetailEntryOptions: React.FC = () => {
   const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
 
   const inDownloadQueueEntryIds = useBoundStore((state) => state.inDownloadQueueEntryIds);
-  const inDownloadQueue = detailedEntry
-    ? inDownloadQueueEntryIds.includes(detailedEntry.id)
-    : false;
+  let inDownloadQueue = false;
+  if (detailedEntry) {
+    inDownloadQueue = inDownloadQueueEntryIds.includes(detailedEntry.id);
+  }
 
   const bulkDownloadSelectedEntries = useBoundStore((state) => state.bulkDownloadSelectedEntries);
-  const inBulkDownloadQueue = detailedEntry
-    ? bulkDownloadSelectedEntries[objectHash(detailedEntry)]
-    : false;
+  let inBulkDownloadQueue = false;
+  if (detailedEntry) {
+    inBulkDownloadQueue = !!bulkDownloadSelectedEntries[objectHash(detailedEntry)];
+  }
 
   const toggleBulkDownload = () => {
     if (!detailedEntry) {
@@ -40,17 +42,27 @@ const DetailEntryOptions: React.FC = () => {
     addToBulkDownloadQueue(detailedEntry);
   };
 
+  let downloadLabel = Label.DOWNLOAD_DIRECTLY;
+  if (inDownloadQueue) {
+    downloadLabel = Label.DOWNLOADING;
+  }
+
+  let bulkDownloadLabel = Label.ADD_TO_BULK_DOWNLOAD_QUEUE;
+  if (inBulkDownloadQueue) {
+    bulkDownloadLabel = Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE;
+  }
+
   const detailOptions: Record<string, IOption> = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {
       label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: () => {
         setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
-        setDetailedEntry(null);
+        setDetailedEntry(undefined);
       },
     },
     [DetailEntryOption.DOWNLOAD_DIRECTLY]: {
       loading: inDownloadQueue,
-      label: inDownloadQueue ? Label.DOWNLOADING : Label.DOWNLOAD_DIRECTLY,
+      label: downloadLabel,
       description: "(Press [D])",
       onSelect: () => {
         if (detailedEntry) {
@@ -59,9 +71,7 @@ const DetailEntryOptions: React.FC = () => {
       },
     },
     [DetailEntryOption.BULK_DOWNLOAD_QUEUE]: {
-      label: inBulkDownloadQueue
-        ? Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE
-        : Label.ADD_TO_BULK_DOWNLOAD_QUEUE,
+      label: bulkDownloadLabel,
       description: "(Press [TAB])",
       onSelect: () => {
         toggleBulkDownload();
@@ -82,7 +92,7 @@ const DetailEntryOptions: React.FC = () => {
   });
 
   if (!detailedEntry) {
-    return null;
+    return;
   }
 
   return (

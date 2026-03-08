@@ -1,4 +1,4 @@
-import { Entry } from "./Entry";
+import { Entry } from "./entry";
 
 export enum IResultListItemType {
   Entry,
@@ -11,6 +11,8 @@ export interface IResultListItemOption {
     id: string;
     label: string;
     onSelect: () => void;
+    disabled?: boolean;
+    showSpinner?: boolean;
   };
 }
 

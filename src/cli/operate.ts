@@ -1,9 +1,10 @@
+// eslint-disable-next-line unicorn/prefer-node-protocol
 import fs from "fs";
 import { getDocument } from "../api/data/document";
 import renderTUI from "../tui/index";
 import { LAYOUT_KEY } from "../tui/layouts/keys";
 import { useBoundStore } from "../tui/store/index";
-import { attempt } from "../utils";
+import { attempt } from "../utilities";
 
 export const operate = async (flags: Record<string, unknown>) => {
   if (flags.search) {
@@ -53,13 +54,13 @@ export const operate = async (flags: Record<string, unknown>) => {
       return;
     }
 
-    const detailPageDocument = await attempt(() => getDocument(detailPageUrl));
-    if (!detailPageDocument) {
+    const detailPageResult = await attempt(() => getDocument(detailPageUrl));
+    if (!detailPageResult) {
       console.log("Failed to get detail page document");
       return;
     }
 
-    const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(detailPageDocument);
+    const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(detailPageResult.document);
     if (!downloadUrl) {
       console.log("Failed to find download url");
       return;

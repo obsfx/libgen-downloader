@@ -1,3 +1,4 @@
+// eslint-disable-next-line unicorn/prefer-node-protocol
 import fs from "fs";
 
 export async function createMD5ListFile(md5List: string[]) {

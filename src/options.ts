@@ -32,6 +32,7 @@ export enum BulkDownloadAfterCompleteOption {
 }
 
 export enum ErrorMessageOption {
+  RETRY,
   EXIT,
 }
 

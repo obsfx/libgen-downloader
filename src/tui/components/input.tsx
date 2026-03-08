@@ -10,9 +10,9 @@ const Input: React.FC<{
   onSearchValueChange: (value: string) => void;
   onSubmit?: () => void;
 }> = ({ label, placeholder, isFocused, searchValue, onSearchValueChange, onSubmit }) => {
-  const handleOnChange = (val: string) => {
+  const handleOnChange = (value: string) => {
     if (isFocused) {
-      onSearchValueChange(val);
+      onSearchValueChange(value);
     }
   };
 

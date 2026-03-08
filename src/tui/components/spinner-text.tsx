@@ -1,10 +1,8 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { Box } from "ink";
-import Spinner from "./Spinner";
+import Spinner from "./spinner";
 
-const SpinnerText: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+const SpinnerText = ({ children }: { children: ReactNode }) => {
   return (
     <Box>
       <Box marginRight={1}>

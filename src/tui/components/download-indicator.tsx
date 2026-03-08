@@ -1,14 +1,13 @@
-import React from "react";
 import { Box, Text } from "ink";
 import { useBoundStore } from "../store";
 
-export const DownloadIndicator: React.FC = () => {
+export const DownloadIndicator = () => {
   const totalAddedToDownloadQueue = useBoundStore((state) => state.totalAddedToDownloadQueue);
   const totalDownloaded = useBoundStore((state) => state.totalDownloaded);
   const totalFailed = useBoundStore((state) => state.totalFailed);
 
   if (totalAddedToDownloadQueue === 0) {
-    return null;
+    return;
   }
 
   return (

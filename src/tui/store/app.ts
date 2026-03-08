@@ -1,9 +1,16 @@
 import { TCombinedStore } from "./index";
-import { Entry } from "../../api/models/Entry";
-import { ListItem } from "../../api/models/ListItem";
-import { constructListItems } from "../../utils";
+import { Entry } from "../../api/models/entry";
+import { ListItem } from "../../api/models/list-item";
+import { constructListItems, NextPageStatus } from "../../utilities";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { clearScreen } from "../helpers/screen";
+
+export type MirrorCheckStatus = "pending" | "checking" | "ok" | "failed";
+
+export interface MirrorCheckState {
+  src: string;
+  status: MirrorCheckStatus;
+}
 
 export interface IAppState {
   CLIMode: boolean;
@@ -14,18 +21,22 @@ export interface IAppState {
 
   loaderMessage: string;
   searchValue: string;
-  errorMessage: string | null;
-  warningMessage: string | null;
-  warningTimeout: NodeJS.Timeout | null;
+  errorMessage: string | undefined;
+  warningMessage: string | undefined;
+  warningTimeout: NodeJS.Timeout | undefined;
 
   currentPage: number;
   activeExpandedListLength: number;
   listItemsCursor: number;
 
-  detailedEntry: Entry | null;
+  detailedEntry: Entry | undefined;
   entries: Entry[];
   listItems: ListItem[];
   activeLayout: LAYOUT_KEY;
+
+  nextPageStatus: NextPageStatus;
+  connectionError: string | undefined;
+  mirrorCheckStates: MirrorCheckState[];
 
   setCLIMode: (CLIMode: boolean) => void;
 
@@ -34,16 +45,20 @@ export interface IAppState {
 
   setLoaderMessage: (loaderMessage: string) => void;
   setSearchValue: (searchValue: string) => void;
-  setErrorMessage: (errorMessage: string | null) => void;
-  setWarningMessage: (warningMessage: string | null) => void;
+  setErrorMessage: (errorMessage: string | undefined) => void;
+  setWarningMessage: (warningMessage: string | undefined) => void;
 
   setCurrentPage: (currentPage: number) => void;
   setActiveExpandedListLength: (activeExpandedListLength: number) => void;
   setListItemsCursor: (listItemsCursor: number) => void;
 
-  setDetailedEntry: (detailedEntry: Entry | null) => void;
+  setDetailedEntry: (detailedEntry: Entry | undefined) => void;
   setEntries: (entries: Entry[]) => void;
   setActiveLayout: (activeLayout: LAYOUT_KEY) => void;
+
+  setNextPageStatus: (nextPageStatus: NextPageStatus) => void;
+  setConnectionError: (connectionError: string | undefined) => void;
+  setMirrorCheckStates: (mirrorCheckStates: MirrorCheckState[]) => void;
 
   resetAppState: () => void;
 }
@@ -55,18 +70,22 @@ export const initialAppState = {
 
   loaderMessage: "",
   searchValue: "",
-  errorMessage: null,
-  warningMessage: null,
-  warningTimeout: null,
+  errorMessage: undefined,
+  warningMessage: undefined,
+  warningTimeout: undefined,
 
   currentPage: 1,
   activeExpandedListLength: 0,
   listItemsCursor: 0,
 
-  detailedEntry: null,
+  detailedEntry: undefined,
   entries: [],
   listItems: [],
   activeLayout: LAYOUT_KEY.SEARCH_LAYOUT,
+
+  nextPageStatus: "idle" as NextPageStatus,
+  connectionError: undefined as string | undefined,
+  mirrorCheckStates: [] as MirrorCheckState[],
 };
 
 export const createAppStateSlice = (
@@ -86,8 +105,8 @@ export const createAppStateSlice = (
     set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
     set({ searchValue });
   },
-  setErrorMessage: (errorMessage: string | null) => set({ errorMessage }),
-  setWarningMessage: (warningMessage: string | null) => {
+  setErrorMessage: (errorMessage: string | undefined) => set({ errorMessage }),
+  setWarningMessage: (warningMessage: string | undefined) => {
     const WARNING_DURATION = 5000;
 
     const timeout = get().warningTimeout;
@@ -97,7 +116,7 @@ export const createAppStateSlice = (
 
     set({ warningMessage });
     const newTimeout = setTimeout(() => {
-      set({ warningMessage: null });
+      set({ warningMessage: undefined });
     }, WARNING_DURATION);
     set({ warningTimeout: newTimeout });
   },
@@ -107,15 +126,18 @@ export const createAppStateSlice = (
     set({ activeExpandedListLength }),
   setListItemsCursor: (listItemsCursor: number) => set({ listItemsCursor }),
 
-  setDetailedEntry: (detailedEntry: Entry | null) => set({ detailedEntry }),
+  setDetailedEntry: (detailedEntry: Entry | undefined) => set({ detailedEntry }),
   setEntries: (entries: Entry[]) => {
     const store = get();
     const listItems = constructListItems({
       entries,
       currentPage: store.currentPage,
-      isNextPageAvailable: store.lookupPageCache(store.currentPage + 1).length > 0,
+      nextPageStatus: store.nextPageStatus,
       handleSearchOption: store.backToSearch,
       handleNextPageOption: store.nextPage,
+      handleRetryNextPageOption: () => {
+        store.checkNextPage(store.searchValue, store.currentPage + 1);
+      },
       handlePrevPageOption: store.prevPage,
       handleStartBulkDownloadOption: store.startBulkDownload,
       handleExitOption: () => {
@@ -142,6 +164,10 @@ export const createAppStateSlice = (
 
     set({ activeLayout });
   },
+
+  setNextPageStatus: (nextPageStatus: NextPageStatus) => set({ nextPageStatus }),
+  setConnectionError: (connectionError: string | undefined) => set({ connectionError }),
+  setMirrorCheckStates: (mirrorCheckStates: MirrorCheckState[]) => set({ mirrorCheckStates }),
 
   resetAppState: () => set(initialAppState),
 });

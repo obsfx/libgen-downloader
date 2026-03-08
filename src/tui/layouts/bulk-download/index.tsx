@@ -1,9 +1,8 @@
-import React from "react";
 import { Box, Text } from "ink";
 import InkSpinner from "ink-spinner";
 import { useBoundStore } from "../../store";
-import { DownloadStatusAndProgress } from "../../components/DownloadStatusAndProgress";
-import { BulkDownloadAfterCompleteOptions } from "./BulkDownloadAfterCompleteOptions";
+import { DownloadStatusAndProgress } from "../../components/download-status-and-progress";
+import { BulkDownloadAfterCompleteOptions } from "./bulk-download-after-complete-options";
 
 export function BulkDownload() {
   const bulkDownloadQueue = useBoundStore((state) => state.bulkDownloadQueue);
@@ -26,34 +25,33 @@ export function BulkDownload() {
         </Text>
 
         <Text color="gray">
-          {createdMD5ListFileName ? (
+          {createdMD5ListFileName && (
             <Text>
               MD5 list file created: <Text color="blueBright">{createdMD5ListFileName}</Text>
             </Text>
-          ) : (
-            <InkSpinner type="simpleDotsScrolling" />
           )}
+          {!createdMD5ListFileName && <InkSpinner type="simpleDotsScrolling" />}
         </Text>
 
         <Text color="white">
           Downloading files to <Text color="blueBright">{process.cwd()}</Text>
         </Text>
 
-        {bulkDownloadQueue.map((item, idx) => (
-          <Text key={idx} wrap="truncate-end">
+        {bulkDownloadQueue.map((item, index) => (
+          <Text key={index} wrap="truncate-end">
             <DownloadStatusAndProgress downloadProgressData={item} />
-            {item.filename ? (
+            {item.filename && (
               <Text>
                 <Text color="green">{item.filename}</Text>
               </Text>
-            ) : item.md5 ? (
+            )}
+            {!item.filename && item.md5 && (
               <Text>
                 <Text color="gray">md5: </Text>
                 <Text color="green">{item.md5}</Text>
               </Text>
-            ) : (
-              <Text color="gray">-</Text>
             )}
+            {!item.filename && !item.md5 && <Text color="gray">-</Text>}
           </Text>
         ))}
 

@@ -11,15 +11,19 @@ export const useListControls = <T,>(
   useInput(
     (input, key) => {
       if (input.toLowerCase() === "j" || key.downArrow) {
-        const nextIndex =
-          selectedOptionIndex === listItems.length - 1 ? 0 : selectedOptionIndex + 1;
+        let nextIndex = selectedOptionIndex + 1;
+        if (selectedOptionIndex === listItems.length - 1) {
+          nextIndex = 0;
+        }
         setSelectedOptionIndex(nextIndex);
         return;
       }
 
       if (input.toLowerCase() === "k" || key.upArrow) {
-        const nextIndex =
-          selectedOptionIndex === 0 ? listItems.length - 1 : selectedOptionIndex - 1;
+        let nextIndex = selectedOptionIndex - 1;
+        if (selectedOptionIndex === 0) {
+          nextIndex = listItems.length - 1;
+        }
         setSelectedOptionIndex(nextIndex);
         return;
       }

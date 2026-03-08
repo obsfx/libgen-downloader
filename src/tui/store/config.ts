@@ -1,21 +1,27 @@
 import { TCombinedStore } from "./index";
 import { Config, fetchConfig, findMirror, Mirror } from "../../api/data/config";
 import Label from "../../labels";
-import { attempt } from "../../utils";
-import { Adapter } from "../../api/adapters/Adapter";
+import { attempt } from "../../utilities";
+import { Adapter } from "../../api/adapters/adapter";
 import { getAdapter } from "../../api/adapters";
+import { getDocument } from "../../api/data/document";
+import { SEARCH_PAGE_SIZE } from "../../settings";
+import { MirrorCheckStatus } from "./app";
 
 export interface IConfigState extends Config {
-  mirrorAdapter: Adapter | null;
-  mirror: Mirror | null;
+  mirrorAdapter: Adapter | undefined;
+  mirror: Mirror | undefined;
   fetchConfig: () => Promise<void>;
+  switchMirror: (
+    onMirrorStatus: (mirror: string, status: MirrorCheckStatus) => void
+  ) => Promise<boolean>;
 }
 
-export const initialConfigState: Omit<IConfigState, "fetchConfig"> = {
-  mirrorAdapter: null,
+export const initialConfigState: Omit<IConfigState, "fetchConfig" | "switchMirror"> = {
+  mirrorAdapter: undefined,
   latestVersion: "",
   mirrors: [],
-  mirror: null,
+  mirror: undefined,
 };
 
 export const createConfigStateSlice = (
@@ -59,5 +65,43 @@ export const createConfigStateSlice = (
       mirror,
       mirrorAdapter,
     });
+  },
+
+  switchMirror: async (
+    onMirrorStatus: (mirror: string, status: MirrorCheckStatus) => void
+  ): Promise<boolean> => {
+    const store = get();
+    const currentMirrorSource = store.mirror?.src;
+    const otherMirrors = store.mirrors.filter((m) => m.src !== currentMirrorSource);
+
+    if (otherMirrors.length === 0) {
+      return false;
+    }
+
+    for (const mirror of otherMirrors) {
+      onMirrorStatus(mirror.src, "checking");
+
+      try {
+        const adapter = getAdapter(mirror.src, mirror.type);
+        const testURL = adapter.getSearchURL("test", 1, SEARCH_PAGE_SIZE);
+        const result = await getDocument(testURL);
+        const connectionError = adapter.detectConnectionError(result.document);
+
+        if (connectionError) {
+          onMirrorStatus(mirror.src, "failed");
+          continue;
+        }
+
+        // Mirror works — switch to it
+        onMirrorStatus(mirror.src, "ok");
+        set({ mirror, mirrorAdapter: adapter });
+        get().resetEntryCacheMap();
+        return true;
+      } catch {
+        onMirrorStatus(mirror.src, "failed");
+      }
+    }
+
+    return false;
   },
 });

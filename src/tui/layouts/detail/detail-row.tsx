@@ -1,7 +1,7 @@
-import React from "react";
+import type { FC } from "react";
 import { Box, Text } from "ink";
 
-const DetailRow: React.FC<{
+const DetailRow: FC<{
   label: string;
   description: string;
 }> = ({ label, description }) => {
