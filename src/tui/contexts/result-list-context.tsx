@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { Entry } from "../../api/models/Entry";
+import { Entry } from "../../api/models/entry";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { useBoundStore } from "../store";
 
@@ -40,7 +40,7 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
 
   const handleDetailTurnBackToTheList = useCallback(() => {
     setActiveLayout(LAYOUT_KEY.RESULT_LIST_LAYOUT);
-    setDetailedEntry(null);
+    setDetailedEntry(undefined);
   }, [setDetailedEntry, setActiveLayout]);
 
   return (

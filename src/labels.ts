@@ -20,6 +20,13 @@ export default {
   GETTING_RESULTS: "Getting results",
   ERR_OCCURED_WHILE_PARSING_DOC: "Error occured while parsing the document",
   PREPARING_FOR_BULK_DOWNLOAD: "Preparing for bulk download...",
+  CONNECTION_ERROR: "Connection error",
+  TRYING_OTHER_MIRRORS: "Trying other mirrors...",
+  ALL_MIRRORS_FAILED: "All mirrors failed. Please try again later.",
+  NEXT_PAGE_CHECKING: "→ Next Page",
+  NEXT_PAGE_ERROR: "→ Next Page (?) (Retry)",
+  NEXT_PAGE_UNAVAILABLE: "→ Next Page (no results on next page)",
+  RETRY: "↻ Retry",
   YES: "Yes",
   NO: "No",
 };

@@ -16,13 +16,13 @@ export async function fetchConfig(): Promise<Config> {
   try {
     const response = await fetch(CONFIGURATION_URL);
     const json = await response.json();
-    const conf = json as Record<string, unknown>;
+    const config = json as Record<string, unknown>;
 
     return {
-      latestVersion: (conf["latest_version"] as string) || "",
-      mirrors: (conf["mirrors"] as Mirror[]) || [],
+      latestVersion: (config["latest_version"] as string) || "",
+      mirrors: (config["mirrors"] as Mirror[]) || [],
     };
-  } catch (e) {
+  } catch {
     throw new Error("Error occurred while fetching configuration.");
   }
 }
@@ -30,15 +30,14 @@ export async function fetchConfig(): Promise<Config> {
 export async function findMirror(
   mirrors: Mirror[],
   onMirrorFail: (failedMirror: string) => void
-): Promise<Mirror | null> {
-  for (let i = 0; i < mirrors.length; i++) {
-    const mirror = mirrors[i];
+): Promise<Mirror | undefined> {
+  for (const mirror of mirrors) {
     try {
       await fetch(mirror.src);
       return mirror;
-    } catch (e) {
+    } catch {
       onMirrorFail(mirror.src);
     }
   }
-  return null;
+  return undefined;
 }

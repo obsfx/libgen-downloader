@@ -1,8 +1,7 @@
-import React from "react";
 import { Box, Text } from "ink";
 import { useBoundStore } from "../../store";
-import { IOption } from "../../components/Option";
-import OptionList from "../../components/OptionList";
+import { IOption } from "../../components/option";
+import OptionList from "../../components/option-list";
 import { BeforeExitOption } from "../../../options";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";

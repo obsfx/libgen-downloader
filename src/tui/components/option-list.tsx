@@ -1,12 +1,10 @@
-import React from "react";
 import { Box } from "ink";
-import Option, { IOption } from "./Option";
-import { useListControls } from "../hooks/useListControls";
+import Option, { IOption } from "./option";
+import { useListControls } from "../hooks/use-list-controls";
 
-const OptionList: React.FC<{
-  options: Record<string, IOption>;
-}> = ({ options }) => {
-  const sortedEntries = Object.entries(options).sort(
+const OptionList = ({ options }: { options: Record<string, IOption> }) => {
+  // eslint-disable-next-line unicorn/no-array-sort
+  const sortedEntries = [...Object.entries(options)].sort(
     ([, a], [, b]) => (a.order ?? 0) - (b.order ?? 0)
   );
 
@@ -20,8 +18,8 @@ const OptionList: React.FC<{
 
   return (
     <Box flexDirection="column" paddingLeft={3}>
-      {sortedEntries.map(([key, option], idx) => {
-        const isOptionActive = idx === selectedOptionIndex;
+      {sortedEntries.map(([key, option], index) => {
+        const isOptionActive = index === selectedOptionIndex;
         return <Option key={key} isOptionActive={isOptionActive} option={option} />;
       })}
     </Box>

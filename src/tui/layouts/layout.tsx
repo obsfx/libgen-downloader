@@ -1,8 +1,8 @@
-import React from "react";
+import type { FC, ReactNode } from "react";
 import { useBoundStore } from "../store/index";
 
-export const Layout: React.FC<{
-  children: React.ReactNode;
+export const Layout: FC<{
+  children: ReactNode;
   layoutName: string;
 }> = ({ children, layoutName }) => {
   const activeLayout = useBoundStore((state) => state.activeLayout);

@@ -1,10 +1,9 @@
-import React from "react";
 import { BulkDownloadAfterCompleteOption } from "../../../options";
-import { IOption } from "../../components/Option";
+import { IOption } from "../../components/option";
 import { useBoundStore } from "../../store";
 import Label from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
-import OptionList from "../../components/OptionList";
+import OptionList from "../../components/option-list";
 
 export function BulkDownloadAfterCompleteOptions() {
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);

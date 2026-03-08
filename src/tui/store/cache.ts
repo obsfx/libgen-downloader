@@ -1,5 +1,5 @@
 import { TCombinedStore } from "./index";
-import { Entry } from "../../api/models/Entry";
+import { Entry } from "../../api/models/entry";
 import { SEARCH_PAGE_SIZE } from "../../settings";
 
 export interface ICacheState {

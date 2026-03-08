@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Text } from "ink";
 import figures from "figures";
 import { useBoundStore } from "../store";
@@ -27,7 +26,7 @@ export function AppHeader() {
           </Box>
         )}
       </Box>
-      {newVersionAvailable ? (
+      {newVersionAvailable && (
         <Box>
           <Text>
             <Text color="gray">New version available: </Text>
@@ -37,7 +36,7 @@ export function AppHeader() {
             <Text color="blue"> run npm i -g libgen-downloader to update</Text>
           </Text>
         </Box>
-      ) : null}
+      )}
     </>
   );
 }

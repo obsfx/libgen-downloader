@@ -1,7 +1,7 @@
 import { TCombinedStore } from "./index";
-import { Entry } from "../../api/models/Entry";
+import { Entry } from "../../api/models/entry";
 import { DownloadStatus } from "../../download-statuses";
-import { attempt } from "../../utils";
+import { attempt } from "../../utilities";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { IDownloadProgress } from "./download-queue";
 import { getDocument } from "../../api/data/document";
@@ -81,14 +81,12 @@ export const createBulkDownloadQueueStateSlice = (
       return;
     }
 
-    const newEntryMap = Object.entries(store.bulkDownloadSelectedEntries).reduce<
-      Record<string, Entry>
-    >((acc, [hash, item]) => {
+    const newEntryMap: Record<string, Entry> = {};
+    for (const [hash, item] of Object.entries(store.bulkDownloadSelectedEntries)) {
       if (hash !== entryHash) {
-        acc[hash] = item;
+        newEntryMap[hash] = item;
       }
-      return acc;
-    }, {});
+    }
 
     set({
       bulkDownloadSelectedEntries: newEntryMap,
@@ -96,9 +94,9 @@ export const createBulkDownloadQueueStateSlice = (
   },
 
   onBulkQueueItemProcessing: (index: number) => {
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
-        if (index !== i) {
+    set((previous) => ({
+      bulkDownloadQueue: previous.bulkDownloadQueue.map((item, index_) => {
+        if (index !== index_) {
           return item;
         }
 
@@ -111,9 +109,9 @@ export const createBulkDownloadQueueStateSlice = (
   },
 
   onBulkQueueItemStart: (index: number, filename: string, total: number) => {
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
-        if (index !== i) {
+    set((previous) => ({
+      bulkDownloadQueue: previous.bulkDownloadQueue.map((item, index_) => {
+        if (index !== index_) {
           return item;
         }
 
@@ -128,9 +126,9 @@ export const createBulkDownloadQueueStateSlice = (
   },
 
   onBulkQueueItemData: (index: number, filename: string, chunk: Buffer, total: number) => {
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
-        if (index !== i) {
+    set((previous) => ({
+      bulkDownloadQueue: previous.bulkDownloadQueue.map((item, index_) => {
+        if (index !== index_) {
           return item;
         }
 
@@ -145,9 +143,9 @@ export const createBulkDownloadQueueStateSlice = (
   },
 
   onBulkQueueItemComplete: (index: number) => {
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
-        if (index !== i) {
+    set((previous) => ({
+      bulkDownloadQueue: previous.bulkDownloadQueue.map((item, index_) => {
+        if (index !== index_) {
           return item;
         }
 
@@ -158,15 +156,15 @@ export const createBulkDownloadQueueStateSlice = (
       }),
     }));
 
-    set((prev) => ({
-      completedBulkDownloadItemCount: prev.completedBulkDownloadItemCount + 1,
+    set((previous) => ({
+      completedBulkDownloadItemCount: previous.completedBulkDownloadItemCount + 1,
     }));
   },
 
   onBulkQueueItemFail: (index: number) => {
-    set((prev) => ({
-      bulkDownloadQueue: prev.bulkDownloadQueue.map((item, i) => {
-        if (index !== i) {
+    set((previous) => ({
+      bulkDownloadQueue: previous.bulkDownloadQueue.map((item, index_) => {
+        if (index !== index_) {
           return item;
         }
 
@@ -177,43 +175,42 @@ export const createBulkDownloadQueueStateSlice = (
       }),
     }));
 
-    set((prev) => ({
-      failedBulkDownloadItemCount: prev.failedBulkDownloadItemCount + 1,
+    set((previous) => ({
+      failedBulkDownloadItemCount: previous.failedBulkDownloadItemCount + 1,
     }));
   },
 
   operateBulkDownloadQueue: async () => {
     const bulkDownloadQueue = get().bulkDownloadQueue;
-    for (let i = 0; i < bulkDownloadQueue.length; i++) {
-      const item = bulkDownloadQueue[i];
+    for (const [index, item] of bulkDownloadQueue.entries()) {
 
       const detailPageUrl = get().mirrorAdapter?.getDetailPageURL(item.md5);
       if (!detailPageUrl) {
         get().setWarningMessage(`Couldn't get the detail page URL for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
+        get().onBulkQueueItemFail(index);
         continue;
       }
 
-      get().onBulkQueueItemProcessing(i);
+      get().onBulkQueueItemProcessing(index);
 
-      const detailPageDocument = await attempt(() => getDocument(detailPageUrl));
-      if (!detailPageDocument) {
+      const detailPageResult = await attempt(() => getDocument(detailPageUrl));
+      if (!detailPageResult) {
         get().setWarningMessage(`Couldn't fetch the detail page for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
+        get().onBulkQueueItemFail(index);
         continue;
       }
 
-      const downloadUrl = get().mirrorAdapter?.getMainDownloadURLFromDocument(detailPageDocument);
+      const downloadUrl = get().mirrorAdapter?.getMainDownloadURLFromDocument(detailPageResult.document);
       if (!downloadUrl) {
         get().setWarningMessage(`Couldn't find the download url for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
+        get().onBulkQueueItemFail(index);
         continue;
       }
 
       const downloadStream = await attempt(() => fetch(downloadUrl));
       if (!downloadStream) {
         get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
-        get().onBulkQueueItemFail(i);
+        get().onBulkQueueItemFail(index);
         continue;
       }
 
@@ -221,16 +218,16 @@ export const createBulkDownloadQueueStateSlice = (
         await downloadFile({
           downloadStream,
           onStart: (filename, total) => {
-            get().onBulkQueueItemStart(i, filename, total);
+            get().onBulkQueueItemStart(index, filename, total);
           },
           onData: (filename, chunk, total) => {
-            get().onBulkQueueItemData(i, filename, chunk, total);
+            get().onBulkQueueItemData(index, filename, chunk, total);
           },
         });
 
-        get().onBulkQueueItemComplete(i);
-      } catch (err) {
-        get().onBulkQueueItemFail(i);
+        get().onBulkQueueItemComplete(index);
+      } catch {
+        get().onBulkQueueItemFail(index);
       }
     }
 
@@ -247,7 +244,7 @@ export const createBulkDownloadQueueStateSlice = (
       set({
         createdMD5ListFileName: filename,
       });
-    } catch (err) {
+    } catch {
       get().setWarningMessage("Couldn't create the MD5 list file");
     }
   },
@@ -269,8 +266,7 @@ export const createBulkDownloadQueueStateSlice = (
 
     // initialize bulk queue
     const bulkDownloadQueue: IBulkDownloadQueueItem[] = [];
-    for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
+    for (const entry of entries) {
       const detailPageURL = get().mirrorAdapter?.getPageURL(entry.mirror);
       if (!detailPageURL) {
         continue;

@@ -1,14 +1,13 @@
-import React from "react";
 import { Text } from "ink";
 import { IDownloadProgress } from "../store/download-queue";
 import { getDownloadProgress } from "../helpers/progress";
 import { DownloadStatus, downloadStatusIndicators } from "../../download-statuses";
 
-interface Props {
+interface Properties {
   downloadProgressData: IDownloadProgress;
 }
 
-export function DownloadStatusAndProgress({ downloadProgressData }: Props) {
+export function DownloadStatusAndProgress({ downloadProgressData }: Properties) {
   const downloadProgress = getDownloadProgress(
     downloadProgressData.progress || 0,
     downloadProgressData.total

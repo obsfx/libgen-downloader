@@ -1,4 +1,4 @@
-import { Entry } from "../models/Entry";
+import { Entry } from "../models/entry";
 
 export abstract class Adapter {
   abstract baseURL: string;
@@ -14,6 +14,7 @@ export abstract class Adapter {
   abstract getMainDownloadURLFromDocument(
     document: Document,
     throwError?: (message: string) => void
-  ): string | null;
+  ): string | undefined;
   abstract formatField(fieldName: string, value: string): string;
+  abstract detectConnectionError(document: Document): string | undefined;
 }

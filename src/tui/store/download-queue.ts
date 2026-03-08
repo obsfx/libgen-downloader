@@ -1,14 +1,14 @@
 import { TCombinedStore } from "./index";
-import { Entry } from "../../api/models/Entry";
+import { Entry } from "../../api/models/entry";
 import { DownloadStatus } from "../../download-statuses";
-import { attempt } from "../../utils";
+import { attempt } from "../../utilities";
 import { getDocument } from "../../api/data/document";
 import { downloadFile } from "../../api/data/download";
 
 export interface IDownloadProgress {
   filename: string;
   total: number;
-  progress: number | null;
+  progress: number | undefined;
   status: DownloadStatus;
 }
 
@@ -81,14 +81,14 @@ export const createDownloadQueueStateSlice = (
   consumeDownloadQueue: () => {
     const store = get();
 
-    if (store.downloadQueue.length < 1) {
-      return undefined;
+    if (store.downloadQueue.length === 0) {
+      return;
     }
 
     const entry = store.downloadQueue[0];
 
     set({
-      downloadQueue: store.downloadQueue.slice(1, store.downloadQueue.length),
+      downloadQueue: store.downloadQueue.slice(1),
     });
 
     return entry;
@@ -123,14 +123,14 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const mirrorPageDocument = await attempt(() => getDocument(detailPageUrl));
-      if (!mirrorPageDocument) {
+      const mirrorPageResult = await attempt(() => getDocument(detailPageUrl));
+      if (!mirrorPageResult) {
         store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
         store.increaseTotalFailed();
         continue;
       }
 
-      const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageDocument);
+      const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(mirrorPageResult.document);
 
       if (!downloadUrl) {
         store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);
@@ -155,7 +155,7 @@ export const createDownloadQueueStateSlice = (
           onStart: (filename, total) => {
             store.updateCurrentDownloadProgress(entry.id, {
               filename,
-              progress: null,
+              progress: undefined,
               total,
             });
           },
@@ -172,7 +172,7 @@ export const createDownloadQueueStateSlice = (
         store.updateCurrentDownloadProgress(entry.id, {
           status: DownloadStatus.DOWNLOADED,
         });
-      } catch (error) {
+      } catch {
         store.setWarningMessage(`Couldn't download "${entry.title}"`);
         store.increaseTotalFailed();
         store.updateCurrentDownloadProgress(entry.id, {
@@ -190,37 +190,39 @@ export const createDownloadQueueStateSlice = (
     entryId: string,
     downloadProgress: Partial<IDownloadProgress>
   ) => {
-    set((prev) => ({
+    set((previous) => ({
       downloadProgressMap: {
-        ...prev.downloadProgressMap,
+        ...previous.downloadProgressMap,
         [entryId]: {
-          ...(prev.downloadProgressMap[entryId] || {}),
+          ...previous.downloadProgressMap[entryId],
           ...downloadProgress,
-          progress:
-            downloadProgress.progress === null
-              ? 0
-              : (prev.downloadProgressMap[entryId]?.progress || 0) +
-                (downloadProgress.progress || 0),
+          progress: (() => {
+            if (downloadProgress.progress === undefined) {
+              return 0;
+            }
+            return (previous.downloadProgressMap[entryId]?.progress || 0) +
+              (downloadProgress.progress || 0);
+          })(),
         },
       },
     }));
   },
 
   increaseTotalAddedToDownloadQueue: () => {
-    set((prev) => ({
-      totalAddedToDownloadQueue: prev.totalAddedToDownloadQueue + 1,
+    set((previous) => ({
+      totalAddedToDownloadQueue: previous.totalAddedToDownloadQueue + 1,
     }));
   },
 
   increaseTotalDownloaded: () => {
-    set((prev) => ({
-      totalDownloaded: prev.totalDownloaded + 1,
+    set((previous) => ({
+      totalDownloaded: previous.totalDownloaded + 1,
     }));
   },
 
   increaseTotalFailed: () => {
-    set((prev) => ({
-      totalFailed: prev.totalFailed + 1,
+    set((previous) => ({
+      totalFailed: previous.totalFailed + 1,
     }));
   },
 });

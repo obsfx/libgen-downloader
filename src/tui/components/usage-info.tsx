@@ -1,12 +1,14 @@
-import React from "react";
 import { Box, Text } from "ink";
 
-const UsageInfo: React.FC<{
-  truncate?: boolean;
-}> = ({ truncate }) => {
+const UsageInfo = ({ truncate }: { truncate?: boolean }) => {
+  let wrap: "truncate" | undefined;
+  if (truncate) {
+    wrap = "truncate";
+  }
+
   return (
     <Box>
-      <Text wrap={truncate ? "truncate" : undefined}>
+      <Text wrap={wrap}>
         <Text color="yellow">[UP]</Text> and <Text color="yellow">[DOWN]</Text> arrow keys to reveal
         listings, <Text color="yellow">[ENTER]</Text> to interact
       </Text>

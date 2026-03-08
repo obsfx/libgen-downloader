@@ -1,4 +1,3 @@
-import React from "react";
 import { Text } from "ink";
 
 export enum DownloadStatus {
@@ -13,7 +12,7 @@ export enum DownloadStatus {
 }
 
 export const downloadStatusIndicators = {
-  [DownloadStatus.IDLE]: null,
+  [DownloadStatus.IDLE]: undefined,
   [DownloadStatus.IN_QUEUE]: (
     <Text color="grey" inverse={true}>
       {" "}
