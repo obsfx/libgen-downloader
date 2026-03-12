@@ -1,18 +1,22 @@
 import contentDisposition from "content-disposition";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import fs from "fs";
+// eslint-disable-next-line unicorn/prefer-node-protocol
+import path from "path";
 import { DownloadResult } from "../models/download-result";
 
 interface downloadFileArguments {
   downloadStream: Response;
   onStart: (filename: string, total: number) => void;
   onData: (filename: string, chunk: Buffer, total: number) => void;
+  outputDirectory?: string;
 }
 
 export const downloadFile = async ({
   downloadStream,
   onStart,
   onData,
+  outputDirectory = ".",
 }: downloadFileArguments): Promise<DownloadResult> => {
   const MAX_FILE_NAME_LENGTH = 128;
 
@@ -26,7 +30,8 @@ export const downloadFile = async ({
   const slicedFileName = fullFileName.slice(
     Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0)
   );
-  const path = `./${slicedFileName}`;
+  await fs.promises.mkdir(outputDirectory, { recursive: true });
+  const filePath = path.join(outputDirectory, slicedFileName);
 
   const total = Number(downloadStream.headers.get("content-length") || 0);
   const filename = parsedContentDisposition.parameters.filename;
@@ -37,7 +42,7 @@ export const downloadFile = async ({
 
   onStart(filename, total);
 
-  const file = fs.createWriteStream(path);
+  const file = fs.createWriteStream(filePath);
   const reader = downloadStream.body.getReader();
 
   try {
@@ -58,7 +63,7 @@ export const downloadFile = async ({
     });
 
     const downloadResult: DownloadResult = {
-      path,
+      path: filePath,
       filename,
       total,
     };
