@@ -9,6 +9,7 @@ import { initialBulkDownloadQueueState } from "../src/tui/store/bulk-download-qu
 import { initialConfigState } from "../src/tui/store/config";
 import { initialDownloadQueueState } from "../src/tui/store/download-queue";
 import { useBoundStore } from "../src/tui/store";
+import { LIBGEN_USER_AGENT } from "../src/settings";
 
 const BASE_URL = "https://libgen.example/";
 const originalStoreState = useBoundStore.getState();
@@ -40,12 +41,16 @@ const createEntry = (id: string, md5: string): Entry => ({
 const installNetworkFixture = () => {
   const requestedURLs: string[] = [];
   const requestSignals: AbortSignal[] = [];
+  const requestHeaders: HeadersInit[] = [];
   const fixtureFetch = Object.assign(
     async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = getRequestURL(input);
       requestedURLs.push(url);
       if (init?.signal) {
         requestSignals.push(init.signal);
+      }
+      if (init?.headers) {
+        requestHeaders.push(init.headers);
       }
 
       if (url.includes("/ads.php?md5=success")) {
@@ -73,7 +78,7 @@ const installNetworkFixture = () => {
   );
   const fetchMock = spyOn(globalThis, "fetch").mockImplementation(fixtureFetch);
 
-  return { fetchMock, requestedURLs, requestSignals };
+  return { fetchMock, requestedURLs, requestSignals, requestHeaders };
 };
 
 const installFilesystemFixture = () => {
@@ -131,7 +136,7 @@ describe("download queue integration", () => {
   });
 
   it("resolves a mirror page, downloads the file, and completes the queue item", async () => {
-    const { fetchMock, requestedURLs, requestSignals } = installNetworkFixture();
+    const { fetchMock, requestedURLs, requestSignals, requestHeaders } = installNetworkFixture();
     const { createWriteStream, downloadedChunks } = installFilesystemFixture();
     const entry = createEntry("entry-1", "success");
     useBoundStore.setState({
@@ -149,6 +154,10 @@ describe("download queue integration", () => {
     ]);
     expect(requestSignals).toHaveLength(2);
     expect(requestSignals.every((signal) => !signal.aborted)).toBe(true);
+    expect(requestHeaders).toEqual([
+      { "User-Agent": LIBGEN_USER_AGENT },
+      { "User-Agent": LIBGEN_USER_AGENT },
+    ]);
     expect(createWriteStream).toHaveBeenCalledWith("./success.epub");
     expect(Buffer.concat(downloadedChunks).toString()).toBe("downloaded content");
     expect(state.downloadProgressMap[entry.id]).toMatchObject({
@@ -194,7 +203,7 @@ describe("bulk download integration", () => {
   });
 
   it("processes successful and failed items and records only completed MD5s", async () => {
-    const { fetchMock } = installNetworkFixture();
+    const { fetchMock, requestHeaders } = installNetworkFixture();
     const { downloadedChunks, writeFile } = installFilesystemFixture();
     useBoundStore.setState({
       bulkDownloadQueue: [
@@ -219,6 +228,11 @@ describe("bulk download integration", () => {
 
     const state = useBoundStore.getState();
     expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(requestHeaders).toEqual([
+      { "User-Agent": LIBGEN_USER_AGENT },
+      { "User-Agent": LIBGEN_USER_AGENT },
+      { "User-Agent": LIBGEN_USER_AGENT },
+    ]);
     expect(state.bulkDownloadQueue).toMatchObject([
       {
         md5: "success",

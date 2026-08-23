@@ -46,6 +46,14 @@ describe("configuration data", () => {
       findMirror(mirrors, onMirrorFail, { attemptCount: 1, delayMs: 0, timeoutMs: 100 })
     ).resolves.toEqual(mirrors[1]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "https://offline.example/", {
+      headers: { "User-Agent": LIBGEN_USER_AGENT },
+      signal: expect.any(AbortSignal),
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "https://online.example/", {
+      headers: { "User-Agent": LIBGEN_USER_AGENT },
+      signal: expect.any(AbortSignal),
+    });
     expect(onMirrorFail).toHaveBeenCalledWith("https://offline.example/");
   });
 });

@@ -7,6 +7,7 @@ import { IDownloadProgress } from "./download-queue";
 import { getDocument } from "../../api/data/document";
 import { downloadFile } from "../../api/data/download";
 import { createMD5ListFile } from "../../api/data/file";
+import { fetchLibgen } from "../../api/data/request";
 import objectHash from "object-hash";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
@@ -210,7 +211,7 @@ export const createBulkDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt((signal) => fetch(downloadUrl, { signal }));
+      const downloadStream = await attempt((signal) => fetchLibgen(downloadUrl, signal));
       if (!downloadStream) {
         get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get().onBulkQueueItemFail(index);

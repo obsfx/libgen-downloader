@@ -5,11 +5,16 @@
 /standalone-executables
 /media
 /legacy
+/test
 
 .gitignore
 /.vscode
 /.idea
 /.claude
+/.trekker
+
+eslint.config.js
+bun.lock
 
 *.chm
 *.pdf
