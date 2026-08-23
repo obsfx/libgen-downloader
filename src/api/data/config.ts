@@ -1,4 +1,6 @@
 import { CONFIGURATION_URL } from "../../settings";
+import { attempt } from "../../utilities";
+import type { AttemptOptions } from "../../utilities";
 
 export type MirrorType = "libgen-plus";
 
@@ -12,9 +14,9 @@ export interface Config {
   mirrors: Mirror[];
 }
 
-export async function fetchConfig(): Promise<Config> {
+export async function fetchConfig(signal: AbortSignal): Promise<Config> {
   try {
-    const response = await fetch(CONFIGURATION_URL);
+    const response = await fetch(CONFIGURATION_URL, { signal });
     const json = await response.json();
     const config = json as Record<string, unknown>;
 
@@ -29,15 +31,16 @@ export async function fetchConfig(): Promise<Config> {
 
 export async function findMirror(
   mirrors: Mirror[],
-  onMirrorFail: (failedMirror: string) => void
+  onMirrorFail: (failedMirror: string) => void,
+  attemptOptions?: AttemptOptions
 ): Promise<Mirror | undefined> {
   for (const mirror of mirrors) {
-    try {
-      await fetch(mirror.src);
+    const response = await attempt((signal) => fetch(mirror.src, { signal }), attemptOptions);
+    if (response) {
       return mirror;
-    } catch {
-      onMirrorFail(mirror.src);
     }
+
+    onMirrorFail(mirror.src);
   }
   return undefined;
 }

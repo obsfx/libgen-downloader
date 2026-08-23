@@ -7,7 +7,7 @@ import {
 } from "./constants";
 import { Option } from "./options";
 import Label from "./labels";
-import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS } from "./settings";
+import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS, REQUEST_TIMEOUT_MS } from "./settings";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -17,31 +17,56 @@ export function delay(ms: number): Promise<void> {
   });
 }
 
-export async function attempt<T>(
-  callback: () => Promise<T>,
-  onFail?: (message: string) => void,
-  onError?: (message: string) => void,
-  onComplete?: () => void
-): Promise<T | undefined> {
-  for (let index = 0; index < FAIL_REQ_ATTEMPT_COUNT; index++) {
-    try {
-      const result = await callback();
+export interface AttemptOptions {
+  attemptCount?: number;
+  delayMs?: number;
+  timeoutMs?: number;
+  onFail?: (message: string) => void;
+  onError?: (message: string) => void;
+  onComplete?: () => void;
+}
 
-      if (onComplete) {
-        onComplete();
+export async function attempt<T>(
+  callback: (signal: AbortSignal) => Promise<T>,
+  options: AttemptOptions = {}
+): Promise<T | undefined> {
+  const attemptCount = options.attemptCount ?? FAIL_REQ_ATTEMPT_COUNT;
+  const delayMs = options.delayMs ?? FAIL_REQ_ATTEMPT_DELAY_MS;
+  const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
+
+  for (let index = 0; index < attemptCount; index++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    let failure: unknown;
+
+    try {
+      const result = await callback(controller.signal);
+
+      if (options.onComplete) {
+        options.onComplete();
       }
 
       return result;
     } catch (error: unknown) {
-      if (onFail) {
-        onFail(`Request failed, trying again ${index + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      failure = error;
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    if (options.onFail) {
+      options.onFail(`Request failed, trying again ${index + 1}/${attemptCount}`);
+    }
+
+    const isLastAttempt = index + 1 === attemptCount;
+    if (isLastAttempt) {
+      if (options.onError) {
+        options.onError((failure as Error)?.message);
       }
-      await delay(FAIL_REQ_ATTEMPT_DELAY_MS);
-      if (index + 1 === FAIL_REQ_ATTEMPT_COUNT && onError) {
-        onError((error as Error)?.message);
-      }
+    } else {
+      await delay(delayMs);
     }
   }
+
   return undefined;
 }
 

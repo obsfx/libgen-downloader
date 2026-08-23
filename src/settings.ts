@@ -1,3 +1,5 @@
+import { version } from "../package.json";
+
 export const SCREEN_BASE_APP_WIDTH = 80;
 export const SCREEN_PADDING = 5;
 export const SCREEN_WIDTH_PERC = 95;
@@ -7,5 +9,8 @@ export const CONFIGURATION_URL =
 
 export const FAIL_REQ_ATTEMPT_COUNT = 5;
 export const FAIL_REQ_ATTEMPT_DELAY_MS = 2000;
+export const REQUEST_TIMEOUT_MS = 10_000;
 
 export const SEARCH_PAGE_SIZE = 25;
+
+export const LIBGEN_USER_AGENT = `libgen-downloader/${version}`;

@@ -125,7 +125,7 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const mirrorPageResult = await attempt(() => getDocument(detailPageUrl));
+      const mirrorPageResult = await attempt((signal) => getDocument(detailPageUrl, signal));
       if (!mirrorPageResult) {
         store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
         store.increaseTotalFailed();
@@ -142,7 +142,7 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() => fetch(downloadUrl as string));
+      const downloadStream = await attempt((signal) => fetch(downloadUrl as string, { signal }));
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         store.increaseTotalFailed();
