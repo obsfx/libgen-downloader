@@ -46,7 +46,7 @@ export const createEventActionsSlice = (
       return { status: "success", entries: cachedEntries };
     }
 
-    const pageDocumentResult = await attempt(() => getDocument(searchURL));
+    const pageDocumentResult = await attempt((signal) => getDocument(searchURL, signal));
     if (!pageDocumentResult) {
       return { status: "error", message: `Couldn't fetch the search page for "${query}"` };
     }

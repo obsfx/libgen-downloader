@@ -194,7 +194,7 @@ export const createBulkDownloadQueueStateSlice = (
 
       get().onBulkQueueItemProcessing(index);
 
-      const detailPageResult = await attempt(() => getDocument(detailPageUrl));
+      const detailPageResult = await attempt((signal) => getDocument(detailPageUrl, signal));
       if (!detailPageResult) {
         get().setWarningMessage(`Couldn't fetch the detail page for ${item.md5}`);
         get().onBulkQueueItemFail(index);
@@ -210,7 +210,7 @@ export const createBulkDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() => fetch(downloadUrl));
+      const downloadStream = await attempt((signal) => fetch(downloadUrl, { signal }));
       if (!downloadStream) {
         get().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get().onBulkQueueItemFail(index);

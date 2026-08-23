@@ -54,7 +54,7 @@ export const operate = async (flags: Record<string, unknown>) => {
       return;
     }
 
-    const detailPageResult = await attempt(() => getDocument(detailPageUrl));
+    const detailPageResult = await attempt((signal) => getDocument(detailPageUrl, signal));
     if (!detailPageResult) {
       console.log("Failed to get detail page document");
       return;

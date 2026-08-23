@@ -39,10 +39,14 @@ const createEntry = (id: string, md5: string): Entry => ({
 
 const installNetworkFixture = () => {
   const requestedURLs: string[] = [];
+  const requestSignals: AbortSignal[] = [];
   const fixtureFetch = Object.assign(
-    async (input: RequestInfo | URL) => {
+    async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = getRequestURL(input);
       requestedURLs.push(url);
+      if (init?.signal) {
+        requestSignals.push(init.signal);
+      }
 
       if (url.includes("/ads.php?md5=success")) {
         return new Response(
@@ -69,7 +73,7 @@ const installNetworkFixture = () => {
   );
   const fetchMock = spyOn(globalThis, "fetch").mockImplementation(fixtureFetch);
 
-  return { fetchMock, requestedURLs };
+  return { fetchMock, requestedURLs, requestSignals };
 };
 
 const installFilesystemFixture = () => {
@@ -127,7 +131,7 @@ describe("download queue integration", () => {
   });
 
   it("resolves a mirror page, downloads the file, and completes the queue item", async () => {
-    const { fetchMock, requestedURLs } = installNetworkFixture();
+    const { fetchMock, requestedURLs, requestSignals } = installNetworkFixture();
     const { createWriteStream, downloadedChunks } = installFilesystemFixture();
     const entry = createEntry("entry-1", "success");
     useBoundStore.setState({
@@ -143,6 +147,8 @@ describe("download queue integration", () => {
       "https://libgen.example/ads.php?md5=success",
       "https://libgen.example/files/success.epub",
     ]);
+    expect(requestSignals).toHaveLength(2);
+    expect(requestSignals.every((signal) => !signal.aborted)).toBe(true);
     expect(createWriteStream).toHaveBeenCalledWith("./success.epub");
     expect(Buffer.concat(downloadedChunks).toString()).toBe("downloaded content");
     expect(state.downloadProgressMap[entry.id]).toMatchObject({

@@ -86,7 +86,11 @@ export const createConfigStateSlice = (
       try {
         const adapter = getAdapter(mirror.src, mirror.type);
         const testURL = adapter.getSearchURL("test", 1, SEARCH_PAGE_SIZE);
-        const result = await getDocument(testURL);
+        const result = await attempt((signal) => getDocument(testURL, signal));
+        if (!result) {
+          onMirrorStatus(mirror.src, "failed");
+          continue;
+        }
         const connectionError = adapter.detectConnectionError(result.document);
 
         if (connectionError) {
