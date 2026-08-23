@@ -1,6 +1,7 @@
 import { CONFIGURATION_URL } from "../../settings";
 import { attempt } from "../../utilities";
 import type { AttemptOptions } from "../../utilities";
+import { fetchLibgen } from "./request";
 
 export type MirrorType = "libgen-plus";
 
@@ -35,7 +36,7 @@ export async function findMirror(
   attemptOptions?: AttemptOptions
 ): Promise<Mirror | undefined> {
   for (const mirror of mirrors) {
-    const response = await attempt((signal) => fetch(mirror.src, { signal }), attemptOptions);
+    const response = await attempt((signal) => fetchLibgen(mirror.src, signal), attemptOptions);
     if (response) {
       return mirror;
     }

@@ -26,20 +26,33 @@ describe("attempt", () => {
     expect(signals[0]).not.toBe(signals[1]);
   });
 
-  it("clears the timeout when an attempt completes", async () => {
+  it("does not abort a response body after the fetch attempt completes", async () => {
     let completedSignal: AbortSignal | undefined;
 
-    const result = await attempt(
+    const response = await attempt(
       async (signal) => {
         completedSignal = signal;
-        return "success";
+        const body = new ReadableStream<Uint8Array>({
+          start(controller) {
+            signal.addEventListener(
+              "abort",
+              () => controller.error(new Error("download was aborted")),
+              { once: true }
+            );
+
+            setTimeout(() => {
+              controller.enqueue(Buffer.from("downloaded content"));
+              controller.close();
+            }, 10);
+          },
+        });
+
+        return new Response(body);
       },
       { attemptCount: 1, delayMs: 0, timeoutMs: 5 }
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    expect(result).toBe("success");
+    await expect(response?.text()).resolves.toBe("downloaded content");
     expect(completedSignal?.aborted).toBe(false);
   });
 });
