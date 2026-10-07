@@ -2,6 +2,7 @@ import contentDisposition from "content-disposition";
 import fs from "node:fs";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
+import { FileDownloadError } from "../../errors";
 import type { DownloadResult } from "../models/download-result";
 
 interface downloadFileArguments {
@@ -19,7 +20,7 @@ export const downloadFile = async ({
 
   const downloadContentDisposition = downloadStream.headers.get("content-disposition");
   if (!downloadContentDisposition) {
-    throw new Error("No content-disposition header found");
+    throw new FileDownloadError("No content-disposition header found");
   }
 
   const parsedContentDisposition = contentDisposition.parse(downloadContentDisposition);
@@ -33,7 +34,7 @@ export const downloadFile = async ({
   const filename = parsedContentDisposition.parameters.filename;
 
   if (!downloadStream.body) {
-    throw new Error("No response body");
+    throw new FileDownloadError("No response body");
   }
 
   onStart(filename, total);
@@ -61,6 +62,6 @@ export const downloadFile = async ({
 
     return downloadResult;
   } catch {
-    throw new Error(`(${filename}) Error occurred while downloading file`);
+    throw new FileDownloadError(`(${filename}) Error occurred while downloading file`);
   }
 };

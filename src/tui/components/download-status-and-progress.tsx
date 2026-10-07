@@ -1,6 +1,6 @@
 import { Text } from "ink";
 import { IDownloadProgress } from "../store/download-queue";
-import { getDownloadProgress } from "../helpers/progress";
+import { getDownloadProgress } from "../helpers/display";
 import { DownloadStatus, downloadStatusIndicators } from "../../download-statuses";
 
 interface Properties {

@@ -4,13 +4,6 @@ export enum Option {
   PREV_PAGE = "prev_page_option",
   START_BULK_DOWNLOAD = "start_bulk_download_option",
   EXIT = "exit_option",
-  SEE_DETAILS = "see_details_option",
-  ALTERNATIVE_DOWNLOADS = "alternative_downloads",
-  DOWNLOAD_DIRECTLY = "download_directly_option",
-  ADD_TO_BULK_DOWNLOAD_QUEUE = "add_to_bulk_download_queue_option",
-  REMOVE_FROM_BULK_DOWNLOAD_QUEUE = "remove_from_bulk_download_queue_option",
-  TURN_BACK_TO_THE_LIST = "turn_back_to_the_list_option",
-  BACK_TO_ENTRY_OPTIONS = "back_to_entry_options",
 }
 
 export enum ResultListEntryOption {
@@ -27,6 +20,7 @@ export enum DetailEntryOption {
 }
 
 export enum BulkDownloadAfterCompleteOption {
+  RETRY_FAILED_DOWNLOADS,
   TURN_BACK_TO_THE_LIST,
   BACK_TO_SEARCH,
 }

@@ -45,3 +45,5 @@ export const cli = meow(
     },
   }
 );
+
+export type CLIFlags = typeof cli.flags;

@@ -3,14 +3,14 @@ import { useBoundStore } from "../../store";
 import { IOption } from "../../components/option";
 import OptionList from "../../components/option-list";
 import { BeforeExitOption } from "../../../options";
-import Label from "../../../labels";
+import { Label } from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 
 export function DownloadQueueBeforeExit() {
   const handleExit = useBoundStore((state) => state.handleExit);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
 
-  const options: Record<string, IOption> = {
+  const options = {
     [BeforeExitOption.NO]: {
       label: Label.NO,
       onSelect: () => {
@@ -20,10 +20,12 @@ export function DownloadQueueBeforeExit() {
     },
     [BeforeExitOption.YES]: {
       label: Label.YES,
-      onSelect: () => handleExit(),
+      onSelect: () => {
+        return handleExit();
+      },
       order: 2,
     },
-  };
+  } satisfies Record<string, IOption>;
 
   return (
     <Box flexDirection="column">

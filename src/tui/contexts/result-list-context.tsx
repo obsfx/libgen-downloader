@@ -2,26 +2,29 @@ import React, { useCallback, useContext } from "react";
 import { Entry } from "../../api/models/entry";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { useBoundStore } from "../store";
+import { MissingContextProviderError } from "../../errors";
 
-export interface IResultListContext {
+interface IResultListContext {
   handleSeeDetailsOptions: (entry: Entry) => void;
   handleTurnBackToTheListOption: () => void;
   handleDetailTurnBackToTheList: () => void;
 }
 
-export const ResultListContext = React.createContext<IResultListContext | undefined>(undefined);
+export interface ResultListContextProviderProperties {
+  children: React.ReactNode;
+}
+
+const ResultListContext = React.createContext<IResultListContext | undefined>(undefined);
 
 export const useResultListContext = () => {
   const context = useContext(ResultListContext);
   if (!context) {
-    throw new Error("useResultListContext must be used within a ResultListContextProvider");
+    throw new MissingContextProviderError("useResultListContext", "ResultListContextProvider");
   }
   return context;
 };
 
-export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export function ResultListContextProvider({ children }: ResultListContextProviderProperties) {
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setAnyEntryExpanded = useBoundStore((state) => state.setAnyEntryExpanded);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
@@ -54,4 +57,4 @@ export const ResultListContextProvider: React.FC<{ children: React.ReactNode }> 
       {children}
     </ResultListContext.Provider>
   );
-};
+}

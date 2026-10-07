@@ -1,10 +1,7 @@
 import { TCombinedStore } from "./index";
 import { Entry } from "../../api/models/entry";
 import { DownloadStatus } from "../../download-statuses";
-import { attempt } from "../../utilities";
-import { getDocument } from "../../api/data/document";
-import { downloadFile } from "../../api/data/download";
-import { fetchLibgen } from "../../api/data/request";
+import { summarizeFailures } from "../../api/download/utils/failure-text";
 
 export interface IDownloadProgress {
   filename: string;
@@ -50,189 +47,195 @@ export const createDownloadQueueStateSlice = (
     partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)
   ) => void,
   get: () => TCombinedStore
-) => ({
-  ...initialDownloadQueueState,
+) => {
+  return {
+    ...initialDownloadQueueState,
 
-  pushDownloadQueue: (entry: Entry) => {
-    const store = get();
+    pushDownloadQueue: (entry: Entry) => {
+      const store = get();
 
-    if (store.inDownloadQueueEntryIds.includes(entry.id)) {
-      return;
-    }
-
-    set({
-      downloadQueue: [...store.downloadQueue, entry],
-      inDownloadQueueEntryIds: [...store.inDownloadQueueEntryIds, entry.id],
-    });
-
-    store.updateCurrentDownloadProgress(entry.id, {
-      filename: "",
-      progress: 0,
-      total: 0,
-      status: DownloadStatus.IN_QUEUE,
-    });
-
-    store.increaseTotalAddedToDownloadQueue();
-
-    if (store.isQueueActive) {
-      return;
-    }
-
-    store.iterateQueue();
-  },
-
-  consumeDownloadQueue: () => {
-    const store = get();
-
-    if (store.downloadQueue.length === 0) {
-      return;
-    }
-
-    const entry = store.downloadQueue[0];
-
-    set({
-      downloadQueue: store.downloadQueue.slice(1),
-    });
-
-    return entry;
-  },
-
-  removeEntryIdFromDownloadQueue: (entryId: string) => {
-    const store = get();
-    set({
-      inDownloadQueueEntryIds: store.inDownloadQueueEntryIds.filter((id) => id !== entryId),
-    });
-  },
-
-  iterateQueue: async () => {
-    const store = get();
-
-    set({ isQueueActive: true });
-
-    for (;;) {
-      const entry = store.consumeDownloadQueue();
-      if (!entry) {
-        break;
+      if (store.inDownloadQueueEntryIds.includes(entry.id)) {
+        return;
       }
 
-      store.updateCurrentDownloadProgress(entry.id, {
-        status: DownloadStatus.CONNECTING_TO_LIBGEN,
+      set({
+        downloadQueue: [...store.downloadQueue, entry],
+        inDownloadQueueEntryIds: [...store.inDownloadQueueEntryIds, entry.id],
       });
 
-      const detailPageUrl = store.mirrorAdapter?.getPageURL(entry.mirror);
-      if (!detailPageUrl) {
-        store.setWarningMessage(`Couldn't get the detail page URL for "${entry.title}"`);
-        store.increaseTotalFailed();
-        continue;
+      store.updateCurrentDownloadProgress(entry.id, {
+        filename: "",
+        progress: 0,
+        total: 0,
+        status: DownloadStatus.IN_QUEUE,
+      });
+
+      store.increaseTotalAddedToDownloadQueue();
+
+      if (store.isQueueActive) {
+        return;
       }
 
-      const mirrorPageResult = await attempt((signal) => getDocument(detailPageUrl, signal));
-      if (!mirrorPageResult) {
-        store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
-        store.increaseTotalFailed();
-        continue;
+      store.allowWaitingForLibgen();
+      store.iterateQueue();
+    },
+
+    consumeDownloadQueue: () => {
+      const store = get();
+
+      if (store.downloadQueue.length === 0) {
+        return;
       }
 
-      const downloadUrl = store.mirrorAdapter?.getMainDownloadURLFromDocument(
-        mirrorPageResult.document
-      );
+      const entry = store.downloadQueue[0];
 
-      if (!downloadUrl) {
-        store.setWarningMessage(`Couldn't find the download url for "${entry.title}"`);
-        store.increaseTotalFailed();
-        continue;
-      }
+      set({
+        downloadQueue: store.downloadQueue.slice(1),
+      });
 
-      const downloadStream = await attempt((signal) => fetchLibgen(downloadUrl as string, signal));
-      if (!downloadStream) {
-        store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
-        store.increaseTotalFailed();
-        continue;
-      }
+      return entry;
+    },
 
-      try {
+    removeEntryIdFromDownloadQueue: (entryId: string) => {
+      const store = get();
+      set({
+        inDownloadQueueEntryIds: store.inDownloadQueueEntryIds.filter((id) => id !== entryId),
+      });
+    },
+
+    iterateQueue: async () => {
+      const store = get();
+
+      set({ isQueueActive: true });
+
+      for (;;) {
+        const entry = store.consumeDownloadQueue();
+        if (!entry) {
+          break;
+        }
+
         store.updateCurrentDownloadProgress(entry.id, {
-          status: DownloadStatus.DOWNLOADING,
+          status: DownloadStatus.CONNECTING_TO_LIBGEN,
         });
 
-        await downloadFile({
-          downloadStream,
-          onStart: (filename, total) => {
-            store.updateCurrentDownloadProgress(entry.id, {
-              filename,
-              progress: undefined,
-              total,
-            });
-          },
-          onData: (filename, chunk, total) => {
-            store.updateCurrentDownloadProgress(entry.id, {
-              filename,
-              progress: chunk.length,
-              total,
-            });
-          },
-        });
+        const md5 = store.mirrorAdapter?.getEntryMD5(entry);
+        if (!md5) {
+          store.setWarningMessage(`Couldn't find the MD5 of "${entry.title}"`);
+          store.increaseTotalFailed();
+          store.updateCurrentDownloadProgress(entry.id, { status: DownloadStatus.FAILED });
+          store.removeEntryIdFromDownloadQueue(entry.id);
+          continue;
+        }
 
-        store.increaseTotalDownloaded();
-        store.updateCurrentDownloadProgress(entry.id, {
-          status: DownloadStatus.DOWNLOADED,
-        });
-      } catch {
-        store.setWarningMessage(`Couldn't download "${entry.title}"`);
-        store.increaseTotalFailed();
-        store.updateCurrentDownloadProgress(entry.id, {
-          status: DownloadStatus.FAILED,
-        });
-      } finally {
-        store.removeEntryIdFromDownloadQueue(entry.id);
-      }
-    }
-
-    set({ isQueueActive: false });
-  },
-
-  updateCurrentDownloadProgress: (
-    entryId: string,
-    downloadProgress: Partial<IDownloadProgress>
-  ) => {
-    set((previous) => ({
-      downloadProgressMap: {
-        ...previous.downloadProgressMap,
-        [entryId]: {
-          ...previous.downloadProgressMap[entryId],
-          ...downloadProgress,
-          progress: (() => {
-            if (!("progress" in downloadProgress)) {
-              return previous.downloadProgressMap[entryId]?.progress;
-            }
-            if (downloadProgress.progress === undefined) {
-              return 0;
-            }
-            return (
-              (previous.downloadProgressMap[entryId]?.progress || 0) +
-              (downloadProgress.progress || 0)
+        try {
+          const outcome = await get()
+            .getRecoveringDownloadService()
+            .download(
+              md5,
+              {
+                onStart: (filename, total) => {
+                  store.updateCurrentDownloadProgress(entry.id, {
+                    filename,
+                    progress: undefined,
+                    total,
+                    status: DownloadStatus.DOWNLOADING,
+                  });
+                },
+                onData: (filename, chunk, total) => {
+                  store.updateCurrentDownloadProgress(entry.id, {
+                    filename,
+                    progress: chunk.length,
+                    total,
+                  });
+                },
+              },
+              {
+                shouldWait: () => {
+                  return !get().libgenWaitDeclined;
+                },
+                onWaiting: () => {
+                  store.updateCurrentDownloadProgress(entry.id, {
+                    status: DownloadStatus.WAITING_FOR_LIBGEN,
+                  });
+                },
+                onResumed: () => {
+                  store.updateCurrentDownloadProgress(entry.id, {
+                    status: DownloadStatus.CONNECTING_TO_LIBGEN,
+                  });
+                },
+              }
             );
-          })(),
+
+          if (!outcome.downloaded) {
+            store.setWarningMessage(
+              `Couldn't download "${entry.title}": ${summarizeFailures(outcome.failures)}`
+            );
+            store.increaseTotalFailed();
+            store.updateCurrentDownloadProgress(entry.id, { status: DownloadStatus.FAILED });
+            continue;
+          }
+
+          store.increaseTotalDownloaded();
+          store.updateCurrentDownloadProgress(entry.id, {
+            status: DownloadStatus.DOWNLOADED,
+          });
+        } catch {
+          store.setWarningMessage(`Couldn't download "${entry.title}"`);
+          store.increaseTotalFailed();
+          store.updateCurrentDownloadProgress(entry.id, {
+            status: DownloadStatus.FAILED,
+          });
+        } finally {
+          store.removeEntryIdFromDownloadQueue(entry.id);
+        }
+      }
+
+      set({ isQueueActive: false });
+    },
+
+    updateCurrentDownloadProgress: (
+      entryId: string,
+      downloadProgress: Partial<IDownloadProgress>
+    ) => {
+      set((previous) => ({
+        downloadProgressMap: {
+          ...previous.downloadProgressMap,
+          [entryId]: {
+            ...previous.downloadProgressMap[entryId],
+            ...downloadProgress,
+            progress: (() => {
+              if (!("progress" in downloadProgress)) {
+                return previous.downloadProgressMap[entryId]?.progress;
+              }
+              if (downloadProgress.progress === undefined) {
+                return 0;
+              }
+              return (
+                (previous.downloadProgressMap[entryId]?.progress || 0) +
+                (downloadProgress.progress || 0)
+              );
+            })(),
+          },
         },
-      },
-    }));
-  },
+      }));
+    },
 
-  increaseTotalAddedToDownloadQueue: () => {
-    set((previous) => ({
-      totalAddedToDownloadQueue: previous.totalAddedToDownloadQueue + 1,
-    }));
-  },
+    increaseTotalAddedToDownloadQueue: () => {
+      set((previous) => ({
+        totalAddedToDownloadQueue: previous.totalAddedToDownloadQueue + 1,
+      }));
+    },
 
-  increaseTotalDownloaded: () => {
-    set((previous) => ({
-      totalDownloaded: previous.totalDownloaded + 1,
-    }));
-  },
+    increaseTotalDownloaded: () => {
+      set((previous) => ({
+        totalDownloaded: previous.totalDownloaded + 1,
+      }));
+    },
 
-  increaseTotalFailed: () => {
-    set((previous) => ({
-      totalFailed: previous.totalFailed + 1,
-    }));
-  },
-});
+    increaseTotalFailed: () => {
+      set((previous) => ({
+        totalFailed: previous.totalFailed + 1,
+      }));
+    },
+  };
+};

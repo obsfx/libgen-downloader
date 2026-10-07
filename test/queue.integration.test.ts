@@ -10,6 +10,7 @@ import { initialConfigState } from "../src/tui/store/config";
 import { initialDownloadQueueState } from "../src/tui/store/download-queue";
 import { useBoundStore } from "../src/tui/store";
 import { LIBGEN_USER_AGENT } from "../src/settings";
+import { LAYOUT_KEY } from "../src/tui/layouts/keys";
 
 const BASE_URL = "https://libgen.example/";
 const originalStoreState = useBoundStore.getState();
@@ -25,20 +26,23 @@ const getRequestURL = (input: RequestInfo | URL): string => {
   }
 };
 
-const createEntry = (id: string, md5: string): Entry => ({
-  id,
-  authors: "Example Author",
-  title: `Example Book ${id}`,
-  publisher: "Example Press",
-  year: "2026",
-  pages: "100",
-  language: "English",
-  size: "1 KB",
-  extension: "epub",
-  mirror: `/ads.php?md5=${md5}`,
-});
+const createEntry = (id: string, md5: string): Entry => {
+  return {
+    id,
+    authors: "Example Author",
+    title: `Example Book ${id}`,
+    publisher: "Example Press",
+    year: "2026",
+    pages: "100",
+    language: "English",
+    size: "1 KB",
+    extension: "epub",
+    mirror: `/ads.php?md5=${md5}`,
+  };
+};
 
 const installNetworkFixture = () => {
+  let flakyPageRequests = 0;
   const requestedURLs: string[] = [];
   const requestSignals: AbortSignal[] = [];
   const requestHeaders: HeadersInit[] = [];
@@ -54,6 +58,16 @@ const installNetworkFixture = () => {
       }
 
       if (url.includes("/ads.php?md5=success")) {
+        return new Response(
+          '<table id="main"><tr><td>Book</td><td><a href="/files/success.epub">GET</a></td></tr></table>'
+        );
+      }
+
+      if (url.includes("/ads.php?md5=flaky")) {
+        flakyPageRequests += 1;
+        if (flakyPageRequests === 1) {
+          return new Response("<main>Download link unavailable</main>");
+        }
         return new Response(
           '<table id="main"><tr><td>Book</td><td><a href="/files/success.epub">GET</a></td></tr></table>'
         );
@@ -202,7 +216,7 @@ describe("bulk download integration", () => {
     expect(operateBulkDownloadQueue).toHaveBeenCalledTimes(1);
   });
 
-  it("processes successful and failed items and records only completed MD5s", async () => {
+  it("processes items, retries failures once, and records completed and failed MD5s", async () => {
     const { fetchMock, requestHeaders } = installNetworkFixture();
     const { downloadedChunks, writeFile } = installFilesystemFixture();
     useBoundStore.setState({
@@ -227,8 +241,9 @@ describe("bulk download integration", () => {
     await useBoundStore.getState().operateBulkDownloadQueue();
 
     const state = useBoundStore.getState();
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
     expect(requestHeaders).toEqual([
+      { "User-Agent": LIBGEN_USER_AGENT },
       { "User-Agent": LIBGEN_USER_AGENT },
       { "User-Agent": LIBGEN_USER_AGENT },
       { "User-Agent": LIBGEN_USER_AGENT },
@@ -251,10 +266,86 @@ describe("bulk download integration", () => {
     expect(state.failedBulkDownloadItemCount).toBe(1);
     expect(state.isBulkDownloadComplete).toBe(true);
     expect(state.createdMD5ListFileName).toMatch(/^libgen_downloader_md5_list_\d+\.txt$/);
-    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(state.createdFailedMD5ListFileName).toMatch(
+      /^libgen_downloader_failed_md5_list_\d+\.txt$/
+    );
+    expect(writeFile).toHaveBeenCalledTimes(2);
     expect(writeFile.mock.calls[0]?.[0].toString()).toMatch(
       /^\.\/libgen_downloader_md5_list_\d+\.txt$/
     );
     expect(writeFile.mock.calls[0]?.[1]).toBe("success");
+    expect(writeFile.mock.calls[1]?.[1]).toBe("missing");
+  });
+});
+
+const queueItem = (md5: string, status: DownloadStatus) => {
+  return {
+    md5,
+    filename: "",
+    total: 0,
+    progress: 0,
+    status,
+  };
+};
+
+describe("bulk download retries", () => {
+  it("recovers an item that fails once through the automatic retry pass", async () => {
+    installNetworkFixture();
+    installFilesystemFixture();
+    useBoundStore.setState({ bulkDownloadQueue: [queueItem("flaky", DownloadStatus.IN_QUEUE)] });
+
+    await useBoundStore.getState().operateBulkDownloadQueue();
+
+    const state = useBoundStore.getState();
+    expect(state.bulkDownloadQueue[0]?.status).toBe(DownloadStatus.DOWNLOADED);
+    expect(state.completedBulkDownloadItemCount).toBe(1);
+    expect(state.failedBulkDownloadItemCount).toBe(0);
+    expect(state.createdFailedMD5ListFileName).toBe("");
+  });
+
+  it("retries only the failed items and updates the counters", async () => {
+    const { requestedURLs } = installNetworkFixture();
+    installFilesystemFixture();
+    useBoundStore.setState({
+      bulkDownloadQueue: [
+        queueItem("success", DownloadStatus.DOWNLOADED),
+        queueItem("flaky", DownloadStatus.FAILED),
+      ],
+      completedBulkDownloadItemCount: 1,
+      failedBulkDownloadItemCount: 1,
+      isBulkDownloadComplete: true,
+    });
+
+    await useBoundStore.getState().retryFailedBulkDownloads();
+
+    const state = useBoundStore.getState();
+    expect(requestedURLs.some((url) => url.includes("md5=success"))).toBe(false);
+    expect(state.bulkDownloadQueue.map((item) => item.status)).toEqual([
+      DownloadStatus.DOWNLOADED,
+      DownloadStatus.DOWNLOADED,
+    ]);
+    expect(state.completedBulkDownloadItemCount).toBe(2);
+    expect(state.failedBulkDownloadItemCount).toBe(0);
+    expect(state.isBulkDownloadComplete).toBe(true);
+  });
+
+  it("returns to the list with only the failed entries still selected", () => {
+    const succeeded = createEntry("entry-1", "success");
+    const failed = createEntry("entry-2", "missing");
+    useBoundStore.setState({
+      bulkDownloadSelectedEntries: { succeeded, failed },
+      bulkDownloadQueue: [
+        queueItem("success", DownloadStatus.DOWNLOADED),
+        queueItem("missing", DownloadStatus.FAILED),
+      ],
+      failedBulkDownloadItemCount: 1,
+    });
+
+    useBoundStore.getState().returnToListKeepingFailedSelected();
+
+    const state = useBoundStore.getState();
+    expect(Object.values(state.bulkDownloadSelectedEntries)).toEqual([failed]);
+    expect(state.bulkDownloadQueue).toEqual([]);
+    expect(state.activeLayout).toBe(LAYOUT_KEY.RESULT_LIST_LAYOUT);
   });
 });

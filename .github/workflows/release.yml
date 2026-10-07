@@ -52,6 +52,15 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Cache embedded models
+        uses: actions/cache@v4
+        with:
+          path: assets/models
+          key: embedded-models-${{ hashFiles('scripts/models/manifest.ts') }}
+
+      - name: Fetch embedded models
+        run: bun run models:fetch
+
       - name: Compile executable
         run: bun build src/index.ts --compile --outfile ${{ matrix.artifact }}
 

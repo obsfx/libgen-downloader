@@ -1,8 +1,7 @@
-import type { FC } from "react";
 import { Box } from "ink";
 import { RESULT_LIST_ACTIVE_LIST_INDEX } from "../../../constants";
 import ResultListItemOption from "./result-list-item-option";
-import ResultListItemEntry from "./result-list-item-entry";
+import { ResultListItemEntry } from "./result-list-item-entry";
 import { IResultListItemType } from "../../../api/models/list-item";
 import ContentContainer from "../../components/content-container";
 import { useScrollableListControls } from "../../hooks/use-scrollable-list-controls";
@@ -12,7 +11,7 @@ import ResultListInfo from "../../components/result-list-info";
 import { useBoundStore } from "../../store";
 import { ResultListLoadingSkeleton } from "./result-list-loading-skeleton";
 
-const ResultList: FC = () => {
+export function ResultList() {
   const anyEntryExpanded = useBoundStore((state) => state.anyEntryExpanded);
   const activeExpandedListLength = useBoundStore((state) => state.activeExpandedListLength);
   const listItems = useBoundStore((state) => state.listItems);
@@ -71,6 +70,4 @@ const ResultList: FC = () => {
       <UsageInfo />
     </Box>
   );
-};
-
-export default ResultList;
+}

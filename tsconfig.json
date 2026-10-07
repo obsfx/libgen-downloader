@@ -3,6 +3,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
@@ -18,6 +19,6 @@
     "skipLibCheck": true,
     "types": ["bun"]
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "build", "standalone-executables"]
 }

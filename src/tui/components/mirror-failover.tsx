@@ -1,9 +1,9 @@
 import { Box, Text } from "ink";
 import { useBoundStore } from "../store/index";
-import Label from "../../labels";
+import { Label } from "../../labels";
 import Spinner from "./spinner";
 
-const MirrorFailover = () => {
+export function MirrorFailover() {
   const mirrorCheckStates = useBoundStore((state) => state.mirrorCheckStates);
 
   if (mirrorCheckStates.length === 0) {
@@ -29,6 +29,4 @@ const MirrorFailover = () => {
       ))}
     </Box>
   );
-};
-
-export default MirrorFailover;
+}

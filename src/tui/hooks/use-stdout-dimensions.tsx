@@ -14,7 +14,9 @@ export function useStdoutDimensions(): [number, number] {
       return;
     }
 
-    const handler = () => setDimensions([stdout.columns, stdout.rows]);
+    const handler = () => {
+      return setDimensions([stdout.columns, stdout.rows]);
+    };
     stdout.on("resize", handler);
     return () => {
       stdout.off("resize", handler);

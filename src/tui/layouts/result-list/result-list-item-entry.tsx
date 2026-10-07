@@ -1,23 +1,24 @@
-import type { FC } from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/option";
 import OptionList from "../../components/option-list";
 import { useResultListContext } from "../../contexts/result-list-context";
 import { ResultListEntryOption } from "../../../options";
-import Label from "../../../labels";
+import { Label } from "../../../labels";
 import { IResultListItemEntry } from "../../../api/models/list-item";
 import { SEARCH_PAGE_SIZE } from "../../../settings";
 import { useBoundStore } from "../../store";
 import { DownloadStatusAndProgress } from "../../components/download-status-and-progress";
 import objectHash from "object-hash";
 
-const ResultListItemEntry: FC<{
+interface Properties {
   item: IResultListItemEntry;
   isActive: boolean;
   isExpanded: boolean;
   isFadedOut: boolean;
-}> = ({ item, isActive, isExpanded, isFadedOut }) => {
+}
+
+export function ResultListItemEntry({ item, isActive, isExpanded, isFadedOut }: Properties) {
   const addToBulkDownloadQueue = useBoundStore((state) => state.addToBulkDownloadQueue);
   const removeFromBulkDownloadQueue = useBoundStore((state) => state.removeFromBulkDownloadQueue);
   const currentPage = useBoundStore((state) => state.currentPage);
@@ -55,10 +56,12 @@ const ResultListItemEntry: FC<{
     bulkDownloadLabel = Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE;
   }
 
-  const entryOptions: Record<string, IOption> = {
+  const entryOptions = {
     [ResultListEntryOption.SEE_DETAILS]: {
       label: Label.SEE_DETAILS,
-      onSelect: () => handleSeeDetailsOptions(item.data),
+      onSelect: () => {
+        return handleSeeDetailsOptions(item.data);
+      },
     },
     [ResultListEntryOption.DOWNLOAD_DIRECTLY]: {
       loading: inDownloadQueue,
@@ -79,7 +82,7 @@ const ResultListItemEntry: FC<{
       label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: handleTurnBackToTheListOption,
     },
-  };
+  } satisfies Record<string, IOption>;
 
   useInput(
     (input, key) => {
@@ -144,6 +147,4 @@ const ResultListItemEntry: FC<{
       {isExpanded && <OptionList key={"entryOptions"} options={entryOptions} />}
     </Box>
   );
-};
-
-export default ResultListItemEntry;
+}

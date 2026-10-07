@@ -18,38 +18,40 @@ export const createCacheStateSlice = (
     partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)
   ) => void,
   get: () => TCombinedStore
-) => ({
-  ...initialCacheState,
+) => {
+  return {
+    ...initialCacheState,
 
-  setEntryCacheMap: (searchURL: string, entryList: Entry[]) => {
-    const store = get();
+    setEntryCacheMap: (searchURL: string, entryList: Entry[]) => {
+      const store = get();
 
-    const entryCacheMap = {
-      ...store.entryCacheMap,
-      [searchURL]: entryList,
-    };
+      const entryCacheMap = {
+        ...store.entryCacheMap,
+        [searchURL]: entryList,
+      };
 
-    set({ entryCacheMap });
-  },
+      set({ entryCacheMap });
+    },
 
-  resetEntryCacheMap: () => {
-    set({
-      entryCacheMap: {},
-    });
-  },
+    resetEntryCacheMap: () => {
+      set({
+        entryCacheMap: {},
+      });
+    },
 
-  lookupPageCache: (pageNumber: number) => {
-    const store = get();
+    lookupPageCache: (pageNumber: number) => {
+      const store = get();
 
-    const searchURLAsCacheMapKey = store.mirrorAdapter?.getSearchURL(
-      store.searchValue,
-      pageNumber,
-      SEARCH_PAGE_SIZE
-    );
+      const searchURLAsCacheMapKey = store.mirrorAdapter?.getSearchURL(
+        store.searchValue,
+        pageNumber,
+        SEARCH_PAGE_SIZE
+      );
 
-    if (!searchURLAsCacheMapKey) {
-      return [];
-    }
-    return store.entryCacheMap[searchURLAsCacheMapKey] || [];
-  },
-});
+      if (!searchURLAsCacheMapKey) {
+        return [];
+      }
+      return store.entryCacheMap[searchURLAsCacheMapKey] || [];
+    },
+  };
+};

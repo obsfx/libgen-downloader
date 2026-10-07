@@ -9,6 +9,7 @@ export enum DownloadStatus {
   FAILED = "FAILED",
   CONNECTING_TO_LIBGEN = "CONNECTING_TO_LIBGEN",
   FETCHING_MD5 = "FETCHING_MD5",
+  WAITING_FOR_LIBGEN = "WAITING_FOR_LIBGEN",
 }
 
 export const downloadStatusIndicators = {
@@ -53,6 +54,12 @@ export const downloadStatusIndicators = {
     <Text color="whiteBright" inverse={true}>
       {" "}
       FETCHING MD5{" "}
+    </Text>
+  ),
+  [DownloadStatus.WAITING_FOR_LIBGEN]: (
+    <Text color="magentaBright" inverse={true}>
+      {" "}
+      WAITING FOR LIBGEN{" "}
     </Text>
   ),
 };

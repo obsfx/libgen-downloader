@@ -70,6 +70,18 @@ chmod +x ./libgen-downloader-linux-*
 
 ## Changelogs
 
+v3.4.0
+
+- Downloads no longer depend on a single mirror. Each book is tried on every `libgen+` mirror and then on the libgen SPA mirrors (randombook.org, libgen.pw, libgen.me, libgen.xyz), which are now listed in the remote configuration.
+- Temporary errors such as server errors, database overloads and timeouts are retried instead of failing the download right away. Failure messages now explain what went wrong.
+- When libgen is down, the app waits for it to come back instead of giving up, then resumes on the mirror that recovered first. A banner shows the outage and the next check, with `[ctrl+r]` to check now and `[esc]` to stop waiting.
+- Each book gets at most 90 seconds of retries and waiting, so one unavailable book no longer blocks the rest of the queue.
+- Search results and download links still work when a mirror changes its page layout. The app finds the right table or link on its own, checks it, and remembers it for that mirror. A small embedded model (TinyBERT) helps when the layout is unfamiliar.
+- Fixed downloads failing for results whose first mirror link points directly to a file ([#98](https://github.com/obsfx/libgen-downloader/issues/98)).
+- Bulk downloads retry failed books once more. After a bulk download you can retry failed downloads, a list of failed MD5s is saved, and failed entries stay selected when you go back to the results ([#99](https://github.com/obsfx/libgen-downloader/issues/99)).
+
+---
+
 v3.0.0
 
 - Added new `libgen+` mirrors as primary source. App is now usable as long as the `libgen+` mirrors are available.

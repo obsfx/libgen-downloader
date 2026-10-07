@@ -1,0 +1,13 @@
+export const RANKED_TOP_K = 3;
+export const MIN_RESULT_COLUMNS = 5;
+export const MIN_LINKED_ROW_RATIO = 0.5;
+export const MD5_HREF = /[a-f0-9]{32}/i;
+export const FILE_ENDPOINT_HREF = /(?:get|file|download)\.php\?[^"]*md5=[a-f0-9]{32}/i;
+export const KEY_PARAMETER = /[?&]key=/i;
+export const DOWNLOAD_TEXT = /^(get|download)$/i;
+export const NON_NAVIGABLE_HREF = /^\s*(#|javascript:|mailto:)/i;
+export const DESCRIBED_MD5_PATTERN = /[a-f0-9]{32}/gi;
+export const MAX_DESCRIBED_HREF_LENGTH = 120;
+export const MAX_DESCRIBED_TEXT_LENGTH = 60;
+export const TABLE_SAMPLE_LENGTH = 100;
+export const HEADER_CELL_LENGTH = 20;
