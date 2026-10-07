@@ -10,5 +10,10 @@
 *.epub
 *.txt
 *.tgz
+*.lit
+*.fb2
 
 ws.session
+/spikes
+
+/assets/models

@@ -12,6 +12,7 @@ export function BulkDownload() {
   );
   const failedBulkDownloadItemCount = useBoundStore((state) => state.failedBulkDownloadItemCount);
   const createdMD5ListFileName = useBoundStore((state) => state.createdMD5ListFileName);
+  const createdFailedMD5ListFileName = useBoundStore((state) => state.createdFailedMD5ListFileName);
   const CLIMode = useBoundStore((state) => state.CLIMode);
   const totalItemCount = bulkDownloadQueue.length;
 
@@ -32,6 +33,13 @@ export function BulkDownload() {
           )}
           {!createdMD5ListFileName && <InkSpinner type="simpleDotsScrolling" />}
         </Text>
+
+        {createdFailedMD5ListFileName && failedBulkDownloadItemCount > 0 && (
+          <Text color="gray">
+            Failed MD5 list file created:{" "}
+            <Text color="redBright">{createdFailedMD5ListFileName}</Text>
+          </Text>
+        )}
 
         <Text color="white">
           Downloading files to <Text color="blueBright">{process.cwd()}</Text>

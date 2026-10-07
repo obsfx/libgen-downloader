@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { LibgenPlusAdapter } from "../src/api/adapters/libgen-plus-adapter";
 import type { Entry } from "../src/api/models/entry";
-import Label from "../src/labels";
+import { Label } from "../src/labels";
 import { initialAppState } from "../src/tui/store/app";
 import { initialBulkDownloadQueueState } from "../src/tui/store/bulk-download-queue";
 import { initialCacheState } from "../src/tui/store/cache";
@@ -129,16 +129,25 @@ describe("search integration", () => {
     expect(checkNextPage).toHaveBeenCalledWith("typescript", 2);
   });
 
-  it("reports an unrecoverable connection error when no fallback mirror exists", async () => {
+  it("waits for libgen and reports an unrecoverable error when waiting is declined", async () => {
     const search = mock(async () => ({
       status: "connection_error" as const,
       message: "Active mirror failed",
     }));
-    useBoundStore.setState({ searchValue: "typescript", search });
+    const waitForLibgen = mock(async () => ({
+      recovered: false as const,
+      reason: "cancelled" as const,
+    }));
+    useBoundStore.setState({ searchValue: "typescript", search, waitForLibgen });
 
     await useBoundStore.getState().handleSearchSubmit();
 
     const state = useBoundStore.getState();
+    expect(waitForLibgen).toHaveBeenCalledWith(
+      { kind: "search", query: "typescript" },
+      { kind: "server-error", reason: "Active mirror failed" },
+      expect.objectContaining({ since: expect.any(Number) })
+    );
     expect(state.connectionError).toBe("Active mirror failed");
     expect(state.errorMessage).toBe(Label.ALL_MIRRORS_FAILED);
     expect(state.isLoading).toBe(false);

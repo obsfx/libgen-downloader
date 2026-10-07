@@ -3,7 +3,7 @@ import { Entry } from "../../api/models/entry";
 import { ListItem } from "../../api/models/list-item";
 import { constructListItems, NextPageStatus } from "../../utilities";
 import { LAYOUT_KEY } from "../layouts/keys";
-import { clearScreen } from "../helpers/screen";
+import { clearScreen } from "../helpers/display";
 
 export type MirrorCheckStatus = "pending" | "checking" | "ok" | "failed";
 
@@ -93,83 +93,110 @@ export const createAppStateSlice = (
     partial: Partial<TCombinedStore> | ((state: TCombinedStore) => Partial<TCombinedStore>)
   ) => void,
   get: () => TCombinedStore
-) => ({
-  CLIMode: false,
-  setCLIMode: (CLIMode: boolean) => set({ CLIMode }),
+) => {
+  return {
+    CLIMode: false,
+    setCLIMode: (CLIMode: boolean) => {
+      return set({ CLIMode });
+    },
 
-  ...initialAppState,
+    ...initialAppState,
 
-  setIsLoading: (isLoading: boolean) => set({ isLoading }),
-  setAnyEntryExpanded: (anyEntryExpanded: boolean) => set({ anyEntryExpanded }),
+    setIsLoading: (isLoading: boolean) => {
+      return set({ isLoading });
+    },
+    setAnyEntryExpanded: (anyEntryExpanded: boolean) => {
+      return set({ anyEntryExpanded });
+    },
 
-  setLoaderMessage: (loaderMessage: string) => set({ loaderMessage }),
-  setSearchValue: (searchValue: string) => {
-    set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
-    set({ searchValue });
-  },
-  setErrorMessage: (errorMessage: string | undefined) => set({ errorMessage }),
-  setWarningMessage: (warningMessage: string | undefined) => {
-    const WARNING_DURATION = 5000;
+    setLoaderMessage: (loaderMessage: string) => {
+      return set({ loaderMessage });
+    },
+    setSearchValue: (searchValue: string) => {
+      set(() => ({ showSearchMinCharWarning: searchValue.length < 3 }));
+      set({ searchValue });
+    },
+    setErrorMessage: (errorMessage: string | undefined) => {
+      return set({ errorMessage });
+    },
+    setWarningMessage: (warningMessage: string | undefined) => {
+      const WARNING_DURATION = 5000;
 
-    const timeout = get().warningTimeout;
-    if (timeout) {
-      clearTimeout(timeout);
-    }
+      const timeout = get().warningTimeout;
+      if (timeout) {
+        clearTimeout(timeout);
+      }
 
-    set({ warningMessage });
-    const newTimeout = setTimeout(() => {
-      set({ warningMessage: undefined });
-    }, WARNING_DURATION);
-    set({ warningTimeout: newTimeout });
-  },
+      set({ warningMessage });
+      const newTimeout = setTimeout(() => {
+        set({ warningMessage: undefined });
+      }, WARNING_DURATION);
+      set({ warningTimeout: newTimeout });
+    },
 
-  setCurrentPage: (currentPage: number) => set({ currentPage }),
-  setActiveExpandedListLength: (activeExpandedListLength: number) =>
-    set({ activeExpandedListLength }),
-  setListItemsCursor: (listItemsCursor: number) => set({ listItemsCursor }),
+    setCurrentPage: (currentPage: number) => {
+      return set({ currentPage });
+    },
+    setActiveExpandedListLength: (activeExpandedListLength: number) => {
+      return set({ activeExpandedListLength });
+    },
+    setListItemsCursor: (listItemsCursor: number) => {
+      return set({ listItemsCursor });
+    },
 
-  setDetailedEntry: (detailedEntry: Entry | undefined) => set({ detailedEntry }),
-  setEntries: (entries: Entry[]) => {
-    const store = get();
-    const listItems = constructListItems({
-      entries,
-      currentPage: store.currentPage,
-      nextPageStatus: store.nextPageStatus,
-      handleSearchOption: store.backToSearch,
-      handleNextPageOption: store.nextPage,
-      handleRetryNextPageOption: () => {
-        store.checkNextPage(store.searchValue, store.currentPage + 1);
-      },
-      handlePrevPageOption: store.prevPage,
-      handleStartBulkDownloadOption: store.startBulkDownload,
-      handleExitOption: () => {
-        if (get().inDownloadQueueEntryIds.length > 0) {
-          store.setActiveLayout(LAYOUT_KEY.DOWNLOAD_QUEUE_BEFORE_EXIT_LAYOUT);
-          return;
-        }
+    setDetailedEntry: (detailedEntry: Entry | undefined) => {
+      return set({ detailedEntry });
+    },
+    setEntries: (entries: Entry[]) => {
+      const store = get();
+      const listItems = constructListItems({
+        entries,
+        currentPage: store.currentPage,
+        nextPageStatus: store.nextPageStatus,
+        handleSearchOption: store.backToSearch,
+        handleNextPageOption: store.nextPage,
+        handleRetryNextPageOption: () => {
+          store.checkNextPage(store.searchValue, store.currentPage + 1);
+        },
+        handlePrevPageOption: store.prevPage,
+        handleStartBulkDownloadOption: store.startBulkDownload,
+        handleExitOption: () => {
+          if (get().inDownloadQueueEntryIds.length > 0) {
+            store.setActiveLayout(LAYOUT_KEY.DOWNLOAD_QUEUE_BEFORE_EXIT_LAYOUT);
+            return;
+          }
 
-        if (Object.keys(get().bulkDownloadSelectedEntries).length > 0) {
-          store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_BEFORE_EXIT_LAYOUT);
-          return;
-        }
+          if (Object.keys(get().bulkDownloadSelectedEntries).length > 0) {
+            store.setActiveLayout(LAYOUT_KEY.BULK_DOWNLOAD_BEFORE_EXIT_LAYOUT);
+            return;
+          }
 
-        store.handleExit();
-      },
-    });
-    set({ entries, listItems });
-  },
-  setActiveLayout: (activeLayout: LAYOUT_KEY) => {
-    const store = get();
-    if (!store.CLIMode) {
-      clearScreen();
-    }
+          store.handleExit();
+        },
+      });
+      set({ entries, listItems });
+    },
+    setActiveLayout: (activeLayout: LAYOUT_KEY) => {
+      const store = get();
+      if (!store.CLIMode) {
+        clearScreen();
+      }
 
-    set({ activeLayout });
-  },
+      set({ activeLayout });
+    },
 
-  setNextPageStatus: (nextPageStatus: NextPageStatus) => set({ nextPageStatus }),
-  setConnectionError: (connectionError: string | undefined) => set({ connectionError }),
-  setMirrorCheckStates: (mirrorCheckStates: MirrorCheckState[]) => set({ mirrorCheckStates }),
+    setNextPageStatus: (nextPageStatus: NextPageStatus) => {
+      return set({ nextPageStatus });
+    },
+    setConnectionError: (connectionError: string | undefined) => {
+      return set({ connectionError });
+    },
+    setMirrorCheckStates: (mirrorCheckStates: MirrorCheckState[]) => {
+      return set({ mirrorCheckStates });
+    },
 
-  resetAppState: () => set(initialAppState),
-});
+    resetAppState: () => {
+      return set(initialAppState);
+    },
+  };
+};

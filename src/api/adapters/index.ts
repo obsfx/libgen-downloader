@@ -1,6 +1,7 @@
 import { Adapter } from "./adapter";
 import { LibgenPlusAdapter } from "./libgen-plus-adapter";
-import { MirrorType } from "../data/config";
+import { MirrorType } from "../data/types";
+import { UnknownMirrorTypeError } from "../../errors";
 
 export const getAdapter = (mirrorURL: string, mirrorType: MirrorType): Adapter => {
   switch (mirrorType) {
@@ -8,7 +9,7 @@ export const getAdapter = (mirrorURL: string, mirrorType: MirrorType): Adapter =
       return new LibgenPlusAdapter(mirrorURL);
     }
     default: {
-      throw new Error(`Unknown mirror type: ${mirrorType}`);
+      throw new UnknownMirrorTypeError(mirrorType);
     }
   }
 };

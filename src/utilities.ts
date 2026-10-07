@@ -1,15 +1,16 @@
 import { Entry } from "./api/models/entry";
-import { ListItem, IResultListItemType } from "./api/models/list-item";
+import { ListItem, IResultListItemType, OptionItemSettings } from "./api/models/list-item";
 import {
   MIN_RESULT_LIST_LENGTH,
   RESULT_LIST_ACTIVE_LIST_INDEX,
   RESULT_LIST_LENGTH,
 } from "./constants";
 import { Option } from "./options";
-import Label from "./labels";
+import { Label } from "./labels";
+import { OperationTimeoutError } from "./errors";
 import { FAIL_REQ_ATTEMPT_COUNT, FAIL_REQ_ATTEMPT_DELAY_MS, REQUEST_TIMEOUT_MS } from "./settings";
 
-export function delay(ms: number): Promise<void> {
+function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
@@ -21,6 +22,8 @@ export interface AttemptOptions {
   attemptCount?: number;
   delayMs?: number;
   timeoutMs?: number;
+  signal?: AbortSignal;
+  shouldRetry?: (cause: unknown) => boolean;
   onFail?: (message: string) => void;
   onError?: (message: string) => void;
   onComplete?: () => void;
@@ -36,11 +39,15 @@ export async function attempt<T>(
 
   for (let index = 0; index < attemptCount; index++) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const timeout = setTimeout(() => controller.abort(new OperationTimeoutError()), timeoutMs);
+    let signal = controller.signal;
+    if (options.signal) {
+      signal = AbortSignal.any([controller.signal, options.signal]);
+    }
     let failure: unknown;
 
     try {
-      const result = await callback(controller.signal);
+      const result = await callback(signal);
 
       if (options.onComplete) {
         options.onComplete();
@@ -53,37 +60,41 @@ export async function attempt<T>(
       clearTimeout(timeout);
     }
 
-    if (options.onFail) {
+    const isRetryable = !options.signal?.aborted && (options.shouldRetry?.(failure) ?? true);
+    if (options.onFail && isRetryable) {
       options.onFail(`Request failed, trying again ${index + 1}/${attemptCount}`);
     }
 
-    const isLastAttempt = index + 1 === attemptCount;
+    const isLastAttempt = index + 1 === attemptCount || !isRetryable;
     if (isLastAttempt) {
       if (options.onError) {
         options.onError((failure as Error)?.message);
       }
-    } else {
-      await delay(delayMs);
+      return undefined;
     }
+
+    await delay(delayMs);
   }
 
   return undefined;
 }
 
-export const createOptionItem = (
+const createOptionItem = (
   id: string,
   label: string,
   onSelect: () => void,
-  options?: { disabled?: boolean; showSpinner?: boolean }
-): ListItem => ({
-  type: IResultListItemType.Option,
-  data: {
-    id,
-    label,
-    onSelect,
-    ...options,
-  },
-});
+  options?: OptionItemSettings
+): ListItem => {
+  return {
+    type: IResultListItemType.Option,
+    data: {
+      id,
+      label,
+      onSelect,
+      ...options,
+    },
+  };
+};
 
 export type NextPageStatus = "idle" | "checking" | "ready" | "unavailable" | "error";
 

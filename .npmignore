@@ -31,3 +31,8 @@ CLAUDE.md
 /.github
 AGENTS.md
 tsconfig.json
+/.trekker
+
+/spikes
+/assets
+/scripts

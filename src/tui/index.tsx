@@ -1,7 +1,7 @@
 import { render } from "ink";
 
 import { LAYOUT_KEY } from "./layouts/keys";
-import App from "./app";
+import { App } from "./app";
 import { useBoundStore } from "./store";
 
 interface renderTUIArguments {
@@ -10,7 +10,7 @@ interface renderTUIArguments {
   initialLayout?: LAYOUT_KEY;
 }
 
-export default function renderTUI({
+export function renderTUI({
   startInCLIMode,
   doNotFetchConfigInitially,
   initialLayout,

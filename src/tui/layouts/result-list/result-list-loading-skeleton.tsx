@@ -1,9 +1,9 @@
 import { Box, Text } from "ink";
 import InkSpinner from "ink-spinner";
-import Label from "../../../labels";
+import { Label } from "../../../labels";
 import { RESULT_LIST_LENGTH } from "../../../constants";
 import { useBoundStore } from "../../store/index";
-import MirrorFailover from "../../components/mirror-failover";
+import { MirrorFailover } from "../../components/mirror-failover";
 
 export function ResultListLoadingSkeleton() {
   const connectionError = useBoundStore((state) => state.connectionError);

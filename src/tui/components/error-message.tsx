@@ -1,7 +1,7 @@
 import { Box, Text } from "ink";
 import OptionList from "./option-list";
 import { useBoundStore } from "../store";
-import Label from "../../labels";
+import { Label } from "../../labels";
 import { ErrorMessageOption } from "../../options";
 
 export function ErrorMessage() {
@@ -35,7 +35,9 @@ export function ErrorMessage() {
           }),
           [ErrorMessageOption.EXIT]: {
             label: Label.EXIT,
-            onSelect: () => handleExit(),
+            onSelect: () => {
+              return handleExit();
+            },
           },
         }}
       />

@@ -4,17 +4,13 @@ export abstract class Adapter {
   abstract baseURL: string;
 
   abstract isHiddenField(fieldName: string): boolean;
-  abstract parseEntries(
+  abstract resolveEntries(
     document: Document,
-    throwError?: (message: string) => void
-  ): Entry[] | undefined;
-  abstract getPageURL(pathname: string): string;
+    pageURL: string,
+    signal: AbortSignal
+  ): Promise<Entry[]>;
   abstract getSearchURL(query: string, pageNumber: number, pageSize: number): string;
-  abstract getDetailPageURL(md5: string): string;
-  abstract getMainDownloadURLFromDocument(
-    document: Document,
-    throwError?: (message: string) => void
-  ): string | undefined;
+  abstract getEntryMD5(entry: Entry): string | undefined;
   abstract formatField(fieldName: string, value: string): string;
   abstract detectConnectionError(document: Document): string | undefined;
 }

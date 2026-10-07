@@ -5,15 +5,20 @@ export enum IResultListItemType {
   Option,
 }
 
+export interface OptionItemSettings {
+  disabled?: boolean;
+  showSpinner?: boolean;
+}
+
+export interface OptionItemData extends OptionItemSettings {
+  id: string;
+  label: string;
+  onSelect: () => void;
+}
+
 export interface IResultListItemOption {
   type: IResultListItemType.Option;
-  data: {
-    id: string;
-    label: string;
-    onSelect: () => void;
-    disabled?: boolean;
-    showSpinner?: boolean;
-  };
+  data: OptionItemData;
 }
 
 export interface IResultListItemEntry {

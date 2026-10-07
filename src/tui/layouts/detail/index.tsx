@@ -1,14 +1,13 @@
-import type { FC } from "react";
 import { Box } from "ink";
 import ContentContainer from "../../components/content-container";
 import DetailRow from "./detail-row";
-import DetailEntryOptions from "./detail-entry-options";
+import { DetailEntryOptions } from "./detail-entry-options";
 import UsageInfo from "../../components/usage-info";
 import { useBoundStore } from "../../store";
 import ResultListInfo from "../../components/result-list-info";
 import { DownloadStatusAndProgress } from "../../components/download-status-and-progress";
 
-const Detail: FC = () => {
+export function Detail() {
   const mirrorAdapter = useBoundStore((state) => state.mirrorAdapter);
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
 
@@ -53,6 +52,4 @@ const Detail: FC = () => {
       <UsageInfo />
     </Box>
   );
-};
-
-export default Detail;
+}

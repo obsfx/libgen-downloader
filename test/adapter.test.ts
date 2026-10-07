@@ -1,21 +1,35 @@
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { parseHTML } from "linkedom";
 import { LibgenPlusAdapter } from "../src/api/adapters/libgen-plus-adapter";
+import { AppServices } from "../src/api/services/app-services";
+import { MemorySelectorStore } from "./support/memory-selector-store";
 
-const parseDocument = (html: string) => parseHTML(html).document as unknown as Document;
+function parseDocument(html: string): Document {
+  return parseHTML(html).document;
+}
 
 describe("LibgenPlusAdapter", () => {
-  const adapter = new LibgenPlusAdapter("https://libgen.example/");
+  const services = new AppServices({
+    selectorStore: new MemorySelectorStore(),
+    crossEncoder: false,
+  });
+  const adapter = new LibgenPlusAdapter("https://libgen.example/", services.resolverFactory);
+  const resolveEntries = (document: Document) => {
+    return adapter.resolveEntries(
+      document,
+      "https://libgen.example/index.php",
+      AbortSignal.timeout(5000)
+    );
+  };
 
-  it("constructs search, detail, and relative page URLs", () => {
+  it("constructs search and detail page URLs", () => {
     expect(adapter.getSearchURL("clean code", 2, 25)).toBe(
       "https://libgen.example/index.php?req=clean+code&page=2&res=25"
     );
     expect(adapter.getDetailPageURL("abc123")).toBe("https://libgen.example/ads.php?md5=abc123");
-    expect(adapter.getPageURL("/book.epub")).toBe("https://libgen.example/book.epub");
   });
 
-  it("parses result rows into normalized entries", () => {
+  it("parses result rows into normalized entries", async () => {
     const document = parseDocument(`
       <table id="tablelibgen">
         <tbody>
@@ -34,7 +48,7 @@ describe("LibgenPlusAdapter", () => {
       </table>
     `);
 
-    const entries = adapter.parseEntries(document);
+    const entries = await resolveEntries(document);
 
     expect(entries).toHaveLength(1);
     expect(entries?.[0]).toMatchObject({
@@ -51,24 +65,17 @@ describe("LibgenPlusAdapter", () => {
     expect(entries?.[0].id).toBeTruthy();
   });
 
-  it("extracts the primary download URL and connection errors", () => {
+  it("detects connection errors", () => {
     const document = parseDocument(`
-      <table id="main"><tr><td>Book</td><td><a href="/get/book.epub">GET</a></td></tr></table>
       <div class="alert-danger">Mirror temporarily unavailable</div>
     `);
 
-    expect(adapter.getMainDownloadURLFromDocument(document)).toBe(
-      "https://libgen.example/get/book.epub"
-    );
     expect(adapter.detectConnectionError(document)).toBe("Mirror temporarily unavailable");
   });
 
-  it("returns an empty result and reports malformed result pages", () => {
-    const onError = mock(() => {});
-
-    expect(adapter.parseEntries(parseDocument("<main>no results table</main>"), onError)).toEqual(
+  it("returns an empty result for pages without a results table", async () => {
+    await expect(resolveEntries(parseDocument("<main>no results table</main>"))).resolves.toEqual(
       []
     );
-    expect(onError).toHaveBeenCalledWith("containerTable is undefined");
   });
 });

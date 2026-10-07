@@ -1,15 +1,14 @@
-import type { FC } from "react";
 import { Box, Text, useInput } from "ink";
 import figures from "figures";
 import { IOption } from "../../components/option";
 import OptionList from "../../components/option-list";
 import { DetailEntryOption } from "../../../options";
-import Label from "../../../labels";
+import { Label } from "../../../labels";
 import { LAYOUT_KEY } from "../keys";
 import { useBoundStore } from "../../store";
 import objectHash from "object-hash";
 
-const DetailEntryOptions: FC = () => {
+export function DetailEntryOptions() {
   const detailedEntry = useBoundStore((state) => state.detailedEntry);
   const setDetailedEntry = useBoundStore((state) => state.setDetailedEntry);
   const setActiveLayout = useBoundStore((state) => state.setActiveLayout);
@@ -52,7 +51,7 @@ const DetailEntryOptions: FC = () => {
     bulkDownloadLabel = Label.REMOVE_FROM_BULK_DOWNLOAD_QUEUE;
   }
 
-  const detailOptions: Record<string, IOption> = {
+  const detailOptions = {
     [DetailEntryOption.TURN_BACK_TO_THE_LIST]: {
       label: Label.TURN_BACK_TO_THE_LIST,
       onSelect: () => {
@@ -77,7 +76,7 @@ const DetailEntryOptions: FC = () => {
         toggleBulkDownload();
       },
     },
-  };
+  } satisfies Record<string, IOption>;
 
   useInput((input, key) => {
     if (key.tab) {
@@ -107,6 +106,4 @@ const DetailEntryOptions: FC = () => {
       <OptionList key={"detailOptions"} options={detailOptions} />
     </>
   );
-};
-
-export default DetailEntryOptions;
+}

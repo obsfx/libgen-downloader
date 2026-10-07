@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { fetchConfig, findMirror } from "../src/api/data/config";
-import { getDocument } from "../src/api/data/document";
+import { RemoteConfig } from "../src/api/data/remote-config";
+import { LibgenHttpClient } from "../src/api/http/libgen-http-client";
 import { CONFIGURATION_URL, LIBGEN_USER_AGENT } from "../src/settings";
 
 afterEach(() => {
@@ -13,23 +13,25 @@ describe("configuration data", () => {
       Response.json({
         latest_version: "4.0.0",
         mirrors: [{ src: "https://mirror.example/", type: "libgen-plus" }],
+        download_mirrors: [{ src: "https://spa.example/", type: "libgen-spa" }],
       })
     );
     const signal = new AbortController().signal;
 
-    await expect(fetchConfig(signal)).resolves.toEqual({
+    await expect(new RemoteConfig(new LibgenHttpClient()).load(signal)).resolves.toEqual({
       latestVersion: "4.0.0",
       mirrors: [{ src: "https://mirror.example/", type: "libgen-plus" }],
+      downloadMirrors: [{ src: "https://spa.example/", type: "libgen-spa" }],
     });
-    expect(fetchMock).toHaveBeenCalledWith(CONFIGURATION_URL, { signal });
+    expect(fetchMock).toHaveBeenCalledWith(CONFIGURATION_URL, expect.objectContaining({ signal }));
   });
 
   it("wraps configuration transport errors", async () => {
     spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
 
-    await expect(fetchConfig(new AbortController().signal)).rejects.toThrow(
-      "Error occurred while fetching configuration."
-    );
+    await expect(
+      new RemoteConfig(new LibgenHttpClient()).load(new AbortController().signal)
+    ).rejects.toThrow("Error occurred while fetching configuration.");
   });
 
   it("selects the first reachable mirror and reports failed mirrors", async () => {
@@ -43,17 +45,23 @@ describe("configuration data", () => {
     ];
 
     await expect(
-      findMirror(mirrors, onMirrorFail, { attemptCount: 1, delayMs: 0, timeoutMs: 100 })
+      new RemoteConfig(new LibgenHttpClient()).findReachableMirror(mirrors, onMirrorFail, {
+        attemptCount: 1,
+        delayMs: 0,
+        timeoutMs: 100,
+      })
     ).resolves.toEqual(mirrors[1]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock).toHaveBeenNthCalledWith(1, "https://offline.example/", {
-      headers: { "User-Agent": LIBGEN_USER_AGENT },
-      signal: expect.any(AbortSignal),
-    });
-    expect(fetchMock).toHaveBeenNthCalledWith(2, "https://online.example/", {
-      headers: { "User-Agent": LIBGEN_USER_AGENT },
-      signal: expect.any(AbortSignal),
-    });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://offline.example/",
+      expect.objectContaining({ headers: { "User-Agent": LIBGEN_USER_AGENT } })
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "https://online.example/",
+      expect.objectContaining({ headers: { "User-Agent": LIBGEN_USER_AGENT } })
+    );
     expect(onMirrorFail).toHaveBeenCalledWith("https://offline.example/");
   });
 });
@@ -66,13 +74,13 @@ describe("document data", () => {
 
     const url = "https://mirror.example/book";
     const signal = new AbortController().signal;
-    const result = await getDocument(url, signal);
+    const result = await new LibgenHttpClient().fetchDocument(url, { signal });
 
-    expect(fetchMock).toHaveBeenCalledWith(url, {
-      headers: { "User-Agent": LIBGEN_USER_AGENT },
-      signal,
-    });
-    expect(result.htmlString).toContain("Example Book");
+    expect(fetchMock).toHaveBeenCalledWith(
+      url,
+      expect.objectContaining({ headers: { "User-Agent": LIBGEN_USER_AGENT }, signal })
+    );
+    expect(result.ok).toBe(true);
     expect(result.document.querySelector("#title")?.textContent).toBe("Example Book");
   });
 
@@ -80,7 +88,9 @@ describe("document data", () => {
     spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
 
     await expect(
-      getDocument("https://mirror.example/book", new AbortController().signal)
-    ).rejects.toThrow("Error occured while fetching document of https://mirror.example/book");
+      new LibgenHttpClient().fetchDocument("https://mirror.example/book", {
+        signal: new AbortController().signal,
+      })
+    ).rejects.toThrow("Error occurred while fetching document of https://mirror.example/book");
   });
 });
