@@ -21,5 +21,23 @@
 			"src": "https://libgen.la/",
 			"type": "libgen-plus"
 		}
+	],
+	"download_mirrors": [
+		{
+			"src": "https://randombook.org/",
+			"type": "libgen-spa"
+		},
+		{
+			"src": "https://libgen.pw/",
+			"type": "libgen-spa"
+		},
+		{
+			"src": "https://libgen.me/",
+			"type": "libgen-spa"
+		},
+		{
+			"src": "https://libgen.xyz/",
+			"type": "libgen-spa"
+		}
 	]
 }
