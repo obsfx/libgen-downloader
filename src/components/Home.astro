@@ -1,0 +1,110 @@
+---
+import Brand from "@/src/components/Brand.astro";
+import DemoVideos from "@/src/components/DemoVideos.astro";
+import ExternalLink from "@/src/components/ExternalLink.astro";
+import InstallCommand from "@/src/components/InstallCommand.astro";
+import LibraryCanvas from "@/src/components/LibraryCanvas.astro";
+import ProjectLinks from "@/src/components/ProjectLinks.astro";
+import { LatestVersion } from "@/src/lib/latest-version";
+
+const version = await LatestVersion.read();
+---
+
+<div class="home">
+  <div class="home__visual">
+    <LibraryCanvas />
+  </div>
+  <main class="home__main">
+    <div class="home__copy">
+      <Brand version={version} />
+      <h1 class="home__intro">A command-line tool to search and download books from libgen.</h1>
+      <p>
+        You can download books from multiple mirrors. It also supports bulk downloading. It has a responsive resizable UI that renders in your terminal.
+      </p>
+      <p>If you have Node.js and npm installed, you can use npm to install libgen-downloader.</p>
+      <InstallCommand command="npm install -g libgen-downloader" />
+      <p>
+        If you don't want to install Node.js and npm, you can download one of the <ExternalLink href="https://github.com/obsfx/libgen-downloader/releases" library={0}>standalone binaries</ExternalLink> for macOS, Linux and Windows.
+      </p>
+    </div>
+    <div class="home__demos">
+      <DemoVideos />
+    </div>
+    <div class="home__copy">
+      <p>
+        Run it without flags for the interactive UI, or go straight to work: <code>-s</code> searches, <code>-b</code> bulk downloads from an MD5 list and <code>-d</code> downloads a single file. Visit <ExternalLink href="https://github.com/obsfx/libgen-downloader" library={1}>GitHub</ExternalLink> for detailed information.
+      </p>
+      <ProjectLinks />
+    </div>
+  </main>
+</div>
+
+<style>
+  .home {
+    position: relative;
+    overflow: hidden;
+    min-block-size: 100svh;
+    color: var(--fg);
+  }
+
+  .home__visual {
+    position: absolute;
+    inset: 0 0 auto;
+    block-size: clamp(26rem, 64svh, 44rem);
+    pointer-events: none;
+    mask-image: linear-gradient(
+      to bottom,
+      #000 20%,
+      rgb(0 0 0 / 0.62) 46%,
+      rgb(0 0 0 / 0.24) 66%,
+      rgb(0 0 0 / 0.06) 84%,
+      transparent
+    );
+  }
+
+  .home__main {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3.5rem;
+    padding: clamp(15rem, 44svh, 27rem) clamp(1.25rem, 4vw, 3.5rem) 5rem;
+  }
+
+  .home__copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9em;
+    inline-size: 100%;
+    max-inline-size: 31rem;
+    margin-inline: auto;
+    color: var(--fg-muted);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .home__copy > :global(.install-command) {
+    justify-self: start;
+    margin-block: 0.2em 0.4em;
+  }
+
+  .home__intro {
+    color: var(--fg);
+    font-size: clamp(1.375rem, 1.15rem + 0.6vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .home__demos {
+    inline-size: 100%;
+    max-inline-size: 56rem;
+    margin-inline: auto;
+  }
+
+  .home__copy code {
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
+</style>

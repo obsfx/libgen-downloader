@@ -1,0 +1,56 @@
+---
+interface Props {
+  name: "arrow-up-right";
+}
+
+const { name } = Astro.props;
+const viewBoxes = {
+  "arrow-up-right": "4.5 4.5 7 7",
+};
+---
+
+<svg
+  class:list={["icon", `icon--${name}`]}
+  viewBox={viewBoxes[name]}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {
+    name === "arrow-up-right" && (
+      <>
+        <path d="M4.5 11.5 11.5 4.5" />
+        <path d="M5.75 4.5h5.75v5.75" />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .icon {
+    display: inline-block;
+    flex-shrink: 0;
+    overflow: visible;
+    margin-inline-start: 0.12em;
+    opacity: 0.55;
+    transition: opacity 160ms ease-out;
+  }
+
+  .icon path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .icon--arrow-up-right {
+    inline-size: 0.45em;
+    block-size: 0.45em;
+    vertical-align: 0.42em;
+  }
+
+  :global(a:hover) > .icon,
+  :global(a:focus-visible) > .icon {
+    opacity: 1;
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+const clips = [
+  { name: "single", label: "Search and download", description: "Searching libgen and downloading a single book in libgen-downloader" },
+  { name: "bulk", label: "Bulk download", description: "Queueing several books and bulk downloading them in libgen-downloader" },
+] as const;
+const width = 1352;
+const height = 1048;
+---
+
+<div class="demo-videos" data-demo-tabs>
+  <div class="demo-videos__list" role="tablist" aria-label="Demos">
+    {
+      clips.map((clip, index) => {
+        return (
+          <button
+            type="button"
+            class="demo-videos__tab"
+            role="tab"
+            id={`demo-tab-${clip.name}`}
+            aria-controls={`demo-panel-${clip.name}`}
+            aria-selected={index === 0}
+            tabindex={index === 0 ? 0 : -1}
+          >
+            {clip.label}
+          </button>
+        );
+      })
+    }
+  </div>
+  {
+    clips.map((clip, index) => {
+      return (
+        <div class="demo-videos__panel" role="tabpanel" id={`demo-panel-${clip.name}`} aria-labelledby={`demo-tab-${clip.name}`} hidden={index !== 0}>
+          <video
+            class="demo-videos__video"
+            muted
+            loop
+            playsinline
+            preload="none"
+            width={width}
+            height={height}
+            poster={`/media/${clip.name}-poster.webp`}
+            aria-label={clip.description}
+            data-in-view-video
+          >
+            <source src={`/media/${clip.name}.webm`} type="video/webm" />
+            <source src={`/media/${clip.name}.mp4`} type="video/mp4" />
+          </video>
+        </div>
+      );
+    })
+  }
+</div>
+
+<style>
+  .demo-videos {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .demo-videos__list {
+    display: flex;
+    justify-content: safe center;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .demo-videos__tab {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color 160ms ease-out,
+      border-color 160ms ease-out;
+  }
+
+  .demo-videos__tab:hover {
+    color: var(--fg);
+  }
+
+  .demo-videos__tab[aria-selected="true"] {
+    border-color: var(--line);
+    background: rgb(241 237 249 / 0.06);
+    color: var(--fg);
+  }
+
+  .demo-videos__video {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    border: 1px solid rgb(241 237 249 / 0.14);
+    border-radius: 14px;
+    background: #0c0a14;
+    box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.8);
+  }
+</style>
+
+<script>
+  import { DemoTabs } from "@/src/lib/demo-tabs";
+  import { InViewVideos } from "@/src/lib/in-view-videos";
+
+  DemoTabs.start();
+  InViewVideos.start();
+</script>

@@ -1,0 +1,24 @@
+<library-canvas aria-hidden="true"></library-canvas>
+
+<style>
+  library-canvas {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  library-canvas :global(canvas) {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+</style>
+
+<script>
+  import { LibraryCanvasElement } from "@/src/lib/library/library-canvas-element";
+
+  LibraryCanvasElement.register();
+</script>

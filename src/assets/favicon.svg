@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#lantern)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="lantern" x1="5" y1="20" x2="17" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b5532f" />
+      <stop offset="0.55" stop-color="#e0954f" />
+      <stop offset="1" stop-color="#f6c77d" />
+    </linearGradient>
+  </defs>
+  <path d="M5 4.5h10.5A1.5 1.5 0 0 1 17 6v13.5H6.5A1.5 1.5 0 0 1 5 18z" />
+  <path d="M5 18a1.5 1.5 0 0 1 1.5-1.5H17" />
+  <path d="M11 7.5v5.25" />
+  <path d="m8.75 10.5 2.25 2.25 2.25-2.25" />
+</svg>

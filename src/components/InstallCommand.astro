@@ -1,0 +1,83 @@
+---
+interface Props {
+  command: string;
+}
+
+const { command } = Astro.props;
+---
+
+<button type="button" class="install-command" data-copy={command} aria-label={`Copy ${command}`}>
+  <span class="install-command__prompt" aria-hidden="true">$</span>
+  <code class="install-command__text">{command}</code>
+  <span class="install-command__state" aria-hidden="true">
+    <span class="install-command__idle">Copy</span>
+    <span class="install-command__done">Copied</span>
+  </span>
+</button>
+
+<style>
+  .install-command {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-inline-size: 100%;
+    padding: 0.6rem 0.7rem 0.6rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgb(17 14 27 / 0.55);
+    backdrop-filter: blur(8px);
+    color: var(--fg);
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 160ms ease-out;
+  }
+
+  .install-command:hover {
+    border-color: var(--fg-muted);
+  }
+
+  .install-command__prompt {
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .install-command__text {
+    min-inline-size: 0;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .install-command__state {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgb(241 237 249 / 0.1);
+    color: var(--fg-muted);
+    font-size: 0.75rem;
+  }
+
+  .install-command__done,
+  .install-command[data-copied] .install-command__idle {
+    display: none;
+  }
+
+  .install-command[data-copied] .install-command__done {
+    display: inline;
+    color: var(--fg);
+  }
+
+  @media (max-width: 26rem) {
+    .install-command:not([data-copied]) .install-command__state {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { CopyButtons } from "@/src/lib/copy-buttons";
+
+  CopyButtons.start();
+</script>

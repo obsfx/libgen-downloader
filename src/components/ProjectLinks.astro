@@ -1,0 +1,44 @@
+---
+import Icon from "@/src/components/Icon.astro";
+
+const links = [
+  { label: "GitHub", href: "https://github.com/obsfx/libgen-downloader" },
+  { label: "Releases", href: "https://github.com/obsfx/libgen-downloader/releases" },
+  { label: "npm", href: "https://www.npmjs.com/package/libgen-downloader" },
+];
+---
+
+<ul class="project-links">
+  {
+    links.map((link) => {
+      return (
+        <li>
+          <a class="project-links__link" href={link.href} target="_blank" rel="noreferrer">
+            {link.label}
+            <Icon name="arrow-up-right" />
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .project-links {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+  }
+
+  .project-links__link {
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 160ms ease-out;
+  }
+
+  .project-links__link:hover {
+    color: var(--fg);
+  }
+</style>

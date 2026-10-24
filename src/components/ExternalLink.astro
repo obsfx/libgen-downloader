@@ -1,0 +1,30 @@
+---
+import Icon from "@/src/components/Icon.astro";
+
+interface Props {
+  href: string;
+  library?: 0 | 1 | 2;
+}
+
+const { href, library } = Astro.props;
+---
+
+<a href={href} target="_blank" rel="noreferrer" class="external-link" data-library-focus={library}
+  ><slot /><Icon name="arrow-up-right" /></a
+>
+
+<style>
+  .external-link {
+    color: var(--fg);
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 160ms ease-out;
+  }
+
+  .external-link:hover {
+    text-decoration-color: var(--line);
+  }
+</style>

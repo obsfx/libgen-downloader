@@ -1,0 +1,54 @@
+---
+interface Props {
+  version: string;
+}
+
+const { version } = Astro.props;
+---
+
+<span class="brand">
+  <svg
+    class="brand__mark"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M5 4.5h10.5A1.5 1.5 0 0 1 17 6v13.5H6.5A1.5 1.5 0 0 1 5 18z" />
+    <path d="M5 18a1.5 1.5 0 0 1 1.5-1.5H17" />
+    <path d="M11 7.5v5.25" />
+    <path d="m8.75 10.5 2.25 2.25 2.25-2.25" />
+  </svg>
+  libgen-downloader
+  <span class="brand__version">v{version}</span>
+</span>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    color: var(--fg);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .brand__mark {
+    inline-size: 1.15em;
+    block-size: 1.15em;
+  }
+
+  .brand__version {
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+  }
+</style>
